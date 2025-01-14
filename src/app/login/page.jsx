@@ -107,11 +107,11 @@ export default function Page() {
               비밀번호 재설정
             </Link>
           </div>
-          <Button color='primary' type='submit' className='!mt-[91.5px] h-[57px] w-full rounded-full'>
+          <Button color='primary' type='submit' className='!mt-[91.5px] h-[57px] w-full rounded-full !bg-[#EA4336]'>
             로그인
           </Button>
         </Form>
-        <Button color='primary' className='!mt-[15px] h-[57px] w-full rounded-full'>
+        <Button color='success' className='!mt-[15px] h-[57px] w-full rounded-full !bg-white'>
           회원가입
         </Button>
         <div className='flex flex-row items-center justify-between max-w-[414px] gap-2'>
