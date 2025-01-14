@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { Button, Form, Input } from '@nextui-org/react';
+import googleIcon from '@public/src/images/google_icon.png';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Page() {
   const [submitted, setSubmitted] = useState(null);
@@ -10,14 +13,8 @@ export default function Page() {
 
   const validatePassword = (password) => {
     const newErrors = [];
-    if (password.length < 4) {
-      newErrors.push('Password must be 4 characters or more.');
-    }
-    if ((password.match(/[A-Z]/g) || []).length < 1) {
-      newErrors.push('Password must include at least 1 upper case letter.');
-    }
-    if ((password.match(/[^a-z0-9]/gi) || []).length < 1) {
-      newErrors.push('Password must include at least 1 symbol.');
+    if (password.length <= 0) {
+      newErrors.push('비밀번호를 입력해주세요.');
     }
     return newErrors;
   };
@@ -39,27 +36,35 @@ export default function Page() {
   return (
     <div className='flex min-h-screen justify-center px-6 py-12'>
       <div className='flex flex-col w-full justify-center gap-4 max-w-[414px]'>
-        <div className='text-[30px]'>
-          GDGoC Inha에 <br /> 오신 것을 환영합니다
+        <div className='text-[30px] text-white'>
+          GDGoC Inha에 <br /> 오신 것을 환영합니다👋
         </div>
         <Form className='w-full max-w-[414px]' validationBehavior='native' onSubmit={onSubmit}>
           <Input
             isRequired
             errorMessage={({ validationDetails, validationErrors }) => {
               if (validationDetails.typeMismatch) {
-                return 'Please enter a valid email address.';
+                return '올바른 이메일 형식을 입력해주세요.';
+              } else {
+                return '이메일을 입력해주세요.';
               }
               return validationErrors;
             }}
-            className='!mt-[49.5px] w-full'
+            className='!mt-[49.5px] w-full rounded-full'
             classNames={{
-              label: '!pb-[12px]',
-              inputWrapper: 'h-[57px]',
+              label: '!pb-[12px] !text-white',
+              inputWrapper: `h-[57px] rounded-full border-1 border-white bg-transparent 
+              group-data-[focus=true]:border-1 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent 
+              group-data-[hover=true]:border-1 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
+              group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#F31260]`,
+              mainWrapper: 'relative',
+              helperWrapper: 'absolute -bottom-7 left-0',
+              input: '!text-white',
             }}
             label='아이디'
             labelPlacement='outside'
             name='email'
-            placeholder='Enter your email'
+            placeholder='이메일을 적어주세요'
             type='email'
           />
           <Input
@@ -72,20 +77,32 @@ export default function Page() {
             )}
             isInvalid={errors.length > 0}
             className='!mt-[49.5px] w-full'
+            autoComplete='off'
             classNames={{
-              label: '!pb-[12px]',
-              inputWrapper: 'h-[57px]',
+              label: '!pb-[12px] !text-white',
+              inputWrapper: `h-[57px] rounded-full border-1 border-white bg-transparent 
+              group-data-[focus=true]:border-1 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent 
+              group-data-[hover=true]:border-1 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
+              group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#F31260]`,
+              mainWrapper: 'relative',
+              helperWrapper: 'absolute -bottom-7 left-0',
+              input: '!text-white',
             }}
             label='비밀번호'
             labelPlacement='outside'
             name='password'
-            placeholder='Enter your password'
+            type='password'
+            placeholder='비밀번호를 적어주세요'
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
               setErrors([]); // 에러 메시지 초기화
             }}
           />
+          <div className='flex flex-row justify-end w-full px-2 gap-[16.5px] text-xs text-[#A8A8A8]'>
+            <Link href=''>아이디 찾기</Link>
+            <Link href=''>비밀번호 재설정</Link>
+          </div>
           <Button color='primary' type='submit' className='!mt-[91.5px] h-[57px] w-full rounded-full'>
             로그인
           </Button>
@@ -97,6 +114,9 @@ export default function Page() {
           <hr className='flex-1 border-t border-[#A8A8A8]' />
           <div className='px-2 text-sm text-[#A8A8A8]'>또는</div>
           <hr className='flex-1 border-t border-[#A8A8A8]' />
+        </div>
+        <div className='flex flex-col items-center justify-between max-w-[414px]'>
+          <Image className='cursor-pointer' src={googleIcon} alt='googleIcon' height={50} width={50} />
         </div>
       </div>
     </div>
