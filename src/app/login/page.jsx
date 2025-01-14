@@ -53,8 +53,8 @@ export default function Page() {
             className='!mt-[49.5px] w-full rounded-full'
             classNames={{
               label: '!pb-[12px] !text-white',
-              inputWrapper: `h-[57px] rounded-full border-1 border-white bg-transparent 
-              group-data-[focus=true]:border-1 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent 
+              inputWrapper: `h-[57px] rounded-full border-1 border-white/50 bg-transparent !transition !duration-300 !ease-in-out
+              group-data-[focus=true]:border-1 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent
               group-data-[hover=true]:border-1 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
               group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#F31260]`,
               mainWrapper: 'relative',
@@ -80,7 +80,7 @@ export default function Page() {
             autoComplete='off'
             classNames={{
               label: '!pb-[12px] !text-white',
-              inputWrapper: `h-[57px] rounded-full border-1 border-white bg-transparent 
+              inputWrapper: `h-[57px] rounded-full border-1 border-white/50 bg-transparent !transition !duration-300 !ease-in-out
               group-data-[focus=true]:border-1 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent 
               group-data-[hover=true]:border-1 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
               group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#F31260]`,
@@ -99,9 +99,13 @@ export default function Page() {
               setErrors([]); // 에러 메시지 초기화
             }}
           />
-          <div className='flex flex-row justify-end w-full px-2 gap-[16.5px] text-xs text-[#A8A8A8]'>
-            <Link href=''>아이디 찾기</Link>
-            <Link href=''>비밀번호 재설정</Link>
+          <div className='flex flex-row justify-end w-full px-2 gap-[16.5px] text-xs text-[#DCDCDC]/50'>
+            <Link href='' className='transition ease-in-out hover:text-[#DCDCDC]'>
+              아이디 찾기
+            </Link>
+            <Link href='' className='transition ease-in-out hover:text-[#DCDCDC]'>
+              비밀번호 재설정
+            </Link>
           </div>
           <Button color='primary' type='submit' className='!mt-[91.5px] h-[57px] w-full rounded-full'>
             로그인
