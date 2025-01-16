@@ -59,10 +59,11 @@ export default function Page() {
                 inputWrapper: `h-[57px] rounded-full border-2 border-white/50 caret-white bg-transparent !transition !duration-300 !ease-in-out
               group-data-[focus=true]:border-2 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent
               group-data-[hover=true]:border-2 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
-              group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#F31260]`,
+              group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#EA4336]`,
                 mainWrapper: 'relative',
                 helperWrapper: 'absolute -bottom-6 left-0',
                 input: '!text-white',
+                errorMessage: 'text-[#EA4336]',
               }}
               label='아이디'
               labelPlacement='outside'
@@ -86,10 +87,11 @@ export default function Page() {
                 inputWrapper: `h-[57px] rounded-full border-2 border-white/50 caret-white bg-transparent !transition !duration-300 !ease-in-out
               group-data-[focus=true]:border-2 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent 
               group-data-[hover=true]:border-2 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
-              group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#F31260]`,
+              group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#EA4336]`,
                 mainWrapper: 'relative',
                 helperWrapper: 'absolute -bottom-6 left-0',
                 input: '!text-white',
+                errorMessage: 'text-[#EA4336]',
               }}
               label='비밀번호'
               labelPlacement='outside'
