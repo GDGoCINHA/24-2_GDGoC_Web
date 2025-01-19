@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
     background-color: black;
+}
+
+@layer utilities {
+    input:-webkit-autofill {
+        -webkit-text-fill-color: white;
+    }
 }
 
 body{
@@ -19,17 +24,11 @@ input {
     margin-left: 10px;
 }
 
-@layer utilities {
-    input:-webkit-autofill {
-        -webkit-text-fill-color: white;
-    }
-  }
 
-
-  [data-top-scroll="true"] {
+[data-top-scroll="true"] {
     mask-image: none !important;
-  }
+}
 
-  [data-top-scroll="false"] {
+[data-top-scroll="false"] {
     mask-image: none !important;
-  }
+}
