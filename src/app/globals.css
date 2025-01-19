@@ -6,3 +6,21 @@
 :root {
     background-color: black;
 }
+
+body{
+    -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+input {
+    margin-left: 10px;
+}
+
+@layer utilities {
+    input:-webkit-autofill {
+        -webkit-text-fill-color: white;
+    }
+  }
