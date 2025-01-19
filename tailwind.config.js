@@ -1,3 +1,4 @@
+const {heroui} = require('@heroui/theme');
 // tailwind.config.js
 const {nextui} = require("@nextui-org/react");
 
@@ -8,6 +9,7 @@ module.exports = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@heroui/theme/dist/components/scroll-shadow.js"
   ],
   theme: {
     extend: {
@@ -17,5 +19,5 @@ module.exports = {
       },
     },
   },
-  plugins: [nextui()],
+  plugins: [nextui(),heroui()],
 };

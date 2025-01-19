@@ -24,3 +24,12 @@ input {
         -webkit-text-fill-color: white;
     }
   }
+
+
+  [data-top-scroll="true"] {
+    mask-image: none !important;
+  }
+
+  [data-top-scroll="false"] {
+    mask-image: none !important;
+  }
