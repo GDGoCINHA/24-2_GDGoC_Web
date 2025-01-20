@@ -1,6 +1,12 @@
 import * as React from "react";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
+import localFont from "next/font/local";
+
+const pretendard = localFont({
+  src: "../../public/fonts/PretendardVariable.woff2",
+  display: "swap",
+});
 
 export const metadata = {
   title: "Create Next App",
@@ -9,8 +15,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ko">
-      <body>
+    <html lang="ko" className={pretendard.variable}>
+      <body className={pretendard.className}>
         <NextUIProvider>
           {children}
         </NextUIProvider>
