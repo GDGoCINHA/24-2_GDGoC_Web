@@ -13,8 +13,8 @@ import {
   Pagination,
 } from '@nextui-org/react';
 import Header from './Header';
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import UserDetailsModal from './UserDetailModal';
+import { users } from './users';
 
 export const columns = [
   { name: 'NAME', uid: 'name' },
@@ -22,67 +22,20 @@ export const columns = [
   { name: 'STATUS', uid: 'status' },
 ];
 
-export const users = [
-  {
-    id: 1,
-    name: '김소연',
-    major: '컴퓨터공학과',
-    studentID: '12212444',
-    status: 'active',
-    age: '29',
-    email: 'kim@example.com',
-  },
-  {
-    id: 2,
-    name: '강명묵',
-    major: '컴퓨터공학과',
-    studentID: '12201674',
-    status: 'active',
-    age: '25',
-    email: 'kang@example.com',
-  },
-  {
-    id: 3,
-    name: '박우찬',
-    major: '컴퓨터공학과',
-    studentID: '12221111',
-    status: 'active',
-    age: '22',
-    email: 'park@example.com',
-  },
-  {
-    id: 4,
-    name: '김철수',
-    major: '인공지능공학과',
-    studentID: '12231111',
-    status: 'paused',
-    age: '28',
-    email: 'kimchulsoo@example.com',
-  },
-  {
-    id: 5,
-    name: '김유리',
-    major: '기계공학과',
-    studentID: '12241222',
-    status: 'active',
-    age: '24',
-    email: 'iceggaggi@example.com',
-  },
-];
-
 const statusColorMap = {
-  active: 'success',
-  paused: 'danger',
-  vacation: 'warning',
+  합격: 'success',
+  불합격: 'danger',
 };
 
 export default function Page() {
-  //추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
+  // 추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
   const [page, setPage] = React.useState(1); // 현재 페이지 상태
+  const [modalOpen, setModalOpen] = React.useState(false); // 모달 열림 상태
+  const [selectedUser, setSelectedUser] = React.useState(null); // 선택된 사용자 데이터
   const rowsPerPage = 10; // 페이지당 표시할 행 수
-  const totalUsers = 70; // 총 유저 수
+  const totalUsers = 110; // 총 유저 수
 
-  // 현재 페이지 데이터 계산
+  // 현재 페이지 데이터 계산 (임시)
   const currentUsers = React.useMemo(() => {
     const startIndex = (page - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -90,7 +43,7 @@ export default function Page() {
   }, [page, rowsPerPage]);
 
   // 총 페이지 수 계산
-  // 현제는 (users의 전체 인원수 / rowsPerage) 를 기준으로 계산중
+  // 현제는 (users의 전체 인원수 / rowsPerPage) 를 기준으로 계산중
   const totalPages = React.useMemo(() => Math.ceil(totalUsers / rowsPerPage), [totalUsers, rowsPerPage]);
 
   const renderCell = useCallback((user, columnKey) => {
@@ -128,13 +81,19 @@ export default function Page() {
     }
   }, []);
 
+  // 행 클릭 시 선택된 사용자 데이터를 모달에 표시
+  const handleRowClick = (user) => {
+    setSelectedUser(user); // 선택된 사용자 설정
+    setModalOpen(true); // 모달 열기
+  };
+
   return (
     <div>
       <Header />
       {/* 추후 페이지 클릭 시 api 통신으로 데이터 불러오기 */}
       {console.log(page)}
       <Table
-        className='dark pt-[53px] px-[96px]'
+        className='dark py-[30px] px-[96px] mobile:px-[10px]'
         aria-label='Example table with custom cells'
         bottomContent={
           totalPages > 0 ? (
@@ -162,12 +121,18 @@ export default function Page() {
         {/* 나중에 여기 users 로 변경할 것 */}
         <TableBody items={currentUsers}>
           {(item) => (
-            <TableRow className='hover:bg-[#35353b99] cursor-pointer' key={item.id}>
+            <TableRow
+              className='hover:bg-[#35353b99] cursor-pointer'
+              key={item.id}
+              onClick={() => handleRowClick(item)}
+            >
               {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
             </TableRow>
           )}
         </TableBody>
       </Table>
+
+      <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={() => setModalOpen(false)} preventClose />
     </div>
   );
 }
