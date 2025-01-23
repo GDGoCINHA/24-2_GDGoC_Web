@@ -1,6 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "@nextui-org/react";
+import Recruit1 from "@/components/Recruit1";
+import Recruit2 from "@/components/Recruit2";
+import Recruit3 from "@/components/Recruit3";
+import Recruit4 from "@/components/Recruit4";
+import Recruit5 from "@/components/Recruit5";
+import Recruit6 from "@/components/Recruit6";
 
 export default function Recruit() {
 
@@ -8,7 +14,7 @@ export default function Recruit() {
 
   return (
     <>
-        <div className="flex flex-col w-full h-full pl-[306px] pt-[132px] pr-[306px]">
+        <div className="flex flex-col max-w-[1305px] mx-auto h-full pt-[132px]">
             <p className="text-white text-4xl font-bold">GDGoC INHA 25-1 멤버에 지원해보세요</p>
             <div className="flex flex-row w-full mt-[90px] h-[489px]">
                 <div className="flex flex-row flex-none h-full">
@@ -36,30 +42,17 @@ export default function Recruit() {
                     
                   </div>
                 </div>
-                <div className="relative flex w-full h-full border-2 border-gray-500 overflow-hidden">
-                  <div className={`absolute flex w-full h-full bg-red-500 transition-all duration-500 ease-in-out ${step-1 == 1 ? "opacity-0" : step == 1 ? "" : step + 1 == 1? "opacity-0" : "hidden"} ${step-1 == 1 ? "-translate-y-full" : step == 1 ? "translate-y-0" : step+1 == 1 ? "translate-y-full" : ""}`}>
-                    우왕1
-                  </div>
-                  <div className={`absolute flex w-full h-full bg-green-500 transition-all duration-500 ease-in-out ${step-1 == 2 ? "opacity-0" : step == 2 ? "" : step + 1 == 2? "opacity-0" : "hidden"} ${step-1 == 2 ? "-translate-y-full" : step == 2 ? "translate-y-0" : step+1 == 2 ? "translate-y-full" : ""}`}>
-                    우왕2
-                  </div>
-                  <div className={`absolute flex w-full h-full bg-blue-500 transition-all duration-500 ease-in-out ${step-1 == 3 ? "opacity-0" : step == 3 ? "" : step + 1 == 3? "opacity-0" : "hidden"} ${step-1 == 3 ? "-translate-y-full" : step == 3 ? "translate-y-0" : step+1 == 3 ? "translate-y-full" : ""}`}>
-                    우왕3
-                  </div>
-                  <div className={`absolute flex w-full h-full bg-yellow-500 transition-all duration-500 ease-in-out ${step-1 == 4 ? "opacity-0" : step == 4 ? "" : step + 1 == 4? "opacity-0" : "hidden"} ${step-1 == 4 ? "-translate-y-full" : step == 4 ? "translate-y-0" : step+1 == 4 ? "translate-y-full" : ""}`}>
-                    우왕4
-                  </div>
-                  <div className={`absolute flex w-full h-full bg-purple-500 transition-all duration-500 ease-in-out ${step-1 == 5 ? "opacity-0" : step == 5 ? "" : step + 1 == 5? "opacity-0" : "hidden"} ${step-1 == 5 ? "-translate-y-full" : step == 5 ? "translate-y-0" : step+1 == 5 ? "translate-y-full" : ""}`}>
-                    우왕5
-                  </div>
-                  <div className={`absolute flex w-full h-full bg-orange-500 transition-all duration-500 ease-in-out ${step-1 == 6 ? "opacity-0" : step == 6 ? "" : step + 1 == 6? "opacity-0" : "hidden"} ${step-1 == 6 ? "-translate-y-full" : step == 6 ? "translate-y-0" : step+1 == 6 ? "translate-y-full" : ""}`}>
-                    우왕6
-                  </div>
+                <div className="relative flex w-full h-full ml-8  overflow-hidden">
+                  <Recruit1 step={step} />
+                  <Recruit2 step={step} />
+                  <Recruit3 step={step} />
+                  <Recruit4 step={step} />
+                  <Recruit5 step={step} />
+                  <Recruit6 step={step} />
                 </div>
             </div>
-            <div className="flex w-full items-center justify-end">
-              <Button className="bg-red-500 text-white px-4 py-2 rounded-md" onPress={() => setStep(step - 1)}>이전</Button>
-              <Button className="bg-red-500 text-white px-4 py-2 rounded-md" onPress={() => setStep(step + 1)}>다음</Button>
+            <div className="flex w-full items-center justify-end mt-[72px]">
+              <Button className="bg-red-500 text-white rounded-full w-[183px] h-[57px] text-lg font-semibold" onPress={() => setStep(step + 1)}>다음</Button>
             </div>
         </div>
     </>
