@@ -16,13 +16,14 @@ export default function UserDetailsModal({ user, isOpen, onClose }) {
       document.body.style.overflow = 'auto';
     };
   }, [isOpen]);
+
   if (!isOpen) return null;
 
   const rowStyle = 'border border-[#5b5b6699]';
   const cellStyle = 'p-3 font-bold text-gray-300';
   const valueStyle = 'p-3';
 
-  const infoTextStyle = 'font-bold text-xl pb-[10px]';
+  const infoTextStyle = 'font-bold text-xl py-[10px]';
 
   return (
     <div className='fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/50'>
@@ -57,13 +58,14 @@ export default function UserDetailsModal({ user, isOpen, onClose }) {
         {/* 추가 정보 */}
         <div className='text-white space-y-7'>
           {[
-            ['지원 이유', user.apply_reason],
-            ['생애와 이야기', user.life_and_story],
+            ['신청 동기', user.apply_reason || '없음'],
+            ['진로 경험 & 이야기', user.life_and_story || '없음'],
             ['희망 사항', user.want_to_get.join(', ')],
             ['기타 활동', user.other_activity || '없음'],
             ['피드백', user.feedback || '없음'],
           ].map(([label, value], idx) => (
             <div key={idx}>
+              <hr className='border-[#5b5b6699]' />
               <div className={clsx(infoTextStyle)}>{label}</div>
               <div className='text-sm'> {value}</div>
             </div>

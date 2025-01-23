@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import {
   Table,
   TableHeader,
@@ -11,10 +11,12 @@ import {
   User,
   Chip,
   Pagination,
+  Input,
 } from '@nextui-org/react';
 import Header from './Header';
 import UserDetailsModal from './UserDetailModal';
 import { users } from './users';
+import { IoSearch } from 'react-icons/io5';
 
 export const columns = [
   { name: 'NAME', uid: 'name' },
@@ -29,11 +31,16 @@ const statusColorMap = {
 
 export default function Page() {
   // 추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
-  const [page, setPage] = React.useState(1); // 현재 페이지 상태
+  const [page, setPage] = React.useState(1); // 현재 페이지 상태 (추후 페이지 상태에 따라 api 통신으로 데이터 불러오기)
+
   const [modalOpen, setModalOpen] = React.useState(false); // 모달 열림 상태
+  const modalClosing = useRef(false); // 모달이 닫히는 상태를 추적
+
   const [selectedUser, setSelectedUser] = React.useState(null); // 선택된 사용자 데이터
-  const rowsPerPage = 10; // 페이지당 표시할 행 수
-  const totalUsers = 110; // 총 유저 수
+  const [searchValue, setSearchValue] = React.useState(''); // 검색 입력 상태
+
+  const rowsPerPage = 10; //한 페이지당 표시될 유저 수
+  const totalUsers = 110; //총 유저 수 (총 페이지 표시를 위함)
 
   // 현재 페이지 데이터 계산 (임시)
   const currentUsers = React.useMemo(() => {
@@ -42,13 +49,10 @@ export default function Page() {
     return users.slice(startIndex, endIndex);
   }, [page, rowsPerPage]);
 
-  // 총 페이지 수 계산
-  // 현제는 (users의 전체 인원수 / rowsPerPage) 를 기준으로 계산중
   const totalPages = React.useMemo(() => Math.ceil(totalUsers / rowsPerPage), [totalUsers, rowsPerPage]);
 
   const renderCell = useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
-
     switch (columnKey) {
       case 'name':
         return (
@@ -81,17 +85,28 @@ export default function Page() {
     }
   }, []);
 
-  // 행 클릭 시 선택된 사용자 데이터를 모달에 표시
   const handleRowClick = (user) => {
-    setSelectedUser(user); // 선택된 사용자 설정
-    setModalOpen(true); // 모달 열기
+    if (modalClosing.current) return; // 모달이 닫히는 중에는 클릭 무시
+    setSelectedUser(user);
+    setModalOpen(true);
+  };
+
+  const handleSearch = () => {
+    //추후 api 연결 함수로 변경 예정
+    console.log(searchValue); //임시
+  };
+
+  const handleCloseModal = () => {
+    modalClosing.current = true; // 모달이 닫히는 중임을 표시
+    setModalOpen(false);
+    setTimeout(() => {
+      modalClosing.current = false; // 모달 닫힘 완료 후 상태 변경
+    }, 300);
   };
 
   return (
     <div>
       <Header />
-      {/* 추후 페이지 클릭 시 api 통신으로 데이터 불러오기 */}
-      {console.log(page)}
       <Table
         className='dark py-[30px] px-[96px] mobile:px-[10px]'
         aria-label='Example table with custom cells'
@@ -109,6 +124,49 @@ export default function Page() {
               />
             </div>
           ) : null
+        }
+        topContent={
+          <Input
+            isClearable
+            classNames={{
+              label: 'text-black/50 dark:text-white/90',
+              input: [
+                'bg-transparent',
+                'text-black/90 dark:text-white/90',
+                'placeholder:text-default-700/50 dark:placeholder:text-white/60',
+              ],
+              innerWrapper: 'bg-transparent',
+              inputWrapper: [
+                'shadow-xl',
+                'bg-default-200/50',
+                'dark:bg-default/60',
+                'backdrop-blur-xl',
+                'backdrop-saturate-200',
+                'hover:bg-default-200/70',
+                'dark:hover:bg-default/70',
+                'group-data-[focus=true]:bg-default-200/50',
+                'dark:group-data-[focus=true]:bg-default/60',
+                '!cursor-text',
+              ],
+            }}
+            placeholder='Type to search...'
+            radius='lg'
+            startContent={
+              <IoSearch
+                className='text-white cursor-pointer'
+                onClick={handleSearch} // 클릭시 이벤트 발생 (추후 api 연결로 대체)
+              />
+            }
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                handleSearch(); // 클릭시 이벤트 발생 (추후 api 연결로 대체)
+              }
+            }}
+            onClear={() => setSearchValue('')}
+          />
         }
       >
         <TableHeader columns={columns}>
@@ -132,7 +190,7 @@ export default function Page() {
         </TableBody>
       </Table>
 
-      <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={() => setModalOpen(false)} preventClose />
+      <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={handleCloseModal} preventClose />
     </div>
   );
 }
