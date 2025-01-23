@@ -3,11 +3,32 @@
 @tailwind utilities;
 
 :root {
-  background-color: black;
+    background-color: black;
 }
 
 @layer utilities {
-  input:-webkit-autofill {
-    -webkit-text-fill-color: white;
-  }
+    input:-webkit-autofill {
+        -webkit-text-fill-color: white;
+    }
+}
+
+body{
+    -ms-overflow-style: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+input {
+    margin-left: 10px;
+}
+
+
+[data-top-scroll="true"] {
+    mask-image: none !important;
+}
+
+[data-top-scroll="false"] {
+    mask-image: none !important;
 }
