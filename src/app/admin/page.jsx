@@ -107,90 +107,90 @@ export default function Page() {
   return (
     <div>
       <Header />
-      <Table
-        className='dark py-[30px] px-[96px] mobile:px-[10px]'
-        aria-label='Example table with custom cells'
-        bottomContent={
-          totalPages > 0 ? (
-            <div className='flex w-full justify-center'>
-              <Pagination
-                isCompact
-                showControls
-                showShadow
-                color='primary'
-                page={page}
-                total={totalPages}
-                onChange={(newPage) => setPage(newPage)}
-              />
-            </div>
-          ) : null
-        }
-        topContent={
-          <Input
-            isClearable
-            classNames={{
-              label: 'text-black/50 dark:text-white/90',
-              input: [
-                'bg-transparent',
-                'text-black/90 dark:text-white/90',
-                'placeholder:text-default-700/50 dark:placeholder:text-white/60',
-              ],
-              innerWrapper: 'bg-transparent',
-              inputWrapper: [
-                'shadow-xl',
-                'bg-default-200/50',
-                'dark:bg-default/60',
-                'backdrop-blur-xl',
-                'backdrop-saturate-200',
-                'hover:bg-default-200/70',
-                'dark:hover:bg-default/70',
-                'group-data-[focus=true]:bg-default-200/50',
-                'dark:group-data-[focus=true]:bg-default/60',
-                '!cursor-text',
-              ],
-            }}
-            placeholder='Type to search...'
-            radius='lg'
-            startContent={
-              <IoSearch
-                className='text-white cursor-pointer'
-                onClick={handleSearch} // 클릭시 이벤트 발생 (추후 api 연결로 대체)
-              />
-            }
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                e.preventDefault();
-                handleSearch(); // 클릭시 이벤트 발생 (추후 api 연결로 대체)
+        <Table
+          className='dark py-[30px] px-[96px] mobile:px-[10px]'
+          aria-label='Example table with custom cells'
+          bottomContent={
+            totalPages > 0 ? (
+              <div className='flex w-full justify-center'>
+                <Pagination
+                  isCompact
+                  showControls
+                  showShadow
+                  color='primary'
+                  page={page}
+                  total={totalPages}
+                  onChange={(newPage) => setPage(newPage)}
+                />
+              </div>
+            ) : null
+          }
+          topContent={
+            <Input
+              isClearable
+              classNames={{
+                label: 'text-black/50 dark:text-white/90',
+                input: [
+                  'bg-transparent',
+                  'text-black/90 dark:text-white/90',
+                  'placeholder:text-default-700/50 dark:placeholder:text-white/60',
+                ],
+                innerWrapper: 'bg-transparent',
+                inputWrapper: [
+                  'shadow-xl',
+                  'bg-default-200/50',
+                  'dark:bg-default/60',
+                  'backdrop-blur-xl',
+                  'backdrop-saturate-200',
+                  'hover:bg-default-200/70',
+                  'dark:hover:bg-default/70',
+                  'group-data-[focus=true]:bg-default-200/50',
+                  'dark:group-data-[focus=true]:bg-default/60',
+                  '!cursor-text',
+                ],
+              }}
+              placeholder='Type to search...'
+              radius='lg'
+              startContent={
+                <IoSearch
+                  className='text-white cursor-pointer'
+                  onClick={handleSearch} // 클릭시 이벤트 발생 (추후 api 연결로 대체)
+                />
               }
-            }}
-            onClear={() => setSearchValue('')}
-          />
-        }
-      >
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn key={column.uid} align={column.uid === 'actions' ? 'center' : 'start'}>
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        {/* 나중에 여기 users 로 변경할 것 */}
-        <TableBody items={currentUsers}>
-          {(item) => (
-            <TableRow
-              className='hover:bg-[#35353b99] cursor-pointer'
-              key={item.id}
-              onClick={() => handleRowClick(item)}
-            >
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  handleSearch(); // 클릭시 이벤트 발생 (추후 api 연결로 대체)
+                }
+              }}
+              onClear={() => setSearchValue('')}
+            />
+          }
+        >
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.uid} align={column.uid === 'actions' ? 'center' : 'start'}>
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          {/* 나중에 여기 users 로 변경할 것 */}
+          <TableBody items={currentUsers}>
+            {(item) => (
+              <TableRow
+                className='hover:bg-[#35353b99] cursor-pointer'
+                key={item.id}
+                onClick={() => handleRowClick(item)}
+              >
+                {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
 
-      <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={handleCloseModal} preventClose />
+        <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={handleCloseModal} preventClose />
     </div>
   );
 }
