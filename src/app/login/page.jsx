@@ -35,28 +35,29 @@ export default function Page() {
   };
 
   return (
-    <>
+    <div className='min-h-screen flex flex-col overflow-hidden'>
       <Header />
-      <div className='flex min-h-screen justify-center px-6 py-12 select-none'>
-        <div className='flex flex-col w-full justify-center gap-4 max-w-[414px]'>
-          <div className='text-[30px] text-white'>
-            GDGoC Inha에 <br /> 오신 것을 환영합니다👋
+      <div className='flex justify-center items-center flex-1'>
+        <div className='flex flex-col w-full gap-4 max-w-[349px] mx-[24px] my-[53px] select-none mobile:mx-[32px]'>
+          <div className='text-[28px]/8 mobile:text-[26px] text-white font-bold'>
+            <div>GDGoC Inha에</div>
+            <div>오신 것을 환영합니다👋</div>
           </div>
-          <Form className='w-full max-w-[414px]' validationBehavior='native' onSubmit={onSubmit}>
+          <Form className='w-full max-w-[349px]' validationBehavior='native' onSubmit={onSubmit}>
             <Input
               isRequired
               errorMessage={({ validationDetails, validationErrors }) => {
                 if (validationDetails.typeMismatch) {
-                  return '올바른 이메일 형식을 입력해주세요.';
+                  validationErrors = '올바른 이메일 형식을 입력해주세요.';
                 } else {
-                  return '이메일을 입력해주세요.';
+                  validationErrors = '이메일을 입력해주세요.';
                 }
                 return validationErrors;
               }}
-              className='!mt-[49.5px] w-full rounded-full'
+              className='!mt-[62px] w-full rounded-full'
               classNames={{
-                label: '!pb-[12px] !text-white',
-                inputWrapper: `h-[57px] rounded-full border-2 border-white/50 caret-white bg-transparent !transition !duration-300 !ease-in-out
+                label: '!pb-[10px] !text-white',
+                inputWrapper: `h-[48px] mobile:h-[46px] rounded-full border-2 border-white/50 caret-white bg-transparent !transition !duration-300 !ease-in-out
               group-data-[focus=true]:border-2 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent
               group-data-[hover=true]:border-2 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
               group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#EA4336]`,
@@ -80,11 +81,11 @@ export default function Page() {
                 </ul>
               )}
               isInvalid={errors.length > 0}
-              className='!mt-[49.5px] w-full'
+              className='!mt-[49px] w-full'
               autoComplete='off'
               classNames={{
-                label: '!pb-[12px] !text-white',
-                inputWrapper: `h-[57px] rounded-full border-2 border-white/50 caret-white bg-transparent !transition !duration-300 !ease-in-out
+                label: '!pb-[10px] !text-white',
+                inputWrapper: `h-[48px] mobile:h-[46px] rounded-full border-2 border-white/50 caret-white bg-transparent !transition !duration-300 !ease-in-out
               group-data-[focus=true]:border-2 group-data-[focus=true]:border-white group-data-[focus=true]:bg-transparent 
               group-data-[hover=true]:border-2 group-data-[hover=true]:border-white group-data-[hover=true]:bg-transparent
               group-data-[invalid=true]:!bg-transparent group-data-[invalid=true]:!border-[#EA4336]`,
@@ -104,7 +105,7 @@ export default function Page() {
                 setErrors([]); // 에러 메시지 초기화
               }}
             />
-            <div className='flex flex-row justify-end w-full px-2 gap-[16.5px] text-xs text-[#DCDCDC]/50'>
+            <div className='flex flex-row justify-end w-full px-2 gap-[16.5px] text-[12px] text-[#DCDCDC]/50'>
               <Link href='' className='transition ease-in-out hover:text-[#DCDCDC]'>
                 아이디 찾기
               </Link>
@@ -112,23 +113,27 @@ export default function Page() {
                 비밀번호 재설정
               </Link>
             </div>
-            <Button color='primary' type='submit' className='!mt-[91.5px] h-[57px] w-full rounded-full !bg-[#EA4336]'>
+            <Button
+              color='primary'
+              type='submit'
+              className='!mt-[70px] h-[48px] mobile:h-[46px] w-full rounded-full !bg-[#EA4336]'
+            >
               로그인
             </Button>
           </Form>
-          <Button color='success' className='!mt-[15px] h-[57px] w-full rounded-full !bg-white'>
+          <Button color='success' className='!mt-[15px] h-[48px] mobile:h-[46px] w-full rounded-full !bg-white'>
             회원가입
           </Button>
-          <div className='flex flex-row items-center justify-between max-w-[414px] gap-2'>
+          <div className='flex flex-row items-center justify-between max-w-[349px] gap-2'>
             <hr className='flex-1 border-t border-[#A8A8A8]' />
-            <div className='px-2 text-sm text-[#A8A8A8]'>또는</div>
+            <div className='px-2 text-[14px] text-[#A8A8A8]'>또는</div>
             <hr className='flex-1 border-t border-[#A8A8A8]' />
           </div>
-          <div className='flex flex-col items-center justify-between max-w-[414px]'>
-            <Image className='cursor-pointer' src={googleIcon} alt='googleIcon' height={50} width={50} />
+          <div className='flex flex-col items-center justify-between max-w-[349px]'>
+            <Image className='cursor-pointer' src={googleIcon} alt='googleIcon' height={54} width={54} />
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
