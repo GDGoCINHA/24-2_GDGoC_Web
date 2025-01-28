@@ -21,12 +21,12 @@ import { IoSearch } from 'react-icons/io5';
 export const columns = [
   { name: 'NAME', uid: 'name' },
   { name: 'MAJOR / ID', uid: 'major' },
-  { name: 'STATUS', uid: 'status' },
+  { name: 'PAYMENT', uid: 'status' },
 ];
 
 const statusColorMap = {
-  합격: 'success',
-  불합격: 'danger',
+  true: 'success',
+  false: 'danger',
 };
 
 export default function Page() {
@@ -52,7 +52,7 @@ export default function Page() {
   const totalPages = React.useMemo(() => Math.ceil(totalUsers / rowsPerPage), [totalUsers, rowsPerPage]);
 
   const renderCell = useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+    const cellValue = user.member[columnKey];
     switch (columnKey) {
       case 'name':
         return (
@@ -61,23 +61,23 @@ export default function Page() {
             avatarProps={{
               className: 'w-0 h-0 overflow-hidden',
             }}
-            description={user.email}
+            description={user.member.email}
             name={cellValue}
           >
-            {user.email}
+            {user.member.email}
           </User>
         );
       case 'major':
         return (
           <div className='flex flex-col'>
-            <p className='text-white text-bold text-sm capitalize'>{cellValue}</p>
-            <p className='text-bold text-sm capitalize text-default-400'>{user.studentID}</p>
+            <p className='text-white text-bold text-sm capitalize'>{user.member.majors.main}</p>
+            <p className='text-bold text-sm capitalize text-default-400'>{user.member.studentId}</p>
           </div>
         );
       case 'status':
         return (
-          <Chip className='capitalize' color={statusColorMap[user.status]} size='sm' variant='flat'>
-            {cellValue}
+          <Chip className='capitalize' color={statusColorMap[user.member.isPayed]} size='sm' variant='flat'>
+            {user.member.isPayed ? '입금' : '미입금'}
           </Chip>
         );
       default:
