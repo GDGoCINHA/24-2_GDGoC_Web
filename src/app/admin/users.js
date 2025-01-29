@@ -1,7 +1,7 @@
 export const users = [
   {
-    id: 1,
     member: {
+      id: 1,
       name: "김소연",
       grade: 4,
       studentId: 12212444,
@@ -31,8 +31,8 @@ export const users = [
     ],
   },
   {
-    id: 2,
     member: {
+      id: 2,
       name: "강명묵",
       grade: 4,
       studentId: 12201674,
@@ -62,8 +62,8 @@ export const users = [
     ],
   },
   {
-    id: 3,
     member: {
+      id: 3,
       name: "정지훈",
       grade: 3,
       studentId: 12204567,
@@ -93,8 +93,8 @@ export const users = [
     ],
   },
   {
-    id: 4,
     member: {
+      id: 4,
       name: "박지은",
       grade: 2,
       studentId: 12209876,
@@ -124,8 +124,8 @@ export const users = [
     ],
   },
   {
-    id: 5,
     member: {
+      id: 5,
       name: "이수현",
       grade: 3,
       studentId: 12208765,
@@ -155,8 +155,8 @@ export const users = [
     ],
   },
   {
-    id: 6,
     member: {
+      id: 6,
       name: "홍길동",
       grade: 4,
       studentId: 12213456,
@@ -186,8 +186,8 @@ export const users = [
     ],
   },
   {
-    id: 7,
     member: {
+      id: 7,
       name: "최하늘",
       grade: 2,
       studentId: 12204589,
@@ -217,8 +217,8 @@ export const users = [
     ],
   },
   {
-    id: 8,
     member: {
+      id: 8,
       name: "정세희",
       grade: 3,
       studentId: 12213487,
@@ -248,8 +248,8 @@ export const users = [
     ],
   },
   {
-    id: 9,
     member: {
+      id: 9,
       name: "배지호",
       grade: 2,
       studentId: 12203211,
@@ -279,8 +279,8 @@ export const users = [
     ],
   },
   {
-    id: 10,
     member: {
+      id: 10,
       name: "윤지현",
       grade: 4,
       studentId: 12204590,

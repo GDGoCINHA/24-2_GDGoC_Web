@@ -181,7 +181,7 @@ export default function Page() {
             {(item) => (
               <TableRow
                 className='hover:bg-[#35353b99] cursor-pointer'
-                key={item.id}
+                key={item.member.id}
                 onClick={() => handleRowClick(item)}
               >
                 {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
