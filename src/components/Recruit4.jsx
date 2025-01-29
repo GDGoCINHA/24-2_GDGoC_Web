@@ -11,6 +11,7 @@ export default function Recruit4( {step} ) {
   const [birthDate, setBirthDate] = useState("");
 
   const domains = [
+    { label: "inha.edu", value: "inha.edu" },
     { label: "gmail.com", value: "gmail.com" },
     { label: "naver.com", value: "naver.com" },
     { label: "daum.net", value: "daum.net" },
@@ -29,7 +30,7 @@ export default function Recruit4( {step} ) {
         <Input 
           label="이메일"
           value={emailId}
-          onChange={(e) => setEmailId(e.target.value)}
+          onValueChange={setEmailId}
           variant="bordered"
           labelPlacement="outside"
           placeholder=" "
@@ -45,7 +46,7 @@ export default function Recruit4( {step} ) {
         {selectedDomain.has("custom") ? (
           <Input 
             value={emailDomain}
-            onChange={(e) => setEmailDomain(e.target.value)}
+            onValueChange={setEmailDomain}
             variant="bordered"
             placeholder=" "
             classNames={{
@@ -53,6 +54,7 @@ export default function Recruit4( {step} ) {
               inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
                             group-data-[focus=true]:border-[#bbbbbb30]`,
             }}
+            endContent={<p className="text-white text-xl cursor-pointer" onClick={() => setSelectedDomain(new Set([]))}>×</p>}
           />
         ) : (
           <Select
@@ -61,7 +63,7 @@ export default function Recruit4( {step} ) {
             onSelectionChange={setSelectedDomain}
             className="w-[200px]"
             classNames={{
-              trigger: "h-[57px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[selected=true]:bg-[#471915] data-[selected=true]:border-[#ea4335] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]",
+              trigger: "h-[57px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]",
               value: "!text-white text-xl",
               listbox: "bg-[#181818] text-white",
               popoverContent: "bg-[#181818]",

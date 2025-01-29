@@ -5,7 +5,9 @@ import { Input, CheckboxGroup, Checkbox } from "@nextui-org/react";
 
 export default function Recruit2( {step} ) {
 
-  const [selected, setSelected] = useState([]);
+  const [name, setName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [studentCategory, setStudentCategory] = useState([]);
   
   return (
     <div 
@@ -15,6 +17,8 @@ export default function Recruit2( {step} ) {
       <p className="text-white text-2xl font-semibold">필수 개인정보를 적어주세요</p>
       <Input 
         label="국문성명"
+        value={name}
+        onValueChange={setName}
         variant="bordered"
         labelPlacement="outside"
         placeholder=" "
@@ -28,6 +32,8 @@ export default function Recruit2( {step} ) {
       />
       <Input 
         label="학번"
+        value={studentId}
+        onValueChange={setStudentId}
         variant="bordered"
         labelPlacement="outside"
         placeholder=" "
@@ -43,12 +49,12 @@ export default function Recruit2( {step} ) {
       <CheckboxGroup
         className="flex gap-4 mt-[20px] w-[500px]"
         orientation="horizontal"
-        value={selected}
+        value={studentCategory}
         onValueChange={(value)=>{
           if(value.length > 1){
-            setSelected(value.slice(-1));
+            setStudentCategory(value.slice(-1));
           }else{
-            setSelected(value);
+            setStudentCategory(value);
           }
         }}
       >
@@ -57,7 +63,7 @@ export default function Recruit2( {step} ) {
           radius="none"
           classNames={{
             wrapper: "hidden",
-            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${selected.includes("정등록") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
+            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${studentCategory.includes("정등록") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
           }}
         >정등록</Checkbox>
         <Checkbox 
@@ -65,7 +71,7 @@ export default function Recruit2( {step} ) {
           radius="none"
           classNames={{
             wrapper: "hidden",
-            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${selected.includes("부분등록") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
+            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${studentCategory.includes("부분등록") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
           }}
         >부분등록</Checkbox>
         <Checkbox 
@@ -73,7 +79,7 @@ export default function Recruit2( {step} ) {
           radius="none"
           classNames={{
             wrapper: "hidden",
-            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${selected.includes("휴학") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
+            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${studentCategory.includes("휴학") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
           }}
         >휴학</Checkbox>
         <Checkbox 
@@ -81,7 +87,7 @@ export default function Recruit2( {step} ) {
           radius="none"
           classNames={{
             wrapper: "hidden",
-            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${selected.includes("수료") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
+            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${studentCategory.includes("수료") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
           }}
         >수료</Checkbox>
         <Checkbox 
@@ -89,7 +95,7 @@ export default function Recruit2( {step} ) {
           radius="none"
           classNames={{
             wrapper: "hidden",
-            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${selected.includes("졸업") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
+            label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md ${studentCategory.includes("졸업") ? "bg-[#471915] border-[1.5px] border-[#ea4335]" : "bg-[#181818]"}`
           }}
         >졸업</Checkbox>
       </CheckboxGroup>
