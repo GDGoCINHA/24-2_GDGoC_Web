@@ -1,10 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Textarea } from '@nextui-org/react';
 
-export default function Recruit7({ step }) {
+export default function Recruit7({ step, setChecked, updateRecruitData }) {
   const [gdgUserStory, setGdgUserStory] = useState('');
+
+  useEffect(() => {
+    if (step === 7) {
+      setChecked(gdgUserStory.trim() !== '');
+      const formData = {
+        gdgUserStory : gdgUserStory
+      };
+
+      updateRecruitData(7, formData);
+    }
+  }, [gdgUserStory, step, setChecked, updateRecruitData]);
 
   return (
     <div

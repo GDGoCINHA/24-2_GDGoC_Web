@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
 import SingleSelectBox from './listbox/SingleSelectBox';
 import MultipleSelectBox from './listbox/MultipleSelectBox';
-export default function Recruit9({ step }) {
+export default function Recruit9({ step, setChecked, updateRecruitData }) {
   const gdgWishOptions = [
     '친구',
     '비슷한 관심사를 가진 동기',
@@ -30,6 +30,28 @@ export default function Recruit9({ step }) {
   const gdgExpectOptions = ['네, 원하는 활동이 있습니다', '아니요, 원하는 활동이 없습니다'];
   const [gdgExpect, setGdgExpect] = useState('');
   const [etcGdgExpect, setEtcGdgExpect] = useState(''); //기타 입력 상태
+
+  useEffect(() => {
+    const isWishFilled = gdgWish.size > 0;
+    const isEtcWishFilled = !gdgWish.has('기타') || etcGdgWish.trim() !== '';
+  
+    const isExpectFilled = gdgExpect.trim() !== '';
+    const isEtcExpectFilled = gdgExpect !== '네, 원하는 활동이 있습니다' || etcGdgExpect.trim() !== '';
+  
+    if (step === 9) {
+      setChecked(isWishFilled && isEtcWishFilled && isExpectFilled && isEtcExpectFilled);
+      const gdgWishCombined = Array.from(gdgWish)
+      .map(wish => wish === '기타' ? etcGdgWish : wish)
+      .filter(wish => wish !== '기타' || etcGdgWish.trim() !== '');
+
+      const formData = {
+        gdgWish: gdgWishCombined,
+        gdgExpect: gdgExpect === '네, 원하는 활동이 있습니다' ? etcGdgExpect : gdgExpect
+      };
+    
+      updateRecruitData(9, formData);
+    }
+  }, [gdgWish, etcGdgWish, gdgExpect, etcGdgExpect, step, setChecked, updateRecruitData]);
 
   return (
     <div

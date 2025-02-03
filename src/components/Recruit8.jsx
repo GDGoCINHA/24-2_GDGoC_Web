@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
 import MultipleSelectBox from './listbox/MultipleSelectBox';
 import SingleSelectBox from './listbox/SingleSelectBox';
 
-export default function Recruit8({ step }) {
+export default function Recruit8({ step, setChecked, updateRecruitData }) {
   const gdgInterestOptions = ['FrontEnd', 'BackEnd', 'UX/UI', 'AI', 'Mobile', 'Game', '3D', 'IT', 'PM', 'Startup'];
   const [gdgInterest, setGdgInterest] = useState(new Set());
 
@@ -14,6 +14,24 @@ export default function Recruit8({ step }) {
   const gdgRouteOptions = ['지인의 소개', '에브리타임', '소속 단톡방 홍보글', 'IT 정보공유방(오픈카톡방)', '기타'];
   const [gdgRoute, setGdgRoute] = useState('');
   const [etcGdgRoute, setEtcGdgRoute] = useState('');
+
+  useEffect(() => {
+    const isInterestFilled = gdgInterest.size > 0;
+    const isPeriodFilled = gdgPeriod.size > 0;
+    const isRouteFilled = gdgRoute.trim() !== '';
+    const isEtcRouteFilled = gdgRoute !== '기타' || etcGdgRoute.trim() !== '';
+  
+    if (step === 8) {
+      setChecked(isInterestFilled && isPeriodFilled && isRouteFilled && isEtcRouteFilled);
+      const formData = {
+        gdgInterest: gdgInterest,
+        gdgPeriod: gdgPeriod,
+        gdgRoute: gdgRoute === '기타' ? etcGdgRoute : gdgRoute
+      };
+      
+      updateRecruitData(8, formData);
+    }
+  }, [gdgInterest, gdgPeriod, gdgRoute, etcGdgRoute, step, setChecked, updateRecruitData]);
 
   return (
     <div
@@ -56,7 +74,6 @@ export default function Recruit8({ step }) {
           placeHolder={'항목을 선택해주세요'}
         />
         {gdgRoute === '기타' && (
-          //아래 수정해야함
           <Input
             variant='bordered'
             placeholder='어떤 경로를 통해 알게 되었나요?'
