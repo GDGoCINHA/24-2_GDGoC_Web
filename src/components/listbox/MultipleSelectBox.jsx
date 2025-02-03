@@ -1,0 +1,60 @@
+import { Select, SelectItem, Chip } from "@nextui-org/react";
+
+const MultipleSelectBox = ({ label, labelVisible, options, maxSelection, selectedValue, setSelectedValue }) => {
+  const handleSelectionChange = (e) => {
+    const selectedItems = new Set(e.target.value.split(',').filter(item => item !== ''));
+
+    if (selectedItems.size > maxSelection) {
+      alert(`${label}은(는) ${maxSelection}개까지만 선택할 수 있습니다.`);
+      return;
+    }
+
+    setSelectedValue(selectedItems);
+  };
+
+  return (
+    <Select
+      label={labelVisible ? label : null}
+      labelPlacement='outside'
+      placeholder={`${label}을(를) 선택해주세요. (최대 ${maxSelection}개)`}
+      className=''
+      classNames={{
+        label: '!text-white text-[21px] pb-3',
+        trigger: `rounded-3xl min-h-[57px] bg-[#1c1c1c] group-data-[focus=true]:bg-[#1c1c1c] data-[hover=true]:bg-[#1c1c1c]`,
+        value: '!text-white !text-[18px] !text-[#71717a]',
+        popoverContent: 'bg-[#1c1c1c]',
+        innerWrapper: 'pl-2',
+      }}
+      popoverProps={{
+        classNames: {
+          base: 'mt-3',
+          content: 'bg-[#1c1c1c]',
+        },
+      }}
+      listboxProps={{
+        classNames: {
+          base: 'bg-[#1c1c1c] text-white',
+        },
+      }}
+      isMultiline={true}
+      selectionMode='multiple'
+      renderValue={(items) => (
+        <div className='flex flex-wrap gap-2 my-[10px]'>
+          {items.map((item, index) => (
+            <Chip key={index}>{item.props.value}</Chip>
+          ))}
+        </div>
+      )}
+      selectedKeys={selectedValue}
+      onChange={handleSelectionChange}
+    >
+      {options.map((option, index) => (
+        <SelectItem key={option} value={option}>
+          {option}
+        </SelectItem>
+      ))}
+    </Select>
+  );
+};
+
+export default MultipleSelectBox;

@@ -22,54 +22,66 @@ export default function UserDetailsModal({ user, isOpen, onClose }) {
   const rowStyle = 'border border-[#5b5b6699]';
   const cellStyle = 'p-3 font-bold text-gray-300';
   const valueStyle = 'p-3';
-
   const infoTextStyle = 'font-bold text-xl py-[10px]';
 
   return (
     <div className='fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/50'>
       <div className='max-w-[600px] w-full max-h-[90vh] mobile:max-h-[80vh] bg-[#27272A] rounded-lg shadow-md p-6 overflow-y-auto'>
         <div className='text-lg font-bold text-center text-white mb-4'>User Details</div>
+        
+        {/* User Basic Info */}
         <table className='w-full border-collapse border text-white mb-6'>
           <tbody>
             {[
-              ['이름', user.name],
-              ['학년', user.grade],
-              ['학번', user.studentID],
-              ['국적', user.nationality],
-              ['Email', user.email],
-              ['성별', user.gender],
-              ['생년월일', user.birth],
-              ['학교', user.school],
-              ['전공', user.major],
-              ['부전공', user.second_major || '없음'],
-              ['GDG 활동 학기', user.gdg_semester.join(', ')],
-              ['가입 경로', user.route],
-              ['합격 여부', user.status],
-              ['관심사', user.interests.join(', ')],
-            ].map(([label, value], idx) => (
+              ['이름', user.member.name],
+              ['학년', user.member.grade],
+              ['학번', user.member.studentId],
+              ['전화번호', user.member.phoneNumber],
+              ['국적', user.member.nationality === 'etc' ? user.member.nationalityContent : user.member.nationality],
+              ['Email', user.member.email],
+              ['성별', user.member.gender],
+              ['생년월일', user.member.birth],
+              ['학교', user.member.school],
+              ['전공', user.member.majors.main],
+              ['부전공', user.member.majors.second.join(', ') || '없음'],
+              ['가입 경로', user.member.route],
+              ['회비 송금 여부', user.member.isPayed ? 'Yes' : 'No'],
+            ].map(([label, userValue], idx) => (
               <tr key={idx} className={rowStyle}>
                 <td className={clsx(cellStyle)}>{label}</td>
-                <td className={clsx(valueStyle)}>{value}</td>
+                <td className={clsx(valueStyle)}>{userValue}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* 추가 정보 */}
         <div className='text-white space-y-7'>
-          {[
-            ['신청 동기', user.apply_reason || '없음'],
-            ['진로 경험 & 이야기', user.life_and_story || '없음'],
-            ['희망 사항', user.want_to_get.join(', ')],
-            ['기타 활동', user.other_activity || '없음'],
-            ['피드백', user.feedback || '없음'],
-          ].map(([label, value], idx) => (
-            <div key={idx}>
-              <hr className='border-[#5b5b6699]' />
-              <div className={clsx(infoTextStyle)}>{label}</div>
-              <div className='text-sm'> {value}</div>
-            </div>
-          ))}
+          {user.answers.map((answer, idx) => {
+            const questionMap = {
+              1: '지원 동기',
+              2: '진로 경험 & 이야기',
+              3: '관심 분야',
+              4: 'GDG 기수',
+              5: '경로',
+              6: '얻어가고 싶은 거',
+              7: '기대하는 활동',
+              8: '피드백',
+            };
+
+            const question = questionMap[answer.questionId];
+            //배열일시 전환
+            const response = Array.isArray(answer.responseValue)
+              ? answer.responseValue.join(', ')
+              : answer.responseValue;
+
+            return (
+              <div key={idx}>
+                <hr className='border-[#5b5b6699]' />
+                <div className={clsx(infoTextStyle)}>{question}</div>
+                <div className='text-sm'>{response || '없음'}</div>
+              </div>
+            );
+          })}
         </div>
 
         <div className='flex justify-end mt-6'>
