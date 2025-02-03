@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
-import MultipleSelectBox from './listbox/MultipleSelectBox';
-import SingleSelectBox from './listbox/SingleSelectBox';
+import MultipleSelectBox from '../../../components/listbox/MultipleSelectBox';
+import SingleSelectBox from '../../../components/listbox/SingleSelectBox';
 
 export default function Recruit8({ step, setChecked, updateRecruitData }) {
   const gdgInterestOptions = ['FrontEnd', 'BackEnd', 'UX/UI', 'AI', 'Mobile', 'Game', '3D', 'IT', 'PM', 'Startup'];
@@ -20,15 +20,15 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
     const isPeriodFilled = gdgPeriod.size > 0;
     const isRouteFilled = gdgRoute.trim() !== '';
     const isEtcRouteFilled = gdgRoute !== '기타' || etcGdgRoute.trim() !== '';
-  
+
     if (step === 8) {
       setChecked(isInterestFilled && isPeriodFilled && isRouteFilled && isEtcRouteFilled);
       const formData = {
         gdgInterest: gdgInterest,
         gdgPeriod: gdgPeriod,
-        gdgRoute: gdgRoute === '기타' ? etcGdgRoute : gdgRoute
+        gdgRoute: gdgRoute === '기타' ? etcGdgRoute : gdgRoute,
       };
-      
+
       updateRecruitData(8, formData);
     }
   }, [gdgInterest, gdgPeriod, gdgRoute, etcGdgRoute, step, setChecked, updateRecruitData]);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Textarea } from '@nextui-org/react';
-import SingleSelectBox from './listbox/SingleSelectBox';
+import SingleSelectBox from '../../../components/listbox/SingleSelectBox';
 
 export default function Recruit10({ step, setChecked, updateRecruitData }) {
   const gdgFeedbackOptions = ['저는 신입 멤버입니다', '피드백 사항이 없습니다', 'GDGoC에 원하는 사항이 있습니다'];
@@ -12,13 +12,13 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
   useEffect(() => {
     const isFeedbackFilled = gdgFeedback.trim() !== '';
     const isEtcFeedbackFilled = gdgFeedback !== 'GDGoC에 원하는 사항이 있습니다' || etcGdgFeedback.trim() !== '';
-  
+
     if (step === 10) {
       setChecked(isFeedbackFilled && isEtcFeedbackFilled);
       const formData = {
-        gdgFeedback: gdgFeedback === 'GDGoC에 원하는 사항이 있습니다' ? etcGdgFeedback : gdgFeedback
+        gdgFeedback: gdgFeedback === 'GDGoC에 원하는 사항이 있습니다' ? etcGdgFeedback : gdgFeedback,
       };
-      
+
       updateRecruitData(10, formData);
     }
   }, [gdgFeedback, etcGdgFeedback, step, setChecked, updateRecruitData]);

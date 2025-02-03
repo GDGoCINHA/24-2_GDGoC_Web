@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
-import SingleSelectBox from './listbox/SingleSelectBox';
-import MultipleSelectBox from './listbox/MultipleSelectBox';
+import SingleSelectBox from '../../../components/listbox/SingleSelectBox';
+import MultipleSelectBox from '../../../components/listbox/MultipleSelectBox';
 export default function Recruit9({ step, setChecked, updateRecruitData }) {
   const gdgWishOptions = [
     '친구',
@@ -34,21 +34,21 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
   useEffect(() => {
     const isWishFilled = gdgWish.size > 0;
     const isEtcWishFilled = !gdgWish.has('기타') || etcGdgWish.trim() !== '';
-  
+
     const isExpectFilled = gdgExpect.trim() !== '';
     const isEtcExpectFilled = gdgExpect !== '네, 원하는 활동이 있습니다' || etcGdgExpect.trim() !== '';
-  
+
     if (step === 9) {
       setChecked(isWishFilled && isEtcWishFilled && isExpectFilled && isEtcExpectFilled);
       const gdgWishCombined = Array.from(gdgWish)
-      .map(wish => wish === '기타' ? etcGdgWish : wish)
-      .filter(wish => wish !== '기타' || etcGdgWish.trim() !== '');
+        .map((wish) => (wish === '기타' ? etcGdgWish : wish))
+        .filter((wish) => wish !== '기타' || etcGdgWish.trim() !== '');
 
       const formData = {
         gdgWish: gdgWishCombined,
-        gdgExpect: gdgExpect === '네, 원하는 활동이 있습니다' ? etcGdgExpect : gdgExpect
+        gdgExpect: gdgExpect === '네, 원하는 활동이 있습니다' ? etcGdgExpect : gdgExpect,
       };
-    
+
       updateRecruitData(9, formData);
     }
   }, [gdgWish, etcGdgWish, gdgExpect, etcGdgExpect, step, setChecked, updateRecruitData]);
@@ -90,10 +90,11 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         <div className='text-xl mt-[20px]'>이 외에 GDG on campus에서 기대하거나 원하는 활동이 있으신가요?</div>
         <div className='text-sm text-[#eeeeee] mt-[10px]'>
           <ul>
+            <li>• ex) 이런 프로젝트 하고 싶어요, 이런 스터디 있으면 좋겠어요, 이런 활동 있으면 좋겠어요</li>
             <li>
-              • ex) 이런 프로젝트 하고 싶어요, 이런 스터디 있으면 좋겠어요, 이런 활동 있으면 좋겠어요
+              • 자유롭게 <strong className='text-[#EF4444]'>요청사항</strong>을 작성해주세요. 활동 기획에
+              반영하겠습니다!
             </li>
-            <li>• 자유롭게 <strong className='text-[#EF4444]'>요청사항</strong>을 작성해주세요. 활동 기획에 반영하겠습니다!</li>
           </ul>
         </div>
         <SingleSelectBox

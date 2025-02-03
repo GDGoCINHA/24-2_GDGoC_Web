@@ -3,22 +3,28 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@nextui-org/react";
 
-import Recruit1 from "@/components/Recruit1";
-import Recruit2 from "@/components/Recruit2";
-import Recruit3 from "@/components/Recruit3";
-import Recruit4 from "@/components/Recruit4";
-import Recruit5 from "@/components/Recruit5";
-import Recruit6 from "@/components/Recruit6";
-import Recruit7 from "@/components/Recruit7";
-import Recruit8 from "@/components/Recruit8";
-import Recruit9 from "@/components/Recruit9";
-import Recruit10 from "@/components/Recruit10";
-import Recruit11 from "@/components/Recruit11";
+import Recruit1 from "@/app/recruit/screen/Recruit1";
+import Recruit2 from "@/app/recruit/screen/Recruit2";
+import Recruit3 from "@/app/recruit/screen/Recruit3";
+import Recruit4 from "@/app/recruit/screen/Recruit4";
+import Recruit5 from '@/app/recruit/screen/Recruit5';
+import Recruit6 from '@/app/recruit/screen/Recruit6';
+import Recruit7 from '@/app/recruit/screen/Recruit7';
+import Recruit8 from '@/app/recruit/screen/Recruit8';
+import Recruit9 from '@/app/recruit/screen/Recruit9';
+import Recruit10 from '@/app/recruit/screen/Recruit10';
+import Recruit11 from '@/app/recruit/screen/Recruit11';
 
 export default function Recruit() {
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
   const [checked, setChecked] = useState(true);
+
+  //임시
+  useEffect(() => {
+    console.log('Checked 값 변경됨:', checked);
+  }, [checked]);
+
 
   const handleNext = () => {
     if (!checked) {
