@@ -16,6 +16,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={pretendard.variable}>
+      <head>
+        <script src="https://unpkg.com/type-hangul"></script>
+      </head>
       <body className={pretendard.className}>
         <NextUIProvider>
           {children}

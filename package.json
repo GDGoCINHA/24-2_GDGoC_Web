@@ -13,11 +13,15 @@
     "@heroui/system": "^2.4.7",
     "@heroui/theme": "^2.4.6",
     "@nextui-org/react": "^2.6.11",
+    "@studio-freight/lenis": "^1.0.42",
     "framer-motion": "^11.16.1",
+    "gsap": "^3.12.7",
+    "hangul-js": "^0.2.6",
     "next": "15.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^5.4.0"
+    "react-icons": "^5.4.0",
+    "type-hangul": "^0.2.4"
   },
   "devDependencies": {
     "eslint": "^8",
