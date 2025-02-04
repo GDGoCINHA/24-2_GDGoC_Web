@@ -2,13 +2,13 @@ import { Select, SelectItem, Chip } from "@nextui-org/react";
 
 const MultipleSelectBox = ({ label, labelVisible, options, maxSelection, selectedValue, setSelectedValue }) => {
   const handleSelectionChange = (e) => {
-    const selectedItems = new Set(e.target.value.split(',').filter(item => item !== ''));
-
-    if (selectedItems.size > maxSelection) {
+    const selectedItems = e.target.value.split(',').filter(item => item !== '');
+    
+    if (selectedItems.length > maxSelection) {
       alert(`${label}은(는) ${maxSelection}개까지만 선택할 수 있습니다.`);
       return;
     }
-
+    
     setSelectedValue(selectedItems);
   };
 

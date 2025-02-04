@@ -10,7 +10,7 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
     if (step === 11) {
       setChecked(isPayed);
       const formData = {
-        isPayed: isPayed
+        isPayed,
       };
       updateRecruitData(11, formData);
     }
@@ -38,8 +38,8 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
             <ul>
               <li className='text-base font-semibold'>• 👛 입금 계좌</li>
               <li className='ml-[8px] mb-[10px]'>
-                : <strong className='text-[#EF4444]'>토스뱅크 1001-5012-6180</strong> | 예금주명
-                <strong> 차예원</strong> (모임통장)
+                : <strong className='text-[#EF4444]'>카카오뱅크 3333252211505</strong> | 예금주명
+                <strong> 엄수빈</strong> (모임통장)
               </li>
 
               <li className='text-base font-semibold'>• 💵 25-1 회비</li>

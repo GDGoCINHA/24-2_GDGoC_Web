@@ -3,50 +3,52 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
-import SingleSelectBox from '../../../components/listbox/SingleSelectBox';
 import MultipleSelectBox from '../../../components/listbox/MultipleSelectBox';
 export default function Recruit9({ step, setChecked, updateRecruitData }) {
   const gdgWishOptions = [
-    '친구',
-    '비슷한 관심사를 가진 동기',
-    '공부 메이트',
-    '네트워킹(인맥)',
-    '지식/정보 공유',
-    '프로젝트 경험',
-    '프로젝트 파트너',
-    '학점에 도움되는 스터디',
-    '취업준비를 위한 스터디',
-    '구글에서 제공하는 스터디',
-    '타 대학 GDG Campus 챕터와의 교류',
-    '타 학과 및 대내외 협업 경험',
-    'Google Goods',
-    'IT분야 기초 지식',
-    '기초 개발(프로그래밍) 지식',
+    '네트워킹',
+    '공부 메이트 & 스터디',
+    '프로젝트 경험 & 파트너',
+    '취업 & 진로 준비',
+    '타 대학과의 교류',
+    '구글 관련 활동 & 혜택',
+    'IT & 개발 지식',
     '기타',
   ];
-  const [gdgWish, setGdgWish] = useState(new Set());
+  const [gdgWish, setGdgWish] = useState([]);
   const [etcGdgWish, setEtcGdgWish] = useState(''); //기타 입력 상태
 
-  const gdgExpectOptions = ['네, 원하는 활동이 있습니다', '아니요, 원하는 활동이 없습니다'];
-  const [gdgExpect, setGdgExpect] = useState('');
+  const gdgExpectOptions = [
+    '해커톤 참여',
+    '스터디 참여',
+    '네트워킹 참여',
+    '현직자 강연',
+    '선배/현직자 멘토링',
+    '토이 프로젝트 참여',
+    '기타',
+  ];
+  const [gdgExpect, setGdgExpect] = useState([]);
   const [etcGdgExpect, setEtcGdgExpect] = useState(''); //기타 입력 상태
 
   useEffect(() => {
-    const isWishFilled = gdgWish.size > 0;
-    const isEtcWishFilled = !gdgWish.has('기타') || etcGdgWish.trim() !== '';
+    const isWishFilled = gdgWish.length > 0;
+    const isEtcWishFilled = !gdgWish.includes('기타') || etcGdgWish.trim() !== '';
 
-    const isExpectFilled = gdgExpect.trim() !== '';
-    const isEtcExpectFilled = gdgExpect !== '네, 원하는 활동이 있습니다' || etcGdgExpect.trim() !== '';
+    const isExpectFilled = gdgExpect.length > 0;
+    const isEtcExpectFilled = !gdgExpect.includes('기타') || etcGdgExpect.trim !== '';
 
     if (step === 9) {
       setChecked(isWishFilled && isEtcWishFilled && isExpectFilled && isEtcExpectFilled);
-      const gdgWishCombined = Array.from(gdgWish)
+      const gdgWishCombined = gdgWish
         .map((wish) => (wish === '기타' ? etcGdgWish : wish))
         .filter((wish) => wish !== '기타' || etcGdgWish.trim() !== '');
+      const gdgExpectCombined = gdgExpect
+        .map((expect) => (expect === '기타' ? etcGdgExpect : expect))
+        .filter((expect) => expect !== '기타' || etcGdgExpect.trim() !== '');
 
       const formData = {
         gdgWish: gdgWishCombined,
-        gdgExpect: gdgExpect === '네, 원하는 활동이 있습니다' ? etcGdgExpect : gdgExpect,
+        gdgExpect: gdgExpectCombined,
       };
 
       updateRecruitData(9, formData);
@@ -60,7 +62,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 9 ? '-translate-y-full' : step == 9 ? 'translate-y-0' : step + 1 == 9 ? 'translate-y-full' : ''}`}
     >
       <div className='flex flex-col w-full h-full mx-[10px] text-white'>
-        <div className='text-xl my-[10px]'>GDG on campus INHA에서 무엇을 얻어가고 싶으신가요? (중복선택 가능)</div>
+        <div className='text-xl my-[10px]'>GDG on Campus INHA에서 무엇을 얻어가고 싶으신가요? (중복선택 가능)</div>
 
         <MultipleSelectBox
           label='얻어가고 싶은 것'
@@ -71,7 +73,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
           setSelectedValue={setGdgWish}
         />
 
-        {gdgWish.has('기타') && (
+        {gdgWish.includes('기타') && (
           <Input
             variant='bordered'
             placeholder='무엇을 GDGoC INHA에서 얻어가고 싶으신가요?'
@@ -88,31 +90,33 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         )}
 
         <div className='text-xl mt-[20px]'>이 외에 GDG on campus에서 기대하거나 원하는 활동이 있으신가요?</div>
-        <div className='text-sm text-[#eeeeee] mt-[10px]'>
+        <div className='text-sm text-[#eeeeee] my-[10px]'>
           <ul>
             <li>• ex) 이런 프로젝트 하고 싶어요, 이런 스터디 있으면 좋겠어요, 이런 활동 있으면 좋겠어요</li>
             <li>
-              • 자유롭게 <strong className='text-[#EF4444]'>요청사항</strong>을 작성해주세요. 활동 기획에
-              반영하겠습니다!
+              • 선택지에 없는 활동을 원하시면 <strong className='text-[#EF4444]'>'기타'</strong> 항목을 선택 후{' '}
+              <strong className='text-[#EF4444]'>요청사항</strong>을 작성해주세요. 반영하여 활동을 기획하겠습니다!
             </li>
           </ul>
         </div>
-        <SingleSelectBox
+        <MultipleSelectBox
+          label='희망하는 활동'
+          labelVisible={false}
           options={gdgExpectOptions}
+          maxSelection={3}
           selectedValue={gdgExpect}
           setSelectedValue={setGdgExpect}
-          labelVisible={false}
-          placeHolder={'항목을 선택해주세요'}
         />
-        {gdgExpect === '네, 원하는 활동이 있습니다' && (
+
+        {gdgExpect.includes('기타') && (
           <Input
             variant='bordered'
-            placeholder='저희 GDGoC에 어떠한 활동을 기대하거나 원하시나요?'
+            placeholder='무엇을 GDGoC INHA에서 얻어가고 싶으신가요?'
             className='max-w-xs mt-4'
             value={etcGdgExpect}
-            onValueChange={setEtcGdgExpect}
+            onChange={(e) => setEtcGdgExpect(e.target.value)}
             classNames={{
-              mainWrapper: 'w-[480px] h-[57px]',
+              mainWrapper: 'w-140 h-[57px]',
               label: '!text-white text-xl pb-[18px]',
               inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
                             group-data-[focus=true]:border-[#bbbbbb30]`,

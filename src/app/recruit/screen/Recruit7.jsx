@@ -8,9 +8,9 @@ export default function Recruit7({ step, setChecked, updateRecruitData }) {
 
   useEffect(() => {
     if (step === 7) {
-      setChecked(gdgUserStory.trim() !== '');
+      setChecked(true);
       const formData = {
-        gdgUserStory : gdgUserStory
+        gdgUserStory,
       };
 
       updateRecruitData(7, formData);
@@ -24,7 +24,7 @@ export default function Recruit7({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 7 ? '-translate-y-full' : step == 7 ? 'translate-y-0' : step + 1 == 7 ? 'translate-y-full' : ''}`}
     >
       <div className='flex flex-col text-white p-2 w-full h-full max-w-4xl mx-auto'>
-        <div className='text-2xl font-semibold'>지원자의 삶과 진로 경험 & 이야기</div>
+        <div className='text-2xl font-semibold'>지원자의 삶과 진로 경험 & 이야기 (선택)</div>
         <div className='text-l text-[#eeeeee] mt-[5px]'>
           <ul>
             <li>
@@ -32,7 +32,7 @@ export default function Recruit7({ step, setChecked, updateRecruitData }) {
               알려주세요! <br /> 기존 멤버분들께서는 간단하게 적어주셔도 됩니다 😀
             </li>
             <li>
-              • ex) 1학년: ☆☆동아리 하면서 대학생활 / 2학년: ☆☆을 공부하는 학부 연구생, ☆☆대외활동 / 3 학년: 잠시의
+              • ex) 1학년: ☆☆동아리 하면서 대학생활 / 2학년: ☆☆을 공부하는 학부 연구생, ☆☆대외활동 / 3학년: 잠시의
               방황과 교환학생 / 4학년: ☆☆기업 인턴
             </li>
           </ul>
