@@ -110,17 +110,17 @@ export default function Recruit() {
             </div>
           </div>
           <div className='relative flex w-full h-full ml-8 overflow-hidden'>
-          <Recruit1 step={step} />
-          <Recruit2 step={step} />
-          <Recruit3 step={step} />
-          <Recruit4 step={step} />
-          <Recruit5 step={step} />
-          <Recruit6 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-          <Recruit7 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-          <Recruit8 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-          <Recruit9 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-          <Recruit10 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-          <Recruit11 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
+          <Recruit1 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit2 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit3 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit4 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit5 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit6 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit7 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit8 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit9 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit10 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
+          <Recruit11 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData}/>
           </div>
         </div>
         <div className='flex w-full items-center justify-end mt-[72px]'>
