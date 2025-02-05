@@ -89,6 +89,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
             placeholder=' '
             value={emailDomain}
             onChange={(e) => setEmailDomain(e.target.value)}
+            aria-label='이메일'
             className='w-[200px]'
             classNames={{
               trigger:

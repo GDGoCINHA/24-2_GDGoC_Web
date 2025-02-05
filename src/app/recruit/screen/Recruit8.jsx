@@ -89,9 +89,10 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
           selectedValue={gdgPeriod}
           setSelectedValue={setGdgPeriod}
         />
-        <div className='text-xl mt-[20px]'>어떤 경로를 통해 GDG on Campus를 알게 되셨나요?</div>
+        <div className='text-xl mt-[20px]' id='gdgRoute'>어떤 경로를 통해 GDG on Campus를 알게 되셨나요?</div>
         <SingleSelectBox
           options={gdgRouteOptions}
+          ariaLabel='gdgRoute'
           selectedValue={gdgRoute}
           setSelectedValue={setGdgRoute}
           labelVisible={false}

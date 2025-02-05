@@ -1,9 +1,10 @@
 import { Select, SelectItem } from "@nextui-org/react";
 
-const SingleSelectBox = ({ options, selectedValue, setSelectedValue, label, labelVisible, placeHolder }) => {
+const SingleSelectBox = ({ options, selectedValue, setSelectedValue, label, labelVisible, placeHolder, ariaLabel }) => {
   return (
     <Select
       label={labelVisible ? label : null}
+      aria-labelledby={(`${ariaLabel}`)}
       labelPlacement='outside'
       placeholder={`${placeHolder}`}
       className="w-[300px] !mt-[10px]"

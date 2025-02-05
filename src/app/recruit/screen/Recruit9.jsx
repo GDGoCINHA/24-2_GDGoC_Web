@@ -94,8 +94,8 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
           <ul>
             <li>• ex) 이런 프로젝트 하고 싶어요, 이런 스터디 있으면 좋겠어요, 이런 활동 있으면 좋겠어요</li>
             <li>
-              • 선택지에 없는 활동을 원하시면 <strong className='text-[#EF4444]'>'기타'</strong> 항목을 선택 후{' '}
-              <strong className='text-[#EF4444]'>요청사항</strong>을 작성해주세요. 반영하여 활동을 기획하겠습니다!
+              • 선택지에 없는 활동을 원하시면 <strong className='text-[#EF4444]'>&apos;기타&apos;</strong> 항목을 선택
+              후<strong className='text-[#EF4444]'>요청사항</strong>을 작성해주세요. 반영하여 활동을 기획하겠습니다!
             </li>
           </ul>
         </div>

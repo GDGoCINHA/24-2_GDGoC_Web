@@ -34,6 +34,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
       <p className='text-white text-2xl font-semibold'>필수 개인정보를 적어주세요</p>
       <Select
         label='학년'
+        aria-label='학년'
         labelPlacement='outside'
         placeholder='학년을 선택하세요'
         className='w-[200px] !mt-[57px]'

@@ -15,6 +15,7 @@ const MultipleSelectBox = ({ label, labelVisible, options, maxSelection, selecte
   return (
     <Select
       label={labelVisible ? label : null}
+      aria-label={(`${label}`)}
       labelPlacement='outside'
       placeholder={`${label}을(를) 선택해주세요. (최대 ${maxSelection}개)`}
       className=''

@@ -32,7 +32,7 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
         }`}
     >
       <div className='flex flex-col w-full h-full mx-[10px] text-white'>
-        <div className='text-xl mt-[20px]'>(기존 멤버) 피드백</div>
+        <div className='text-xl mt-[20px]' id='feedback'>(기존 멤버) 피드백</div>
         <div className='text-sm text-[#eeeeee] mt-[10px]'>
           <ul>
             <li>
@@ -46,6 +46,7 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
         </div>
         <SingleSelectBox
           options={gdgFeedbackOptions}
+          ariaLabel='feedback'
           selectedValue={gdgFeedback}
           setSelectedValue={setGdgFeedback}
           labelVisible={false}
