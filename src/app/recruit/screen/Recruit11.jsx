@@ -27,14 +27,14 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
       <div className='flex flex-col w-full h-full mx-[10px] text-white'>
         <div className='text-2xl font-semibold'>회비 안내</div>
         <div className='flex flex-col w-full bg-[#95959514] h-[358px] mt-[30px] p-2 rounded-2xl border-1 border-[#ffffff34] overflow-y-scroll'>
-          <div className='mt-[15px]'>
+          <div className='mt-[5px]'>
             회비 납부 확인 후, GDG on campus 멤버로서 모든 활동들에 대한 참가 권한을 얻게 됩니다.
           </div>
           <div className='mt-[15px]'>
             프로젝트와 스터디 등 일부 활동은 운영 소요에 따라 추가금이 산정될 수 있습니다.
           </div>
           <div className='mt-[15px]'>모든 회비는 커뮤니티 운영비로 투명하게 사용, 처리됩니다.</div>
-          <div className='text-sm text-[#eeeeee] mt-[30px]'>
+          <div className='text-sm text-[#eeeeee] mt-[20px]'>
             <ul>
               <li className='text-base font-semibold'>• 👛 입금 계좌</li>
               <li className='ml-[8px] mb-[10px]'>
@@ -49,11 +49,14 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
 
               <li className='text-base font-semibold'>• 📌 주의사항</li>
               <li className='ml-[8px]'>
-                : 회비 납부 과정에서{' '}
+                : 회비 납부 과정에서
                 <strong className='text-[#EF4444]'>입금자 명을 반드시 [2자리 학번+이름] 으로 변경</strong>해주세요!
               </li>
-              <li className='ml-[8px] mb-[10px]'>→ ex) 24김인하</li>
+              <li className='ml-[8px]'>→ ex) 24김인하</li>
             </ul>
+          </div>
+          <div className='mt-[15px]'>
+            <strong>문의사항:</strong> 박우찬 | 010-2087-1816
           </div>
         </div>
         <div className='flex w-full items-center justify-end mt-5'>
