@@ -19,6 +19,7 @@ module.exports = {
       },
       screens: {
         mobile: { max: '768px' }, // 768px 이하일 때 적용
+        pc: { min: '768px' },
       },
     },
   },
