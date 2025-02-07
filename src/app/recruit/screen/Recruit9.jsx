@@ -35,10 +35,11 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
     const isEtcWishFilled = !gdgWish.includes('기타') || etcGdgWish.trim() !== '';
 
     const isExpectFilled = gdgExpect.length > 0;
-    const isEtcExpectFilled = !gdgExpect.includes('기타') || etcGdgExpect.trim !== '';
+    const isEtcExpectFilled = !gdgExpect.includes('기타') || etcGdgExpect.trim() !== '';
 
     if (step === 9) {
       setChecked(isWishFilled && isEtcWishFilled && isExpectFilled && isEtcExpectFilled);
+      
       const gdgWishCombined = gdgWish
         .map((wish) => (wish === '기타' ? etcGdgWish : wish))
         .filter((wish) => wish !== '기타' || etcGdgWish.trim() !== '');
