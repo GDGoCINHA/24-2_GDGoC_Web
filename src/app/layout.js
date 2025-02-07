@@ -6,6 +6,13 @@ import localFont from "next/font/local";
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
   display: "swap",
+  variable: '--font-pretendard'
+});
+
+const ocra = localFont({
+  src: "../../public/fonts/OCRAExtended.woff2",
+  display: "swap",
+  variable: '--font-ocra'
 });
 
 export const metadata = {
@@ -15,7 +22,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ko" className={pretendard.variable}>
+    <html lang="ko" className={`${pretendard.variable} ${ocra.variable}`}>
+      <head>
+        <script src="https://unpkg.com/type-hangul"></script>
+      </head>
       <body className={pretendard.className}>
         <NextUIProvider>
           {children}

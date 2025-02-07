@@ -13,12 +13,18 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'pretendard': 'var(--font-pretendard)',
+        'ocra': 'var(--font-ocra)',
+      },
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
       },
       screens: {
-        mobile: { max: '768px' }, // 768px 이하일 때 적용
+        'mobile': { 'max': '1000px' },
+        'tablet': { 'min': '1000px', 'max': '1400px' },
+        'desktop': { 'min': '1400px' },
       },
     },
   },
