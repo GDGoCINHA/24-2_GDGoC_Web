@@ -63,7 +63,7 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 8 ? 'opacity-0' : step == 8 ? '' : step + 1 == 8 ? 'opacity-0' : 'hidden'} 
         ${step - 1 == 8 ? '-translate-y-full' : step == 8 ? 'translate-y-0' : step + 1 == 8 ? 'translate-y-full' : ''}`}
     >
-      <div className='flex flex-col w-full h-full mx-[10px] text-white'>
+      <div className='flex flex-col w-full h-full mx-[10px] text-white overflow-y-scroll'>
         <MultipleSelectBox
           label='관심분야'
           labelVisible={true}
@@ -72,7 +72,7 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
           selectedValue={gdgInterest}
           setSelectedValue={setGdgInterest}
         />
-        <div className='text-xl mt-[20px]'>GDG on Campus 기수</div>
+        <div className='text-xl mt-[20px] mobile:text-lg'>GDG on Campus 기수</div>
         <div className='text-sm text-[#eeeeee] my-[10px]'>
           <ul>
             <li>
@@ -89,7 +89,7 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
           selectedValue={gdgPeriod}
           setSelectedValue={setGdgPeriod}
         />
-        <div className='text-xl mt-[20px]' id='gdgRoute'>어떤 경로를 통해 GDG on Campus를 알게 되셨나요?</div>
+        <div className='text-xl mt-[20px] mobile:text-lg' id='gdgRoute'>어떤 경로를 통해 GDG on Campus를 알게 되셨나요?</div>
         <SingleSelectBox
           options={gdgRouteOptions}
           ariaLabel='gdgRoute'
@@ -106,9 +106,9 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
             value={etcGdgRoute}
             onValueChange={setEtcGdgRoute}
             classNames={{
-              mainWrapper: 'w-90 h-[57px]',
-              label: '!text-white text-xl pb-[18px]',
-              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
+              mainWrapper: 'w-90 h-[57px] mobile:w-[85vw]',
+              label: '!text-white text-xl pb-[18px] mobile:text-lg',
+              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                             group-data-[focus=true]:border-[#bbbbbb30]`,
             }}
           />

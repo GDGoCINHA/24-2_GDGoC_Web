@@ -8,7 +8,7 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
   const [doubleMajor, setDoubleMajor] = useState('');
 
   useEffect(() => {
-    const isMajorFilled = major.trim() !== '';
+    const isMajorFilled = major ? major.trim() !== '' : false;
 
     if (step === 5) {
       setChecked(isMajorFilled);
@@ -26,22 +26,22 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 5 ? 'opacity-0' : step == 5 ? '' : step + 1 == 5 ? 'opacity-0' : 'hidden'} 
         ${step - 1 == 5 ? '-translate-y-full' : step == 5 ? 'translate-y-0' : step + 1 == 5 ? 'translate-y-full' : ''}`}
     >
-      <p className='text-white text-2xl font-semibold'>필수 개인정보를 적어주세요</p>
+      <p className='text-white text-2xl font-semibold mobile:text-xl'>필수 개인정보를 적어주세요</p>
       <Autocomplete
         label='주전공'
         labelPlacement='outside'
-        placeholder='학과를 지정해주세요'
-        className='!mt-14 w-60'
+        placeholder='검색 혹은 스크롤하여 지정하세요'
+        className='!mt-14 w-96 mobile:w-[90vw]'
         classNames={{
           popoverContent: 'bg-[#1c1c1c]',
           selectorButton: 'text-white',
         }}
         inputProps={{
           classNames: {
-            label: '!text-white text-[21px] pb-3',
+            label: '!text-white text-xl pb-3 mobile:text-lg',
             inputWrapper:
               'rounded-full bg-[#1c1c1c] group-data-[focus=true]:bg-[#1c1c1c] group-data-[hover=true]:bg-[#1c1c1c] h-[57px]',
-            input: '!text-white text-[18px]',
+            input: '!text-white text-xl mobile:text-lg',
           },
         }}
         popoverProps={{
@@ -56,6 +56,7 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
         }}
         selectedKeys={major}
         onSelectionChange={setMajor}
+        disableAutoFocus
       >
         <AutocompleteSection title='프런티어 학부대학'>
           <AutocompleteItem key='자유전공학부' aria-label='자유전공학부' value='자유전공학부'>
@@ -338,8 +339,8 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
         </AutocompleteSection>
       </Autocomplete>
       <div className='flex flex-col w-full mt-6'>
-        <p className='text-white text-xl'>다중전공 (선택)</p>
-        <p className='text-white text-md mt-2'>
+        <p className='text-white text-xl mobile:text-lg'>다중전공 (선택)</p>
+        <p className='text-white text-base mt-2 mobile:text-sm'>
           • 현재 진행 중인 다중 전공(복수전공, 부전공, 융합전공, 연계전공)을 순서에 맞게 띄어쓰기 없이 정확한 이름으로
           입력해주세요.
           <br /> ex) XXX 학과 복수전공, 000학과 융합전공
@@ -352,9 +353,9 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
           placeholder='다중전공이 있을경우 입력해주세요.'
           className='!mt-5'
           classNames={{
-            mainWrapper: 'w-96 h-[57px]',
-            label: '!text-white text-xl pb-[18px]',
-            inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
+            mainWrapper: 'w-96 h-[57px] mobile:w-[90vw]',
+            label: '!text-white text-xl pb-[18px] mobile:text-lg',
+            inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                                 group-data-[focus=true]:border-[#bbbbbb30]`,
           }}
         />

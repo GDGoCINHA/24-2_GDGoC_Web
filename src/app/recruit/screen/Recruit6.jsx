@@ -23,9 +23,9 @@ export default function Recruit6({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 6 ? 'opacity-0' : step == 6 ? '' : step + 1 == 6 ? 'opacity-0' : 'hidden'} 
         ${step - 1 == 6 ? '-translate-y-full' : step == 6 ? 'translate-y-0' : step + 1 == 6 ? 'translate-y-full' : ''}`}
     >
-      <div className='flex flex-col text-white p-2 w-full h-full max-w-4xl mx-auto'>
-        <div className='text-2xl font-semibold'>지원 동기</div>
-        <div className='text-l text-[#eeeeee] mt-[5px]'>
+      <div className='flex flex-col text-white p-2 w-full h-full max-w-4xl mx-auto overflow-y-scroll'>
+        <div className='text-2xl font-semibold mobile:text-xl'>지원 동기</div>
+        <div className='text-base text-[#eeeeee] mt-[5px] mobile:text-[15px]'>
           <ul>
             <li>• GDG on Campus INHA 멤버 가입을 지원하게 된 동기가 어떻게 되시나요?</li>
             <li>• 많은 동아리들 중, &apos;GDG on Campus INHA&apos; 를 선택하신 계기가 궁금합니다.</li>

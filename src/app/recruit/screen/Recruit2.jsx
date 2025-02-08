@@ -32,18 +32,20 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
           step - 1 === 2 ? '-translate-y-full' : step === 2 ? 'translate-y-0' : step + 1 === 2 ? 'translate-y-full' : ''
         }`}
     >
-      <p className='text-white text-2xl font-semibold'>필수 개인정보를 적어주세요</p>
+      <div className='flex flex-col w-full h-full mx-[10px] text-white overflow-y-scroll'>
+      <p className='text-white text-2xl mb-[27px] font-semibold mobile:text-xl'>필수 개인정보를 적어주세요</p>
       <Input
         label='국문성명'
         value={name}
         onValueChange={setName}
         variant='bordered'
         labelPlacement='outside'
-        placeholder=' '
+        placeholder='성함을 입력해주세요'
         className='!mt-[57px]'
+        disableAutoFocus
         classNames={{
           mainWrapper: 'w-60 h-[57px]',
-          label: '!text-white text-xl pb-[18px]',
+          label: '!text-white text-xl pb-[18px] mobile:text-lg',
           inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
                         group-data-[focus=true]:border-[#bbbbbb30]`,
         }}
@@ -54,17 +56,18 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
         onValueChange={setStudentId}
         variant='bordered'
         labelPlacement='outside'
-        placeholder=' '
+        placeholder='학번을 입력해주세요'
         className='!mt-[60px]'
+        disableAutoFocus
         classNames={{
           mainWrapper: 'w-60 h-[57px]',
-          label: '!text-white text-xl pb-[18px]',
+          label: '!text-white text-xl pb-[18px] mobile:text-lg',
           inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
                         group-data-[focus=true]:border-[#bbbbbb30]`,
         }}
       />
-      <p className='text-white text-xl mt-[20px]'>재학 구분</p>
-      <div className='flex flex-wrap gap-4 mt-[20px] w-[500px]'>
+      <p className='text-white text-xl mt-[20px] mobile:text-lg'>재학 구분</p>
+      <div className="flex flex-wrap gap-4 mt-[20px] w-full">
         {['정등록', '부분등록', '휴학', '수료', '졸업'].map((label) => (
           <Checkbox
             key={label}
@@ -73,13 +76,14 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
             radius='none'
             classNames={{
               wrapper: 'hidden',
-              label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md 
+              label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md mobile:text-lg 
                 ${enrolledClassification === label ? 'bg-[#471915] border-[1.5px] border-[#ea4335]' : 'bg-[#181818]'}`,
             }}
           >
             {label}
           </Checkbox>
         ))}
+      </div>
       </div>
     </div>
   );

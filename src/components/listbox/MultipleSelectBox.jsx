@@ -20,9 +20,9 @@ const MultipleSelectBox = ({ label, labelVisible, options, maxSelection, selecte
       placeholder={`${label}을(를) 선택해주세요. (최대 ${maxSelection}개)`}
       className=''
       classNames={{
-        label: '!text-white text-[21px] pb-3',
+        label: '!text-white text-xl pb-3 mobile:text-lg',
         trigger: `rounded-3xl min-h-[57px] bg-[#1c1c1c] group-data-[focus=true]:bg-[#1c1c1c] data-[hover=true]:bg-[#1c1c1c]`,
-        value: '!text-white !text-[18px] !text-[#71717a]',
+        value: 'text-lg mobile:text-base',
         popoverContent: 'bg-[#1c1c1c]',
         innerWrapper: 'pl-2',
       }}

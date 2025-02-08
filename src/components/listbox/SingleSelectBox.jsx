@@ -11,9 +11,10 @@ const SingleSelectBox = ({ options, selectedValue, setSelectedValue, label, labe
       value={selectedValue}
       onChange={(e) => setSelectedValue(e.target.value)}
       classNames={{
+        mainWrapper: 'mobile:w-[85vw]',
         trigger: "h-[57px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]",
-        value: "!text-white text-lg",
-        label: labelVisible ? "!text-white text-xl pb-[18px]" : "sr-only",
+        value: "!text-white text-lg mobile:text-base",
+        label: labelVisible ? "!text-white text-xl pb-[18px] mobile:text-lg" : "sr-only",
         popoverContent: "bg-[#181818]",
         selectorIcon: "text-white"
       }}

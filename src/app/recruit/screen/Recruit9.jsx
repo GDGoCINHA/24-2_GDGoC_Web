@@ -62,8 +62,8 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 9 ? 'opacity-0' : step == 9 ? '' : step + 1 == 9 ? 'opacity-0' : 'hidden'} 
         ${step - 1 == 9 ? '-translate-y-full' : step == 9 ? 'translate-y-0' : step + 1 == 9 ? 'translate-y-full' : ''}`}
     >
-      <div className='flex flex-col w-full h-full mx-[10px] text-white'>
-        <div className='text-xl my-[10px]'>GDG on Campus INHA에서 무엇을 얻어가고 싶으신가요? (중복선택 가능)</div>
+      <div className='flex flex-col w-full h-full mx-[10px] text-white overflow-y-scroll'>
+        <div className='text-xl my-[10px] mobile:text-lg'>GDG on Campus INHA에서 무엇을 얻어가고 싶으신가요? (중복선택 가능)</div>
 
         <MultipleSelectBox
           label='얻어가고 싶은 것'
@@ -82,21 +82,21 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
             value={etcGdgWish}
             onChange={(e) => setEtcGdgWish(e.target.value)}
             classNames={{
-              mainWrapper: 'w-140 h-[57px]',
-              label: '!text-white text-xl pb-[18px]',
-              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
+              mainWrapper: 'w-140 h-[57px] mobile:w-[85vw]',
+              label: '!text-white text-lg pb-[18px] mobile:text-base',
+              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-base
                             group-data-[focus=true]:border-[#bbbbbb30]`,
             }}
           />
         )}
 
-        <div className='text-xl mt-[20px]'>이 외에 GDG on campus에서 기대하거나 원하는 활동이 있으신가요?</div>
+        <div className='text-xl mt-[40px] mobile:text-lg'>이 외에 GDG on campus에서 기대하거나 원하는 활동이 있으신가요?</div>
         <div className='text-sm text-[#eeeeee] my-[10px]'>
           <ul>
             <li>• ex) 이런 프로젝트 하고 싶어요, 이런 스터디 있으면 좋겠어요, 이런 활동 있으면 좋겠어요</li>
             <li>
               • 선택지에 없는 활동을 원하시면 <strong className='text-[#EF4444]'>&apos;기타&apos;</strong> 항목을 선택
-              후<strong className='text-[#EF4444]'>요청사항</strong>을 작성해주세요. 반영하여 활동을 기획하겠습니다!
+              후<strong className='text-[#EF4444]'> 요청사항</strong>을 작성해주세요. 반영하여 활동을 기획하겠습니다!
             </li>
           </ul>
         </div>
@@ -117,9 +117,9 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
             value={etcGdgExpect}
             onChange={(e) => setEtcGdgExpect(e.target.value)}
             classNames={{
-              mainWrapper: 'w-140 h-[57px]',
-              label: '!text-white text-xl pb-[18px]',
-              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
+              mainWrapper: 'w-140 h-[57px] mobile:w-[85vw]',
+              label: '!text-white text-xl pb-[18px] mobile:text-lg',
+              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                             group-data-[focus=true]:border-[#bbbbbb30]`,
             }}
           />

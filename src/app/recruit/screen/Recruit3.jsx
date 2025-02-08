@@ -31,7 +31,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 3 ? 'opacity-0' : step == 3 ? '' : step + 1 == 3 ? 'opacity-0' : 'hidden'} 
         ${step - 1 == 3 ? '-translate-y-full' : step == 3 ? 'translate-y-0' : step + 1 == 3 ? 'translate-y-full' : ''}`}
     >
-      <p className='text-white text-2xl font-semibold'>필수 개인정보를 적어주세요</p>
+      <p className='text-white text-2xl font-semibold mb-[27px] mobile:text-xl'>필수 개인정보를 적어주세요</p>
       <Select
         label='학년'
         aria-label='학년'
@@ -43,8 +43,8 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
         classNames={{
           trigger:
             'h-[57px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]',
-          value: '!text-white text-xl',
-          label: '!text-white text-xl pb-[18px]',
+          value: '!text-white text-lg mobile:text-base',
+          label: '!text-white text-xl pb-[18px] mobile:text-lg',
           popoverContent: 'bg-[#181818]',
           selectorIcon: 'text-white',
         }}
@@ -89,14 +89,15 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
         variant='bordered'
         labelPlacement='outside'
         className='!mt-[60px]'
+        disableAutoFocus
         classNames={{
           mainWrapper: 'w-60 h-[57px]',
-          label: '!text-white text-xl pb-[18px]',
-          inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
+          label: '!text-white text-xl pb-[18px] mobile:text-lg',
+          inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                         group-data-[focus=true]:border-[#bbbbbb30]`,
         }}
       />
-      <p className='text-white text-xl mt-[20px]'>국적</p>
+      <p className='text-white text-xl mt-[20px] mobile:text-lg'>국적</p>
       <div className='flex gap-4 mt-[20px] w-[500px]'>
         {['대한민국', '기타'].map((label) => (
           <Checkbox
@@ -106,7 +107,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
             radius='none'
             classNames={{
               wrapper: 'hidden',
-              label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md 
+              label: `text-white text-lg w-[150px] h-[67px] flex justify-center items-center rounded-md mobile:text-base
                 ${nationality === label ? 'bg-[#471915] border-[1.5px] border-[#ea4335]' : 'bg-[#181818]'}`,
             }}
           >
@@ -122,6 +123,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
           className='max-w-xs mt-4'
           value={etcNationality}
           onValueChange={setEtcNationality}
+          disableAutoFocus
           classNames={{
             mainWrapper: 'w-60 h-[57px]',
             label: '!text-white text-xl pb-[18px]',

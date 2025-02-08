@@ -31,10 +31,11 @@ const HorizontalProgressBar = ({ step }) => {
         {steps.map((i) => (
           <div
             key={i}
-            className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-2xl transition-all duration-500 ease-in-out ${
+            className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-sm transition-all duration-500 ease-in-out ${
               step >= i ? "bg-red-500" : "bg-gray-500"
             }`}
           >
+            ✓
           </div>
         ))}
       </div>

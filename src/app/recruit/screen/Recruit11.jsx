@@ -30,32 +30,32 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
           <div className='mt-[5px]'>
             회비 납부 확인 후, GDG on campus 멤버로서 모든 활동들에 대한 참가 권한을 얻게 됩니다.
           </div>
-          <div className='mt-[15px]'>
+          <div className='mt-[7px]'>
             프로젝트와 스터디 등 일부 활동은 운영 소요에 따라 추가금이 산정될 수 있습니다.
           </div>
-          <div className='mt-[15px]'>모든 회비는 커뮤니티 운영비로 투명하게 사용, 처리됩니다.</div>
+          <div className='mt-[7px]'>모든 회비는 커뮤니티 운영비로 투명하게 사용, 처리됩니다.</div>
           <div className='text-sm text-[#eeeeee] mt-[20px]'>
             <ul>
               <li className='text-base font-semibold'>• 👛 입금 계좌</li>
-              <li className='ml-[8px] mb-[10px]'>
-                : <strong className='text-[#EF4444]'>카카오뱅크 3333252211505</strong> | 예금주명
+              <li className='ml-[8px] mb-[15px]'>
+                : <strong className='text-[#34A853]'>카카오뱅크 3333252211505</strong> | 예금주명
                 <strong> 엄수빈</strong> (모임통장)
               </li>
 
               <li className='text-base font-semibold'>• 💵 25-1 회비</li>
-              <li className='ml-[8px] mb-[10px]'>
-                : <strong className='text-[#EF4444]'>20,000</strong> 원
+              <li className='ml-[8px] mb-[15px]'>
+                : <strong className='text-[#F9AB00]'>20,000</strong> 원
               </li>
 
               <li className='text-base font-semibold'>• 📌 주의사항</li>
               <li className='ml-[8px]'>
-                : 회비 납부 과정에서
-                <strong className='text-[#EF4444]'>입금자 명을 반드시 [2자리 학번+이름] 으로 변경</strong>해주세요!
+                : 회비 납부 과정에서 입금자명을 반드시
+                <strong className='text-[#4285F4]'> [2자리 학번+이름] 으로 변경</strong>해주세요!
               </li>
               <li className='ml-[8px]'>→ ex) 24김인하</li>
             </ul>
           </div>
-          <div className='mt-[15px]'>
+          <div className='mt-[20px]'>
             <strong>문의사항:</strong> 박우찬 | 010-2087-1816
           </div>
         </div>
