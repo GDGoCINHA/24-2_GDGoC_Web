@@ -9,6 +9,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
   const [etcEmailDomain, setEtcEmailDomain] = useState('');
   const [gender, setGender] = useState('');
   const [birth, setBirth] = useState('');
+  const [isSelectBoxOpen, setIsSelectBoxOpen] = useState(false);
 
   const domains = [
     { label: 'inha.edu', value: 'inha.edu' },
@@ -35,6 +36,12 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
       updateRecruitData(4, formData);
     }
   }, [emailId, emailDomain, etcEmailDomain, gender, birth, step, setChecked, updateRecruitData]);
+
+  const handleSelectBoxOpen = (open) => {
+    setTimeout(() => {
+      setIsSelectBoxOpen(open);
+    }, 80);
+  };
 
   return (
     <div
@@ -90,9 +97,11 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
           />
         ) : (
           <Select
-            placeholder=' '
+            placeholder='이메일 선택'
             value={emailDomain}
             onChange={(e) => setEmailDomain(e.target.value)}
+            onOpenChange={handleSelectBoxOpen}
+            isOpen={isSelectBoxOpen}
             aria-label='이메일'
             className='w-[200px]'
             classNames={{

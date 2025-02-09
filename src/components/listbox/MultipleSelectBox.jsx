@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Select, SelectItem, Chip } from "@nextui-org/react";
 
 const MultipleSelectBox = ({ label, labelVisible, options, maxSelection, selectedValue, setSelectedValue }) => {
+  const [isOpen, setIsOpen] = useState(false); // Select의 열림 상태를 관리
+
   const handleSelectionChange = (e) => {
     const selectedItems = e.target.value.split(',').filter(item => item !== '');
     
@@ -12,13 +15,20 @@ const MultipleSelectBox = ({ label, labelVisible, options, maxSelection, selecte
     setSelectedValue(selectedItems);
   };
 
+  const handleOpenChange = (open) => {
+    setTimeout(() => {
+      setIsOpen(open);
+    }, 80);
+  };
+
   return (
     <Select
       label={labelVisible ? label : null}
       aria-label={(`${label}`)}
       labelPlacement='outside'
       placeholder={`${label}을(를) 선택해주세요. (최대 ${maxSelection}개)`}
-      className=''
+      isOpen={isOpen}
+      onOpenChange={handleOpenChange}
       classNames={{
         label: '!text-white text-xl pb-3 mobile:text-lg',
         trigger: `rounded-3xl min-h-[57px] bg-[#1c1c1c] group-data-[focus=true]:bg-[#1c1c1c] data-[hover=true]:bg-[#1c1c1c]`,

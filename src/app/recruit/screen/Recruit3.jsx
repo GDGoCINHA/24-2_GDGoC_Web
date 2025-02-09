@@ -8,12 +8,12 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
   const [nationality, setNationality] = useState('');
   const [etcNationality, setEtcNationality] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isSelectBoxOpen, setIsSelectBoxOpen] = useState(false);
 
   useEffect(() => {
     const isGradeFilled = grade.trim() !== '';
     const isPhoneNumberFilled = phoneNumber.trim() !== '';
     const isNationalityFilled = nationality === '기타' ? etcNationality.trim() !== '' : nationality !== '';
-
     if (step === 3) {
       setChecked(isGradeFilled && isNationalityFilled && isPhoneNumberFilled);
       const formData = {
@@ -25,21 +25,29 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
     }
   }, [grade, nationality, etcNationality, phoneNumber, step, setChecked, updateRecruitData]);
 
+  const handleSelectBoxOpen = (open) => {
+    setTimeout(() => {
+      setIsSelectBoxOpen(open);
+    }, 80);
+  };
+
   return (
     <div
       className={`absolute flex flex-col w-full h-full transition-all duration-500 ease-in-out 
         ${step - 1 == 3 ? 'opacity-0' : step == 3 ? '' : step + 1 == 3 ? 'opacity-0' : 'hidden'} 
         ${step - 1 == 3 ? '-translate-y-full' : step == 3 ? 'translate-y-0' : step + 1 == 3 ? 'translate-y-full' : ''}`}
     >
-      <p className='text-white text-2xl font-semibold mb-[27px] mobile:text-xl'>필수 개인정보를 적어주세요</p>
+      <p className='text-white text-2xl font-semibold mb-[25px] mobile:text-xl'>필수 개인정보를 적어주세요</p>
       <Select
         label='학년'
         aria-label='학년'
         labelPlacement='outside'
         placeholder='학년을 선택하세요'
-        className='w-[200px] !mt-[57px]'
+        className='w-[200px] !mt-[55px]'
         value={grade}
         onChange={(e) => setGrade(e.target.value)}
+        onOpenChange={handleSelectBoxOpen}
+        isOpen={isSelectBoxOpen}
         classNames={{
           trigger:
             'h-[53px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]',
@@ -88,7 +96,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
         placeholder='010-0000-0000'
         variant='bordered'
         labelPlacement='outside'
-        className='!mt-[70px]'
+        className='!mt-[68px]'
         disableAutoFocus
         classNames={{
           mainWrapper: 'w-60 h-[57px]',
@@ -98,7 +106,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
           input: 'text-lg mobile:text-base',
         }}
       />
-      <p className='text-white text-xl mt-[30px] mobile:text-lg'>국적</p>
+      <p className='text-white text-xl mt-[28px] mobile:text-lg'>국적</p>
       <div className='flex gap-4 mt-[12px] w-[500px]'>
         {['대한민국', '기타'].map((label) => (
           <Checkbox
