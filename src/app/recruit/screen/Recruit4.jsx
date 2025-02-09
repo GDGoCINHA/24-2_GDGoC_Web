@@ -59,6 +59,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
             label: '!text-white text-xl pb-[18px] mobile:text-lg',
             inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
                           group-data-[focus=true]:border-[#bbbbbb30]`,
+            input: 'text-lg mobile:text-base',
           }}
         />
         <span className='text-white text-xl mb-[14px] mobile:text-lg'>@</span>
@@ -73,6 +74,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
               mainWrapper: 'w-60 h-[57px] mobile:w-[39vw]',
               inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                             group-data-[focus=true]:border-[#bbbbbb30]`,
+              input: 'text-lg mobile:text-base',
             }}
             endContent={
               <p
@@ -121,7 +123,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
             radius='none'
             classNames={{
               wrapper: 'hidden',
-              label: `text-white text-lg w-[150px] h-[67px] flex justify-center items-center rounded-md mobile:text-base
+              label: `text-white text-lg w-[150px] h-[67px] flex justify-center items-center rounded-md mobile:text-base mobile:w-[27vw] mobile:h-[49px]
                       ${gender === label ? 'bg-[#471915] border-[1.5px] border-[#ea4335]' : 'bg-[#181818]'}`,
             }}
           >
@@ -145,7 +147,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
           label: '!text-white text-xl pb-[18px] mobile:text-lg',
           inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                         group-data-[focus=true]:border-[#bbbbbb30]`,
-          input: '!text-black invert',
+          input: '!text-black invert text-lg mobile:text-base',
         }}
       />
     </div>

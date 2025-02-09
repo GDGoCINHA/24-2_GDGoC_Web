@@ -42,9 +42,9 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
         onChange={(e) => setGrade(e.target.value)}
         classNames={{
           trigger:
-            'h-[57px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]',
+            'h-[52px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]',
           value: '!text-white text-lg mobile:text-base',
-          label: '!text-white text-xl pb-[18px] mobile:text-lg',
+          label: '!text-white text-xl pb-[12px] mobile:text-lg',
           popoverContent: 'bg-[#181818]',
           selectorIcon: 'text-white',
         }}
@@ -88,17 +88,18 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
         placeholder='010-0000-0000'
         variant='bordered'
         labelPlacement='outside'
-        className='!mt-[60px]'
+        className='!mt-[70px]'
         disableAutoFocus
         classNames={{
           mainWrapper: 'w-60 h-[57px]',
-          label: '!text-white text-xl pb-[18px] mobile:text-lg',
+          label: '!text-white text-xl pb-[12px] mobile:text-lg',
           inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                         group-data-[focus=true]:border-[#bbbbbb30]`,
+          input: 'text-lg mobile:text-base',
         }}
       />
-      <p className='text-white text-xl mt-[20px] mobile:text-lg'>국적</p>
-      <div className='flex gap-4 mt-[20px] w-[500px]'>
+      <p className='text-white text-xl mt-[30px] mobile:text-lg'>국적</p>
+      <div className='flex gap-4 mt-[12px] w-[500px]'>
         {['대한민국', '기타'].map((label) => (
           <Checkbox
             key={label}
@@ -107,7 +108,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
             radius='none'
             classNames={{
               wrapper: 'hidden',
-              label: `text-white text-lg w-[150px] h-[67px] flex justify-center items-center rounded-md mobile:text-base
+              label: `text-white text-lg w-[150px] h-[57px] flex justify-center items-center rounded-md mobile:text-base mobile:w-[27vw] mobile:h-[49px]
                 ${nationality === label ? 'bg-[#471915] border-[1.5px] border-[#ea4335]' : 'bg-[#181818]'}`,
             }}
           >
@@ -129,6 +130,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
             label: '!text-white text-xl pb-[18px]',
             inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl
                           group-data-[focus=true]:border-[#bbbbbb30]`,
+            input: 'text-lg mobile:text-base',
           }}
         />
       )}

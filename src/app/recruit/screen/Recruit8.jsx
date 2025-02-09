@@ -89,7 +89,9 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
           selectedValue={gdgPeriod}
           setSelectedValue={setGdgPeriod}
         />
-        <div className='text-xl mt-[20px] mobile:text-lg' id='gdgRoute'>어떤 경로를 통해 GDG on Campus를 알게 되셨나요?</div>
+        <div className='text-xl mt-[20px] mobile:text-lg' id='gdgRoute'>
+          어떤 경로를 통해 GDG on Campus를 알게 되셨나요?
+        </div>
         <SingleSelectBox
           options={gdgRouteOptions}
           ariaLabel='gdgRoute'
@@ -108,8 +110,9 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
             classNames={{
               mainWrapper: 'w-90 h-[57px] mobile:w-[85vw]',
               label: '!text-white text-xl pb-[18px] mobile:text-lg',
-              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
+              inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white
                             group-data-[focus=true]:border-[#bbbbbb30]`,
+              input: 'text-lg mobile:text-base',
             }}
           />
         )}

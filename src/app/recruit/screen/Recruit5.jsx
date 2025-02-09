@@ -357,6 +357,7 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
             label: '!text-white text-xl pb-[18px] mobile:text-lg',
             inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                                 group-data-[focus=true]:border-[#bbbbbb30]`,
+            input: 'text-lg mobile:text-base',
           }}
         />
       </div>

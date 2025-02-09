@@ -63,7 +63,9 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 9 ? '-translate-y-full' : step == 9 ? 'translate-y-0' : step + 1 == 9 ? 'translate-y-full' : ''}`}
     >
       <div className='flex flex-col w-full h-full mx-[10px] text-white overflow-y-scroll'>
-        <div className='text-xl my-[10px] mobile:text-lg'>GDG on Campus INHA에서 무엇을 얻어가고 싶으신가요? (중복선택 가능)</div>
+        <div className='text-xl my-[10px] mobile:text-lg'>
+          GDG on Campus INHA에서 무엇을 얻어가고 싶으신가요? (중복선택 가능)
+        </div>
 
         <MultipleSelectBox
           label='얻어가고 싶은 것'
@@ -77,7 +79,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         {gdgWish.includes('기타') && (
           <Input
             variant='bordered'
-            placeholder='무엇을 GDGoC INHA에서 얻어가고 싶으신가요?'
+            placeholder='무엇을 GDGoC에서 얻어가고 싶으신가요?'
             className='max-w-xs mt-4'
             value={etcGdgWish}
             onChange={(e) => setEtcGdgWish(e.target.value)}
@@ -86,11 +88,14 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
               label: '!text-white text-lg pb-[18px] mobile:text-base',
               inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-base
                             group-data-[focus=true]:border-[#bbbbbb30]`,
+              input: 'text-lg mobile:text-base',
             }}
           />
         )}
 
-        <div className='text-xl mt-[40px] mobile:text-lg'>이 외에 GDG on campus에서 기대하거나 원하는 활동이 있으신가요?</div>
+        <div className='text-xl mt-[30px] mobile:text-lg'>
+          이 외에 GDG on campus에서 기대하거나 원하는 활동이 있으신가요?
+        </div>
         <div className='text-sm text-[#eeeeee] my-[10px]'>
           <ul>
             <li>• ex) 이런 프로젝트 하고 싶어요, 이런 스터디 있으면 좋겠어요, 이런 활동 있으면 좋겠어요</li>
@@ -112,7 +117,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         {gdgExpect.includes('기타') && (
           <Input
             variant='bordered'
-            placeholder='무엇을 GDGoC INHA에서 얻어가고 싶으신가요?'
+            placeholder='GDGoC에서 어떤 활동을 희망하시나요?'
             className='max-w-xs mt-4'
             value={etcGdgExpect}
             onChange={(e) => setEtcGdgExpect(e.target.value)}
@@ -121,6 +126,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
               label: '!text-white text-xl pb-[18px] mobile:text-lg',
               inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                             group-data-[focus=true]:border-[#bbbbbb30]`,
+              input: 'text-lg mobile:text-base',
             }}
           />
         )}
