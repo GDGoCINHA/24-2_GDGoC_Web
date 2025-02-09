@@ -13,7 +13,7 @@ const VerticalProgressBar = ({ step }) => {
   const steps = [1, 2, 5, 6, 8, 11];
 
   return (
-    <div className="flex flex-col relative pr-[46px] mobile:hidden">
+    <div className="flex flex-col relative pr-[46px] mobile:hidden select-none">
       <div id="line" className="absolute flex items-center justify-center h-full w-full">
         <div id="long-line-gray" className="absolute h-full bg-gray-500 w-1"></div>
         <div

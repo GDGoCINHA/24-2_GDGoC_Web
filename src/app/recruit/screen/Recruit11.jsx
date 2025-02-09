@@ -39,7 +39,7 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
               <li className='text-base font-semibold'>• 👛 입금 계좌</li>
               <li className='ml-[8px] mb-[15px]'>
                 : <strong className='text-[#34A853]'>카카오뱅크 3333252211505</strong> | 예금주명
-                <strong> 엄수빈</strong> (모임통장)
+                <strong> 엄수빈</strong>
               </li>
 
               <li className='text-base font-semibold'>• 💵 25-1 회비</li>
