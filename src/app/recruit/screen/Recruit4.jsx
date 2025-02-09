@@ -123,7 +123,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
             radius='none'
             classNames={{
               wrapper: 'hidden',
-              label: `text-white text-lg w-[150px] h-[67px] flex justify-center items-center rounded-md mobile:text-base mobile:w-[27vw] mobile:h-[49px]
+              label: `text-white text-lg w-[150px] h-[57px] flex justify-center items-center rounded-md mobile:text-base mobile:w-[27vw] mobile:h-[49px]
                       ${gender === label ? 'bg-[#471915] border-[1.5px] border-[#ea4335]' : 'bg-[#181818]'}`,
             }}
           >

@@ -84,7 +84,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
             value={etcGdgWish}
             onChange={(e) => setEtcGdgWish(e.target.value)}
             classNames={{
-              mainWrapper: 'w-140 h-[57px] mobile:w-[85vw]',
+              mainWrapper: 'w-[500px] h-[57px] mobile:w-[85vw]',
               label: '!text-white text-lg pb-[18px] mobile:text-base',
               inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-base
                             group-data-[focus=true]:border-[#bbbbbb30]`,
@@ -122,7 +122,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
             value={etcGdgExpect}
             onChange={(e) => setEtcGdgExpect(e.target.value)}
             classNames={{
-              mainWrapper: 'w-140 h-[57px] mobile:w-[85vw]',
+              mainWrapper: 'w-[500px] h-[57px] mobile:w-[85vw]',
               label: '!text-white text-xl pb-[18px] mobile:text-lg',
               inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
                             group-data-[focus=true]:border-[#bbbbbb30]`,

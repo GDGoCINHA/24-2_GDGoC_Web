@@ -78,7 +78,7 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
               radius='none'
               classNames={{
                 wrapper: 'hidden',
-                label: `text-white text-xl w-[150px] h-[67px] flex justify-center items-center rounded-md mobile:text-base mobile:w-[27vw] mobile:h-[49px]
+                label: `text-white text-xl w-[150px] h-[57px] flex justify-center items-center rounded-md mobile:text-base mobile:w-[27vw] mobile:h-[49px]
                 ${enrolledClassification === label ? 'bg-[#471915] border-[1.5px] border-[#ea4335]' : 'bg-[#181818]'}`,
               }}
             >

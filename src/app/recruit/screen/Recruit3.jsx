@@ -42,7 +42,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
         onChange={(e) => setGrade(e.target.value)}
         classNames={{
           trigger:
-            'h-[52px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]',
+            'h-[53px] bg-[#181818] border-[#bbbbbb30] border-[1.5px] data-[hover=true]:bg-[#181818] data-[hover=true]:border-[#bbbbbb30]',
           value: '!text-white text-lg mobile:text-base',
           label: '!text-white text-xl pb-[12px] mobile:text-lg',
           popoverContent: 'bg-[#181818]',
