@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Textarea } from '@nextui-org/react';
-import SingleSelectBox from './listbox/SingleSelectBox';
+import SingleSelectBox from '../../../components/listbox/SingleSelectBox';
 
 export default function Recruit10({ step, setChecked, updateRecruitData }) {
   const gdgFeedbackOptions = ['저는 신입 멤버입니다', '피드백 사항이 없습니다', 'GDGoC에 원하는 사항이 있습니다'];
@@ -12,13 +12,13 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
   useEffect(() => {
     const isFeedbackFilled = gdgFeedback.trim() !== '';
     const isEtcFeedbackFilled = gdgFeedback !== 'GDGoC에 원하는 사항이 있습니다' || etcGdgFeedback.trim() !== '';
-  
+
     if (step === 10) {
       setChecked(isFeedbackFilled && isEtcFeedbackFilled);
       const formData = {
-        gdgFeedback: gdgFeedback === 'GDGoC에 원하는 사항이 있습니다' ? etcGdgFeedback : gdgFeedback
+        gdgFeedback: gdgFeedback === 'GDGoC에 원하는 사항이 있습니다' ? etcGdgFeedback : gdgFeedback,
       };
-      
+
       updateRecruitData(10, formData);
     }
   }, [gdgFeedback, etcGdgFeedback, step, setChecked, updateRecruitData]);
@@ -32,12 +32,12 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
         }`}
     >
       <div className='flex flex-col w-full h-full mx-[10px] text-white'>
-        <div className='text-xl mt-[20px]'>(기존 멤버) 피드백</div>
+        <div className='text-xl mt-[20px]' id='feedback'>(기존 멤버) 피드백</div>
         <div className='text-sm text-[#eeeeee] mt-[10px]'>
           <ul>
             <li>
               • 기존 멤버로 활동하시면서&nbsp;
-              <strong className='text-[#EF4444]'>
+              <strong>
                 건의 및 문의사항 / 아쉬웠던 점 / 바라는 점 / 기억에 남는 재미있었던 활동 / 새로 개설했으면 하는 행사
               </strong>
               등을 자유롭게 작성해주세요.
@@ -46,6 +46,7 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
         </div>
         <SingleSelectBox
           options={gdgFeedbackOptions}
+          ariaLabel='feedback'
           selectedValue={gdgFeedback}
           setSelectedValue={setGdgFeedback}
           labelVisible={false}
