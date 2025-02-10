@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={`${pretendard.variable} ${ocra.variable}`}>
       <head>
-        <script src="https://unpkg.com/type-hangul"></script>
+        <script src="https://unpkg.com/type-hangul" async></script>
       </head>
       <body className={pretendard.className}>
         <NextUIProvider>
