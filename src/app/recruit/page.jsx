@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 import { Button } from '@nextui-org/react';
 import { formatRecruitData } from '../utils/formatRecruitData.js';
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
-import Recruit1 from "@/app/recruit/screen/Recruit1";
-import Recruit2 from "@/app/recruit/screen/Recruit2";
-import Recruit3 from "@/app/recruit/screen/Recruit3";
-import Recruit4 from "@/app/recruit/screen/Recruit4";
+import Recruit1 from '@/app/recruit/screen/Recruit1';
+import Recruit2 from '@/app/recruit/screen/Recruit2';
+import Recruit3 from '@/app/recruit/screen/Recruit3';
+import Recruit4 from '@/app/recruit/screen/Recruit4';
 import Recruit5 from '@/app/recruit/screen/Recruit5';
 import Recruit6 from '@/app/recruit/screen/Recruit6';
 import Recruit7 from '@/app/recruit/screen/Recruit7';
@@ -25,6 +25,7 @@ export default function Recruit() {
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
   const [checked, setChecked] = useState(false);
+  const router = useRouter();
 
   const handleNext = async () => {
     if (!checked) {
@@ -35,17 +36,14 @@ export default function Recruit() {
       const confirmation = window.confirm('정말 제출하시겠습니까?');
       if (confirmation) {
         const formattedData = formatRecruitData(mainRecruitData);
-        console.log(formattedData);
-        redirect('recruit/submitted');
-        // try {
-        //   const response = await axios.post("http://gdgalb-1926815393.ap-northeast-2.elb.amazonaws.com/apply", formattedData);
-        //   console.log("서버 응답:", response.data);
-        //   alert("지원서 제출이 완료되었습니다.");
-        //   redirect('/recruit-submitted')
-        // } catch (error) {
-        //   console.error("데이터 전송 실패:", error);
-        //   alert("제출 중 오류가 발생했습니다. 다시 시도해 주세요.");
-        // }
+        try {
+          const response = await axios.post('https://www.gdgocinha.site/apply', formattedData);
+          // console.log("서버 응답:", response.data);
+          router.push('/recruit/submitted');
+        } catch (error) {
+          // console.error("데이터 전송 실패:", error);
+          alert('제출 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        }
       }
     } else {
       setStep((prev) => prev + 1);

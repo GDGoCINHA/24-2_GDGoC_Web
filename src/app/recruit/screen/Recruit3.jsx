@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { Input, CheckboxGroup, Checkbox, Select, SelectItem } from '@nextui-org/react';
+import { Input, Checkbox, Select, SelectItem } from '@nextui-org/react';
 
 export default function Recruit3({ step, setChecked, updateRecruitData }) {
   const [grade, setGrade] = useState('');
