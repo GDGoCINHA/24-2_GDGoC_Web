@@ -32,3 +32,40 @@ input {
 [data-top-scroll="false"] {
     mask-image: none !important;
 }
+
+.neon-text {
+  text-shadow: 
+    0 0 4px currentColor,
+    0 0 8px currentColor,
+    0 0 12px currentColor;
+  animation: neon-glow 1.5s ease-in-out infinite alternate;
+}
+
+.neon-text-sm {
+  text-shadow: 
+    0 0 1px currentColor,
+    0 0 2px currentColor,
+    0 0 3px currentColor;
+}
+
+
+@keyframes neon-glow {
+  from {
+    text-shadow: 
+      0 0 4px currentColor,
+      0 0 8px currentColor,
+      0 0 12px currentColor;
+  }
+  to {
+    text-shadow: 
+      0 0 6px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor;
+  }
+}
+
+.arrow-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
