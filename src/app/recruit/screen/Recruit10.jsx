@@ -37,7 +37,7 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
           <ul>
             <li>
               • 기존 멤버로 활동하시면서&nbsp;
-              <strong className='text-[#EF4444]'>
+              <strong>
                 건의 및 문의사항 / 아쉬웠던 점 / 바라는 점 / 기억에 남는 재미있었던 활동 / 새로 개설했으면 하는 행사
               </strong>
               등을 자유롭게 작성해주세요.

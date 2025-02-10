@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 import { Button } from '@nextui-org/react';
 import { formatRecruitData } from '../utils/formatRecruitData.js';
+import { redirect } from 'next/navigation'
 
 import Recruit1 from "@/app/recruit/screen/Recruit1";
 import Recruit2 from "@/app/recruit/screen/Recruit2";
@@ -30,11 +31,22 @@ export default function Recruit() {
       alert('신청서의 공란을 모두 기입해 주세요.');
       return;
     }
-
     if (step >= 11) {
-      const formattedData = formatRecruitData(mainRecruitData);
-      console.log(formattedData);
-      
+      const confirmation = window.confirm('정말 제출하시겠습니까?');
+      if (confirmation) {
+        const formattedData = formatRecruitData(mainRecruitData);
+        console.log(formattedData);
+        redirect('/recruit-submitted');
+        // try {
+        //   const response = await axios.post("http://gdgalb-1926815393.ap-northeast-2.elb.amazonaws.com/apply", formattedData);
+        //   console.log("서버 응답:", response.data);
+        //   alert("지원서 제출이 완료되었습니다.");
+        //   redirect('/recruit-submitted')
+        // } catch (error) {
+        //   console.error("데이터 전송 실패:", error);
+        //   alert("제출 중 오류가 발생했습니다. 다시 시도해 주세요.");
+        // }
+      }
     } else {
       setStep((prev) => prev + 1);
     }
@@ -52,7 +64,7 @@ export default function Recruit() {
     <div className='flex flex-col max-w-[1305px] mx-auto h-screen justify-center'>
       <div className='flex flex-col scale-90 origin-top-left w-[111.11%]'>
         <div className='mx-[30px]'>
-          <p className='text-white text-4xl font-bold mt-[80px] mobile:text-3xl'>
+          <p className='text-white text-4xl font-bold mt-[80px] select-none mobile:text-3xl'>
             <strong className='text-[#EA4335]'>G</strong>
             <strong className='text-[#34A853]'>D</strong>
             <strong className='text-[#F9AB00]'>G</strong>
@@ -63,10 +75,10 @@ export default function Recruit() {
           <HorizontalProgressBar step={step} />
           <div className='flex flex-row w-full h-[489px] pc:mt-[90px]'>
             <div className='flex flex-row flex-none h-full'>
-              <div className='flex flex-col text-white text-2xl mr-[54px] justify-between mobile:hidden'>
+              <div className='flex flex-col text-white text-2xl mr-[54px] justify-between select-none mobile:hidden'>
                 <p>개인정보 수집</p>
                 <p>필수 인적 사항</p>
-                <p>전공 | 사범대학</p>
+                <p>단과대학 | 전공</p>
                 <p>지원 정보</p>
                 <p>설문조사</p>
                 <p>회비 안내</p>
