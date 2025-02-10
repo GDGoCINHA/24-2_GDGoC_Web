@@ -22,7 +22,8 @@ module.exports = {
         foreground: 'var(--foreground)',
       },
       screens: {
-        'mobile': { 'max': '1000px' },
+        mobile: { max: '768px' }, // 768px 이하일 때 적용
+        pc: { min: '768px' },
         'tablet': { 'min': '1000px', 'max': '1400px' },
         'desktop': { 'min': '1400px' },
       },
