@@ -11,8 +11,7 @@ phases:
   build:
     commands:
       - npm run build  # npm 스크립트를 통해 빌드 수행
-      - npm run export # Next.js를 정적 사이트로 변환
-
+      
 # 빌드 후 생성된 결과물에 대한 정보
 artifacts:
   files:
