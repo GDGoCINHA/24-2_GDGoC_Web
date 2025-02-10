@@ -19,11 +19,11 @@ export default function Recruit1({ step, setChecked, updateRecruitData }) {
         step - 1 == 1 ? 'opacity-0' : step == 1 ? '' : step + 1 == 1 ? 'opacity-0' : 'hidden'
       } ${step - 1 == 1 ? '-translate-y-full' : step == 1 ? 'translate-y-0' : step + 1 == 1 ? 'translate-y-full' : ''}`}
     >
-      <p className='text-white text-3xl font-semibold mobile:text-2xl'>
+      <p className='text-white text-3xl font-semibold mobile:text-xl'>
         아래와 같이 개인정보를 처리하고 제3자에게 제공하는데 동의하십니까?
       </p>
       <div className='flex flex-col w-full bg-[#95959514] h-[358px] mt-[47px] p-2 rounded-2xl border-1 border-[#ffffff34] overflow-y-scroll mobile:mt-[27px] mobile:p-4'>
-        <p className='text-white text-2xl font-semibold'>GDG on Campus INHA 개인정보 수집·이용, 제3자 제공 동의서</p>
+        <p className='text-white text-xl font-semibold'>GDG on Campus INHA 개인정보 수집·이용, 제3자 제공 동의서</p>
         <br />
         <p className='text-[#C5C5C5] text-base font-normal'>
           Google Developer Groups Campus INHA(이하, “이 동아리”라 한다)는 이 동아리의 운영을 위하여 대한민국 「개인정보

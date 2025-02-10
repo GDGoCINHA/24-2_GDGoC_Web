@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input } from '@nextui-org/react';
 
 import MultipleSelectBox from '../../../components/listbox/MultipleSelectBox';
@@ -38,6 +38,7 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
   ];
   const [gdgRoute, setGdgRoute] = useState('');
   const [etcGdgRoute, setEtcGdgRoute] = useState('');
+  const gdgRouteInputRef = useRef(null);
 
   useEffect(() => {
     const isInterestFilled = gdgInterest.length > 0;
@@ -56,6 +57,12 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
       updateRecruitData(8, formData);
     }
   }, [gdgInterest, gdgPeriod, gdgRoute, etcGdgRoute, step, setChecked, updateRecruitData]);
+
+  useEffect(() => {
+    if (gdgRoute === '기타' && gdgRouteInputRef.current) {
+      gdgRouteInputRef.current.focus();
+    }
+  }, [gdgRoute]);
 
   return (
     <div
@@ -102,6 +109,7 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
         />
         {gdgRoute === '기타' && (
           <Input
+            ref={gdgRouteInputRef}
             variant='bordered'
             placeholder='어떤 경로를 통해 알게 되었나요?'
             className='max-w-xs mt-4'

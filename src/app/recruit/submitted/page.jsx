@@ -17,7 +17,7 @@ export default function RecruitSubmitted() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen text-white">
+    <div className="flex flex-col items-center justify-center h-[100svh] text-white">
       <div
         className={`w-[75px] h-[75px] border-5 rounded-full border-green-500 flex justify-center items-center relative overflow-hidden transition-all duration-500 ${
           checkMotion ? 'scale-125' : ''

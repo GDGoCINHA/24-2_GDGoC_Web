@@ -32,7 +32,7 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
           step - 1 === 2 ? '-translate-y-full' : step === 2 ? 'translate-y-0' : step + 1 === 2 ? 'translate-y-full' : ''
         }`}
     >
-      <div className='flex flex-col w-full h-full mx-[10px] text-white overflow-y-scroll'>
+      <div className='flex flex-col w-full h-full text-white overflow-y-scroll'>
         <p className='text-white text-2xl mb-[27px] font-semibold mobile:text-xl'>필수 개인정보를 적어주세요</p>
         <Input
           label='국문성명'

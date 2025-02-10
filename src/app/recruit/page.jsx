@@ -36,7 +36,7 @@ export default function Recruit() {
       if (confirmation) {
         const formattedData = formatRecruitData(mainRecruitData);
         console.log(formattedData);
-        redirect('/recruit-submitted');
+        redirect('recruit/submitted');
         // try {
         //   const response = await axios.post("http://gdgalb-1926815393.ap-northeast-2.elb.amazonaws.com/apply", formattedData);
         //   console.log("서버 응답:", response.data);
@@ -61,10 +61,10 @@ export default function Recruit() {
   }, []);
 
   return (
-    <div className='flex flex-col max-w-[1305px] mx-auto h-screen justify-center'>
-      <div className='flex flex-col scale-90 origin-top-left w-[111.11%]'>
-        <div className='mx-[30px]'>
-          <p className='text-white text-4xl font-bold mt-[80px] select-none mobile:text-3xl'>
+    <div className='flex flex-col max-w-[1305px] mx-auto h-screen justify-center mobile:h-[100svh]'>
+      <div className='flex flex-col scale-90 origin-top-left w-[111.11%] mobile:flex-grow'>
+        <div className='mx-[30px] mobile:flex mobile:flex-col mobile:h-full mobile:justify-between'>
+          <p className='text-white text-4xl font-bold mt-[80px] select-none mobile:text-3xl mobile:mt-[7svh]'>
             <strong className='text-[#EA4335]'>G</strong>
             <strong className='text-[#34A853]'>D</strong>
             <strong className='text-[#F9AB00]'>G</strong>
@@ -73,7 +73,7 @@ export default function Recruit() {
             멤버에 지원해보세요
           </p>
           <HorizontalProgressBar step={step} />
-          <div className='flex flex-row w-full h-[489px] pc:mt-[90px]'>
+          <div className='flex flex-row w-full pc:h-[489px] pc:mt-[90px] mobile:flex-grow'>
             <div className='flex flex-row flex-none h-full'>
               <div className='flex flex-col text-white text-2xl mr-[54px] justify-between select-none mobile:hidden'>
                 <p>개인정보 수집</p>
@@ -99,7 +99,7 @@ export default function Recruit() {
               <Recruit11 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
             </div>
           </div>
-          <div className='flex w-full items-center justify-end mt-[62px]'>
+          <div className='flex w-full items-center justify-end mt-[62px] mobile:mt-[20px]'>
             {step > 1 && (
               <Button
                 className='bg-gray-500 text-white rounded-full w-[183px] h-[57px] text-lg font-semibold mr-[24px]'
