@@ -54,17 +54,23 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
         <Input
           label='학번'
           value={studentId}
-          onValueChange={setStudentId}
+          onValueChange={(value) => {
+            const numericValue = value.replace(/\D/g, '');
+            if (numericValue.length <= 8) {
+              setStudentId(numericValue);
+            }
+          }}
           variant='bordered'
           labelPlacement='outside'
           placeholder='학번을 입력해주세요'
           className='!mt-[60px]'
+          inputMode="numeric"
           disableAutoFocus
           classNames={{
             mainWrapper: 'w-60 h-[57px]',
             label: '!text-white text-xl pb-[18px] mobile:text-lg',
             inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
-                        group-data-[focus=true]:border-[#bbbbbb30]`,
+                    group-data-[focus=true]:border-[#bbbbbb30]`,
             input: 'text-lg mobile:text-base',
           }}
         />

@@ -102,6 +102,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
             }
           }}
           placeholder='010-0000-0000'
+          inputMode="numeric"
           variant='bordered'
           labelPlacement='outside'
           className='!mt-[68px]'
