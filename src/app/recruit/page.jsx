@@ -18,6 +18,7 @@ import Recruit9 from '@/app/recruit/screen/Recruit9';
 import Recruit10 from '@/app/recruit/screen/Recruit10';
 import Recruit11 from '@/app/recruit/screen/Recruit11';
 
+import RecruitLoading from '@/app/recruit/screen/RecruitLoading.jsx'
 import VerticalProgressBar from './VerticalProgressBar.jsx';
 import HorizontalProgressBar from './HorizontalProgressBar.jsx';
 
@@ -25,6 +26,7 @@ export default function Recruit() {
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleNext = async () => {
@@ -37,6 +39,7 @@ export default function Recruit() {
       if (confirmation) {
         const formattedData = formatRecruitData(mainRecruitData);
         try {
+          setLoading(true)
           const response = await axios.post("https://www.gdgocinha.site/apply", formattedData);
           router.push("/recruit/submitted");
         } catch (error) {
@@ -45,6 +48,7 @@ export default function Recruit() {
           } else {
             alert("제출 중 오류가 발생했습니다. 다시 시도해 주세요.");
           }
+          setLoading(false)
         }
       }
     } else {
@@ -62,6 +66,7 @@ export default function Recruit() {
 
   return (
     <div className='flex flex-col max-w-[1305px] mx-auto h-screen justify-center mobile:h-[100svh]'>
+      <RecruitLoading isLoading={loading} />
       <div className='flex flex-col scale-90 origin-top-left w-[111.11%] mobile:flex-grow'>
         <div className='mx-[30px] mobile:flex mobile:flex-col mobile:h-full mobile:justify-between'>
           <p className='text-white text-4xl font-bold mt-[80px] select-none mobile:text-3xl mobile:mt-[7svh]'>
