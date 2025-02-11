@@ -29,20 +29,22 @@ export default function Recruit() {
 
   const handleNext = async () => {
     if (!checked) {
-      alert('신청서의 공란을 모두 기입해 주세요.');
+      alert("신청서의 공란을 모두 기입해 주세요.");
       return;
     }
     if (step >= 11) {
-      const confirmation = window.confirm('정말 제출하시겠습니까?');
+      const confirmation = window.confirm("정말 제출하시겠습니까?");
       if (confirmation) {
         const formattedData = formatRecruitData(mainRecruitData);
         try {
-          const response = await axios.post('https://www.gdgocinha.site/apply', formattedData);
-          // console.log("서버 응답:", response.data);
-          router.push('/recruit/submitted');
+          const response = await axios.post("https://www.gdgocinha.site/apply", formattedData);
+          router.push("/recruit/submitted");
         } catch (error) {
-          // console.error("데이터 전송 실패:", error);
-          alert('제출 중 오류가 발생했습니다. 다시 시도해 주세요.');
+          if (error.response && error.response.status === 500) {
+            alert("이미 가입된 회원입니다.");
+          } else {
+            alert("제출 중 오류가 발생했습니다. 다시 시도해 주세요.");
+          }
         }
       }
     } else {
