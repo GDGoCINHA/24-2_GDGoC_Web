@@ -62,7 +62,7 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
           }}
           variant='bordered'
           labelPlacement='outside'
-          placeholder='학번을 입력해주세요'
+          placeholder='8자리 학번을 입력해주세요'
           className='!mt-[60px]'
           inputMode="numeric"
           disableAutoFocus
