@@ -43,6 +43,12 @@ export default function RootLayout({ children }) {
     <html lang="ko" className={`${pretendard.variable} ${ocra.variable}`}>
       <head>
         <meta name="description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
+        <meta property="og:title" content="GDGoC INHA" />
+        <meta property="og:description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
+        <meta property="og:url" content="https://gdgocinha.com" />
+        <meta property="og:site_name" content="GDGoC INHA" />
+        <meta property="og:image" content="/favicon.ico" />
+        <meta property="og:type" content="website" />
         <script src="https://unpkg.com/type-hangul" async></script>
       </head>
       <body className={pretendard.className}>
