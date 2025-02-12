@@ -48,68 +48,79 @@ export default function Home() {
   const logoRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.TypeHangul) {
-      TypeHangul.type('#typing-effect', {
-        text: '개발자와 비개발자가 같이 성장하는 즐거움 with Google',
-        speed: 27,
-        intervalType: 20,
-        humanize: 0.02,
-      });
-      const typingEffect = document.getElementById('typing-effect');
-      typingEffect.addEventListener('th.endType', () => {
-        console.log('endType');
-        gsap.fromTo(logoRef.current, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'power1.inOut' });
+    const checkTypeHangul = () => {
+      if (typeof window !== 'undefined' && window.TypeHangul) {
+        console.log('TypeHangul 라이브러리가 로드되었습니다.');
+        TypeHangul.type('#typing-effect', {
+          text: '개발자와 비개발자가 같이 성장하는 즐거움 with Google',
+          speed: 27,
+          intervalType: 20,
+          humanize: 0.02,
+        });
+        
+        const typingEffect = document.getElementById('typing-effect');
+        typingEffect.addEventListener('th.endType', () => {
+          console.log('타이핑 효과가 완료되었습니다.');
+          gsap.fromTo(logoRef.current, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'power1.inOut' });
 
-        gsap.fromTo(
-          recruitTextRef.current,
-          { y: 50, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1, ease: 'power1.inOut' }
-        );
+          gsap.fromTo(
+            recruitTextRef.current,
+            { y: 50, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1, ease: 'power1.inOut' }
+          );
 
-        gsap.fromTo(
-          buttonRef.current,
-          { y: 50, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            delay: 0.4,
-            ease: 'power1.out',
-            onComplete: () => {
-              gsap.to(buttonRef.current, {
-                y: '-=10',
-                duration: 1.5,
-                repeat: -1,
-                yoyo: true,
-                ease: 'power1.inOut',
-              });
-            },
+          gsap.fromTo(
+            buttonRef.current,
+            { y: 50, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              delay: 0.4,
+              ease: 'power1.out',
+              onComplete: () => {
+                gsap.to(buttonRef.current, {
+                  y: '-=10',
+                  duration: 1.5,
+                  repeat: -1,
+                  yoyo: true,
+                  ease: 'power1.inOut',
+                });
+              },
+            }
+          );
+
+          if (leftArrowRef.current && rightArrowRef.current) {
+            // 왼쪽 화살표 설정
+            gsap.set(leftArrowRef.current, { strokeDasharray: 1000, strokeDashoffset: 1000 });
+
+            // 오른쪽 화살표 설정
+            gsap.set(rightArrowRef.current, { strokeDasharray: 1000, strokeDashoffset: 1000 });
+
+            // 왼쪽 화살표 애니메이션
+            gsap.to(leftArrowRef.current, {
+              strokeDashoffset: 0,
+              duration: 5,
+              ease: 'power1.inOut',
+            });
+
+            // 오른쪽 화살표 애니메이션
+            gsap.to(rightArrowRef.current, {
+              strokeDashoffset: 0,
+              duration: 2.5,
+              ease: 'power1.inOut',
+            });
           }
-        );
+        });
+      } else {
+        console.log('TypeHangul 라이브러리를 찾을 수 없습니다. 재시도 중...');
+        // TypeHangul이 로드되지 않았다면 100ms 후에 다시 확인
+        setTimeout(checkTypeHangul, 100);
+      }
+    };
 
-        if (leftArrowRef.current && rightArrowRef.current) {
-          // 왼쪽 화살표 설정
-          gsap.set(leftArrowRef.current, { strokeDasharray: 1000, strokeDashoffset: 1000 });
-
-          // 오른쪽 화살표 설정
-          gsap.set(rightArrowRef.current, { strokeDasharray: 1000, strokeDashoffset: 1000 });
-
-          // 왼쪽 화살표 애니메이션
-          gsap.to(leftArrowRef.current, {
-            strokeDashoffset: 0,
-            duration: 5,
-            ease: 'power1.inOut',
-          });
-
-          // 오른쪽 화살표 애니메이션
-          gsap.to(rightArrowRef.current, {
-            strokeDashoffset: 0,
-            duration: 2.5,
-            ease: 'power1.inOut',
-          });
-        }
-      });
-    }
+    console.log('TypeHangul 로딩 체크를 시작합니다.');
+    checkTypeHangul();
   }, []);
 
   useEffect(() => {
