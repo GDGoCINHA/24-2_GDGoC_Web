@@ -33,7 +33,7 @@ export const metadata = {
     description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
     url: "https://gdgocinha.com",
     siteName: "GDGoC INHA",
-    images: "https://gdgocinha.com/icon.png",
+    images: "https://gdgocinha.com/logo.png",
     type: "website",
   },
 };
@@ -42,13 +42,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={`${pretendard.variable} ${ocra.variable}`}>
       <head>
-        <meta name="description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
+        {/* <meta name="description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
         <meta property="og:title" content="GDGoC INHA" />
         <meta property="og:description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
         <meta property="og:url" content="https://gdgocinha.com" />
         <meta property="og:site_name" content="GDGoC INHA" />
         <meta property="og:image" content="/logo.png" />
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content="website" /> */}
         <script src="https://unpkg.com/type-hangul" async></script>
       </head>
       <body className={pretendard.className}>
