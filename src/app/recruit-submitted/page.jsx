@@ -5,7 +5,42 @@ import { useRouter } from 'next/navigation'
 import { Button } from "@nextui-org/react";
 
 export default function RecruitSubmitted() {
-  const router = useRouter()
+  const router = useRouter();
+  const [pageState, setPageState] = useState('loading');
+
+  useEffect(() => {
+    if (!document.referrer) {
+      router.replace('/');
+      return;
+    }
+
+    setTimeout(() => {
+      setPageState('allowed');
+      
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.TypeHangul) {
+          const element = document.getElementById('typing-effect');
+          if (element) {
+            TypeHangul.type('#typing-effect', {
+              text: '지원해주셔서 감사합니다!',
+              speed: 50,
+              intervalType: 30,
+              humanize: 0.1,
+            });
+          }
+        }
+      }, 100);
+    }, 300);
+  }, []);
+
+  if (pageState === 'loading') {
+    return (
+      <div className="flex items-center justify-center h-screen bg-black">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
   const [checkMotion, setCheckMotion] = useState(false);
 
   useEffect(() => {
@@ -18,6 +53,7 @@ export default function RecruitSubmitted() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen text-white">
+      <div id="typing-effect" className="text-4xl min-h-[48px]"></div>
       <div
         className={`w-[75px] h-[75px] border-5 rounded-full border-green-500 flex justify-center items-center relative overflow-hidden transition-all duration-500 ${
           checkMotion ? 'scale-125' : ''
