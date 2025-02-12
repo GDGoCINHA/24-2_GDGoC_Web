@@ -28,7 +28,7 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
         <div className='text-2xl font-semibold'>회비 안내</div>
         <div className='flex flex-col w-full bg-[#95959514] h-[358px] mt-[30px] p-2 rounded-2xl border-1 border-[#ffffff34] overflow-y-scroll'>
           <div className='mt-[5px]'>
-            회비 납부 확인 후, GDG on campus 멤버로서 모든 활동들에 대한 참가 권한을 얻게 됩니다.
+            회비 납부 확인 후, GDG on Campus 멤버로서 모든 활동들에 대한 참가 권한을 얻게 됩니다.
           </div>
           <div className='mt-[7px]'>
             프로젝트와 스터디 등 일부 활동은 운영 소요에 따라 추가금이 산정될 수 있습니다.

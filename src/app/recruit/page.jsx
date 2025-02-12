@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 import { Button } from '@nextui-org/react';
 import { formatRecruitData } from '../utils/formatRecruitData.js';
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
-import Recruit1 from "@/app/recruit/screen/Recruit1";
-import Recruit2 from "@/app/recruit/screen/Recruit2";
-import Recruit3 from "@/app/recruit/screen/Recruit3";
-import Recruit4 from "@/app/recruit/screen/Recruit4";
+import Recruit1 from '@/app/recruit/screen/Recruit1';
+import Recruit2 from '@/app/recruit/screen/Recruit2';
+import Recruit3 from '@/app/recruit/screen/Recruit3';
+import Recruit4 from '@/app/recruit/screen/Recruit4';
 import Recruit5 from '@/app/recruit/screen/Recruit5';
 import Recruit6 from '@/app/recruit/screen/Recruit6';
 import Recruit7 from '@/app/recruit/screen/Recruit7';
@@ -18,6 +18,7 @@ import Recruit9 from '@/app/recruit/screen/Recruit9';
 import Recruit10 from '@/app/recruit/screen/Recruit10';
 import Recruit11 from '@/app/recruit/screen/Recruit11';
 
+import RecruitLoading from '@/app/recruit/screen/RecruitLoading.jsx'
 import VerticalProgressBar from './VerticalProgressBar.jsx';
 import HorizontalProgressBar from './HorizontalProgressBar.jsx';
 
@@ -25,27 +26,30 @@ export default function Recruit() {
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleNext = async () => {
     if (!checked) {
-      alert('신청서의 공란을 모두 기입해 주세요.');
+      alert("신청서의 공란을 모두 기입해 주세요.");
       return;
     }
     if (step >= 11) {
-      const confirmation = window.confirm('정말 제출하시겠습니까?');
+      const confirmation = window.confirm("정말 제출하시겠습니까?");
       if (confirmation) {
         const formattedData = formatRecruitData(mainRecruitData);
-        console.log(formattedData);
-        redirect('/recruit-submitted');
-        // try {
-        //   const response = await axios.post("http://gdgalb-1926815393.ap-northeast-2.elb.amazonaws.com/apply", formattedData);
-        //   console.log("서버 응답:", response.data);
-        //   alert("지원서 제출이 완료되었습니다.");
-        //   redirect('/recruit-submitted')
-        // } catch (error) {
-        //   console.error("데이터 전송 실패:", error);
-        //   alert("제출 중 오류가 발생했습니다. 다시 시도해 주세요.");
-        // }
+        try {
+          setLoading(true)
+          const response = await axios.post("https://www.gdgocinha.site/apply", formattedData);
+          router.push("/recruit/submitted");
+        } catch (error) {
+          if (error.response && error.response.status === 500) {
+            alert("이미 가입된 회원입니다.");
+          } else {
+            alert("제출 중 오류가 발생했습니다. 다시 시도해 주세요.");
+          }
+          setLoading(false)
+        }
       }
     } else {
       setStep((prev) => prev + 1);
@@ -61,10 +65,11 @@ export default function Recruit() {
   }, []);
 
   return (
-    <div className='flex flex-col max-w-[1305px] mx-auto h-screen justify-center'>
-      <div className='flex flex-col scale-90 origin-top-left w-[111.11%]'>
-        <div className='mx-[30px]'>
-          <p className='text-white text-4xl font-bold mt-[80px] select-none mobile:text-3xl'>
+    <div className='flex flex-col max-w-[1305px] mx-auto h-screen justify-center mobile:h-[100svh]'>
+      <RecruitLoading isLoading={loading} />
+      <div className='flex flex-col scale-90 origin-top-left w-[111.11%] mobile:flex-grow'>
+        <div className='mx-[30px] mobile:flex mobile:flex-col mobile:h-full mobile:justify-between'>
+          <p className='text-white text-4xl font-bold mt-[80px] select-none mobile:text-3xl mobile:mt-[7svh]'>
             <strong className='text-[#EA4335]'>G</strong>
             <strong className='text-[#34A853]'>D</strong>
             <strong className='text-[#F9AB00]'>G</strong>
@@ -73,7 +78,7 @@ export default function Recruit() {
             멤버에 지원해보세요
           </p>
           <HorizontalProgressBar step={step} />
-          <div className='flex flex-row w-full h-[489px] pc:mt-[90px]'>
+          <div className='flex flex-row w-full pc:h-[489px] pc:mt-[90px] mobile:flex-grow'>
             <div className='flex flex-row flex-none h-full'>
               <div className='flex flex-col text-white text-2xl mr-[54px] justify-between select-none mobile:hidden'>
                 <p>개인정보 수집</p>
@@ -99,7 +104,7 @@ export default function Recruit() {
               <Recruit11 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
             </div>
           </div>
-          <div className='flex w-full items-center justify-end mt-[62px]'>
+          <div className='flex w-full items-center justify-end mt-[62px] mobile:mt-[20px]'>
             {step > 1 && (
               <Button
                 className='bg-gray-500 text-white rounded-full w-[183px] h-[57px] text-lg font-semibold mr-[24px]'

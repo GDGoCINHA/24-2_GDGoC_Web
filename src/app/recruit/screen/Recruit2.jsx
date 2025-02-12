@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Input, CheckboxGroup, Checkbox } from '@nextui-org/react';
+import { Input, Checkbox } from '@nextui-org/react';
 
 export default function Recruit2({ step, setChecked, updateRecruitData }) {
   const [name, setName] = useState('');
@@ -32,7 +32,7 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
           step - 1 === 2 ? '-translate-y-full' : step === 2 ? 'translate-y-0' : step + 1 === 2 ? 'translate-y-full' : ''
         }`}
     >
-      <div className='flex flex-col w-full h-full mx-[10px] text-white overflow-y-scroll'>
+      <div className='flex flex-col w-full h-full text-white overflow-y-scroll'>
         <p className='text-white text-2xl mb-[27px] font-semibold mobile:text-xl'>필수 개인정보를 적어주세요</p>
         <Input
           label='국문성명'
@@ -54,17 +54,23 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
         <Input
           label='학번'
           value={studentId}
-          onValueChange={setStudentId}
+          onValueChange={(value) => {
+            const numericValue = value.replace(/\D/g, '');
+            if (numericValue.length <= 8) {
+              setStudentId(numericValue);
+            }
+          }}
           variant='bordered'
           labelPlacement='outside'
           placeholder='학번을 입력해주세요'
           className='!mt-[60px]'
+          inputMode="numeric"
           disableAutoFocus
           classNames={{
             mainWrapper: 'w-60 h-[57px]',
             label: '!text-white text-xl pb-[18px] mobile:text-lg',
             inputWrapper: `h-[57px] border-[#bbbbbb30] border-[1.5px] rounded-md text-white text-xl mobile:text-lg
-                        group-data-[focus=true]:border-[#bbbbbb30]`,
+                    group-data-[focus=true]:border-[#bbbbbb30]`,
             input: 'text-lg mobile:text-base',
           }}
         />
