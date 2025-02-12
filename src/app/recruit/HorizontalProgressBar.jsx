@@ -13,7 +13,7 @@ const HorizontalProgressBar = ({ step }) => {
   const steps = [1, 2, 5, 6, 8, 11];
 
   return (
-    <div className="flex items-center relative mx-5 pc:hidden py-[45px] select-none">
+    <div className="flex items-center relative mx-5 pc:hidden py-[40px] select-none">
       <div id="line" className="absolute flex items-center justify-center w-full h-full">
         <div id="long-line-gray" className="absolute w-full bg-gray-500 h-1"></div>
         <div

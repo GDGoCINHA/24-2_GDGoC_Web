@@ -49,6 +49,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
         ${step - 1 == 4 ? 'opacity-0' : step == 4 ? '' : step + 1 == 4 ? 'opacity-0' : 'hidden'} 
         ${step - 1 == 4 ? '-translate-y-full' : step == 4 ? 'translate-y-0' : step + 1 == 4 ? 'translate-y-full' : ''}`}
     >
+      <div className='flex flex-col w-full h-full text-white overflow-y-scroll'>
       <p className='text-white text-2xl font-semibold mobile:text-xl'>필수 개인정보를 적어주세요</p>
 
       <div className='flex flex-row items-end justify-start gap-2 !mt-[57px]'>
@@ -111,6 +112,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
               listbox: 'bg-[#181818] text-white',
               popoverContent: 'bg-[#181818]',
               selectorIcon: 'invert',
+              selectorIcon: 'text-white',
             }}
           >
             {domains.map((domain) => (
@@ -148,7 +150,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
         onChange={(e) => setBirth(e.target.value)}
         variant='bordered'
         labelPlacement='outside'
-        placeholder=' '
+        placeholder='생년월일을 선택해주세요'
         className='!mt-[60px]'
         disableAutoFocus
         classNames={{
@@ -159,6 +161,7 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
           input: '!text-black invert text-lg mobile:text-base',
         }}
       />
+    </div>
     </div>
   );
 }
