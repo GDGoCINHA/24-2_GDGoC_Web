@@ -18,6 +18,7 @@ const ocra = localFont({
 export const metadata = {
   title: "GDGoC INHA",
   description: "GDGoC INHA",
+  icons: "/favicon.ico",
 };
 
 export const viewport = {
