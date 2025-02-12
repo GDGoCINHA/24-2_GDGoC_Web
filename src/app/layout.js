@@ -21,6 +21,28 @@ export const viewport = {
   maximumScale: 1.0,
   minimumScale: 1.0,
 };
+export const metadata = {
+  title: "GDGoC INHA",
+  description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
+  icons: {
+    icon: "/favicon.ico", 
+  },
+  openGraph: {
+    title: "GDGoC INHA",
+    description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
+    url: "https://gdgocinha.com",
+    siteName: "GDGoC INHA",
+    images: [
+      {
+        url: "/favicon.ico",
+        width: 1200,
+        height: 630,
+        alt: "GDGoC INHA 오픈그래프 이미지",
+      },
+    ],
+    type: "website",
+  },
+};
 
 export const metadata = {
   title: "GDGoC INHA",
