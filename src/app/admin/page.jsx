@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import {
   Table,
   TableHeader,
@@ -30,6 +30,12 @@ const statusColorMap = {
 };
 
 export default function Page() {
+
+  useEffect(() => {
+    if(!document.referrer) {
+      router.push('/')
+    }
+  }, []);
   // 추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
   const [page, setPage] = React.useState(1); // 현재 페이지 상태 (추후 페이지 상태에 따라 api 통신으로 데이터 불러오기)
 
