@@ -15,6 +15,13 @@ const ocra = localFont({
   variable: "--font-ocra"
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 1.0,
+  minimumScale: 1.0,
+};
+
 export const metadata = {
   title: "GDGoC INHA",
   description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
