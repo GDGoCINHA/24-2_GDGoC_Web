@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect, useState } from 'react';
 import {
   Table,
   TableHeader,
@@ -12,12 +12,13 @@ import {
   Chip,
   Pagination,
   Input,
+  Spinner,
 } from '@nextui-org/react';
 import Header from './Header';
 import UserDetailsModal from './UserDetailModal';
 import { users } from './users';
 import { IoSearch } from 'react-icons/io5';
-
+import { useRouter } from 'next/navigation';
 export const columns = [
   { name: 'NAME', uid: 'name' },
   { name: 'MAJOR / ID', uid: 'major' },
@@ -30,10 +31,14 @@ const statusColorMap = {
 };
 
 export default function Page() {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if(!document.referrer) {
       router.push('/')
+    } else {
+      setIsLoading(false);
     }
   }, []);
   // 추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
@@ -110,10 +115,17 @@ export default function Page() {
     }, 300);
   };
 
+  // isloading 이 false 일때만 렌더링
   return (
-    <div>
-      <Header />
-        <Table
+    <>
+      {isLoading ? (
+        <div className='flex justify-center items-center h-screen'>
+          <Spinner />
+        </div>
+      ) : (
+        <div>
+          <Header />
+          <Table
           className='dark py-[30px] px-[96px] mobile:px-[10px]'
           aria-label='Example table with custom cells'
           bottomContent={
@@ -197,6 +209,8 @@ export default function Page() {
         </Table>
 
         <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={handleCloseModal} preventClose />
-    </div>
+    </div>)}
+    </>
   );
+
 }
