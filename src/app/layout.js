@@ -15,6 +15,12 @@ const ocra = localFont({
   variable: "--font-ocra"
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 1.0,
+  minimumScale: 1.0,
+};
 export const metadata = {
   title: "GDGoC INHA",
   description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
@@ -38,6 +44,22 @@ export const metadata = {
   },
 };
 
+export const metadata = {
+  title: "GDGoC INHA",
+  description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
+  icons: {
+    icon: "/favicon.ico", 
+  },
+  openGraph: {
+    title: "GDGoC INHA",
+    description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
+    url: "https://gdgocinha.com",
+    siteName: "GDGoC INHA",
+    images: "https://gdgocinha.com/icon.png",
+    type: "website",
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={`${pretendard.variable} ${ocra.variable}`}>
@@ -47,7 +69,7 @@ export default function RootLayout({ children }) {
         <meta property="og:description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
         <meta property="og:url" content="https://gdgocinha.com" />
         <meta property="og:site_name" content="GDGoC INHA" />
-        <meta property="og:image" content="/favicon.ico" />
+        <meta property="og:image" content="/logo.png" />
         <meta property="og:type" content="website" />
         <script src="https://unpkg.com/type-hangul" async></script>
       </head>
