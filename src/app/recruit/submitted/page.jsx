@@ -33,7 +33,7 @@ export default function RecruitSubmitted() {
       </div>
         <div className="text-3xl mt-[50px] font-semibold mobile:text-2xl">25-1 멤버 가입이 완료되었습니다.</div>
         <div className='text-xl mt-[20px] mobile:text-base items-center mobile:text-center'>
-          회비 납부가 확인되는대로,              
+          회비 납부를 확인한 후 2~3일 내로,              
           <strong className='text-[#EA4335]'> G</strong>
           <strong className='text-[#34A853]'>D</strong>
           <strong className='text-[#F9AB00]'>G</strong>

@@ -25,6 +25,7 @@ import HorizontalProgressBar from './HorizontalProgressBar.jsx';
 export default function Recruit() {
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
+  const [mount, setMount] = useState(1);
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -53,6 +54,7 @@ export default function Recruit() {
       }
     } else {
       setStep((prev) => prev + 1);
+      setMount((prev) => Math.max(prev, step + 1));
     }
   };
 
@@ -91,17 +93,17 @@ export default function Recruit() {
               <VerticalProgressBar step={step} />
             </div>
             <div className='relative flex w-full h-full ml-8 overflow-hidden mobile:ml-0'>
-              <Recruit1 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit2 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit3 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit4 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit5 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit6 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit7 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit8 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit9 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit10 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
-              <Recruit11 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />
+              {mount >= 0 && <Recruit1 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 1 && <Recruit2 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 2 && <Recruit3 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 3 && <Recruit4 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 4 && <Recruit5 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 5 && <Recruit6 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 6 && <Recruit7 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 7 && <Recruit8 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 8 && <Recruit9 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 9 && <Recruit10 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
+              {mount >= 10 && <Recruit11 step={step} setChecked={setChecked} updateRecruitData={updateRecruitData} />}
             </div>
           </div>
           <div className='flex w-full items-center justify-end mt-[62px] mobile:mt-[20px]'>
