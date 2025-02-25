@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Input, Checkbox, Select, SelectItem, Button } from '@nextui-org/react';
+import axios from 'axios';
 
 export default function Recruit3({ step, setChecked, updateRecruitData }) {
   const [grade, setGrade] = useState('');
@@ -21,7 +22,9 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
     const isPhoneNumberFilled = phoneNumber.trim() !== '';
     const isNationalityFilled = nationality === '기타' ? etcNationality.trim() !== '' : nationality !== '';
     if (step === 3) {
-      setChecked(isGradeFilled && isPhoneNumberFilled && isNationalityFilled && isValidPhoneNumber && isValidButtonClicked);
+      setChecked(
+        isGradeFilled && isPhoneNumberFilled && isNationalityFilled && isValidPhoneNumber && isValidButtonClicked
+      );
       const formData = {
         grade,
         phoneNumber,
@@ -29,7 +32,17 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
       };
       updateRecruitData(3, formData);
     }
-  }, [grade, nationality, etcNationality, phoneNumber, step, setChecked, updateRecruitData, isValidPhoneNumber, isValidButtonClicked]);
+  }, [
+    grade,
+    nationality,
+    etcNationality,
+    phoneNumber,
+    step,
+    setChecked,
+    updateRecruitData,
+    isValidPhoneNumber,
+    isValidButtonClicked,
+  ]);
 
   useEffect(() => {
     if (nationality === '기타' && nationalityInputRef.current) {
@@ -43,9 +56,18 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
     }, 80);
   };
 
-  const handleCheckDuplicate = () => {
-    setIsValidButtonClicked(true);
-    setIsValidPhoneNumber(phoneNumber !== '123'); // 임시
+  const handleCheckDuplicate = async () => {
+    try {
+      const response = await axios.get(`https://www.gdgocinha.site/check/phoneNumber`, {
+        params: { phoneNumber },
+      });
+      setIsValidButtonClicked(true);
+      setIsValidPhoneNumber(!response.data.data);
+    } catch (error) {
+      setIsValidButtonClicked(true);
+      console.log('중복확인 오류 발생:', error);
+      setIsValidPhoneNumber(false);
+    }
   };
 
   return (

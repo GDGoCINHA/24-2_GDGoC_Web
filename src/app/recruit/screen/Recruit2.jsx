@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Input, Checkbox, Button } from '@nextui-org/react';
+import axios from 'axios';
 
 export default function Recruit2({ step, setChecked, updateRecruitData }) {
   const [name, setName] = useState('');
@@ -16,7 +17,9 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
     const isEnrolledClassificationFilled = enrolledClassification !== '';
 
     if (step === 2) {
-      setChecked(isNameFilled && isStudentIdFilled && isEnrolledClassificationFilled && isValidButtonClicked && isValidStudentId);
+      setChecked(
+        isNameFilled && isStudentIdFilled && isEnrolledClassificationFilled && isValidButtonClicked && isValidStudentId
+      );
       const formData = {
         name,
         studentId,
@@ -24,11 +27,30 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
       };
       updateRecruitData(2, formData);
     }
-  }, [name, studentId, enrolledClassification, step, setChecked, updateRecruitData, isValidButtonClicked, isValidStudentId]);
+  }, [
+    name,
+    studentId,
+    enrolledClassification,
+    step,
+    setChecked,
+    updateRecruitData,
+    isValidButtonClicked,
+    isValidStudentId,
+  ]);
 
-  const handleCheckDuplicate = () => {
-    setIsValidButtonClicked(true);
-    setIsValidStudentId(studentId !== '123'); // 임시
+  const handleCheckDuplicate = async () => {
+
+    try {
+      const response = await axios.get(`https://www.gdgocinha.site/check/studentId`, {
+        params: { studentId },
+      });
+      setIsValidButtonClicked(true);
+      setIsValidStudentId(!response.data.data);
+    } catch (error) {
+      setIsValidButtonClicked(true);
+      console.log('중복확인 오류 발생:', error);
+      setIsValidStudentId(false);
+    }
   };
 
   return (
@@ -110,7 +132,11 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
           </Button>
         </div>
         {isValidButtonClicked && (
-          <p className={`absolute bottom-0 left-0 right-0 top-[293px] text-xs ml-[4px] mt-[3px] ${isValidStudentId ? 'text-[#33A652]' : 'text-[#EA4336]'}`}>
+          <p
+            className={`absolute bottom-0 left-0 right-0 top-[293px] text-xs ml-[4px] mt-[3px] ${
+              isValidStudentId ? 'text-[#33A652]' : 'text-[#EA4336]'
+            }`}
+          >
             {isValidStudentId ? '사용이 가능한 학번입니다.' : '이미 등록되었거나 형식에 맞지 않는 학번입니다.'}
           </p>
         )}
