@@ -10,39 +10,43 @@ export default function HeroSection({ router }) {
     const subTitleRef = useRef(null);
     const buttonRef = useRef(null);
 
+    const animation = () => {
+        TypeHangul.type("#typing-effect", {
+            text: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
+            speed: 27,
+            intervalType: 20,
+            humanize: 0.02,
+        });
+
+        const typingEffect = document.getElementById("typing-effect");
+        typingEffect.addEventListener("th.endType", () => {
+            gsap.fromTo(
+                subTitleRef.current,
+                { y: 50, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1, ease: "power1.inOut" }
+            );
+
+            gsap.fromTo(
+                buttonRef.current,
+                { y: 50, opacity: 0 },
+                { y: 0, opacity: 1, duration: 1, delay: 0.4, ease: "power1.out",
+                onComplete: () => {
+                    gsap.to(buttonRef.current, {
+                        y: "-=10",
+                        duration: 1.5,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: "power1.inOut",
+                    });
+                },
+                }
+            );
+        });
+    }
+
     useEffect(() => {
         if (typeof window !== "undefined" && window.TypeHangul) {
-            TypeHangul.type("#typing-effect", {
-                text: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
-                speed: 27,
-                intervalType: 20,
-                humanize: 0.02,
-            });
-
-            const typingEffect = document.getElementById("typing-effect");
-            typingEffect.addEventListener("th.endType", () => {
-                gsap.fromTo(
-                    subTitleRef.current,
-                    { y: 50, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 1, ease: "power1.inOut" }
-                );
-
-                gsap.fromTo(
-                    buttonRef.current,
-                    { y: 50, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 1, delay: 0.4, ease: "power1.out",
-                    onComplete: () => {
-                        gsap.to(buttonRef.current, {
-                            y: "-=10",
-                            duration: 1.5,
-                            repeat: -1,
-                            yoyo: true,
-                            ease: "power1.inOut",
-                        });
-                    },
-                    }
-                );
-            });
+            animation();
         } else {
             setTimeout(animation, 100);
         }
