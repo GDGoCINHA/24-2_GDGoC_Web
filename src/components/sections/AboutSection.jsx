@@ -5,68 +5,74 @@ import ScrollTrigger from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function AboutSection() {
-    useEffect(() => {    
-        // 섹션2 스크롤 애니메이션 타임라인 설정
-        let tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: '#section2', // 트리거 요소
-                start: 'top top', // 시작 지점
-                end: '+=200%', // 종료 지점 (200% 스크롤)
-                scrub: true, // 스크롤에 따른 부드러운 애니메이션
-                pin: true, // 섹션 고정
-            },
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            // 섹션2 스크롤 애니메이션 타임라인 설정
+            let tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '#section2', // 트리거 요소
+                    start: 'top top', // 시작 지점
+                    end: '+=200%', // 종료 지점 (200% 스크롤)
+                    scrub: true, // 스크롤에 따른 부드러운 애니메이션
+                    pin: true, // 섹션 고정
+                },
+            });
+        
+            // GDGOC 네온 텍스트 깜빡임 효과
+            const neonLetters = document.querySelectorAll('#section2 .neon1');
+        
+            // 첫 번째 깜빡임 효과
+            tl.to(
+              neonLetters,
+              {
+                textShadow: '0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor',
+                duration: 0.1,
+                yoyo: true,
+                repeat: 3,
+                ease: 'steps(2)',
+                stagger: {
+                  each: 0.05,
+                  from: 'random',
+                },
+              },
+              0
+            );
+        
+            // 두 번째 깜빡임 효과
+            tl.to(
+              neonLetters,
+              {
+                textShadow: '0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor',
+                duration: 0.15,
+                yoyo: true,
+                repeat: 2,
+                ease: 'steps(1)',
+                stagger: {
+                  each: 0.03,
+                  from: 'random',
+                },
+              },
+              0.5
+            );
+        
+            // 텍스트 페이드인 애니메이션
+            tl.fromTo('#section2-text1', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 0.2) // 첫 번째 텍스트
+              .fromTo('#section2-text2', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 0.7) // 두 번째 텍스트
+              .fromTo('#section2-text3', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 1.2) // 세 번째 텍스트
+              .fromTo('#section2-text4', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 1.7); // 네 번째 텍스트
+        
+            // 컴포넌트 언마운트 시 정리
+            return () => {
+              ScrollTrigger.getAll().forEach((trigger) => trigger.kill()); // 모든 ScrollTrigger 제거
+            };
         });
-    
-        // GDGOC 네온 텍스트 깜빡임 효과
-        const neonLetters = document.querySelectorAll('#section2 .neon1');
-    
-        // 첫 번째 깜빡임 효과
-        tl.to(
-          neonLetters,
-          {
-            textShadow: '0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor',
-            duration: 0.1,
-            yoyo: true,
-            repeat: 3,
-            ease: 'steps(2)',
-            stagger: {
-              each: 0.05,
-              from: 'random',
-            },
-          },
-          0
-        );
-    
-        // 두 번째 깜빡임 효과
-        tl.to(
-          neonLetters,
-          {
-            textShadow: '0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor',
-            duration: 0.15,
-            yoyo: true,
-            repeat: 2,
-            ease: 'steps(1)',
-            stagger: {
-              each: 0.03,
-              from: 'random',
-            },
-          },
-          0.5
-        );
-    
-        // 텍스트 페이드인 애니메이션
-        tl.fromTo('#section2-text1', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 0.2) // 첫 번째 텍스트
-          .fromTo('#section2-text2', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 0.7) // 두 번째 텍스트
-          .fromTo('#section2-text3', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 1.2) // 세 번째 텍스트
-          .fromTo('#section2-text4', { opacity: 0, y: 20 }, { opacity: 1, y: 0 }, 1.7); // 네 번째 텍스트
-    
-        // 컴포넌트 언마운트 시 정리
+
         return () => {
-          ScrollTrigger.getAll().forEach((trigger) => trigger.kill()); // 모든 ScrollTrigger 제거
+            ctx.revert();
+            ScrollTrigger.getAll().forEach(st => st.kill());
+            gsap.killTweensOf("*");  // 모든 애니메이션 정리
         };
     }, []);
-
-
 
     return (
         <div id='section2' className='flex flex-col w-full h-screen bg-black relative'>

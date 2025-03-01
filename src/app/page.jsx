@@ -22,24 +22,24 @@ export default function Home() {
 
   const router = useRouter();
 
-  useEffect(()=>{
+  useEffect(() => {
     const lenis = new Lenis({
       duration: 1.5,
       smoothWheel: true,
       wheelMultiplier: 0.8,
-      smoothTouch: true, 
+      smoothTouch: true,
     });
 
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
-    lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => {
       lenis.raf(time * 800);
     });
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove();
+    };
   }, []);
 
 
