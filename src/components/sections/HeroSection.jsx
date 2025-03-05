@@ -85,7 +85,7 @@ export default function HeroSection({ router }) {
                     onPress={() => router.push("/recruit")}
                     radius="full"
                     ref={buttonRef}
-                    className="opacity-0 mt-[41px] w-60 mr-3 h-16 mobile:w-40 mobile:h-14 mobile:text-2xl bg-gradient-to-r from-[#EA4335] to-[#FF6E62] text-white text-3xl relative group"
+                    className="opacity-0 mt-[41px] w-60 h-16 mobile:w-40 mobile:h-14 mobile:text-2xl bg-gradient-to-r from-[#EA4335] to-[#FF6E62] text-white text-3xl relative group"
                 >
                     <span className="font-semibold">지원하기</span>
                 </Button>
