@@ -27,12 +27,15 @@ jobs:
         AWS_REGION: ap-northeast-2
         SOURCE_DIR: './'
 
-    - name: Trigger CodeDeploy
-      uses: webfactory/create-aws-codedeploy-deployment@v0.4.0
-      with:
-        application-name: gdgoc-fe-app
-        deployment-group: gdgoc-fe-dg
-        deployment-description: "Auto deploy triggered"
-        bucket: ${{ secrets.S3_BUCKET }}
-        bundle: app.zip
-        region: ap-northeast-2
+    - name: Deploy to CodeDeploy using AWS CLI
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-northeast-2
+      run: |
+        aws deploy create-deployment \
+          --application-name gdgoc-fe-app \
+          --deployment-group-name gdgoc-fe-dg \
+          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=app.zip \
+          --file-exists-behavior OVERWRITE
+
