@@ -2,12 +2,15 @@
 
 cd /home/ubuntu/app
 
+# S3에서 이미지 다운로드
+aws s3 cp s3://gdgoc-fe-app/nextjs-app.tar nextjs-app.tar
+
 # 기존 컨테이너 종료 및 삭제
 docker stop nextjs-app || true
 docker rm nextjs-app || true
 
-# Docker 이미지 빌드 및 실행
-docker build -t nextjs-app .
+# 도커 이미지 로드 및 실행
+docker load -i nextjs-app.tar
 
 docker run -d \
   --name nextjs-app \
