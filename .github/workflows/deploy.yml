@@ -31,3 +31,17 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ap-northeast-2
         SOURCE_DIR: './'
+        
+
+
+    - name: Trigger CodeDeploy (CLI)
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-northeast-2
+      run: |
+        aws deploy create-deployment \
+          --application-name gdgoc-fe-app \
+          --deployment-group-name gdgoc-fe-dg \
+          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=nextjs-app.zip \
+          --file-exists-behavior OVERWRITE
