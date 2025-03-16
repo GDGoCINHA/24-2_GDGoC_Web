@@ -21,7 +21,17 @@ jobs:
         docker build -t nextjs-app .
         docker save nextjs-app -o nextjs-app.tar
 
-    - name: Upload docker image tar to S3
+    - name: Package artifacts (tar + appspec.yml + scripts)
+      run: |
+        mkdir deploy-package
+        mv nextjs-app.tar deploy-package/
+        cp appspec.yml deploy-package/
+        cp -r scripts/ deploy-package/
+        cd deploy-package
+        zip -r ../nextjs-app.zip .
+        cd ..
+
+    - name: Upload ZIP to S3
       uses: jakejarvis/s3-sync-action@master
       with:
         args: --acl private --follow-symlinks
@@ -31,7 +41,6 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ap-northeast-2
         SOURCE_DIR: './'
-        
 
 
     - name: Trigger CodeDeploy (CLI)
