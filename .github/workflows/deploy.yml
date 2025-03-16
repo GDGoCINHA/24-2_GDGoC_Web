@@ -1,27 +1,38 @@
-name: Deploy to EC2
+name: CI/CD Pipeline with CodeDeploy
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Deploy to EC2 via SSH
-      uses: appleboy/ssh-action@v1.0.0
+    - name: Zip project
+      run: zip -r app.zip . -x "*.git*"
+
+    - name: Upload to S3
+      uses: jakejarvis/s3-sync-action@master
       with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          cd /home/ubuntu/gdgoc-web
-          git pull origin master
-          npm install
-          npm run build
-          pm2 restart ecosystem.config.js
+        args: --acl private --follow-symlinks
+      env:
+        AWS_S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-northeast-2
+        SOURCE_DIR: './'
+
+    - name: Trigger CodeDeploy
+      uses: webfactory/create-aws-codedeploy-deployment@v0.4.0
+      with:
+        application-name: gdgoc-fe-app
+        deployment-group: gdgoc-fe-dg
+        deployment-description: "Auto deploy triggered"
+        bucket: ${{ secrets.S3_BUCKET }}
+        bundle: app.zip
+        region: ap-northeast-2
