@@ -16,14 +16,11 @@ jobs:
     - name: Login to DockerHub (Optional)
       run: echo "Skipping DockerHub login since we're saving as tar."
 
-    # - name: Docker Build
-    #   run: |
-    #     docker build -t nextjs-app .
-    #     docker save nextjs-app -o nextjs-app.tar
 
-    - name: Check .next after build
+    - name: Docker Build + Save as tar + .next 확인
       run: |
         docker build -t nextjs-app .
+        docker save nextjs-app -o nextjs-app.tar
         docker run --rm --entrypoint "" nextjs-app ls -al /app/.next || echo ".next not found"
 
 
