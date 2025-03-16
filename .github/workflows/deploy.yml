@@ -3,7 +3,7 @@ name: CI/CD Pipeline with CodeDeploy
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
