@@ -30,7 +30,11 @@ jobs:
       run: |
         cp scripts/deploy.sh ./deploy.sh
         echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
-        zip -r deploy.zip .env docker-compose.yml deploy.sh appspec.yml
+
+        zip -r deploy.zip .env docker-compose.yml deploy.sh appspec.yml \
+            Dockerfile package.json package-lock.json next.config.mjs \
+            pages public .next
+
 
 
     - name: Configure AWS credentials

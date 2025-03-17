@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 cd /home/ubuntu/gdgoc-fe-app
 
 # Docker & Docker Compose가 설치되어 있는지 확인
