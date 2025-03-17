@@ -41,8 +41,8 @@ jobs:
 
 
     - name: Upload Deployment Package to S3
-        run: |
-          aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy.zip
+      run: |
+        aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy.zip
 
 
     - name: Trigger CodeDeploy (CLI)
