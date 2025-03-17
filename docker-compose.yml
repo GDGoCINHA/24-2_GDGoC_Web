@@ -10,7 +10,7 @@ services:
     environment:
       NODE_ENV: production
     volumes:
-      - .:/gdgoc-fe-app  # 코드 변경 사항을 반영하려면 필요
-    working_dir: /gdgoc-fe-app
+      - .:/app  # 코드 변경 사항을 반영하려면 필요
+    working_dir: /app
     command: "npm run start"
 
