@@ -40,7 +40,7 @@ jobs:
         aws configure set region ${{ secrets.AWS_REGION }}
 
 
-    - - name: Upload Deployment Package to S3
+    - name: Upload Deployment Package to S3
         run: |
           aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy.zip
 
