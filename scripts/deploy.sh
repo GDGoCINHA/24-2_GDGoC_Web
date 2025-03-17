@@ -1,18 +1,36 @@
 #!/bin/bash
+#!/bin/bash
+cd /home/ubuntu/gdgoc-fe-app
 
-cd /home/ubuntu/app
+# Docker & Docker Compose가 설치되어 있는지 확인
+if ! [ -x "$(command -v docker)" ]; then
+  echo "Docker가 설치되어 있지 않습니다. 설치 중..."
+  sudo apt update
+  sudo apt install -y docker.io
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  echo "Docker 설치 완료"
+fi
 
-# S3에서 이미지 다운로드
-aws s3 cp s3://gdgoc-fe-app/nextjs-app.tar nextjs-app.tar
+if ! [ -x "$(command -v docker-compose)" ]; then
+  echo "Docker Compose가 설치되어 있지 않습니다. 설치 중..."
+  sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+  echo "Docker Compose 설치 완료"
+fi
 
-# 기존 컨테이너 종료 및 삭제
-docker stop nextjs-app || true
-docker rm nextjs-app || true
+# 기존 컨테이너 중지 및 삭제
+docker-compose down
 
-# 도커 이미지 로드 및 실행
-docker load -i nextjs-app.tar
+# 사용되지 않는 컨테이너, 이미지, 네트워크, 볼륨 정리
+docker system prune -af
 
-docker run -d \
-  --name nextjs-app \
-  -p 3000:3000 \
-  nextjs-app
+# 불필요한 Docker 볼륨도 정리 (옵션)
+docker volume prune -f
+
+# 최신 이미지 가져오기
+export $(grep -v '^#' .env | xargs)
+docker pull ${DOCKER_HUB_USERNAME}/gdgoc-fe-app:latest
+
+# 컨테이너 실행
+docker-compose --env-file .env up -d
