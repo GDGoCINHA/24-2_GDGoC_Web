@@ -11,6 +11,8 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+RUN ls -l /app
+
 # 2단계: 실행 환경
 FROM node:18
 
