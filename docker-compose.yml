@@ -10,7 +10,7 @@ services:
     environment:
       NODE_ENV: production
     volumes:
-      - .:/app  # 코드 변경 사항을 반영하려면 필요
-      - /app/node_modules  # 호스트와 컨테이너 간 충돌 방지
-    working_dir: /app
-    command: "npm start"  # Next.js 프로덕션 서버 실행
+      - .:/gdgoc-fe-app  # 코드 변경 사항을 반영하려면 필요
+    working_dir: /gdgoc-fe-app
+    command: "npm run start"
+
