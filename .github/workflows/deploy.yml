@@ -23,6 +23,7 @@ jobs:
     - name: Build and Push Docker Image
       run: |
         docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest .
+        ls -l /app/
         docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest
 
       
