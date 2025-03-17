@@ -2,10 +2,10 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ubuntu/app
+    destination: /home/ubuntu/gdgoc-fe-app
 
 hooks:
   AfterInstall:
     - location: scripts/deploy.sh
       timeout: 300
-      runas: ubuntu
+      runas: root
