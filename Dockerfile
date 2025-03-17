@@ -1,6 +1,8 @@
 # 1단계: 빌드 환경
 FROM node:18 AS builder
 
+WORKDIR /app
+
 # package.json과 package-lock.json을 먼저 복사하고, npm install 실행
 COPY package.json package-lock.json ./
 RUN npm install
