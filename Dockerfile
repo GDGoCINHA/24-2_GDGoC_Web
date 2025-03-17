@@ -9,10 +9,13 @@ RUN npm install
 
 # 이후 전체 파일 복사
 COPY . .
+
+# 동적 배포를 위한 빌드만 실행 (export 없이)
 RUN npm run build
 
 # 빌드 결과물 확인
 RUN ls -la /app
+RUN ls -la /app/.next || echo ".next 디렉토리가 없습니다"
 
 # 2단계: 실행 환경
 FROM node:18
@@ -23,9 +26,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# 빌드 결과물 위치 확인 후 복사 (.next 또는 out 디렉토리)
-COPY --from=builder /app/.next ./.next || true
-COPY --from=builder /app/out ./out || true
+# 빌드된 결과물 가져오기
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
@@ -36,5 +38,5 @@ RUN ls -la /app
 
 EXPOSE 3000
 
-# package.json에 명시된 start 스크립트 실행
+# Next.js 서버 시작
 CMD ["npm", "run", "start"]
