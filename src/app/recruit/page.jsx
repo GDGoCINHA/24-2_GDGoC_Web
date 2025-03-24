@@ -42,7 +42,7 @@ export default function Recruit() {
         try {
           setLoading(true)
           const response = await axios.post("https://www.gdgocinha.site/apply", formattedData);
-          router.push("/recruit/submitted");
+          router.push("/recruit/submit");
         } catch (error) {
           if (error.response && error.response.status === 500) {
             alert("이미 가입된 회원입니다.");
