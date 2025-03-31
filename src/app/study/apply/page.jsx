@@ -60,49 +60,55 @@ export default function ApplyPage() {
                     {/* Header */}
                     <Header />
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
-                        <h1 className="text-white text-xl text-left mobile:text-center">
-                            {studyTitle ? `${studyTitle} 스터디 상세 정보` : '스터디 정보 없음'}
+                        <h1 className="text-white text-2xl text-left mobile:text-center">
+                            {studyTitle} 스터디 신청하기
                         </h1>
                     </header>
 
                     <div className="flex justify-center items-center mt-10 bg-black text-white">
                         <div className="w-full max-w-2xl px-6">
-                            {/* Form */}
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <label className="block text-lg font-semibold">
-                                    자기소개 <span className="text-red-500">*</span>
-                                </label>
-                                <textarea
-                                    name="intro"
-                                    value={formData.intro}
-                                    onChange={handleChange}
-                                    placeholder="자기 소개 및 활동 포부를 적어주세요."
-                                    className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
-                                    required
-                                />
+                            {studyContent.length > 0 ? (
+                                <>
+                                    {/* Form */}
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        <label className="block text-lg font-semibold">
+                                            자기소개 <span className="text-red-500">*</span>
+                                        </label>
+                                        <textarea
+                                            name="intro"
+                                            value={formData.intro}
+                                            onChange={handleChange}
+                                            placeholder="자기 소개 및 활동 포부를 적어주세요."
+                                            className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
+                                            required
+                                        />
 
-                                <label className="block text-lg font-semibold">
-                                    활동 가능한 시간대 <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    name="avaTime"
-                                    value={formData.avaTime}
-                                    onChange={handleChange}
-                                    placeholder="활동 가능한 시간대를 모두 적어주세요. (ex. 월 17-19시, 화 15시~)"
-                                    className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
-                                    required
-                                />
+                                        <label className="block text-lg font-semibold">
+                                            활동 가능한 시간대 <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            name="avaTime"
+                                            value={formData.avaTime}
+                                            onChange={handleChange}
+                                            placeholder="활동 가능한 시간대를 모두 적어주세요. (ex. 월 17-19시, 화 15시~)"
+                                            className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
+                                            required
+                                        />
 
-                                {/* 제출 버튼 */}
-                                <div className="flex justify-center pt-4">
-                                    <Button
-                                        type="submit"
-                                        className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
-                                    >
-                                        제출하기
-                                    </Button>
-                                </div>
-                            </form>
+                                        {/* 제출 버튼 */}
+                                        <div className="flex justify-center pt-4">
+                                            <Button
+                                                type="submit"
+                                                className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
+                                            >
+                                                제출하기
+                                            </Button>
+                                        </div>
+                                    </form>
+                                </>
+                            ) : (
+                                <h1 className="text-center text-xl">스터디 신청 정보를 불러올 수 없습니다.</h1>
+                            )}
                         </div>
                     </div>
                 </>
