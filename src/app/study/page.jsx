@@ -6,32 +6,72 @@ import {
     Button
 } from '@nextui-org/react';
 import Header from './Header';
-import StudyCard from './StudyPanel';
+import StudyCard from './StudyCard';
 import { IoAdd } from 'react-icons/io5';
-import studyData from './studyData'; // Import the studyData.js
+import axios from 'axios';
+import studyData from './studyData'; // temp data
 
 export default function Page() {
-    const [isLoading, setIsLoading] = useState(true); // Start with loading state
-    const [studyContent, setStudyContent] = useState([]); // Empty state for studyContent
-    const [courseType, setCourseType] = useState('official'); // Default to 'official' for "정규"
+    const [isLoading, setIsLoading] = useState(true);
+    const [studyContent, setStudyContent] = useState([]);
+    const [estType, setEstType] = useState('PERSONAL');
 
+    // API 호출
     useEffect(() => {
-        // Mimic loading delay
-        setTimeout(() => {
-            setStudyContent(studyData.studyCards); // Set the studyData after the delay
-            setIsLoading(false); // Stop the loading spinner
-        }, 1000); // Simulate delay
+        const fetchStudyData = async () => {
+            try {
+                const response = await axios.get('https://gdgocinha.site/studyData');
+                setStudyContent(response.data.studies);
+                setIsLoading(false);
+            } catch (error) {
+                //console.error('Error fetching study data');
+                setStudyContent(studyData.studies);
+                setIsLoading(false);
+            }
+        };
+
+        fetchStudyData();
     }, []);
 
-    // Function to handle course type selection
-    const handleCourseTypeChange = (type) => {
-        setCourseType(type);
+    // GDGOC or PERSONAL
+    const handleEstChange = (type) => {
+        setEstType(type);
     };
 
-    // Function to filter study content based on course type
-    const filteredStudyContent = courseType
-        ? studyContent.filter((study) => study.course === courseType)
+    // Filter study based on estType
+    const filterStudy = estType
+        ? studyContent.filter((study) => study.establisher === estType)
         : studyContent;
+
+    const renderStudySection = (status, title, intro) => {
+        return (
+            <>
+                <div className="m-auto mt-5">
+                    <h2 className="text-white text-[18px] font-bold text-left">{title}</h2>
+                    <p className="text-white text-sm text-left">{intro}</p>
+                </div>
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {filterStudy.map((study, index) => {
+                        if (study.status === status) {
+                            return (
+                                <div key={index}>
+                                    <StudyCard
+                                        key={study.id}
+                                        title={study.title}
+                                        description={study.simIntro}
+                                        status={study.status}
+                                        reqEnd={study.reqEnd}
+                                        icon={study.thumbnail}
+                                    />
+                                </div>
+                            );
+                        }
+                        return null;
+                    })}
+                </div>
+            </>
+        );
+    };
 
     return (
         <>
@@ -43,29 +83,29 @@ export default function Page() {
                 <div>
                     {/* Header */}
                     <Header />
-                    <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px]">
-                        <h1 className="text-white text-left">
+                    <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
+                        <h1 className="text-white text-xl text-left mobile:text-center">
                             GDSC Inha에서는 높은 수준의 멤버들과
                         </h1>
-                        <h1 className="text-white text-left">
-                            다양한 스터디를 진행하고 있습니다(예시)
+                        <h1 className="text-white text-xl text-left mobile:text-center">
+                            다양한 스터디를 진행하고 있습니다.
                         </h1>
                     </header>
 
                     {/* Course Type Selection */}
-                    <div className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px]">
+                    <div className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:mt-14">
                         <p className="text-white text-right pt-[3px]">
                             <span
-                                className={courseType === 'official' ? 'font-bold' : ''}
-                                onClick={() => handleCourseTypeChange('official')}
+                                className={estType === 'GDGOC' ? 'font-bold' : ''}
+                                onClick={() => handleEstChange('GDGOC')}
                                 style={{ cursor: 'pointer' }}
                             >
                                 정규
                             </span>
                             {" | "}
                             <span
-                                className={courseType === 'personal' ? 'font-bold' : ''}
-                                onClick={() => handleCourseTypeChange('personal')}
+                                className={estType === 'PERSONAL' ? 'font-bold' : ''}
+                                onClick={() => handleEstChange('PERSONAL')}
                                 style={{ cursor: 'pointer' }}
                             >
                                 개인개설
@@ -74,28 +114,21 @@ export default function Page() {
                     </div>
 
                     <div className="relative flex justify-center items-center space-y-4 mobile:px-[24px]">
-                        {/* Study Cards */}
-                        <div className="w-full max-w-4xl">
-                            {filteredStudyContent.map((study, index) => (
-                                <div key={index} className="m-auto mt-5">
-                                    <h2 className="text-white font-bold text-left">{study.title}</h2>
-                                    <p className="text-white text-left">{study.description}</p>
+                        {/* 정규 카테고리 */}
+                        {estType === 'GDGOC' && (
+                            <div className="w-full max-w-4xl">
+                                {renderStudySection("RECRUITING", '현재 모집 중인 스터디', '마감일 확인하시고 원하시는 스터디에 지원하세요!')}
+                                {renderStudySection("RECRUITED", '지난 스터디 구경하기', 'GDGoC에서 진행했던 스터디들을 구경해보세요!')}
+                            </div>
+                        )}
 
-                                    {/* Study Card Area */}
-                                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {study.studyCards.map((card, cardIndex) => (
-                                            <StudyCard
-                                                key={cardIndex}
-                                                title={card.title}
-                                                description={card.description}
-                                                status={card.status}
-                                                icon={card.icon}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        {/* 개인개설 카테고리 */}
+                        {estType === 'PERSONAL' && (
+                            <div className="w-full max-w-4xl">
+                                {renderStudySection("RECRUITING", '현재 모집 중인 스터디', '마감일 확인하시고 원하시는 스터디에 지원하세요!')}
+                                {renderStudySection("RECRUITED", '지난 스터디 구경하기', 'GDGoC에서 진행했던 스터디들을 구경해보세요!')}
+                            </div>
+                        )}
                     </div>
 
                     {/* Create New Study */}
