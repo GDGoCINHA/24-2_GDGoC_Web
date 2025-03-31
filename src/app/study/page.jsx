@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import {
     Image,
@@ -13,6 +14,7 @@ import axios from 'axios';
 import studyData from './studyData'; // temp data
 
 export default function Page() {
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [studyContent, setStudyContent] = useState([]);
     const [estType, setEstType] = useState('PERSONAL');
@@ -81,7 +83,7 @@ export default function Page() {
                     <Spinner />
                 </div>
             ) : (
-                <div>
+                <>
                     {/* Header */}
                     <Header />
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
@@ -93,7 +95,7 @@ export default function Page() {
                         </h1>
                     </header>
 
-                    {/* Course Type Selection */}
+                    {/* Est Type Selection */}
                     <div className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:mt-14">
                         <p className="text-white text-right pt-[3px]">
                             <span
@@ -135,19 +137,19 @@ export default function Page() {
                     {/* Create New Study */}
                     <div className="fixed bottom-6 right-6">
                         <Button
-                            auto
                             color="danger"
-                            iconRight={<IoAdd size={24} />}
+                            onPress={() => router.push(`/study/createStudy`)}
                             className="rounded-full p-0 shadow-lg flex items-center justify-center w-14 h-14"
+                            isIconOnly
                         >
                             <Image
-                                src="/src/images/google_icon.png"
                                 alt="icon"
+                                src="/src/images/google_icon.png"
                                 className="w-8 h-8 object-contain"
                             />
                         </Button>
                     </div>
-                </div>
+                </>
             )}
         </>
     );
