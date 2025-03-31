@@ -19,7 +19,7 @@ export default function ApplyPage() {
     useEffect(() => {
         const fetchStudyData = async () => {
             try {
-                const response = await axios.get(`https://gdgocinha.site/studyData`);
+                const response = await axios.get(`https://temp.gdgocinha.site/studyData`);
                 setStudyContent(response.data.studies);
             } catch (error) {
                 // console.error('Error fetching study data', error);

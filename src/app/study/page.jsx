@@ -23,7 +23,7 @@ export default function Page() {
     useEffect(() => {
         const fetchStudyData = async () => {
             try {
-                const response = await axios.get('https://gdgocinha.site/studyData');
+                const response = await axios.get('https://temp.gdgocinha.site/studyData');
                 setStudyContent(response.data.studies);
                 setIsLoading(false);
             } catch (error) {
