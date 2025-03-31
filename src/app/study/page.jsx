@@ -96,7 +96,7 @@ export default function Page() {
                     <div className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:mt-14">
                         <p className="text-white text-right pt-[3px]">
                             <span
-                                className={estType === 'GDGOC' ? 'font-bold' : ''}
+                                className={`cursor-pointer ${estType === 'GDGOC' ? 'font-bold' : ''}`}
                                 onClick={() => handleEstChange('GDGOC')}
                                 style={{ cursor: 'pointer' }}
                             >
@@ -104,7 +104,7 @@ export default function Page() {
                             </span>
                             {" | "}
                             <span
-                                className={estType === 'PERSONAL' ? 'font-bold' : ''}
+                                className={`cursor-pointer ${estType === 'PERSONAL' ? 'font-bold' : ''}`}
                                 onClick={() => handleEstChange('PERSONAL')}
                                 style={{ cursor: 'pointer' }}
                             >
