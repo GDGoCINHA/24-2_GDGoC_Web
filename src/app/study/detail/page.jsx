@@ -6,7 +6,7 @@ import Header from '../Header';
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import studyData from "../studyData";
-import {Button, Spinner} from "@nextui-org/react";
+import {Image, Button, Spinner} from "@nextui-org/react";
 
 export default function DetailPage() {
     const router = useRouter();
@@ -17,11 +17,10 @@ export default function DetailPage() {
     const [isRecruiting, setIsRecruiting] = useState(false);
 
     // API 호출
-    // 없는 스터디 경우 예외 처리 필요
     useEffect(() => {
         const fetchStudyData = async () => {
             try {
-                const response = await axios.get(`https://gdgocinha.site/studyData`);
+                const response = await axios.get(`https://temp.gdgocinha.site/studyData`);
                 setStudyContent(response.data.studies);
             } catch (error) {
                 // console.error('Error fetching study data', error);
@@ -59,43 +58,76 @@ export default function DetailPage() {
             ) : (
                 <>
                     {/* Header */}
-                        <Header />
-                        <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
-                            <h1 className="text-white text-xl text-left mobile:text-center">
-                                {studyTitle} 스터디 상세 정보
-                            </h1>
-                        </header>
+                    <Header />
+                    <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
+                        <h1 className="text-white text-2xl text-left mobile:text-center">
+                            {studyTitle} 스터디 상세 정보
+                        </h1>
+                    </header>
 
-                        <div className="relative flex flex-col select-none text-white pt-[35px] px-[96px] mobile:px-[24px]">
-                            <h2>스터디 장 정보</h2>
-                            <p>이름: 이재아</p>
-                            <p>학과: 컴퓨터공학과</p>
-                            <p>학번: 12243954</p>
-                            <p>전화번호: 010-3271-2218</p>
-                            <p>학년: 2</p>
+                    <div className="relative flex flex-col items-center justify-center w-full px-[96px] mobile:px-[24px] py-8">
+                        <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
+                            {/* 중앙에 흐리게 처리된 배경 이미지 */}
+                            <div className="absolute inset-0 flex justify-center pointer-events-none">
+                                {studyContent.length > 0 && studyContent[0].thumbnail ? (
+                                    <div className="h-3/5 opacity-20 mt-2 items-center justify-center">
+                                        <Image
+                                            src={studyContent[0].thumbnail}
+                                            alt={`${studyTitle} 배경`}
+                                            width="50"
+                                            height="50"
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="h-3/5 opacity-20 mt-4 flex items-center justify-center">
+                                        <Image
+                                            src="/src/images/GDGoC_icon.pngç"
+                                            alt="gdgocIcon 배경"
+                                            width="50"
+                                            height="50"
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="text-white relative z-10">
+                                {studyContent.length > 0 ? (
+                                    <>
+                                        <div className="mb-6">
+                                            <p className="text-lg">{studyContent[0].simIntro}</p>
+                                        </div>
+
+                                        <div className="mb-6 border-l-2 border-gray-500 pl-4">
+                                            <p className="mb-2">모집 기간: {studyContent[0].reqStart} ~ {studyContent[0].reqEnd}</p>
+                                            <p>활동 기간: {studyContent[0].actStart} ~ {studyContent[0].actEnd}</p>
+                                        </div>
+
+                                        <div className="mb-6">
+                                            <p className="mb-4">{studyContent[0].actIntro}</p>
+                                        </div>
+
+                                        <div className="bg-[#2a2a2a] p-4 rounded">
+                                            <p className="mb-2">장소: {studyContent[0].expPlace}</p>
+                                            <p>진행 시간: {studyContent[0].expTime}</p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <p>스터디 정보를 불러올 수 없습니다.</p>
+                                )}
+                            </div>
                         </div>
-                        <hr className="justify-self-center w-[60%] select-none text-white pt-[35px] px-[96px]" />
-                        <div className="relative flex flex-col select-none text-white pt-[35px] px-[96px] mobile:px-[24px]">
-                            <h2>스터디 정보</h2>
-                            {studyContent.length > 0 ? (
-                                <>
-                                    <p>모임 이름: {studyTitle}</p>
-                                    <p>한 줄 소개: {studyContent[0].simIntro}</p>
-                                    <p>모집기간: {studyContent[0].reqStart} ~ {studyContent[0].reqEnd}</p>
-                                    <p>활동 기간: 시작시간 ~ 마감시간</p>
-                                    <p>정기 모임 예상 기간: 매주 월요일 오후 7시</p>
-                                    <p>정기 모임 예상 장소: 동방</p>
-                                    <p>활동 소개: {studyContent[0].actIntro}</p>
-                                    <p>활동 활동 활동 활동 활동 활동 활동 활동 활동 활동 활동 활동 활동 활동 활동 </p>
-                                </>
-                            ) : (
-                                <p>스터디 정보를 불러올 수 없습니다.</p>
-                            )}
-                        </div>
-                    <div className="flex justify-center">
+                    </div>
+
+                    {/* 제출 버튼 */}
+                    <div className="flex justify-center mt-4">
                         {isRecruiting && (
-                            <Button onPress={() => router.push(`/study/apply?title=${studyContent[0].title}`)} radius="full" className="mt-[40px] w-80 h-14 mobile:w-40 mobile:h-14 mobile:text-xl bg-gradient-to-r from-[#EA4335] to-[#FF6E62] text-white text-xl relative">
-                                <span className="font-semibold">지원하기</span>
+                            <Button
+                                onPress={() => router.push(`/study/apply?title=${studyContent[0].title}`)}
+                                className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
+                            >
+                                신청하기
                             </Button>
                         )}
                     </div>
