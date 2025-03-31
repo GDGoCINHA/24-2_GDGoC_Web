@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import {
+    Image,
     Spinner,
     Button
 } from '@nextui-org/react';
@@ -139,7 +140,7 @@ export default function Page() {
                             iconRight={<IoAdd size={24} />}
                             className="rounded-full p-0 shadow-lg flex items-center justify-center w-14 h-14"
                         >
-                            <img
+                            <Image
                                 src="/src/images/google_icon.png"
                                 alt="icon"
                                 className="w-8 h-8 object-contain"
