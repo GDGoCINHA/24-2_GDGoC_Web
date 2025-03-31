@@ -15,8 +15,10 @@ export default function DetailPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [studyContent, setStudyContent] = useState([]);
     const [isRecruiting, setIsRecruiting] = useState(false);
+    const [leadDetail, setLeadDetail] = useState(false);
 
     // API 호출
+    // 없는 스터디 경우 예외 처리 필요
     useEffect(() => {
         const fetchStudyData = async () => {
             try {
@@ -34,19 +36,18 @@ export default function DetailPage() {
         fetchStudyData();
     }, [studyTitle]);
 
-    // studyContent 변경 시 모집 상태 업데이트
     useEffect(() => {
-        if (studyContent.length > 0 && studyContent[0].status === "RECRUITING") {
-            setIsRecruiting(true);
-        } else {
-            setIsRecruiting(false);
-        }
+        setIsRecruiting(studyContent.length > 0 && studyContent[0].status === "RECRUITING");
     }, [studyContent]);
 
     const handleClick = () => {
         if (studyContent.length > 0) {
             router.push(`/study/apply?title=${studyContent[0].title}`);
         }
+    };
+
+    const toggleLeadDetail = () => {
+        setLeadDetail(!leadDetail);
     };
 
     return (
@@ -82,7 +83,7 @@ export default function DetailPage() {
                                 ) : (
                                     <div className="h-3/5 opacity-20 mt-4 flex items-center justify-center">
                                         <Image
-                                            src="/src/images/GDGoC_icon.pngç"
+                                            src="/src/images/GDGoC_icon.png"
                                             alt="gdgocIcon 배경"
                                             width="50"
                                             height="50"
@@ -108,13 +109,34 @@ export default function DetailPage() {
                                             <p className="mb-4">{studyContent[0].actIntro}</p>
                                         </div>
 
-                                        <div className="bg-[#2a2a2a] p-4 rounded">
+                                        <div className="bg-[#1f1f1f] p-4 rounded">
                                             <p className="mb-2">장소: {studyContent[0].expPlace}</p>
                                             <p>진행 시간: {studyContent[0].expTime}</p>
                                         </div>
+                                        <div className="mt-6">
+                                            <Button
+                                                onPress={toggleLeadDetail}
+                                                className="items-center justify-center bg-[#1d1d1d] rounded text-left"
+                                            >
+                                                <span className="ml-2 text-white transition-transform duration-200" style={{ transform: leadDetail ? 'rotate(90deg)' : 'rotate(0)' }}>
+                                                    {'▶'}
+                                                </span>
+                                                <p className="text-white text-sm">스터디장 이재아 (정보 펼치기)</p>
+                                            </Button>
+
+                                            {leadDetail && (
+                                                <div className="mt-2 p-4 bg-[#1a1a1a] rounded border border-gray-700 animate-fadeIn">
+                                                    <p className="mb-2">이름: 이재아</p>
+                                                    <p className="mb-2">학번: 12243954</p>
+                                                    <p className="mb-2">전공: 컴퓨터공학과</p>
+                                                    <p className="mb-2">학년: 2학년</p>
+                                                    <p className="mb-2">연락처: 010-1234-1234</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </>
                                 ) : (
-                                    <p>스터디 정보를 불러올 수 없습니다.</p>
+                                    <h1 className="text-center text-xl">스터디 정보를 불러올 수 없습니다.</h1>
                                 )}
                             </div>
                         </div>
