@@ -28,8 +28,6 @@ const StudyCard = ({ title, description, status, reqEnd, icon }) => {
         }
     };
 
-    console.log(status);
-
     const handleClick = () => {
         router.push(`/study/detail?title=${title}`);
     };
@@ -42,7 +40,7 @@ const StudyCard = ({ title, description, status, reqEnd, icon }) => {
             <div className="w-72 mobile:w-[65vw]">
                 <h3 className="text-white text-xl font-bold">{title}</h3>
                 <p className="text-white text-sm text-wrap">{description}</p>
-                <p className="text-yellow-500 text-[12px] text-wrap">마감: {reqEnd}</p>
+                <p className="text-yellow-500 text-[12px] mt-4 text-wrap">마감: {reqEnd}</p>
             </div>
             <div className="flex items-center space-x-2">
                 <Chip className={`capitalize ${getStatusStyle(status)}`} size="sm" variant="flat">
