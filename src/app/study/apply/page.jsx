@@ -97,7 +97,7 @@ export default function ApplyPage() {
                                 <div className="flex justify-center pt-4">
                                     <Button
                                         type="submit"
-                                        className="w-full max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
+                                        className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
                                     >
                                         제출하기
                                     </Button>
