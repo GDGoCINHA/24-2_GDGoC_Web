@@ -7,11 +7,10 @@ import {
     Spinner,
     Button
 } from '@nextui-org/react';
+import axios from 'axios';
 import Header from './Header';
 import StudyCard from './StudyCard';
-import { IoAdd } from 'react-icons/io5';
-import axios from 'axios';
-import studyData from './studyData'; // temp data
+import studyListData from './studyListData'; // temp data
 
 export default function Page() {
     const router = useRouter();
@@ -23,13 +22,13 @@ export default function Page() {
     useEffect(() => {
         const fetchStudyData = async () => {
             try {
-                const response = await axios.get('https://temp.gdgocinha.site/studyData');
-                setStudyContent(response.data.studies);
+                const response = await axios.get('https://temp.gdgocinha.site/studyData?page=1');
+                setStudyContent(response.data.studyList);
                 setIsLoading(false);
             } catch (error) {
                 //console.error('Error fetching study data');
-                setStudyContent(studyData.studies);
-                setIsLoading(false);
+                setStudyContent(studyListData.data.studyList); // remove when deploy
+                setIsLoading(false); // remove when deploy
             }
         };
 
@@ -43,7 +42,7 @@ export default function Page() {
 
     // Filter study based on estType
     const filterStudy = estType
-        ? studyContent.filter((study) => study.establisher === estType)
+        ? studyContent.filter((study) => study.type === estType)
         : studyContent;
 
     const renderStudySection = (status, title, intro) => {
@@ -58,13 +57,14 @@ export default function Page() {
                         if (study.status === status) {
                             return (
                                 <div key={index}>
+                                    {/* Check study API doc before deploy*/}
                                     <StudyCard
                                         key={study.id}
                                         title={study.title}
-                                        description={study.simIntro}
+                                        description={study.simpleIntroduce}
                                         status={study.status}
-                                        reqEnd={study.reqEnd}
-                                        icon={study.thumbnail}
+                                        reqEnd={study.recruitEndDate}
+                                        icon={study.imagePath}
                                     />
                                 </div>
                             );
@@ -101,7 +101,6 @@ export default function Page() {
                             <span
                                 className={`cursor-pointer ${estType === 'GDGOC' ? 'font-bold' : ''}`}
                                 onClick={() => handleEstChange('GDGOC')}
-                                style={{ cursor: 'pointer' }}
                             >
                                 정규
                             </span>
@@ -109,7 +108,6 @@ export default function Page() {
                             <span
                                 className={`cursor-pointer ${estType === 'PERSONAL' ? 'font-bold' : ''}`}
                                 onClick={() => handleEstChange('PERSONAL')}
-                                style={{ cursor: 'pointer' }}
                             >
                                 개인개설
                             </span>
