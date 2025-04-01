@@ -12,7 +12,7 @@ import Header from './Header';
 import StudyCard from './StudyCard';
 import studyListData from './studyListData'; // temp data
 
-export default function Page() {
+export default function Study() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [studyContent, setStudyContent] = useState([]);
