@@ -191,7 +191,7 @@ export default function DetailPage() {
                                 </Button>
                             ) : (
                                 <Button
-                                    onPress={() => router.push(`/study/apply?title=${studyContent.title}`)}
+                                    onPress={() => handleClick()}
                                     className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
                                 >
                                     신청하기
