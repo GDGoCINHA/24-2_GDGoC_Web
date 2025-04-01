@@ -45,6 +45,20 @@ export default function Page() {
         ? studyContent.filter((study) => study.type === estType)
         : studyContent;
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const formatter = new Intl.DateTimeFormat('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+        const formattedDate = formatter.format(date);
+        return formattedDate.replace(',', '');
+    };
+
     const renderStudySection = (status, title, intro) => {
         return (
             <>
@@ -63,7 +77,7 @@ export default function Page() {
                                         title={study.title}
                                         description={study.simpleIntroduce}
                                         status={study.status}
-                                        reqEnd={study.recruitEndDate}
+                                        reqEnd={study.recruitEndDate ? formatDate(study.recruitEndDate) : '정보 없음'}
                                         icon={study.imagePath}
                                     />
                                 </div>
