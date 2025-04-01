@@ -1,38 +1,57 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
-import studyData from "../studyData";
+import React, { useState, useEffect } from 'react';
 import { Input, Button, Textarea, Spinner } from '@nextui-org/react';
-import Header from '@/app/study/Header';
+import axios from 'axios';
+import Header from '../Header';
+import studyListData from "../studyListData";
+import studyDetailData from "@/app/study/studyDetailData";
 
 export default function ApplyPage() {
     const router = useRouter();
     const urlParams = useSearchParams();
     const studyTitle = urlParams.get('title');
     const [isLoading, setIsLoading] = useState(true);
-    const [studyContent, setStudyContent] = useState([]);
+    const [studyContent, setStudyContent] = useState(null);
 
     // API 호출
-    // 없는 스터디 경우 예외 처리 필요
+    // 이미 신청 받았을 경우 예외 처리 필요
     useEffect(() => {
         const fetchStudyData = async () => {
             try {
-                const response = await axios.get(`https://temp.gdgocinha.site/studyData`);
-                setStudyContent(response.data.studies);
-            } catch (error) {
-                // console.error('Error fetching study data', error);
-                const data = studyData.studies.filter(study => study.title === studyTitle);
-                setStudyContent(data);
-            } finally {
+                if (!studyTitle) {
+                    //throw new Error('Study title is missing');
+                    router.push(`/study`);
+                }
+
+                const response = await axios.get(`https://temp.gdgocinha.site/studyData?title=${studyTitle}`);
+
+                if (response.status === 200 && response.data) {
+                    setStudyContent(response.data);
+                } else {
+                    setStudyContent(null);
+                }
                 setIsLoading(false);
+            } catch (error) {
+                //console.error('Error fetching study data:');
+
+                // remove when deploy
+                const data = studyDetailData.data.filter(study => study.title === studyTitle);
+                if (data.length > 0) {
+                    setStudyContent(data[0]);
+                } else {
+                    setStudyContent(null);
+                }
+
+                setIsLoading(false); // remove when deploy
             }
         };
 
         fetchStudyData();
     }, [studyTitle]);
 
+    // NEED EDIT
     const [formData, setFormData] = useState({
         intro: "",
         avaTime: "",
@@ -42,11 +61,12 @@ export default function ApplyPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // NEED EDIT
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);
         alert("신청이 완료!");
-        router.push('/study');
+        router.push(`/study/detail?title=${studyTitle}`);
     };
 
     return (
@@ -67,7 +87,7 @@ export default function ApplyPage() {
 
                     <div className="flex justify-center items-center mt-10 bg-black text-white">
                         <div className="w-full max-w-2xl px-6">
-                            {studyContent.length > 0 ? (
+                            {studyContent ? (
                                 <>
                                     {/* Form */}
                                     <form onSubmit={handleSubmit} className="space-y-6">
