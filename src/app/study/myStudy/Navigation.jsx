@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+
 export default function Navigation({ isAdminPage = false, currentMenu, onMenuClick }) {
     const myMenuItems = [
         { id: 'applyResult', label: '스터디 지원 결과' },

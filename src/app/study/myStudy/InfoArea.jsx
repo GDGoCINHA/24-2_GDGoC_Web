@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import ResultView from "./components/view/ApplyResult";
 import AttendanceView from "./components/view/Attendance";
 import WeeklyView from "./components/view/WeeklyInfo";
