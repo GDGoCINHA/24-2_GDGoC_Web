@@ -1,7 +1,7 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Chip } from '@nextui-org/react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 const StudyCard = ({ title, description, status, reqEnd, icon }) => {
     const router = useRouter();
