@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
         <meta property="og:site_name" content="GDGoC INHA" />
         <meta property="og:image" content="/logo.png" />
         <meta property="og:type" content="website" /> */}
-        <script src='https://unpkg.com/type-hangul' async></script>
+        <script src='https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js' async></script>
       </head>
       <body className={pretendard.className}>
         <NextUIProvider>
