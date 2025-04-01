@@ -1,53 +1,90 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
-import Header from '../Header';
-import React, {useEffect, useState} from "react";
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from "react";
+import { Image, Button, Spinner } from "@nextui-org/react";
 import axios from "axios";
-import studyData from "../studyData";
-import {Image, Button, Spinner} from "@nextui-org/react";
+import Header from '../Header';
+import studyDetailData from "../studyDetailData";
 
 export default function DetailPage() {
     const router = useRouter();
     const urlParams = useSearchParams();
     const studyTitle = urlParams.get('title');
     const [isLoading, setIsLoading] = useState(true);
-    const [studyContent, setStudyContent] = useState([]);
+    const [studyContent, setStudyContent] = useState(null);
     const [isRecruiting, setIsRecruiting] = useState(false);
     const [leadDetail, setLeadDetail] = useState(false);
+    const [isApplied, setIsApplied] = useState(false);
 
     // API 호출
-    // 없는 스터디 경우 예외 처리 필요
+    // 이미 신청 받았을 경우 신청 버튼 예외 처리 필요
     useEffect(() => {
         const fetchStudyData = async () => {
             try {
-                const response = await axios.get(`https://temp.gdgocinha.site/studyData`);
-                setStudyContent(response.data.studies);
-            } catch (error) {
-                // console.error('Error fetching study data', error);
-                const data = studyData.studies.filter(study => study.title === studyTitle);
-                setStudyContent(data);
-            } finally {
+                if (!studyTitle) {
+                    //throw new Error('Study title is missing');
+                    router.push(`/study`);
+                }
+
+                const response = await axios.get(`https://temp.gdgocinha.site/studyData?title=${studyTitle}`);
+
+                if (response.status === 200 && response.data) {
+                    setStudyContent(response.data);
+                } else {
+                    setStudyContent(null);
+                }
                 setIsLoading(false);
+            } catch (error) {
+                //console.error('Error fetching study data:');
+
+                // remove when deploy
+                const data = studyDetailData.data.filter(study => study.title === studyTitle);
+                if (data.length > 0) {
+                    setStudyContent(data[0]);
+                } else {
+                    setStudyContent(null);
+                }
+
+                setIsLoading(false); // remove when deploy
             }
         };
 
         fetchStudyData();
     }, [studyTitle]);
 
+    // 신청 버튼 예외 처리 위해서 유저가 신청 했는지 체크하기
+
     useEffect(() => {
-        setIsRecruiting(studyContent.length > 0 && studyContent[0].status === "RECRUITING");
+        if (studyContent) {
+            setIsRecruiting(studyContent.status === "RECRUITING");
+        } else {
+            setIsRecruiting(false);
+        }
     }, [studyContent]);
 
     const handleClick = () => {
-        if (studyContent.length > 0) {
-            router.push(`/study/apply?title=${studyContent[0].title}`);
+        if (studyContent) {
+            router.push(`/study/apply?title=${studyContent.title}`);
         }
     };
 
     const toggleLeadDetail = () => {
         setLeadDetail(!leadDetail);
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const formatter = new Intl.DateTimeFormat('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+        const formattedDate = formatter.format(date);
+        return formattedDate.replace(',', '');
     };
 
     return (
@@ -70,10 +107,10 @@ export default function DetailPage() {
                         <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
                             {/* 중앙에 흐리게 처리된 배경 이미지 */}
                             <div className="absolute inset-0 flex justify-center pointer-events-none">
-                                {studyContent.length > 0 && studyContent[0].thumbnail ? (
+                                {studyContent ? (
                                     <div className="h-3/5 opacity-20 mt-2 items-center justify-center">
                                         <Image
-                                            src={studyContent[0].thumbnail}
+                                            src={studyContent.imagePath}
                                             alt={`${studyTitle} 배경`}
                                             width="50"
                                             height="50"
@@ -94,24 +131,24 @@ export default function DetailPage() {
                             </div>
 
                             <div className="text-white relative z-10">
-                                {studyContent.length > 0 ? (
+                                {studyContent ? (
                                     <>
                                         <div className="mb-6">
-                                            <p className="text-lg">{studyContent[0].simIntro}</p>
+                                            <p className="text-lg">{studyContent.simpleIntroduce}</p>
                                         </div>
 
                                         <div className="mb-6 border-l-2 border-gray-500 pl-4">
-                                            <p className="mb-2">모집 기간: {studyContent[0].reqStart} ~ {studyContent[0].reqEnd}</p>
-                                            <p>활동 기간: {studyContent[0].actStart} ~ {studyContent[0].actEnd}</p>
+                                            <p className="mb-2">모집 기간: {studyContent.recruitStartDate ? formatDate(studyContent.recruitStartDate) : '정보 없음'} ~ {studyContent.recruitEndDate ? formatDate(studyContent.recruitEndDate) : '정보 없음'}</p>
+                                            <p>활동 기간: {studyContent.activityStartDate ? formatDate(studyContent.activityStartDate) : '정보 없음'} ~ {studyContent.activityEndDate ? formatDate(studyContent.activityEndDate) : '정보 없음'}</p>
                                         </div>
 
                                         <div className="mb-6">
-                                            <p className="mb-4">{studyContent[0].actIntro}</p>
+                                            <p className="mb-4">{studyContent.activityIntroduce}</p>
                                         </div>
 
                                         <div className="bg-[#1f1f1f] p-4 rounded">
-                                            <p className="mb-2">장소: {studyContent[0].expPlace}</p>
-                                            <p>진행 시간: {studyContent[0].expTime}</p>
+                                            <p className="mb-2">장소: {studyContent.expectedPlace}</p>
+                                            <p>진행 시간: {studyContent.expectedTime}</p>
                                         </div>
                                         <div className="mt-6">
                                             <Button
@@ -145,12 +182,21 @@ export default function DetailPage() {
                     {/* 제출 버튼 */}
                     <div className="flex justify-center mt-4">
                         {isRecruiting && (
-                            <Button
-                                onPress={() => router.push(`/study/apply?title=${studyContent[0].title}`)}
-                                className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
-                            >
-                                신청하기
-                            </Button>
+                            isApplied !== false ? (
+                                <Button
+                                    className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg pointer-events-none"
+                                    disabled
+                                >
+                                    신청 완료
+                                </Button>
+                            ) : (
+                                <Button
+                                    onPress={() => router.push(`/study/apply?title=${studyContent.title}`)}
+                                    className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
+                                >
+                                    신청하기
+                                </Button>
+                            )
                         )}
                     </div>
                 </>
