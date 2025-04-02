@@ -10,29 +10,29 @@ import {
 import axios from 'axios';
 import Header from './Header';
 import StudyCard from './StudyCard';
-import studyListData from './studyListData'; // temp data
+import { studyList } from './mock/StudyData';
 
 export default function Study() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const [studyContent, setStudyContent] = useState([]);
+    const [studyInfo, setStudyInfo] = useState([]);
     const [estType, setEstType] = useState('PERSONAL');
 
     // API 호출
     useEffect(() => {
-        const fetchStudyData = async () => {
+        const fetchData = async () => {
             try {
                 const response = await axios.get('https://temp.gdgocinha.site/studyData?page=1');
-                setStudyContent(response.data.studyList);
+                setStudyInfo(response.data.studyList);
                 setIsLoading(false);
             } catch (error) {
                 //console.error('Error fetching study data');
-                setStudyContent(studyListData.data.studyList); // remove when deploy
+                setStudyInfo(studyList.data.studyList); // remove when deploy
                 setIsLoading(false); // remove when deploy
             }
         };
 
-        fetchStudyData();
+        fetchData();
     }, []);
 
     // GDGOC or PERSONAL
@@ -42,8 +42,8 @@ export default function Study() {
 
     // Filter study based on estType
     const filterStudy = estType
-        ? studyContent.filter((study) => study.type === estType)
-        : studyContent;
+        ? studyInfo.filter((study) => study.type === estType)
+        : studyInfo;
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
