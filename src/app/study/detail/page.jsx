@@ -82,8 +82,8 @@ export default function DetailPage() {
     const formatDate = (dateString) => {
         if (!dateString) return "정보 없음";
         const date = new Date(dateString);
-        const year = String(date.getFullYear()).slice(2); // Get last two digits of year
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits
+        const year = String(date.getFullYear());
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -140,7 +140,7 @@ export default function DetailPage() {
                                             <p className="text-lg">{studyInfo.simpleIntroduce}</p>
                                         </div>
 
-                                        <div className="mb-6 border-l-2 border-gray-500 pl-4">
+                                        <div className="mb-6 border-l-2 border-yellow-500 pl-4">
                                             <p className="mb-2">모집 기간: {studyInfo.recruitStartDate ? formatDate(studyInfo.recruitStartDate) : '정보 없음'} ~ {studyInfo.recruitEndDate ? formatDate(studyInfo.recruitEndDate) : '정보 없음'}</p>
                                             <p>활동 기간: {studyInfo.activityStartDate ? formatDate(studyInfo.activityStartDate) : '정보 없음'} ~ {studyInfo.activityEndDate ? formatDate(studyInfo.activityEndDate) : '정보 없음'}</p>
                                         </div>
@@ -156,7 +156,7 @@ export default function DetailPage() {
                                         <div className="mt-6">
                                             <Button
                                                 onPress={toggleLeadDetail}
-                                                className="items-center justify-center bg-[#1d1d1d] rounded text-left"
+                                                className="items-center justify-center bg-[#1f1f1f] rounded text-left"
                                             >
                                                 <span className="ml-2 text-white transition-transform duration-200" style={{ transform: leadDetail ? 'rotate(90deg)' : 'rotate(0)' }}>
                                                     {'▶'}
@@ -165,9 +165,9 @@ export default function DetailPage() {
                                             </Button>
 
                                             {leadDetail && (
-                                                <div className="mt-2 p-4 bg-[#1a1a1a] rounded border border-gray-700 animate-fadeIn">
+                                                <div className="mt-2 p-4 bg-[#1f1f1f] rounded border border-white animate-fadeIn">
                                                     <p className="mb-2">이름: {studyLeadInfo.name}</p>
-                                                    <p className="mb-2">학번: {studyLeadInfo.id}</p>
+                                                    <p className="mb-2">학번: {studyLeadInfo.studentId}</p>
                                                     <p className="mb-2">전공: {studyLeadInfo.major}</p>
                                                     <p className="mb-2">학년: {studyLeadInfo.grade}학년</p>
                                                     <p className="mb-2">연락처: {studyLeadInfo.phoneNumber}</p>
@@ -176,7 +176,10 @@ export default function DetailPage() {
                                         </div>
                                     </>
                                 ) : (
-                                    <h1 className="text-center text-xl">스터디 정보를 불러올 수 없습니다.</h1>
+                                    <>
+                                        <h1 className="text-center text-xl">스터디 정보를 불러올 수 없습니다.</h1>
+                                        <p className="text-center">URL을 다시 확인해주세요.</p>
+                                    </>
                                 )}
                             </div>
                         </div>

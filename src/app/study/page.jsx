@@ -48,8 +48,8 @@ export default function Study() {
     const formatDate = (dateString) => {
         if (!dateString) return "정보 없음";
         const date = new Date(dateString);
-        const year = String(date.getFullYear()).slice(2); // Get last two digits of year
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits
+        const year = String(date.getFullYear());
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');

@@ -5,8 +5,8 @@ import React, { useState, useEffect } from 'react';
 import { Input, Button, Textarea, Spinner } from '@nextui-org/react';
 import axios from 'axios';
 import Header from '../Header';
-import attendeeData from "../mock/attendeeData";
-import studyDetailData from "@/app/study/mock/studyData";
+import { attendee } from "../mock/userData";
+import { studyDetail } from "../mock/studyData";
 
 export default function ApplyPage() {
     const router = useRouter();
@@ -18,7 +18,7 @@ export default function ApplyPage() {
     // API 호출
     // 이미 신청 받았을 경우 예외 처리 필요
     useEffect(() => {
-        const fetchStudyData = async () => {
+        const fetchData = async () => {
             try {
                 if (!studyTitle) {
                     //throw new Error('Study title is missing');
@@ -37,7 +37,7 @@ export default function ApplyPage() {
                 //console.error('Error fetching study data:');
 
                 // remove when deploy
-                const data = studyDetailData.data.filter(study => study.title === studyTitle);
+                const data = studyDetail.data.filter(study => study.title === studyTitle);
                 if (data.length > 0) {
                     setStudyInfo(data[0]);
                 } else {
@@ -45,10 +45,12 @@ export default function ApplyPage() {
                 }
 
                 setIsLoading(false); // remove when deploy
+            } finally {
+                setIsLoading(false);
             }
         };
 
-        fetchStudyData();
+        fetchData();
     }, [studyTitle]);
 
     // NEED EDIT
