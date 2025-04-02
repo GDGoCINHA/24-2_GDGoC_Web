@@ -5,15 +5,15 @@ import React, { useState, useEffect } from 'react';
 import { Input, Button, Textarea, Spinner } from '@nextui-org/react';
 import axios from 'axios';
 import Header from '../Header';
-import studyListData from "../studyListData";
-import studyDetailData from "@/app/study/studyDetailData";
+import attendeeData from "../mock/attendeeData";
+import studyDetailData from "@/app/study/mock/studyData";
 
 export default function ApplyPage() {
     const router = useRouter();
     const urlParams = useSearchParams();
     const studyTitle = urlParams.get('title');
     const [isLoading, setIsLoading] = useState(true);
-    const [studyContent, setStudyContent] = useState(null);
+    const [studyInfo, setStudyInfo] = useState(null);
 
     // API 호출
     // 이미 신청 받았을 경우 예외 처리 필요
@@ -28,9 +28,9 @@ export default function ApplyPage() {
                 const response = await axios.get(`https://temp.gdgocinha.site/studyData?title=${studyTitle}`);
 
                 if (response.status === 200 && response.data) {
-                    setStudyContent(response.data);
+                    setStudyInfo(response.data);
                 } else {
-                    setStudyContent(null);
+                    setStudyInfo(null);
                 }
                 setIsLoading(false);
             } catch (error) {
@@ -39,9 +39,9 @@ export default function ApplyPage() {
                 // remove when deploy
                 const data = studyDetailData.data.filter(study => study.title === studyTitle);
                 if (data.length > 0) {
-                    setStudyContent(data[0]);
+                    setStudyInfo(data[0]);
                 } else {
-                    setStudyContent(null);
+                    setStudyInfo(null);
                 }
 
                 setIsLoading(false); // remove when deploy
@@ -87,7 +87,7 @@ export default function ApplyPage() {
 
                     <div className="flex justify-center items-center mt-10 bg-black text-white">
                         <div className="w-full max-w-2xl px-6">
-                            {studyContent ? (
+                            {studyInfo ? (
                                 <>
                                     {/* Form */}
                                     <form onSubmit={handleSubmit} className="space-y-6">

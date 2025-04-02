@@ -13,6 +13,7 @@ export default function DetailPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [studyContent, setStudyContent] = useState(null);
     const [isApplied, setIsApplied] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const getCurrentDT = () => {
         const now = new Date();
@@ -29,11 +30,25 @@ export default function DetailPage() {
         activityEndTime: "",
         expectedPlace: "",
         expectedTime: "",
-        activityIntroduce: ""
+        activityIntroduce: "",
+        thumbnail: null
     });
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, type, files } = e.target;
+
+        if (type === 'file' && files[0]) {
+            setFormData({ ...formData, [name]: files[0] });
+
+            // Create image preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(files[0]);
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     // NEED EDIT
@@ -173,6 +188,45 @@ export default function DetailPage() {
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
                                     required
                                 />
+
+                                <label className="block text-lg font-semibold text-white">
+                                    썸네일 로고 업로드 (1대1 사이즈)<span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="file"
+                                    name="thumbnail"
+                                    accept="image/*"
+                                    onChange={handleChange}
+                                    className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
+                                    required
+                                />
+
+                                {/* Image Preview */}
+                                {imagePreview && (
+                                    <div className="mt-4">
+                                        <p className="text-white mb-2">이미지 미리보기:</p>
+                                        <div className="w-40 h-40 relative border border-gray-300 rounded-lg overflow-hidden">
+                                            <Image
+                                                src={imagePreview}
+                                                alt="Thumbnail preview"
+                                                className="object-cover"
+                                                width="100%"
+                                                height="100%"
+                                            />
+                                        </div>
+                                        <Button
+                                            className="mt-2 bg-gray-600 text-white"
+                                            size="sm"
+                                            onPress={() => {
+                                                setImagePreview(null);
+                                                setFormData({...formData, thumbnail: null});
+                                                document.querySelector('input[name="thumbnail"]').value = '';
+                                            }}
+                                        >
+                                            이미지 제거
+                                        </Button>
+                                    </div>
+                                )}
 
                                 {/* 제출 버튼 */}
                                 <div className="flex justify-center mt-4">

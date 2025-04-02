@@ -46,17 +46,14 @@ export default function Study() {
         : studyInfo;
 
     const formatDate = (dateString) => {
+        if (!dateString) return "정보 없음";
         const date = new Date(dateString);
-        const formatter = new Intl.DateTimeFormat('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-        });
-        const formattedDate = formatter.format(date);
-        return formattedDate.replace(',', '');
+        const year = String(date.getFullYear()).slice(2); // Get last two digits of year
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}/${month}/${day} ${hours}:${minutes}`;
     };
 
     const renderStudySection = (status, title, intro) => {

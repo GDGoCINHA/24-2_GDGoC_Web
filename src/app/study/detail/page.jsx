@@ -5,67 +5,73 @@ import React, { useEffect, useState } from "react";
 import { Image, Button, Spinner } from "@nextui-org/react";
 import axios from "axios";
 import Header from '../Header';
-import studyDetailData from "../studyDetailData";
+import { studyDetail } from "../mock/studyData";
+import { user, attendee } from "../mock/userData";
 
 export default function DetailPage() {
     const router = useRouter();
     const urlParams = useSearchParams();
     const studyTitle = urlParams.get('title');
     const [isLoading, setIsLoading] = useState(true);
-    const [studyContent, setStudyContent] = useState(null);
+    const [studyInfo, setStudyInfo] = useState(null);
+    const [studyLeadInfo, setStudyLeadInfo] = useState(null);
     const [isRecruiting, setIsRecruiting] = useState(false);
     const [leadDetail, setLeadDetail] = useState(false);
     const [isApplied, setIsApplied] = useState(false);
 
     // API 호출
-    // 이미 신청 받았을 경우 신청 버튼 예외 처리 필요
     useEffect(() => {
-        const fetchStudyData = async () => {
+        const fetchData = async () => {
             try {
+                // Check if studyTitle is provided
                 if (!studyTitle) {
-                    //throw new Error('Study title is missing');
-                    router.push(`/study`);
+                    router.push(`/study`); // 너는 여길 지나갈수 없다!
+                    return;
                 }
 
-                const response = await axios.get(`https://temp.gdgocinha.site/studyData?title=${studyTitle}`);
+                // Fetch study info
+                const { data: studyData } = await axios.get(`https://temp.gdgocinha.site/studyData?title=${studyTitle}`);
+                if (!studyData) throw new Error('No study data found');
+                setStudyInfo(studyData);
 
-                if (response.status === 200 && response.data) {
-                    setStudyContent(response.data);
-                } else {
-                    setStudyContent(null);
-                }
-                setIsLoading(false);
+                // Fetch study lead info
+                const { data: leadData } = await axios.get(`https://temp.gdgocinha.site/user?id=${studyData.createdBy}`);
+                setStudyLeadInfo(leadData || null);
+
+                // Fetch user's application status
+                // NEED EDIT
+                const thisUserId = 12253956;
+                const { data: userApplication } = await axios.get(`https://temp.gdgocinha.site/atendee?id=${studyData.id}`);
+                if (userApplication && userApplication.attendeeId === thisUserId) setIsApplied(true);
             } catch (error) {
                 //console.error('Error fetching study data:');
 
-                // remove when deploy
-                const data = studyDetailData.data.filter(study => study.title === studyTitle);
-                if (data.length > 0) {
-                    setStudyContent(data[0]);
-                } else {
-                    setStudyContent(null);
-                }
-
-                setIsLoading(false); // remove when deploy
+                // Fallback to local study data
+                const localStudyData = studyDetail.data.find(study => study.title === studyTitle);
+                const localLeadData = user.data.find(usr => usr.studentId === localStudyData.createdBy);
+                const localThisUserData = attendee.data.find(usr => usr.attendeeId === 12253956 && usr.studyId === localStudyData.id);
+                setStudyInfo(localStudyData);
+                setStudyLeadInfo(localLeadData);
+                if (localThisUserData) setIsApplied(true);
+            } finally {
+                setIsLoading(false);
             }
         };
 
-        fetchStudyData();
+        fetchData();
     }, [studyTitle]);
 
-    // 신청 버튼 예외 처리 위해서 유저가 신청 했는지 체크하기
-
     useEffect(() => {
-        if (studyContent) {
-            setIsRecruiting(studyContent.status === "RECRUITING");
+        if (studyInfo) {
+            setIsRecruiting(studyInfo.status === "RECRUITING");
         } else {
             setIsRecruiting(false);
         }
-    }, [studyContent]);
+    }, [studyInfo]);
 
     const handleClick = () => {
-        if (studyContent) {
-            router.push(`/study/apply?title=${studyContent.title}`);
+        if (studyInfo) {
+            router.push(`/study/apply?title=${studyInfo.title}`);
         }
     };
 
@@ -74,17 +80,14 @@ export default function DetailPage() {
     };
 
     const formatDate = (dateString) => {
+        if (!dateString) return "정보 없음";
         const date = new Date(dateString);
-        const formatter = new Intl.DateTimeFormat('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false,
-        });
-        const formattedDate = formatter.format(date);
-        return formattedDate.replace(',', '');
+        const year = String(date.getFullYear()).slice(2); // Get last two digits of year
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}/${month}/${day} ${hours}:${minutes}`;
     };
 
     return (
@@ -107,10 +110,10 @@ export default function DetailPage() {
                         <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
                             {/* 중앙에 흐리게 처리된 배경 이미지 */}
                             <div className="absolute inset-0 flex justify-center pointer-events-none">
-                                {studyContent ? (
+                                {studyInfo ? (
                                     <div className="h-3/5 opacity-20 mt-2 items-center justify-center">
                                         <Image
-                                            src={studyContent.imagePath}
+                                            src={studyInfo.imagePath}
                                             alt={`${studyTitle} 배경`}
                                             width="50"
                                             height="50"
@@ -131,24 +134,24 @@ export default function DetailPage() {
                             </div>
 
                             <div className="text-white relative z-10">
-                                {studyContent ? (
+                                {studyInfo ? (
                                     <>
                                         <div className="mb-6">
-                                            <p className="text-lg">{studyContent.simpleIntroduce}</p>
+                                            <p className="text-lg">{studyInfo.simpleIntroduce}</p>
                                         </div>
 
                                         <div className="mb-6 border-l-2 border-gray-500 pl-4">
-                                            <p className="mb-2">모집 기간: {studyContent.recruitStartDate ? formatDate(studyContent.recruitStartDate) : '정보 없음'} ~ {studyContent.recruitEndDate ? formatDate(studyContent.recruitEndDate) : '정보 없음'}</p>
-                                            <p>활동 기간: {studyContent.activityStartDate ? formatDate(studyContent.activityStartDate) : '정보 없음'} ~ {studyContent.activityEndDate ? formatDate(studyContent.activityEndDate) : '정보 없음'}</p>
+                                            <p className="mb-2">모집 기간: {studyInfo.recruitStartDate ? formatDate(studyInfo.recruitStartDate) : '정보 없음'} ~ {studyInfo.recruitEndDate ? formatDate(studyInfo.recruitEndDate) : '정보 없음'}</p>
+                                            <p>활동 기간: {studyInfo.activityStartDate ? formatDate(studyInfo.activityStartDate) : '정보 없음'} ~ {studyInfo.activityEndDate ? formatDate(studyInfo.activityEndDate) : '정보 없음'}</p>
                                         </div>
 
                                         <div className="mb-6">
-                                            <p className="mb-4">{studyContent.activityIntroduce}</p>
+                                            <p className="mb-4">{studyInfo.activityIntroduce}</p>
                                         </div>
 
                                         <div className="bg-[#1f1f1f] p-4 rounded">
-                                            <p className="mb-2">장소: {studyContent.expectedPlace}</p>
-                                            <p>진행 시간: {studyContent.expectedTime}</p>
+                                            <p className="mb-2">장소: {studyInfo.expectedPlace}</p>
+                                            <p>진행 시간: {studyInfo.expectedTime}</p>
                                         </div>
                                         <div className="mt-6">
                                             <Button
@@ -158,16 +161,16 @@ export default function DetailPage() {
                                                 <span className="ml-2 text-white transition-transform duration-200" style={{ transform: leadDetail ? 'rotate(90deg)' : 'rotate(0)' }}>
                                                     {'▶'}
                                                 </span>
-                                                <p className="text-white text-sm">스터디장 이재아 (정보 펼치기)</p>
+                                                <p className="text-white text-sm">스터디장 {studyLeadInfo.name} (정보 펼치기)</p>
                                             </Button>
 
                                             {leadDetail && (
                                                 <div className="mt-2 p-4 bg-[#1a1a1a] rounded border border-gray-700 animate-fadeIn">
-                                                    <p className="mb-2">이름: 이재아</p>
-                                                    <p className="mb-2">학번: 12243954</p>
-                                                    <p className="mb-2">전공: 컴퓨터공학과</p>
-                                                    <p className="mb-2">학년: 2학년</p>
-                                                    <p className="mb-2">연락처: 010-1234-1234</p>
+                                                    <p className="mb-2">이름: {studyLeadInfo.name}</p>
+                                                    <p className="mb-2">학번: {studyLeadInfo.id}</p>
+                                                    <p className="mb-2">전공: {studyLeadInfo.major}</p>
+                                                    <p className="mb-2">학년: {studyLeadInfo.grade}학년</p>
+                                                    <p className="mb-2">연락처: {studyLeadInfo.phoneNumber}</p>
                                                 </div>
                                             )}
                                         </div>
