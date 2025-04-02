@@ -12,7 +12,14 @@ export default function NotFound() {
 
     const handleClick = () => {
         if (window.history.length > 1) {
-            router.back();
+            const referrer = document.referrer;
+            const currentHost = window.location.host;
+
+            if (referrer.includes(currentHost)) {
+                router.back();
+            } else {
+                router.push("/");
+            }
         } else {
             router.push("/");
         }
