@@ -22,11 +22,10 @@ export const GoogleAuthComponent = () => {
 
     exchangeGoogleToken(code)
       .then((res) => {
-        console.log(res);
-        const { exists, accessToken, email, name } = res.data.data;
+        const { exists, access_token, email, name } = res.data.data;
         if (exists) {
-          setAccessToken(accessToken);
-          router.push('/'); //추후 메인페이지 변경
+          setAccessToken(access_token);
+          router.push('/');
         } else {
           alert('회원 정보가 없습니다. 회원가입을 완료해주세요.');
           sessionStorage.setItem('signup_email', email);
