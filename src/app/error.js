@@ -3,7 +3,6 @@
 import React from 'react';
 import {Button} from "@nextui-org/react";
 import {useRouter} from "next/navigation";
-import Header from '@/components/Header';
 import Image from 'next/image';
 import gdgocIcon from "@public/src/images/GDGoC_icon.png";
 
@@ -29,7 +28,6 @@ export default function Error({error, reset}) {
             </div>
 
             <div className="z-10">
-                <Header />
                 <div className="flex flex-col items-center justify-center">
                     <h1 className="text-3xl font-bold text-white">{errorCode} Error</h1>
                     <p className="mt-2 text-lg text-white">페이지 로드 중 에러가 발생하였습니다.</p>
