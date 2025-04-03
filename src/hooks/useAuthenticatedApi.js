@@ -76,9 +76,9 @@ export const useAuthenticatedApi = () => {
           } catch (refreshError) {
             if (refreshError.response?.status === 401 || 
                 refreshError.response?.data?.error === 'invalid_refresh_token') {
-              alert('로그인 세션이 만료되었습니다. 재로그인 해주세요.');
+              alert('로그인이 만료되었습니다. 재로그인 해주세요.');
               clearAuth();
-              router.push('/auth/login');
+              router.push('/auth/signin');
             }
             return Promise.reject(refreshError);
           }
@@ -99,7 +99,7 @@ export const useAuthenticatedApi = () => {
       console.error('로그아웃 handle 실패:', error);
     } finally {
       clearAuth();
-      router.push('/auth/login');
+      router.push('/auth/signin');
     }
   }, [logout, router, clearAuth]);
 

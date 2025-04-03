@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import loginBg from '@public/src/images/bgimg.png';
-import Header from './Header';
+import Header from './screen/Header';
 import { useRouter } from 'next/navigation';
-import { GoogleLogin } from '../google/GoogleLogin';
+import { GoogleLogin } from './google/GoogleLogin';
 import AuthLogin from './screen/AuthLogin';
 import AuthFindId from './screen/AuthFindId';
 import AuthResetPassword from './screen/AuthResetPassword';

@@ -35,7 +35,7 @@ export const GoogleAuthComponent = () => {
       })
       .catch(() => {
         alert('구글 로그인 실패! 다시 시도해주세요.');
-        router.push('/auth/login');
+        router.push('/auth/signin');
       })
       .finally(() => setIsLoading(false));
   }, [searchParams, router, setAccessToken]);
