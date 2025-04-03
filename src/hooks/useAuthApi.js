@@ -16,7 +16,12 @@ export const useAuthApi = () => {
 
       return response;
     } catch (error) {
-      console.error('Access Token 갱신 중 오류 발생:', error);
+      if(error.response?.status === 401) {
+        console.warn('리프레시 토큰 만료')
+      }
+      else {
+        console.error('Access Token 갱신 오류: ', error);
+      }
       throw error;
     }
   };
