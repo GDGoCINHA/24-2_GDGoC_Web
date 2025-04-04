@@ -142,8 +142,8 @@ export default function Study() {
                             <Image
                                 alt="icon"
                                 src={writeIcon}
-                                width="14px"
-                                height="14px"
+                                width="14"
+                                height="14"
                                 className="w-8 h-8 object-contain"
                             />
                         </Button>
