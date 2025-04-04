@@ -25,20 +25,55 @@ const user = {
 };
 
 const attendee = {
-    statusCode: 200,
-    data: [
-        {
-            id: 1,
-            studyId: 1,
-            attendeeId: 12253956, // change this
-            status: "REQUESTED",
-            introduce: "안녕하세요, 이번 스터디에 지원한 이재아입니다. 잘 부탁드립니다.",
-            activityTime: "오후 7시 이후",
-            createdAt: "2023-10-01T12:00:00",
-        }
-    ],
-    message: "요청이 성공적으로 처리되었습니다.",
-    success: true
+    "data": {
+        applications: [
+            {
+                id: 1,
+                studyId: 1,
+                attendeeId: 12253954,
+                status: "APPROVED",
+                introduce: "저는 멋있는 사람입니다.",
+                activityTime: "월 오후 9시~, 화욜 5시~",
+                updatedAt: "2025-03-01T12:00:00"
+            },
+            {
+                id: 2,
+                studyId: 7,
+                attendeeId: 12243954,
+                status: "REQUESTED",
+                introduce: "저는 그냥 사람입니다.",
+                activityTime: "월 오후 5시~, 화욜 공강",
+                updatedAt: "2025-03-23T12:00:00"
+            },
+            {
+                id: 3,
+                studyId: 7,
+                attendeeId: 12253956,
+                status: "APPROVED",
+                introduce: "테스트 유저입니다. 열심히 하겠습니다.",
+                activityTime: "수요일 오후, 금요일 오전",
+                updatedAt: "2025-03-25T09:30:00"
+            },
+            {
+                id: 4,
+                studyId: 5,
+                attendeeId: 12243955,
+                status: "REQUESTED",
+                introduce: "프론트엔드 관심 있습니다.",
+                activityTime: "화요일 오후 2시~, 목요일 오후",
+                updatedAt: "2025-03-28T14:10:00"
+            },
+            {
+                id: 5,
+                studyId: 3,
+                attendeeId: 12253956,
+                status: "REJECTED",
+                introduce: "이전에 신청한 스터디입니다.",
+                activityTime: "토요일 오전",
+                updatedAt: "2025-03-15T10:00:00"
+            }
+        ]
+    }
 };
 
 export {
