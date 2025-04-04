@@ -37,7 +37,6 @@ export default function Detail() {
                     const userApplication = attendee.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
                     setStudyInfo(studyData);
                     setStudyLeadInfo(leadData);
-                    console.log(leadData);
                     if (userApplication) setIsApplied(true);
                 } else {
                     // Fetch study info
