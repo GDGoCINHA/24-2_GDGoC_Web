@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import { GoogleLogin } from './google/GoogleLogin';
 import AuthLogin from './screen/AuthLogin';
 import AuthFindId from './screen/AuthFindId';
-import AuthResetPassword from './screen/AuthResetPassword';
+import AuthResetPassword from './screen/AuthResetRequest';
+import AuthResetPasswordStep2 from './screen/AuthResetPassword';
 
 export default function Page() {
   const router = useRouter();
@@ -16,8 +17,13 @@ export default function Page() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState([]);
   const { handleGoogleLogin } = GoogleLogin();
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [isRendering, setIsRendering] = useState(0); // (0: AuthLogin, 1: AuthFindId, 2: AuthResetPassword)
+  const [isRendering, setIsRendering] = useState(0);
+
+  const handleFindIdClick = () => setIsRendering(1);
+  const handleResetPasswordClick = () => setIsRendering(2);
+  const handleResetPasswordNext = () => setIsRendering(3);
+  const handleBackToLogin = () => setIsRendering(0);
+  const handleBackToResetRequest = () => setIsRendering(2);
 
   const validatePassword = (password) => {
     const newErrors = [];
@@ -41,67 +47,66 @@ export default function Page() {
     }
   };
 
-  const handleFindIdClick = () => {
-    setIsRendering(1);
-  };
-
-  const handleResetPasswordClick = () => {
-    setIsRendering(2);
-  };
-
-  const handleBackToLogin = () => {
-    setIsRendering(0);
-  };
-
   return (
-    <>
-      <div className='min-h-screen flex flex-col overflow-hidden relative'>
-        <Header />
-        <Image
-          src={loginBg}
-          alt='loginBg'
-          fill
-          className='absolute top-0 left-0 -z-10 object-cover opacity-70 blur-sm'
-        />
-        <div className='flex justify-center items-center flex-1 relative'>
-          <div
-            key='screen1'
-            className={`absolute w-full transition-all duration-500 ease-in-out transform ${
-              isRendering === 0 ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
-            } flex justify-center items-center`}
-          >
-            <AuthLogin
-              router={router}
-              onSubmit={onSubmit}
-              errors={errors}
-              password={password}
-              setPassword={setPassword}
-              setErrors={setErrors}
-              handleGoogleLogin={handleGoogleLogin}
-              handleFindIdClick={handleFindIdClick}
-              handleResetPasswordClick={handleResetPasswordClick}
-            />
-          </div>
+    <div className='min-h-screen flex flex-col overflow-hidden relative'>
+      <Header />
+      <Image
+        src={loginBg}
+        alt='loginBg'
+        fill
+        className='absolute top-0 left-0 -z-10 object-cover opacity-70 blur-sm'
+      />
+      <div className='flex justify-center items-center flex-1 relative'>
+        {/* 로그인 화면 */}
+        <div
+          key='screen1'
+          className={`absolute w-full transition-all duration-500 ease-in-out transform ${
+            isRendering === 0 ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
+          } flex justify-center items-center`}
+        >
+          <AuthLogin
+            router={router}
+            onSubmit={onSubmit}
+            errors={errors}
+            password={password}
+            setPassword={setPassword}
+            setErrors={setErrors}
+            handleGoogleLogin={handleGoogleLogin}
+            handleFindIdClick={handleFindIdClick}
+            handleResetPasswordClick={handleResetPasswordClick}
+          />
+        </div>
 
-          <div
-            key='screen2'
-            className={`absolute w-full transition-all duration-500 ease-in-out transform ${
-              isRendering === 1 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-            } flex justify-center items-center`}
-          >
-            <AuthFindId handleBackToLogin={handleBackToLogin} />
-          </div>
+        {/* 아이디 찾기 화면 */}
+        <div
+          key='screen2'
+          className={`absolute w-full transition-all duration-500 ease-in-out transform ${
+            isRendering === 1 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+          } flex justify-center items-center`}
+        >
+          <AuthFindId handleBackToLogin={handleBackToLogin} />
+        </div>
 
-          <div
-            key='screen3'
-            className={`absolute w-full transition-all duration-500 ease-in-out transform ${
-              isRendering === 2 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-            } flex justify-center items-center`}
-          >
-            <AuthResetPassword handleBackToLogin={handleBackToLogin} />
-          </div>
+        {/* 비밀번호 재설정 화면 1 */}
+        <div
+          key='screen3'
+          className={`absolute w-full transition-all duration-500 ease-in-out transform ${
+            isRendering === 2 ? 'translate-x-0 opacity-100' : `${isRendering === 3 ? '-translate-x-full' : 'translate-x-full'} opacity-0`
+          } flex justify-center items-center`}
+        >
+          <AuthResetPassword handleNextStep={handleResetPasswordNext} handleBackToLogin={handleBackToLogin} />
+        </div>
+
+        {/* 비밀번호 재설정 화면 2 */}
+        <div
+          key='screen4'
+          className={`absolute w-full transition-all duration-500 ease-in-out transform ${
+            isRendering === 3 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+          } flex justify-center items-center`}
+        >
+          <AuthResetPasswordStep2 handleBackToResetRequest={handleBackToResetRequest} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
