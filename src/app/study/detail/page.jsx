@@ -1,17 +1,19 @@
 'use client';
 
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from "react";
-import { Image, Button, Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
+import Image from 'next/image';
 import axios from "axios";
 import Header from '../Header';
-import { studyDetail } from "../mock/studyData";
+import gdgocIcon from '@public/src/images/GDGoC_icon.png';
+import studyList from "../mock/studyData";
 import { user, attendee } from "../mock/userData";
 
-export default function DetailPage() {
+export default function Detail() {
     const router = useRouter();
     const urlParams = useSearchParams();
-    const studyTitle = urlParams.get('title');
+    const studyTitle = decodeURIComponent(urlParams.get('title'));
     const [isLoading, setIsLoading] = useState(true);
     const [studyInfo, setStudyInfo] = useState(null);
     const [studyLeadInfo, setStudyLeadInfo] = useState(null);
@@ -19,40 +21,43 @@ export default function DetailPage() {
     const [leadDetail, setLeadDetail] = useState(false);
     const [isApplied, setIsApplied] = useState(false);
 
-    // API 호출
+    // Call API
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // Check if studyTitle is provided
-                if (!studyTitle) {
-                    router.push(`/study`); // 너는 여길 지나갈수 없다!
+                if (!studyTitle || studyTitle === "null") { // 타이틀이 없는 자, 너는 여길 지나갈수 없다!
+                    router.push(`/study`);
                     return;
                 }
 
-                // Fetch study info
-                const { data: studyData } = await axios.get(`https://temp.gdgocinha.site/studyData?title=${studyTitle}`);
-                if (!studyData) throw new Error('No study data found');
-                setStudyInfo(studyData);
+                if (process.env.NODE_ENV === 'development') {
+                    const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
+                    const leadData = user.data.find(usr => usr.studentId === studyData.creatorId);
+                    const userApplication = attendee.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
+                    setStudyInfo(studyData);
+                    setStudyLeadInfo(leadData);
+                    console.log(leadData);
+                    if (userApplication) setIsApplied(true);
+                } else {
+                    // Fetch study info
+                    const { data: studyDataRes } = await axios.get(`https://temp.gdgocinha.site/studyData?page=1`);
+                    const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
+                    setStudyInfo(studyData);
 
-                // Fetch study lead info
-                const { data: leadData } = await axios.get(`https://temp.gdgocinha.site/user?id=${studyData.createdBy}`);
-                setStudyLeadInfo(leadData || null);
+                    // Fetch study lead info
+                    const { data: studyLeadDataRes } = await axios.get(`https://temp.gdgocinha.site/user?id=${studyData.creatorId}`);
+                    setStudyLeadInfo(studyLeadDataRes);
 
-                // Fetch user's application status
-                // NEED EDIT
-                const thisUserId = 12253956;
-                const { data: userApplication } = await axios.get(`https://temp.gdgocinha.site/atendee?id=${studyData.id}`);
-                if (userApplication && userApplication.attendeeId === thisUserId) setIsApplied(true);
+                    // Fetch user's application status
+                    const thisUserId = 12253956;
+                    const { data: userApplications } = await axios.get(`https://temp.gdgocinha.site/atendee?studyId=${studyData.id}`);
+                    if (userApplications.applications.filter((application) => application.attendeeId === thisUserId).length > 0) {
+                        setIsApplied(true);
+                    }
+                }
             } catch (error) {
-                //console.error('Error fetching study data:');
-
-                // Fallback to local study data
-                const localStudyData = studyDetail.data.find(study => study.title === studyTitle);
-                const localLeadData = user.data.find(usr => usr.studentId === localStudyData.createdBy);
-                const localThisUserData = attendee.data.find(usr => usr.attendeeId === 12253956 && usr.studyId === localStudyData.id);
-                setStudyInfo(localStudyData);
-                setStudyLeadInfo(localLeadData);
-                if (localThisUserData) setIsApplied(true);
+                console.error('Error fetching study data');
             } finally {
                 setIsLoading(false);
             }
@@ -61,6 +66,7 @@ export default function DetailPage() {
         fetchData();
     }, [studyTitle]);
 
+    // Get recruiting status
     useEffect(() => {
         if (studyInfo) {
             setIsRecruiting(studyInfo.status === "RECRUITING");
@@ -69,26 +75,30 @@ export default function DetailPage() {
         }
     }, [studyInfo]);
 
-    const handleClick = () => {
-        if (studyInfo) {
-            router.push(`/study/apply?title=${studyInfo.title}`);
-        }
-    };
-
+    // toggle lead detail
     const toggleLeadDetail = () => {
         setLeadDetail(!leadDetail);
     };
 
-    const formatDate = (dateString) => {
-        if (!dateString) return "정보 없음";
+    // onClick to apply
+    const handleClick = useCallback(() => {
+        if (studyInfo) {
+            router.push(`/study/apply?title=${encodeURIComponent(studyInfo.title)}`);
+        }
+    }, [studyInfo]);
+
+    // Date format
+    function formatDate(dateString) {
+        if (!dateString) return "정보없음";
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "정보없음";
         const year = String(date.getFullYear());
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${year}/${month}/${day} ${hours}:${minutes}`;
-    };
+    }
 
     return (
         <>
@@ -100,41 +110,37 @@ export default function DetailPage() {
                 <>
                     {/* Header */}
                     <Header />
-                    <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
-                        <h1 className="text-white text-2xl text-left mobile:text-center">
-                            {studyTitle} 스터디 상세 정보
-                        </h1>
+                    <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] items-center justify-center text-center">
+                        <div className="flex flex-col mobile:flex-col items-center gap-2 mt-4 mobile:mt-2">
+                            <div className="flex items-center gap-2">
+                                {studyInfo && Object.keys(studyInfo).length > 0 ? (
+                                    <Image
+                                        src={studyInfo.imagePath}
+                                        alt={`${studyTitle} Icon`}
+                                        width="30"
+                                        height="30"
+                                        className="object-contain mobile:w-[25px]"
+                                    />
+                                ) : (
+                                    <Image
+                                        src={gdgocIcon}
+                                        alt="gdgocIcon Icon"
+                                        width="30"
+                                        height="30"
+                                        className="object-contain mobile:w-[25px]"
+                                    />
+                                )}
+                                <h1 className="text-white text-2xl text-center mobile:text-lg">
+                                    {studyTitle}
+                                </h1>
+                            </div>
+                        </div>
                     </header>
 
                     <div className="relative flex flex-col items-center justify-center w-full px-[96px] mobile:px-[24px] py-8">
                         <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
-                            {/* 중앙에 흐리게 처리된 배경 이미지 */}
-                            <div className="absolute inset-0 flex justify-center pointer-events-none">
-                                {studyInfo ? (
-                                    <div className="h-3/5 opacity-20 mt-2 items-center justify-center">
-                                        <Image
-                                            src={studyInfo.imagePath}
-                                            alt={`${studyTitle} 배경`}
-                                            width="50"
-                                            height="50"
-                                            className="w-full h-full object-contain"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="h-3/5 opacity-20 mt-4 flex items-center justify-center">
-                                        <Image
-                                            src="/src/images/GDGoC_icon.png"
-                                            alt="gdgocIcon 배경"
-                                            width="50"
-                                            height="50"
-                                            className="w-full h-full object-contain"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
                             <div className="text-white relative z-10">
-                                {studyInfo ? (
+                                {studyInfo && Object.keys(studyInfo).length > 0 ? (
                                     <>
                                         <div className="mb-6">
                                             <p className="text-lg">{studyInfo.simpleIntroduce}</p>
