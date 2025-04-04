@@ -1,34 +1,38 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
-    Image,
     Spinner,
     Button
 } from '@nextui-org/react';
+import Image from 'next/image';
 import axios from 'axios';
 import Header from './Header';
 import StudyCard from './StudyCard';
-import { studyList } from './mock/StudyData';
+import writeIcon from '@public/src/images/GDGoC_icon.png';
+import studyList from './mock/studyData';
 
 export default function Study() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [studyInfo, setStudyInfo] = useState([]);
-    const [estType, setEstType] = useState('PERSONAL');
+    const [creatorType, setCreatorType] = useState('PERSONAL');
 
-    // API 호출
+    // Call API
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('https://temp.gdgocinha.site/studyData?page=1');
-                setStudyInfo(response.data.studyList);
-                setIsLoading(false);
+                if (process.env.NODE_ENV === 'development') {
+                    setStudyInfo(studyList.data.studyList);
+                    setIsLoading(false);
+                } else {
+                    const response = await axios.get('https://temp.gdgocinha.site/studyData?page=1');
+                    setStudyInfo(response.data.studyList);
+                    setIsLoading(false);
+                }
             } catch (error) {
-                //console.error('Error fetching study data');
-                setStudyInfo(studyList.data.studyList); // remove when deploy
-                setIsLoading(false); // remove when deploy
+                console.error('Error fetching study data');
             }
         };
 
@@ -36,27 +40,17 @@ export default function Study() {
     }, []);
 
     // GDGOC or PERSONAL
-    const handleEstChange = (type) => {
-        setEstType(type);
+    const handleCreatorTypeChange = (creatorType) => {
+        setCreatorType(creatorType);
     };
 
-    // Filter study based on estType
-    const filterStudy = estType
-        ? studyInfo.filter((study) => study.type === estType)
+    // Filter study based on creatorType
+    const filterStudy = creatorType
+        ? studyInfo.filter((study) => study.creatorType === creatorType)
         : studyInfo;
 
-    const formatDate = (dateString) => {
-        if (!dateString) return "정보 없음";
-        const date = new Date(dateString);
-        const year = String(date.getFullYear());
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${year}/${month}/${day} ${hours}:${minutes}`;
-    };
-
-    const renderStudySection = (status, title, intro) => {
+    const renderStudyCard = (status, title, intro) => {
+        const filteredStudies = filterStudy.filter(study => study.status === status);
         return (
             <>
                 <div className="m-auto mt-5">
@@ -64,24 +58,17 @@ export default function Study() {
                     <p className="text-white text-sm text-left">{intro}</p>
                 </div>
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {filterStudy.map((study, index) => {
-                        if (study.status === status) {
-                            return (
-                                <div key={index}>
-                                    {/* Check study API doc before deploy*/}
-                                    <StudyCard
-                                        key={study.id}
-                                        title={study.title}
-                                        description={study.simpleIntroduce}
-                                        status={study.status}
-                                        reqEnd={study.recruitEndDate ? formatDate(study.recruitEndDate) : '정보 없음'}
-                                        icon={study.imagePath}
-                                    />
-                                </div>
-                            );
-                        }
-                        return null;
-                    })}
+                    {filteredStudies.map((study) => (
+                        <div key={study.id}>
+                            <StudyCard
+                                title={study.title}
+                                description={study.simpleIntroduce}
+                                status={study.status}
+                                reqEnd={study.recruitEndDate}
+                                icon={study.imagePath}
+                            />
+                        </div>
+                    ))}
                 </div>
             </>
         );
@@ -106,19 +93,19 @@ export default function Study() {
                         </h1>
                     </header>
 
-                    {/* Est Type Selection */}
+                    {/* creatorType Selection */}
                     <div className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:mt-14">
                         <p className="text-white text-right pt-[3px]">
                             <span
-                                className={`cursor-pointer ${estType === 'GDGOC' ? 'font-bold' : ''}`}
-                                onClick={() => handleEstChange('GDGOC')}
+                                className={`cursor-pointer ${creatorType === 'GDGOC' ? 'font-bold' : ''}`}
+                                onClick={() => handleCreatorTypeChange('GDGOC')}
                             >
                                 정규
                             </span>
                             {" | "}
                             <span
-                                className={`cursor-pointer ${estType === 'PERSONAL' ? 'font-bold' : ''}`}
-                                onClick={() => handleEstChange('PERSONAL')}
+                                className={`cursor-pointer ${creatorType === 'PERSONAL' ? 'font-bold' : ''}`}
+                                onClick={() => handleCreatorTypeChange('PERSONAL')}
                             >
                                 개인개설
                             </span>
@@ -126,24 +113,24 @@ export default function Study() {
                     </div>
 
                     <div className="relative flex justify-center items-center space-y-4 mobile:px-[24px]">
-                        {/* 정규 카테고리 */}
-                        {estType === 'GDGOC' && (
+                        {/* GDGOC */}
+                        {creatorType === 'GDGOC' && (
                             <div className="w-full max-w-4xl">
-                                {renderStudySection("RECRUITING", '현재 모집 중인 스터디', '마감일 확인하시고 원하시는 스터디에 지원하세요!')}
-                                {renderStudySection("RECRUITED", '지난 스터디 구경하기', 'GDGoC에서 진행했던 스터디들을 구경해보세요!')}
+                                {renderStudyCard("RECRUITING", '현재 모집 중인 스터디', '마감일 확인하시고 원하시는 스터디에 지원하세요!')}
+                                {renderStudyCard("RECRUITED", '지난 스터디 구경하기', 'GDGoC에서 진행했던 스터디들을 구경해보세요!')}
                             </div>
                         )}
 
-                        {/* 개인개설 카테고리 */}
-                        {estType === 'PERSONAL' && (
+                        {/* PERSONAL */}
+                        {creatorType === 'PERSONAL' && (
                             <div className="w-full max-w-4xl">
-                                {renderStudySection("RECRUITING", '현재 모집 중인 스터디', '마감일 확인하시고 원하시는 스터디에 지원하세요!')}
-                                {renderStudySection("RECRUITED", '지난 스터디 구경하기', 'GDGoC에서 진행했던 스터디들을 구경해보세요!')}
+                                {renderStudyCard("RECRUITING", '현재 모집 중인 스터디', '마감일 확인하시고 원하시는 스터디에 지원하세요!')}
+                                {renderStudyCard("RECRUITED", '지난 스터디 구경하기', 'GDGoC에서 진행했던 스터디들을 구경해보세요!')}
                             </div>
                         )}
                     </div>
 
-                    {/* Create New Study */}
+                    {/* Create New PERSONAL Study */}
                     <div className="fixed bottom-6 right-6">
                         <Button
                             color="danger"
@@ -153,7 +140,9 @@ export default function Study() {
                         >
                             <Image
                                 alt="icon"
-                                src="/src/images/google_icon.png"
+                                src={writeIcon}
+                                width="14px"
+                                height="14px"
                                 className="w-8 h-8 object-contain"
                             />
                         </Button>
