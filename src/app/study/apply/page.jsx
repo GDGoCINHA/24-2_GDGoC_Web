@@ -71,7 +71,7 @@ export default function Apply() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`https://temp.gdgocinha.site/studyWrite`, {
+            await axios.post(`https://temp.gdgocinha.site/studyApply`, {
                 formData
             });
             alert("신청이 완료되었습니다!");
