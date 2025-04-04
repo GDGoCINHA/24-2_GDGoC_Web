@@ -49,6 +49,7 @@ export default function Study() {
         ? studyInfo.filter((study) => study.creatorType === creatorType)
         : studyInfo;
 
+    // Render study cards
     const renderStudyCard = (status, title, intro) => {
         const filteredStudies = filterStudy.filter(study => study.status === status);
         return (
