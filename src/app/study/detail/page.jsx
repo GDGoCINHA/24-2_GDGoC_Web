@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
 import axios from "axios";
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import Header from '../Header';
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 import studyList from "../mock/studyData";
@@ -12,6 +13,7 @@ import { user, attendee } from "../mock/userData";
 
 export default function Detail() {
     const router = useRouter();
+    const { apiClient } = useAuthenticatedApi();
     const urlParams = useSearchParams();
     const studyTitle = decodeURIComponent(urlParams.get('title'));
     const [isLoading, setIsLoading] = useState(true);
@@ -40,17 +42,17 @@ export default function Detail() {
                     if (userApplication) setIsApplied(true);
                 } else {
                     // Fetch study info
-                    const { data: studyDataRes } = await axios.get(`https://temp.gdgocinha.site/studyData?page=1`);
+                    const { data: studyDataRes } = await apiClient.get('/studyData?page=1');
                     const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
 
                     // Fetch study lead info
-                    const { data: studyLeadDataRes } = await axios.get(`https://temp.gdgocinha.site/user?id=${studyData.creatorId}`);
+                    const { data: studyLeadDataRes } = await apiClient.get(`/user?id=${studyData.creatorId}`);
                     setStudyLeadInfo(studyLeadDataRes);
 
                     // Fetch user's application status
                     const thisUserId = 12253956;
-                    const { data: userApplications } = await axios.get(`https://temp.gdgocinha.site/atendee?studyId=${studyData.id}`);
+                    const { data: userApplications } = await apiClient.get(`/attendee?studyId=${studyData.id}`);
                     if (userApplications.applications.filter((application) => application.attendeeId === thisUserId).length > 0) {
                         setIsApplied(true);
                     }

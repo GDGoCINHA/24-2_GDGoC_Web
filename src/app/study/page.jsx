@@ -8,6 +8,7 @@ import {
 } from '@nextui-org/react';
 import Image from 'next/image';
 import axios from 'axios';
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import Header from './Header';
 import StudyCard from './StudyCard';
 import writeIcon from '@public/src/images/GDGoC_icon.png';
@@ -15,6 +16,7 @@ import studyList from './mock/studyData';
 
 export default function Study() {
     const router = useRouter();
+    const { apiClient } = useAuthenticatedApi();
     const [isLoading, setIsLoading] = useState(true);
     const [studyInfo, setStudyInfo] = useState([]);
     const [creatorType, setCreatorType] = useState('PERSONAL');
@@ -27,7 +29,7 @@ export default function Study() {
                     setStudyInfo(studyList.data.studyList);
                     setIsLoading(false);
                 } else {
-                    const response = await axios.get('https://temp.gdgocinha.site/studyData?page=1');
+                    const response = await apiClient.get('/studyData');
                     setStudyInfo(response.data.studyList);
                     setIsLoading(false);
                 }
