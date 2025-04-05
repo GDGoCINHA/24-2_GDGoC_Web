@@ -33,7 +33,7 @@ export default function MyStudy() {
                                 currentMenu={activeMenu}
                                 onMenuClick={handleMenuClick}
                             />
-                            <InfoArea currentMenu={activeMenu} />
+                            <InfoArea currentMenu={activeMenu} isAdmin={false} />
                         </div>
                     </div>
                 </>
