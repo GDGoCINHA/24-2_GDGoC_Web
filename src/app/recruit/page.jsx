@@ -18,7 +18,7 @@ import Recruit9 from '@/app/recruit/screen/Recruit9';
 import Recruit10 from '@/app/recruit/screen/Recruit10';
 import Recruit11 from '@/app/recruit/screen/Recruit11';
 
-import RecruitLoading from '@/app/recruit/screen/RecruitLoading.jsx'
+import Loader from '@/components/ui/Loader.jsx';
 import VerticalProgressBar from './VerticalProgressBar.jsx';
 import HorizontalProgressBar from './HorizontalProgressBar.jsx';
 
@@ -68,7 +68,7 @@ export default function Recruit() {
 
   return (
     <div className='flex flex-col max-w-[1305px] mx-auto h-screen justify-center mobile:h-[100svh]'>
-      <RecruitLoading isLoading={loading} />
+      <Loader isLoading={loading} />
       <div className='flex flex-col scale-90 origin-top-left w-[111.11%] mobile:flex-grow'>
         <div className='mx-[30px] mobile:flex mobile:flex-col mobile:h-full mobile:justify-between'>
           <p className='text-white text-4xl font-bold mt-[80px] select-none mobile:text-3xl mobile:mt-[7svh]'>

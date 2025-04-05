@@ -1,4 +1,4 @@
-const RecruitLoading = ({ isLoading }) => {
+const Loader = ({ isLoading }) => {
     if (!isLoading) return null;
   
     return (
@@ -8,4 +8,4 @@ const RecruitLoading = ({ isLoading }) => {
     );
   };
   
-  export default RecruitLoading;
+  export default Loader;
