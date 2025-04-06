@@ -14,7 +14,7 @@ const user = {
             grade: 3,
             phoneNumber: "010-1234-5678"
         },
-        { // this is test user
+        { // this is TESTUSER
             studentId: 12253956,
             name: "TESTUSER",
             major: "TEST",

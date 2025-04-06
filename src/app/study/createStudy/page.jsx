@@ -23,12 +23,6 @@ export default function CreateStudy() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Check if studyTitle is provided
-                if (!studyTitle || studyTitle === "null") { // 타이틀이 없는 자, 너는 여길 지나갈수 없다!
-                    router.push(`/study`);
-                    return;
-                }
-
                 if (process.env.NODE_ENV === 'development') {
                     const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
@@ -38,7 +32,7 @@ export default function CreateStudy() {
                     setStudyInfo(studyData);
                 }
             } catch (error) {
-                console.error('Error fetching study data');
+                console.error('Lerror fetching study data');
             } finally {
                 setIsLoading(false);
             }
@@ -48,10 +42,9 @@ export default function CreateStudy() {
     }, [studyTitle]);
 
 
-    const getCurrentDT = () => {
+    const getCurrentDate = () => {
         const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        return now.toISOString().slice(0, 16);
+        return now.toISOString().slice(0, 10);
     };
 
     // NEED EDIT
@@ -59,7 +52,7 @@ export default function CreateStudy() {
         title: "",
         introduce: "",
         activityIntroduce: "",
-        recruitStartTime: getCurrentDT(),
+        recruitStartTime: getCurrentDate(),
         recruitEndTime: "",
         activityStartTime: "",
         activityEndTime: "",
@@ -88,16 +81,44 @@ export default function CreateStudy() {
     // onSubmit for form
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const addTime = (dateStr) => {
+            if (!dateStr) return "";
+            return new Date(dateStr).toISOString();
+        };
+
+        // add time 00:00:00
+        const updateFormData = {
+            ...formData,
+            recruitStartTime: addTime(formData.recruitStartTime),
+            recruitEndTime: addTime(formData.recruitEndTime),
+            activityStartTime: addTime(formData.activityStartTime),
+            activityEndTime: addTime(formData.activityEndTime),
+        };
+
         try {
-            await apiClient.post('/studyWrite', {
-                formData
+            const multipartForm = new FormData();
+            multipartForm.append("title", updateFormData.title);
+            multipartForm.append("introduce", updateFormData.introduce);
+            multipartForm.append("activityIntroduce", updateFormData.activityIntroduce);
+            multipartForm.append("recruitStartTime", updateFormData.recruitStartTime);
+            multipartForm.append("recruitEndTime", updateFormData.recruitEndTime);
+            multipartForm.append("activityStartTime", updateFormData.activityStartTime);
+            multipartForm.append("activityEndTime", updateFormData.activityEndTime);
+            multipartForm.append("expectedPlace", updateFormData.expectedPlace);
+            multipartForm.append("expectedTime", updateFormData.expectedTime);
+            multipartForm.append("imagePath", updateFormData.imagePath);
+
+            await apiClient.post('/studyWrite', multipartForm, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
             alert("스터디 개설이 완료되었습니다!");
-
-            router.push(`/study/detail?title=${encodeURIComponent(formData.title)}`);
+            router.push(`/study/detail?title=${encodeURIComponent(updateFormData.title)}`);
         } catch (error) {
-            console.error("Error submitting form");
+            console.error("Lerror submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
@@ -156,9 +177,9 @@ export default function CreateStudy() {
                                     name="recruitStartTime"
                                     value={formData.recruitStartTime}
                                     onChange={handleChange}
-                                    type="datetime-local"
+                                    type="date"
                                     placeholder="모집 시작일"
-                                    min={getCurrentDT()}
+                                    min={getCurrentDate()}
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -166,9 +187,9 @@ export default function CreateStudy() {
                                     name="recruitEndTime"
                                     value={formData.recruitEndTime}
                                     onChange={handleChange}
-                                    type="datetime-local"
+                                    type="date"
                                     placeholder="모집 종료일"
-                                    min={getCurrentDT()}
+                                    min={getCurrentDate()}
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -180,9 +201,9 @@ export default function CreateStudy() {
                                     name="activityStartTime"
                                     value={formData.activityStartTime}
                                     onChange={handleChange}
-                                    type="datetime-local"
+                                    type="date"
                                     placeholder="활동 시작일"
-                                    min={getCurrentDT()}
+                                    min={getCurrentDate()}
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -190,9 +211,9 @@ export default function CreateStudy() {
                                     name="activityEndTime"
                                     value={formData.activityEndTime}
                                     onChange={handleChange}
-                                    type="datetime-local"
+                                    type="date"
                                     placeholder="활동 종료일"
-                                    min={getCurrentDT()}
+                                    min={getCurrentDate()}
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />

@@ -58,7 +58,7 @@ export default function Detail() {
                     }
                 }
             } catch (error) {
-                console.error('Error fetching study data');
+                console.error('Lerror fetching study data');
             } finally {
                 setIsLoading(false);
             }
@@ -96,9 +96,12 @@ export default function Detail() {
         const year = String(date.getFullYear());
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
+        // add later
+        /*
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${year}/${month}/${day} ${hours}:${minutes}`;
+        */
+        return `${year}/${month}/${day}`;
     }
 
     return (

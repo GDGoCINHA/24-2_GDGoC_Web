@@ -34,7 +34,7 @@ export default function Study() {
                     setIsLoading(false);
                 }
             } catch (error) {
-                console.error('Error fetching study data');
+                console.error('Lerror fetching study data');
             }
         };
 

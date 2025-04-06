@@ -49,7 +49,7 @@ export default function Apply() {
                     }
                 }
             } catch (error) {
-                console.error('Error fetching study data');
+                console.error('Lerror fetching study data');
             } finally {
                 setIsLoading(false);
             }
@@ -80,7 +80,7 @@ export default function Apply() {
 
             router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
         } catch (error) {
-            console.error("Error submitting form");
+            console.error("Lerror submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
