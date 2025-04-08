@@ -90,7 +90,7 @@ export default function Detail() {
                                         className="object-contain mobile:w-[25px]"
                                     />
                                 )}
-                                <h1 className="text-white text-2xl text-center mobile:text-lg">
+                                <h1 className="text-white text-3xl text-center mobile:text-xl">
                                     {studyTitle}
                                 </h1>
                             </div>
@@ -99,28 +99,28 @@ export default function Detail() {
 
                     {/* White Box */}
                     <div className="relative flex flex-col items-center justify-center w-full px-[96px] mobile:px-[24px] py-8">
-                        <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
+                        <div className="w-full max-w-[800px] border border-white rounded-lg p-7 relative overflow-hidden">
                             <div className="text-white relative z-10">
                                 {studyInfo ? (
                                     <>
                                         <div className="mb-6">
-                                            <p className="text-lg">{studyInfo.simpleIntroduce}</p>
+                                            <p className="text-xl mobile:text-sm">{studyInfo.simpleIntroduce}</p>
                                         </div>
 
                                         <div className="mb-6 border-l-2 border-yellow-500 pl-4">
-                                            <p className="mb-2">모집 기간: {studyInfo.recruitStartDate ? formatDate(studyInfo.recruitStartDate) : '정보 없음'} ~ {studyInfo.recruitEndDate ? formatDate(studyInfo.recruitEndDate) : '정보 없음'}</p>
-                                            <p>활동 기간: {studyInfo.activityStartDate ? formatDate(studyInfo.activityStartDate) : '정보 없음'} ~ {studyInfo.activityEndDate ? formatDate(studyInfo.activityEndDate) : '정보 없음'}</p>
+                                            <p className="mb-2 text-lg mobile:text-sm">모집 기간: {studyInfo.recruitStartDate ? formatDate(studyInfo.recruitStartDate) : '정보 없음'} ~ {studyInfo.recruitEndDate ? formatDate(studyInfo.recruitEndDate) : '정보 없음'}</p>
+                                            <p className="text-lg mobile:text-sm">활동 기간: {studyInfo.activityStartDate ? formatDate(studyInfo.activityStartDate) : '정보 없음'} ~ {studyInfo.activityEndDate ? formatDate(studyInfo.activityEndDate) : '정보 없음'}</p>
                                         </div>
 
                                         <div className="mb-6">
-                                            <p className="mb-4">{studyInfo.activityIntroduce}</p>
+                                            <p className="mb-4 text-lg mobile:text-sm">{studyInfo.activityIntroduce}</p>
                                         </div>
 
                                         <div className="bg-[#1f1f1f] p-4 rounded">
-                                            <p className="mb-2">장소: {studyInfo.expectedPlace}</p>
-                                            <p>진행 시간: {studyInfo.expectedTime}</p>
+                                            <p className="mb-2 text-lg mobile:text-sm">장소: {studyInfo.expectedPlace}</p>
+                                            <p className="text-lg mobile:text-sm">진행 시간: {studyInfo.expectedTime}</p>
                                         </div>
-                                        <div className="mt-6">
+                                        <div className="mt-6 mobile:pt-0 mobile:p-4 rounded">
                                             <Button
                                                 onPress={toggleLeadDetail}
                                                 className="items-center justify-center bg-[#1f1f1f] rounded text-left"
@@ -133,11 +133,11 @@ export default function Detail() {
 
                                             {leadDetail && (
                                                 <div className="mt-2 p-4 bg-[#1f1f1f] rounded border border-white animate-fadeIn">
-                                                    <p className="mb-2">이름: {studyLeadInfo.name}</p>
-                                                    <p className="mb-2">학번: {studyLeadInfo.studentId}</p>
-                                                    <p className="mb-2">전공: {studyLeadInfo.major}</p>
-                                                    <p className="mb-2">학년: {studyLeadInfo.grade}학년</p>
-                                                    <p className="mb-2">연락처: {studyLeadInfo.phoneNumber}</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">이름: {studyLeadInfo.name}</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">학번: {studyLeadInfo.studentId}</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">전공: {studyLeadInfo.major}</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">학년: {studyLeadInfo.grade}학년</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">연락처: {studyLeadInfo.phoneNumber}</p>
                                                 </div>
                                             )}
                                         </div>
