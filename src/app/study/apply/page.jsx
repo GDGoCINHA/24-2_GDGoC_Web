@@ -93,26 +93,28 @@ export default function Apply() {
                                 <>
                                     {/* Form */}
                                     <form onSubmit={handleSubmit} className="space-y-6">
-                                        <label className="block text-lg font-semibold">
-                                            자기소개 <span className="text-red-500">*</span>
+                                        <label className="block">
+                                            <p className="text-lg font-semibold">자기소개 <span className="text-red-500">*</span></p>
+                                            <p className="text-sm">자기 소개 및 활동 포부를 적어주세요.</p>
                                         </label>
                                         <textarea
                                             name="introduce"
                                             value={formData.introduce}
                                             onChange={handleChange}
-                                            placeholder="자기 소개 및 활동 포부를 적어주세요."
+                                            placeholder="스터디에 참여하고 싶습니다."
                                             className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
                                             required
                                         />
 
-                                        <label className="block text-lg font-semibold">
-                                            활동 가능한 시간대 <span className="text-red-500">*</span>
+                                        <label className="block">
+                                            <p className="text-lg font-semibold">활동 가능한 시간대 <span className="text-red-500">*</span></p>
+                                            <p className="text-sm">활동 가능한 시간대를 모두 적어주세요.</p>
                                         </label>
                                         <input
                                             name="activityTime"
                                             value={formData.activityTime}
                                             onChange={handleChange}
-                                            placeholder="활동 가능한 시간대를 모두 적어주세요. (ex. 월 17-19시, 화 15시~)"
+                                            placeholder="Ex) 월 17-19시, 화 15시-"
                                             className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                             required
                                         />

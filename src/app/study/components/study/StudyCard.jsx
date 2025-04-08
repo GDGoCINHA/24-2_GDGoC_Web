@@ -43,7 +43,7 @@ export default function StudyCard({ title, description, status, reqEnd, icon }) 
             onClick={handleClick}
             className="bg-[#1f1f1f] p-5 rounded-lg flex justify-between items-center w-full h-[150px] cursor-pointer"
         >
-            <div className="w-72 mobile:w-[65vw]">
+            <div className="w-72 mobile:w-[60vw]">
                 <h3 className="text-white text-xl font-bold mobile:text-lg">{title}</h3>
                 <p className="text-white text-sm text-wrap">{description}</p>
                 <p className="text-yellow-500 text-[12px] mt-4 text-wrap">모집마감: {reqEnd ? formatDate(reqEnd) : '정보없음'}</p>

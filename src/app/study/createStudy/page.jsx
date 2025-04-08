@@ -4,41 +4,22 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
+
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
+import { useStudyCreatePreCheck } from "@/hooks/study/useStudyCreatePreCheck";
+
 import Header from '../components/common/Header';
+
 import studyList from "@/mock/studyData";
 
 export default function CreateStudy() {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
     const urlParams = useSearchParams();
-    const studyTitle = urlParams.get('title');
-    const [isLoading, setIsLoading] = useState(false);
-    const [studyInfo, setStudyInfo] = useState(null); // check duplicate
-    const [isApplied, setIsApplied] = useState(false); // disable?
     const [imagePreview, setImagePreview] = useState(null);
 
-    // Call API
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (process.env.NODE_ENV === 'development') {
-                    const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
-                    setStudyInfo(studyData);
-                } else {
-                    const { data: studyDataRes } = await apiClient.get('/studyData?page=1');
-                    const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
-                    setStudyInfo(studyData);
-                }
-            } catch (error) {
-                console.error('error fetching study data');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [studyTitle]);
+    // API: useStudyCreatePreCheck
+    const { studyInfo, isLoading, error } = useStudyCreatePreCheck();
 
     const getCurrentDate = () => {
         const now = new Date();
@@ -153,7 +134,7 @@ export default function CreateStudy() {
                                     value={formData.title}
                                     onChange={handleChange}
                                     placeholder="스터디 명을 적어주세요."
-                                    maxLength="50"
+                                    maxLength="15" // need adjust
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
