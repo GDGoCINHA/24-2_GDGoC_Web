@@ -4,26 +4,25 @@ export default function Attendance() {
 
     const data = {
         myStudies: [
-            {id: 1, title: "UI/UX 스터디"},
-            {id: 2, title: "백엔드 스터디"}
+            {id: 1, title: "UI/UX 스터디"}
         ],
         attendance: [
-            {id: 1, studyTitle: "UI/UX 스터디", session: 1, date: "2024.03.05", status: "출석"},
-            {id: 2, studyTitle: "UI/UX 스터디", session: 2, date: "2024.03.12", status: "결석"},
-            {id: 3, studyTitle: "UI/UX 스터디", session: 3, date: "2024.03.19", status: "지각"},
-            {id: 4, studyTitle: "UI/UX 스터디", session: 4, date: "2024.03.26", status: "미확인"},
-            {id: 5, studyTitle: "UI/UX 스터디", session: 5, date: "2024.04.02", status: "출석"},
+            {id: 1, studyTitle: "UI/UX 스터디", session: 1, date: "2024.03.05", status: "ATTEND"},
+            {id: 2, studyTitle: "UI/UX 스터디", session: 2, date: "2024.03.12", status: "ABSENT"},
+            {id: 3, studyTitle: "UI/UX 스터디", session: 3, date: "2024.03.19", status: "LATE"},
+            {id: 4, studyTitle: "UI/UX 스터디", session: 4, date: "2024.03.26", status: "UNKNOWN"},
+            {id: 5, studyTitle: "UI/UX 스터디", session: 5, date: "2024.04.02", status: "ATTEND"},
         ]
     };
 
     const getAttendanceBadge = (status) => {
         const baseClasses = "px-3 py-1 rounded-full text-sm font-medium text-white";
 
-        if (status === '출석')
+        if (status === 'ATTEND')
             return `${baseClasses} bg-green-500`;
-        if (status === '지각')
+        if (status === 'LATE')
             return `${baseClasses} bg-yellow-500`;
-        if (status === '결석')
+        if (status === 'ABSENT')
             return `${baseClasses} bg-red-500`;
 
         return `${baseClasses} bg-blue-700`;

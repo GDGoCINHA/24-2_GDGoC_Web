@@ -1,6 +1,7 @@
 import React from 'react';
-import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 import Image from 'next/image';
+
+import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
 export default function Header() {
   return (

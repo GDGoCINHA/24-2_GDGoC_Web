@@ -6,28 +6,26 @@ export default function ApplyResult() {
 
     const data = {
         currentStudies: [
-            {id: 1, title: "백엔드", date: "2024.09.09", status: "NOTYET"}
+            {id: 1, title: "백엔드", date: "2024.09.09", status: "PENDING"}
         ],
         completedStudies: [
-            {id: 2, title: "UI/UX", date: "2024.02.28", status: "PASS"},
-            {id: 3, title: "프론트엔드", date: "2024.03.15", status: "FAIL"}
+            {id: 2, title: "UI/UX", date: "2024.02.28", status: "APPROVED"},
+            {id: 3, title: "프론트엔드", date: "2024.03.15", status: "REJECTED"}
         ],
     };
 
     const getStatusBadge = (status) => {
         const baseClasses = "px-3 py-1 rounded-full text-sm font-medium text-white";
-
-        if (status === 'PASS')
+        if (status === 'APPROVED')
             return `${baseClasses} bg-blue-500`;
-        if (status === 'FAIL')
+        if (status === 'REJECTED')
             return `${baseClasses} bg-red-500`;
-
         return `${baseClasses} bg-yellow-500`;
     };
 
     const getStatusName = (status) => {
-        if (status === 'PASS') return '합격';
-        if (status === 'FAIL') return '불합격';
+        if (status === 'APPROVED') return '합격';
+        if (status === 'REJECTED') return '불합격';
         return '발표 전';
     };
 
