@@ -82,7 +82,7 @@ export default function Page() {
           key='screen2'
           className={`absolute w-full transition-all duration-500 ease-in-out transform ${
             isRendering === 1 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-          } flex justify-center items-center mt-[-20px]`}
+          } flex justify-center items-center mt-[-30px]`}
         >
           <AuthFindId handleBackToLogin={handleBackToLogin} />
         </div>
