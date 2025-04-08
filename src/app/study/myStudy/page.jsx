@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Spinner } from "@nextui-org/react";
-import Header from '../Header';
+import Header from '../components/common/Header';
 import Navigation from "./Navigation";
 import InfoArea from "./InfoArea";
 

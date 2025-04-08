@@ -2,14 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Input, Button, Textarea, Spinner } from '@nextui-org/react';
+import { Spinner } from '@nextui-org/react';
 import Image from 'next/image';
-import axios from 'axios';
+
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import Header from '../Header';
+
+import Header from '../components/common/Header';
+import SubmitButton from "../components/ui/SubmitButton";
+import MarginBottom from "../components/common/MarginBottom";
+
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
-import studyList from "../mock/studyData";
-import { user, attendee } from "../mock/userData";
+
+import studyList from "@/mock/studyData";
+import { user, attendee } from "@/mock/userData";
 
 export default function Apply() {
     const router = useRouter();
@@ -49,7 +54,7 @@ export default function Apply() {
                     }
                 }
             } catch (error) {
-                console.error('Lerror fetching study data');
+                console.error('error fetching study data');
             } finally {
                 setIsLoading(false);
             }
@@ -73,14 +78,14 @@ export default function Apply() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`https://temp.gdgocinha.site/studyApply`, {
+            await apiClient.post(`/studyApply`, {
                 formData
             });
             alert("신청이 완료되었습니다!");
 
             router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
         } catch (error) {
-            console.error("Lerror submitting form");
+            console.error("error submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
@@ -98,7 +103,7 @@ export default function Apply() {
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] items-center justify-center text-center">
                         <div className="flex flex-col mobile:flex-col items-center gap-2 mt-4 mobile:mt-2">
                             <div className="flex items-center gap-2">
-                                {studyInfo && Object.keys(studyInfo).length > 0 ? (
+                                {studyInfo ? (
                                     <Image
                                         src={studyInfo.imagePath}
                                         alt={`${studyTitle} Icon`}
@@ -124,7 +129,7 @@ export default function Apply() {
 
                     <div className="flex justify-center items-center mt-10 bg-black text-white">
                         <div className="w-full max-w-2xl px-6">
-                            {studyInfo && Object.keys(studyInfo).length > 0 ? (
+                            {studyInfo ? (
                                 <>
                                     {/* Form */}
                                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -153,14 +158,10 @@ export default function Apply() {
                                         />
 
                                         {/* Submit */}
-                                        <div className="flex justify-center pt-4">
-                                            <Button
-                                                type="submit"
-                                                className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
-                                            >
-                                                제출하기
-                                            </Button>
-                                        </div>
+                                        <SubmitButton text="제출하기" isDisabled={false} type={"submit"} handleClick={() => {}} />
+
+                                        {/* Margin Bottom to prevent Bottom touch */}
+                                        <MarginBottom />
                                     </form>
                                 </>
                             ) : (

@@ -9,35 +9,35 @@ export default function WeeklyInfo() {
         weeklyRecords: [
             {
                 id: 1,
-                title: "1주차 - UI 기초 개념",
+                title: "1주차 - 엥?",
                 date: "2024.03.05",
-                status: "완료",
+                status: "COMPLETE",
                 link: "google.com",
-                description: "사용자 인터페이스 디자인의 기본 원칙과 사용성에 대한 기본 개념 학습"
+                description: "햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오거라. 햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오라고 하지않앗느냐"
             },
             {
                 id: 2,
-                title: "2주차 - UX 리서치 방법론",
-                date: "2024.03.12",
-                status: "완료",
+                title: "2주차 - 엥엥?",
+                date: "2024.03.06",
+                status: "COMPLETE",
                 link: "google.com",
-                description: "사용자 경험 분석을 위한 다양한 리서치 방법 학습 및 실습"
+                description: "햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오거라. 햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오라고 하지않앗느냐"
             },
             {
                 id: 3,
-                title: "3주차 - 와이어프레임 작성",
-                date: "2024.03.19",
-                status: "완료",
+                title: "3주차 - 엥엥엥?",
+                date: "2024.03.07",
+                status: "COMPLETE",
                 link: "google.com",
-                description: "효과적인 와이어프레임 작성 기법과 프로토타이핑 도구 활용 방법"
+                description: "햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오거라. 햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오라고 하지않앗느냐"
             },
             {
                 id: 4,
-                title: "4주차 - 사용자 테스트",
-                date: "2024.03.26",
-                status: "진행 중",
+                title: "4주차 - 엥엥엥엥?",
+                date: "2024.03.08",
+                status: "INPROGRESS",
                 link: "google.com",
-                description: "프로토타입을 통한 사용자 테스트 방법과 피드백 수집 및 분석"
+                description: "햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오거라. 햄부기햄북 햄북어 햄북스딱스 함부르크햄부가우가 햄비기햄부거 햄부가티햄부기온앤 온을 차려오라고 하지않앗느냐"
             }
         ]
     };
@@ -63,7 +63,7 @@ export default function WeeklyInfo() {
                         </div>
                         <div className="p-4">
                             <div className="flex items-center mb-3">
-                                <div className={`w-2 h-2 rounded-full ${week.status === '완료' ? 'bg-green-500' : 'bg-yellow-500'} mr-2`}></div>
+                                <div className={`w-2 h-2 rounded-full ${week.status === 'COMPLETE' ? 'bg-green-500' : 'bg-yellow-500'} mr-2`}></div>
                                 <span className="text-sm">{week.status}</span>
                             </div>
                             <p className="text-sm text-gray-300 mb-4 line-clamp-2">{week.description}</p>

@@ -4,10 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
-import axios from "axios";
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import Header from '../Header';
-import studyList from "@/app/study/mock/studyData";
+import Header from '../components/common/Header';
+import studyList from "@/mock/studyData";
 
 export default function CreateStudy() {
     const router = useRouter();
@@ -15,8 +14,8 @@ export default function CreateStudy() {
     const urlParams = useSearchParams();
     const studyTitle = urlParams.get('title');
     const [isLoading, setIsLoading] = useState(false);
-    const [studyInfo, setStudyInfo] = useState(null);
-    const [isApplied, setIsApplied] = useState(false);
+    const [studyInfo, setStudyInfo] = useState(null); // check duplicate
+    const [isApplied, setIsApplied] = useState(false); // disable?
     const [imagePreview, setImagePreview] = useState(null);
 
     // Call API
@@ -32,7 +31,7 @@ export default function CreateStudy() {
                     setStudyInfo(studyData);
                 }
             } catch (error) {
-                console.error('Lerror fetching study data');
+                console.error('error fetching study data');
             } finally {
                 setIsLoading(false);
             }
@@ -40,7 +39,6 @@ export default function CreateStudy() {
 
         fetchData();
     }, [studyTitle]);
-
 
     const getCurrentDate = () => {
         const now = new Date();
@@ -118,11 +116,12 @@ export default function CreateStudy() {
             alert("스터디 개설이 완료되었습니다!");
             router.push(`/study/detail?title=${encodeURIComponent(updateFormData.title)}`);
         } catch (error) {
-            console.error("Lerror submitting form");
+            console.error("error submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
 
+    // input need data control like length, etc. char100, etc.
     return (
         <>
             {isLoading ? (
@@ -154,6 +153,7 @@ export default function CreateStudy() {
                                     value={formData.title}
                                     onChange={handleChange}
                                     placeholder="스터디 명을 적어주세요."
+                                    maxLength="50"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -166,6 +166,7 @@ export default function CreateStudy() {
                                     value={formData.introduce}
                                     onChange={handleChange}
                                     placeholder="한 줄 소개글을 적어주세요."
+                                    maxLength="100"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -226,6 +227,7 @@ export default function CreateStudy() {
                                     value={formData.expectedPlace}
                                     onChange={handleChange}
                                     placeholder="활동 예정 장소를 적어주세요. (ex. 동방, Google Meet 등)"
+                                    type="text"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -237,6 +239,7 @@ export default function CreateStudy() {
                                     value={formData.expectedTime}
                                     onChange={handleChange}
                                     placeholder="활동 예정 시간대를 모두 적어주세요. (ex. 월 17-19시, 화 15시~)"
+                                    type="text"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -257,10 +260,10 @@ export default function CreateStudy() {
                                     썸네일 로고 업로드 (1대1 사이즈)<span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    type="file"
                                     name="imagePath"
-                                    accept="image/*"
                                     onChange={handleChange}
+                                    accept="image/*"
+                                    type="file"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
