@@ -8,8 +8,8 @@ import { useRouter } from 'next/navigation';
 import { GoogleLogin } from './google/GoogleLogin';
 import AuthLogin from './screen/AuthLogin';
 import AuthFindId from './screen/AuthFindId';
-import AuthResetPassword from './screen/AuthResetRequest';
-import AuthResetPasswordStep2 from './screen/AuthResetPassword';
+import AuthResetPassword from './screen/AuthResetPassword';
+import AuthResetRequest from './screen/AuthResetRequest';
 
 export default function Page() {
   const router = useRouter();
@@ -82,7 +82,7 @@ export default function Page() {
           key='screen2'
           className={`absolute w-full transition-all duration-500 ease-in-out transform ${
             isRendering === 1 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-          } flex justify-center items-center`}
+          } flex justify-center items-center mt-[-20px]`}
         >
           <AuthFindId handleBackToLogin={handleBackToLogin} />
         </div>
@@ -94,7 +94,7 @@ export default function Page() {
             isRendering === 2 ? 'translate-x-0 opacity-100' : `${isRendering === 3 ? '-translate-x-full' : 'translate-x-full'} opacity-0`
           } flex justify-center items-center`}
         >
-          <AuthResetPassword handleNextStep={handleResetPasswordNext} handleBackToLogin={handleBackToLogin} />
+          <AuthResetRequest handleNextStep={handleResetPasswordNext} handleBackToLogin={handleBackToLogin} />
         </div>
 
         {/* 비밀번호 재설정 화면 2 */}
@@ -104,7 +104,7 @@ export default function Page() {
             isRendering === 3 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
           } flex justify-center items-center`}
         >
-          <AuthResetPasswordStep2 handleBackToResetRequest={handleBackToResetRequest} />
+          <AuthResetPassword handleBackToResetRequest={handleBackToResetRequest} />
         </div>
       </div>
     </div>
