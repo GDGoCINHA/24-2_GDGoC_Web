@@ -10,6 +10,8 @@ import { formatDate } from '@/utils/studyUtils';
 
 import Header from '../components/common/Header';
 import SubmitButton from '../components/ui/SubmitButton';
+import MarginBottom from '../components/common/MarginBottom';
+
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
 export default function Detail() {
@@ -152,6 +154,9 @@ export default function Detail() {
 
                     {/* 제출 버튼 */}
                     {renderSubmitButton()}
+
+                    {/* Margin Bottom to prevent Bottom touch */}
+                    <MarginBottom />
                 </>
             )}
         </>
