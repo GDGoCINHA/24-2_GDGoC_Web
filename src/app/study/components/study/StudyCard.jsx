@@ -44,7 +44,7 @@ export default function StudyCard({ title, description, status, reqEnd, icon }) 
             className="bg-[#1f1f1f] p-5 rounded-lg flex justify-between items-center w-full h-[150px] cursor-pointer"
         >
             <div className="w-72 mobile:w-[65vw]">
-                <h3 className="text-white text-xl font-bold">{title}</h3>
+                <h3 className="text-white text-xl font-bold mobile:text-lg">{title}</h3>
                 <p className="text-white text-sm text-wrap">{description}</p>
                 <p className="text-yellow-500 text-[12px] mt-4 text-wrap">모집마감: {reqEnd ? formatDate(reqEnd) : '정보없음'}</p>
             </div>
@@ -53,7 +53,7 @@ export default function StudyCard({ title, description, status, reqEnd, icon }) 
                     {getStatusText(status)}
                 </Chip>
                 {icon && (
-                    <Image src={icon} alt="Study Icon" width={40} height={40} className="w-10 h-10 rounded-full object-cover" />
+                    <Image src={icon} alt="Study Icon" width={40} height={40} className="w-10 h-10 rounded-full object-cover mobile:hidden" />
                 )}
             </div>
         </div>
