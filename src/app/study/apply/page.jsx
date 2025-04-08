@@ -6,6 +6,7 @@ import { Spinner } from '@nextui-org/react';
 import Image from 'next/image';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
+import { useStudyApplyPreCheck } from "@/hooks/study/useStudyApplyPreCheck";
 
 import Header from '../components/common/Header';
 import SubmitButton from "../components/ui/SubmitButton";
@@ -13,55 +14,14 @@ import MarginBottom from "../components/common/MarginBottom";
 
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
-import studyList from "@/mock/studyData";
-import { user, attendee } from "@/mock/userData";
-
 export default function Apply() {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
     const urlParams = useSearchParams();
     const studyTitle = urlParams.get('title');
-    const [isLoading, setIsLoading] = useState(true);
-    const [studyInfo, setStudyInfo] = useState(null);
 
-    // Call API
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Check if studyTitle is provided
-                if (!studyTitle || studyTitle === "null") { // 타이틀이 없는 자, 너는 여길 지나갈수 없다!
-                    router.push(`/study`);
-                    return;
-                }
-
-                if (process.env.NODE_ENV === 'development') {
-                    const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
-                    setStudyInfo(studyData);
-
-                    const userApplication = attendee.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
-                    if (userApplication) { // 당신은 이미 지원을 했다!
-                        router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
-                    }
-                } else {
-                    const { data: studyDataRes } = await apiClient.get('/studyData?page=1');
-                    const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
-                    setStudyInfo(studyData);
-
-                    const thisUserId = 12253956;
-                    const { data: userApplications } = await apiClient.get('/attendee?studyId=${studyData.id}');
-                    if (userApplications.applications.filter((application) => application.attendeeId === thisUserId).length > 0) {
-                        router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
-                    }
-                }
-            } catch (error) {
-                console.error('error fetching study data');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [studyTitle]);
+    // API: useStudyApplyPreCheck
+    const { studyInfo, isLoading, error } = useStudyApplyPreCheck();
 
     // NEED EDIT
     const [formData, setFormData] = useState({
@@ -120,7 +80,7 @@ export default function Apply() {
                                         className="object-contain mobile:w-[25px]"
                                     />
                                 )}
-                                <h1 className="text-white text-2xl text-center mobile:text-lg">
+                                <h1 className="text-white text-3xl text-center mobile:text-xl">
                                     {studyTitle} 신청하기
                                 </h1>
                             </div>

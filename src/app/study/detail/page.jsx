@@ -99,8 +99,8 @@ export default function Detail() {
 
                     {/* White Box */}
                     <div className="relative flex flex-col items-center justify-center w-full px-[96px] mobile:px-[24px] py-8">
-                        <div className="w-full max-w-[800px] border border-white rounded-lg p-7 relative overflow-hidden">
-                            <div className="text-white relative z-10">
+                        <div className="w-full max-w-[800px] border border-white rounded-lg p-7 mobile:pb-2 relative overflow-hidden">
+                            <div className="text-white relative">
                                 {studyInfo ? (
                                     <>
                                         <div className="mb-6">
@@ -137,16 +137,16 @@ export default function Detail() {
                                                     <p className="mb-2 text-lg mobile:text-sm">학번: {studyLeadInfo.studentId}</p>
                                                     <p className="mb-2 text-lg mobile:text-sm">전공: {studyLeadInfo.major}</p>
                                                     <p className="mb-2 text-lg mobile:text-sm">학년: {studyLeadInfo.grade}학년</p>
-                                                    <p className="mb-2 text-lg mobile:text-sm">연락처: {studyLeadInfo.phoneNumber}</p>
+                                                    <p className="text-lg mobile:text-sm">연락처: {studyLeadInfo.phoneNumber}</p>
                                                 </div>
                                             )}
                                         </div>
                                     </>
                                 ) : (
-                                    <>
-                                        <h1 className="text-center text-xl">스터디 정보를 불러올 수 없습니다.</h1>
-                                        <p className="text-center">URL을 다시 확인해주세요.</p>
-                                    </>
+                                    <div className="mobile:pb-7">
+                                        <h1 className="text-center text-xl mobile:text-lg">스터디 정보를 불러올 수 없습니다.</h1>
+                                        <p className="text-center text-lg mobile:text-sm">URL을 다시 확인해주세요.</p>
+                                    </div>
                                 )}
                             </div>
                         </div>
