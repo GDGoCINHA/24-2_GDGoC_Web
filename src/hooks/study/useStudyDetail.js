@@ -36,7 +36,7 @@ export const useStudyDetail = () => {
                     if (userApplication) setIsApplied(true);
                 } else {
                     // Fetch study info
-                    const { data: studyDataRes } = await apiClient.get('/studyData?page=1');
+                    const { data: studyDataRes } = await apiClient.get('/study?page=1');
                     const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
 
@@ -46,7 +46,7 @@ export const useStudyDetail = () => {
 
                     // Fetch user's application status
                     const thisUserId = 12253956;
-                    const { data: userApplications } = await apiClient.get(`/attendee?studyId=${studyData.id}`);
+                    const { data: userApplications } = await apiClient.get(`/study/${studyData.id}/attendee`);
                     if (userApplications.applications.filter((application) => application.attendeeId === thisUserId).length > 0) {
                         setIsApplied(true);
                     }

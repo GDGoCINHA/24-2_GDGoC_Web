@@ -33,12 +33,12 @@ export const useStudyApplyPreCheck = () => {
                         router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
                     }
                 } else {
-                    const { data: studyDataRes } = await apiClient.get('/studyData?page=1');
+                    const { data: studyDataRes } = await apiClient.get('/study?page=1');
                     const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
 
                     const thisUserId = 12253956;
-                    const { data: userApplications } = await apiClient.get('/attendee?studyId=${studyData.id}');
+                    const { data: userApplications } = await apiClient.get('/study/${studyData.id}/attendee');
                     if (userApplications.applications.filter((application) => application.attendeeId === thisUserId).length > 0) {
                         router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
                     }

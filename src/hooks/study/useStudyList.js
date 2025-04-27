@@ -15,7 +15,7 @@ export const useStudyList = () => {
                 if (process.env.NODE_ENV === 'development') {
                     setStudyInfo(studyList.data.studyList);
                 } else {
-                    const response = await apiClient.get('/studyData');
+                    const response = await apiClient.get('/study?page=1');
                     setStudyInfo(response.data.studyList);
                 }
             } catch (err) {

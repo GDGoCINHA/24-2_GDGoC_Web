@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Spinner } from '@nextui-org/react';
 
 import { useStudyList } from '@/hooks/study/useStudyList';
-import { useHambugi } from '@/hooks/study/useHambugi';
 
 import Header from './components/common/Header';
-import Hambugi from './hambugi/Hambugi';
 import CreatorTypeSelector from './components/study/CreatorTypeSelector';
 import StudySection from './components/study/StudySection';
 import CreateStudyButton from './components/ui/CreateStudyButton';
@@ -20,9 +18,6 @@ export default function Study() {
 
     // API: useStudyList
     const { studyInfo, isLoading, error: studyError } = useStudyList();
-
-    // EsterEgg: get Hambugi!
-    const { isHambugi, error: hambugiError } = useHambugi();
 
     // GDGOC or PERSONAL
     const handleCreatorTypeChange = (type) => {
@@ -39,9 +34,6 @@ export default function Study() {
                 </div>
             ) : (
                 <>
-                    {/* Hambugi */}
-                    {isHambugi && <Hambugi />}
-
                     {/* Header */}
                     <Header />
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">

@@ -22,7 +22,7 @@ export const useStudyCreatePreCheck = () => {
                     const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
                 } else {
-                    const { data: studyDataRes } = await apiClient.get('/studyData?page=1');
+                    const { data: studyDataRes } = await apiClient.get('/study?page=1');
                     const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
                 }
