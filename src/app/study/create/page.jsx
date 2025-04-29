@@ -88,14 +88,14 @@ export default function CreateStudy() {
             multipartForm.append("expectedTime", updateFormData.expectedTime);
             multipartForm.append("imagePath", updateFormData.imagePath);
 
-            await apiClient.post('/studyWrite', multipartForm, {
+            await apiClient.post('/study', multipartForm, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
             alert("스터디 개설이 완료되었습니다!");
-            router.push(`/study/detail?title=${encodeURIComponent(updateFormData.title)}`);
+            router.push(`/study/detail/${encodeURIComponent(updateFormData.title)}`);
         } catch (error) {
             console.error("error submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");

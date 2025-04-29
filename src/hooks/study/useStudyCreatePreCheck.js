@@ -3,8 +3,8 @@ import {useRouter, useSearchParams} from "next/navigation";
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
-import studyList from '@/mock/studyMocks';
-import { user, attendee } from "@/mock/userMocks";
+import { getStudyList, getStudyAttendee1 } from '@/mock/studyMocks';
+import { getUser } from "@/mock/userMocks";
 
 export const useStudyCreatePreCheck = () => {
     const router = useRouter();
@@ -19,7 +19,7 @@ export const useStudyCreatePreCheck = () => {
         const fetchData = async () => {
             try {
                 if (process.env.NODE_ENV === 'development') {
-                    const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
+                    const studyData = getStudyList.data.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
                 } else {
                     const { data: studyDataRes } = await apiClient.get('/study?page=1');

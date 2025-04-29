@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {useRouter, useSearchParams} from "next/navigation";
+import { useRouter, useParams, useSearchParams} from "next/navigation";
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
@@ -9,7 +9,8 @@ export const useStudyApplyPreCheck = () => {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
     const urlParams = useSearchParams();
-    const studyTitle = decodeURIComponent(urlParams.get('title'));
+    const pathParams = useParams();
+    const studyTitle =  decodeURIComponent(pathParams.title);
     const [studyInfo, setStudyInfo] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -29,7 +30,7 @@ export const useStudyApplyPreCheck = () => {
 
                     const userApplication = getStudyAttendee1.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
                     if (userApplication) { // 당신은 이미 지원을 했다!
-                        router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
+                        router.push(`/study/detail/${encodeURIComponent(studyTitle)}`);
                     }
                 } else {
                     const { data: studyDataRes } = await apiClient.get('/study?page=1');
@@ -39,7 +40,7 @@ export const useStudyApplyPreCheck = () => {
                     const thisUserId = 12253956;
                     const { data: userApplications } = await apiClient.get('/study/${studyData.id}/attendee');
                     if (userApplications.applications.filter((application) => application.attendeeId === thisUserId).length > 0) {
-                        router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
+                        router.push(`/study/detail/${encodeURIComponent(studyTitle)}`);
                     }
                 }
             } catch (error) {

@@ -41,7 +41,7 @@ export default function Study() {
                     <StudyHeader />
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
                         <h1 className="text-white text-xl text-left mobile:text-center mobile:text-lg">
-                            GDSC Inha에서는 높은 수준의 멤버들과
+                            GDGoC Inha에서는 높은 수준의 멤버들과
                         </h1>
                         <h1 className="text-white text-xl text-left mobile:text-center mobile:text-lg">
                             다양한 스터디를 진행하고 있습니다.

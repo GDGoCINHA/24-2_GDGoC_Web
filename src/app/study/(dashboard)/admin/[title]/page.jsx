@@ -10,6 +10,8 @@ import InfoArea from "@/components/study/dashboard/InfoArea";
 export default function MyStudy() {
     const [isLoading, setIsLoading] = useState(false);
     const [activeMenu, setActiveMenu] = useState('applyResultAdmin');
+    const pathParams = useParams();
+    const studyTitle =  decodeURIComponent(pathParams.title);
 
     // check if logged in
     // check if admin

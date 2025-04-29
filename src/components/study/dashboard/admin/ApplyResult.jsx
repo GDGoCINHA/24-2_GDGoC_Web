@@ -1,74 +1,114 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from "next/navigation";
+import React, { useState } from 'react';
+import { useParams } from "next/navigation";
 
-export default function ResultViewAdmin() {
-    const router = useRouter();
+export default function BackendStudyManagement() {
+    const pathParams = useParams();
+    const studyTitle =  decodeURIComponent(pathParams.title);
 
-    const data = {
-        currentStudies: [
-            {id: 1, title: "백엔드", date: "2024.09.09", status: "PENDING"}
-        ],
-        completedStudies: [
-            {id: 2, title: "UI/UX", date: "2024.02.28", status: "APPROVED"},
-            {id: 3, title: "프론트엔드", date: "2024.03.15", status: "REJECTED"}
-        ],
+    const [applications, setApplications] = useState([
+        { id: 1, name: "이재아", place: "컴퓨터공학과", date: "12243954", grade: "2", selected: false },
+        { id: 2, name: "이재아", place: "컴퓨터공학과", date: "12243954", grade: "2", selected: false },
+        { id: 3, name: "이재아", place: "컴퓨터공학과", date: "12243954", grade: "2", selected: false }
+    ]);
+
+    // Toggle selection for an applicant
+    const toggleSelection = (id) => {
+        setApplications(applications.map(app =>
+            app.id === id ? { ...app, selected: !app.selected } : app
+        ));
     };
 
-    const getStatusBadge = (status) => {
-        const baseClasses = "px-3 py-1 rounded-full text-sm font-medium text-white";
-        if (status === 'APPROVED')
-            return `${baseClasses} bg-blue-500`;
-        if (status === 'REJECTED')
-            return `${baseClasses} bg-red-500`;
-        return `${baseClasses} bg-yellow-500`;
+    // Handle final approval
+    const handleApproval = () => {
+        // Process approvals and rejections
+        const approvedUsers = applications.filter(app => app.selected);
+        const rejectedUsers = applications.filter(app => !app.selected);
+
+        console.log("Approved users:", approvedUsers);
+        console.log("Rejected users:", rejectedUsers);
+
+        alert(`${approvedUsers.length} 명의 지원자가 합격되었습니다.`);
     };
 
-    const getStatusName = (status) => {
-        if (status === 'APPROVED') return '합격';
-        if (status === 'REJECTED') return '불합격';
-        return '발표 전';
-    };
-
-    const renderTable = (title, data) => (
-        <div className="mb-10">
-            <h2 className="text-xl md:text-2xl font-bold mb-6">{title}</h2>
-
-            <div className="overflow-x-auto">
-                <div className="border border-gray-800 rounded-lg bg-gray-900">
-                    <div className="grid grid-cols-4 py-4 px-4 bg-gray-800">
-                        <div className="font-bold">스터디</div>
-                        <div className="font-bold">모집 마감일</div>
-                        <div className="font-bold text-center">상태</div>
-                        <div></div>
-                    </div>
-
-                    {data.length > 0 ? (
-                        data.map((data) => (
-                            <div key={`${title}-${data.id}`} className="grid grid-cols-4 py-4 px-4 border-t border-gray-800 hover:bg-blue-900 transition-colors duration-200">
-                                <div>{data.title}</div>
-                                <div>{data.date}</div>
-                                <div className="text-center">
-                                    <span className={getStatusBadge(data.status)}>{getStatusName(data.status)}</span>
-                                </div>
-                                <div className="text-right">
-                                    <button onClick={() => router.push(`/study/detail?title=${data.title}`)} className="text-blue-500 hover:text-blue-300 text-sm">정보 보기</button>
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div className="py-8 px-4 text-center text-gray-500">
-                            데이터가 없습니다.
-                        </div>
-                    )}
+    // Study notification section
+    const StudyNotice = () => (
+        <div className="bg-gray-900 p-6 rounded-md mb-6">
+            <div className="flex items-start">
+                <span className="text-2xl mr-3">💡</span>
+                <div>
+                    <h3 className="font-medium mb-2">모집 관련 주의사항</h3>
+                    <ul className="space-y-1">
+                        <li>• 모집 마감일 다음 날까지는 자유롭게 합/불 체크가 가능합니다.</li>
+                        <li>• 마감일 이전에는 최종 결정 및 마감 버튼으로 조기 마감이 가능합니다.</li>
+                        <li>• 모집 마감일 하루 뒤 자정에는 자동으로 마지막으로 체크한 합/불 결과가 반영됩니다.</li>
+                        <li>• 지원자는 MY 스터디 참여 현황에서 모집 마감 시간 하루 뒤 합격여부 조회가 가능합니다.</li>
+                    </ul>
                 </div>
             </div>
         </div>
     );
 
+    // Study information section
+    const StudyInfo = () => {
+        // Render checkbox based on selection state
+        const renderCheckbox = (appId, isSelected) => {
+            return (
+                <div
+                    className="w-6 h-6 mx-auto border border-gray-300 cursor-pointer flex items-center justify-center"
+                    onClick={() => toggleSelection(appId)}
+                >
+                    {isSelected ? "O" : ""}
+                </div>
+            );
+        };
+
+        return (
+            <div>
+                <h2 className="text-3xl font-bold mb-6">{studyTitle} 스터디</h2>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead>
+                        <tr className="border-b border-gray-200">
+                            <th className="py-3 text-left">이름</th>
+                            <th className="py-3 text-left">학과</th>
+                            <th className="py-3 text-left">학번</th>
+                            <th className="py-3 text-center">학년</th>
+                            <th className="py-3 text-center">합격 여부</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {applications.map((app) => (
+                            <tr key={app.id} className="border-b border-gray-200">
+                                <td className="py-4">{app.name}</td>
+                                <td className="py-4">{app.place}</td>
+                                <td className="py-4">{app.date}</td>
+                                <td className="py-4 text-center">{app.grade}</td>
+                                <td className="py-4 text-center">
+                                    {renderCheckbox(app.id, app.selected)}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className="mt-4 text-center">
+                    <button
+                        className="border border-green-600 text-green-600 px-4 py-2 rounded hover:bg-green-600 hover:text-white transition-colors"
+                        onClick={handleApproval}
+                    >
+                        인원 확정
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
     return (
-        <>
-            {renderTable("모집 중인 스터디", data.currentStudies)}
-            {renderTable("모집 완료된 스터디", data.completedStudies)}
-        </>
+        <div className="max-w-6xl mx-auto p-4">
+            <StudyNotice />
+            <StudyInfo />
+        </div>
     );
 }

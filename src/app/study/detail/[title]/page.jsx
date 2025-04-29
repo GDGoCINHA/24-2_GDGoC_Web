@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
 
@@ -17,9 +17,12 @@ import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 export default function Detail() {
     const router = useRouter();
     const urlParams = useSearchParams();
-    const studyTitle = decodeURIComponent(urlParams.get('title'));
+    const pathParams = useParams();
+    const studyTitle =  decodeURIComponent(pathParams.title);
     const [isRecruiting, setIsRecruiting] = useState(false);
     const [leadDetail, setLeadDetail] = useState(false);
+
+    console.log(studyTitle);
 
     // API: useStudyDetail
     const { studyInfo, studyLeadInfo, isApplied, isLoading, error: studyDetailError } = useStudyDetail();
@@ -41,7 +44,7 @@ export default function Detail() {
     // onClick to apply
     const handleClick = useCallback(() => {
         if (studyInfo) {
-            router.push(`/study/apply?title=${encodeURIComponent(studyInfo.title)}`);
+            router.push(`/study/apply/${encodeURIComponent(studyInfo.title)}`);
         }
     }, [studyInfo]);
 

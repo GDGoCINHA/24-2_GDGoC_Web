@@ -35,7 +35,7 @@ export default function StudyCard({ title, description, status, reqEnd, icon }) 
     };
 
     const handleClick = () => {
-        router.push(`/study/detail?title=${encodeURIComponent(title)}`);
+        router.push(`/study/detail/${encodeURIComponent(title)}`);
     };
 
     return (

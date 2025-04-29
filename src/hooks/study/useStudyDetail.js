@@ -1,16 +1,17 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams} from 'next/navigation';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
-import studyList from '@/mock/studyMocks';
-import { attendee, user } from "@/mock/userMocks";
+import { getStudyDetails, getStudyAttendee1 } from '@/mock/studyMocks';
+import { getUser } from "@/mock/userMocks";
 
 export const useStudyDetail = () => {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
     const urlParams = useSearchParams();
-    const studyTitle = decodeURIComponent(urlParams.get('title'));
+    const pathParams = useParams();
+    const studyTitle =  decodeURIComponent(pathParams.title);
     const [studyInfo, setStudyInfo] = useState(null);
     const [studyLeadInfo, setStudyLeadInfo] = useState(null);
     const [isApplied, setIsApplied] = useState(false);
@@ -28,9 +29,9 @@ export const useStudyDetail = () => {
                 }
 
                 if (process.env.NODE_ENV === 'development') {
-                    const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
-                    const leadData = user.data.find(usr => usr.studentId === studyData.creatorId);
-                    const userApplication = attendee.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
+                    const studyData = getStudyDetails.data;
+                    const leadData = getUser.data.find(usr => usr.studentId === studyData.creatorId);
+                    const userApplication = getStudyAttendee1.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
                     setStudyInfo(studyData);
                     setStudyLeadInfo(leadData);
                     if (userApplication) setIsApplied(true);

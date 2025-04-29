@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams, useSearchParams} from 'next/navigation';
 import { Spinner } from '@nextui-org/react';
 import Image from 'next/image';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { useStudyApplyPreCheck } from "@/hooks/study/useStudyApplyPreCheck";
 
-import Header from '@components/study/StudyHeader';
+import Header from '@/components/study/StudyHeader';
 import SubmitButton from "@/components/ui/button/SubmitButton";
 import MarginBottom from "@/components/MarginBottom";
 
@@ -18,7 +18,8 @@ export default function Apply() {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
     const urlParams = useSearchParams();
-    const studyTitle = urlParams.get('title');
+    const pathParams = useParams();
+    const studyTitle =  decodeURIComponent(pathParams.title);
 
     // API: useStudyApplyPreCheck
     const { studyInfo, isLoading, error } = useStudyApplyPreCheck();
@@ -38,12 +39,12 @@ export default function Apply() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await apiClient.post(`/studyApply`, {
+            await apiClient.post(`/study/${studyInfo.id}/attendee`, {
                 formData
             });
             alert("신청이 완료되었습니다!");
 
-            router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
+            router.push(`/study/detail/${encodeURIComponent(studyTitle)}`);
         } catch (error) {
             console.error("error submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");

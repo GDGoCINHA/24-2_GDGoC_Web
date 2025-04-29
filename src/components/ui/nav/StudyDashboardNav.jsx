@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react';
 export default function StudyDashboardNav({ isAdminPage = false, currentMenu, onMenuClick }) {
     const myMenuItems = [
         { id: 'applyResult', label: '스터디 지원 결과' },
-        { id: 'attendance', label: '스터디 출석기록' },
-        { id: 'weakly', label: '스터디 주차별 기록' }
+        /*{ id: 'attendance', label: '스터디 출석기록' },*/
+        /*{ id: 'weakly', label: '스터디 주차별 기록' }*/
     ];
     const adminMenuItems = [
         { id: 'applyResultAdmin', label: '스터디 신청자 현황' },
-        { id: 'attendanceAdmin', label: '스터디 출석기록' },
-        { id: 'weaklyAdmin', label: '스터디 주차별 기록' }
+        /*{ id: 'attendanceAdmin', label: '스터디 출석기록' },*/
+        /*{ id: 'weaklyAdmin', label: '스터디 주차별 기록' }*/
     ];
 
     const menuOption = isAdminPage ? adminMenuItems : myMenuItems;
