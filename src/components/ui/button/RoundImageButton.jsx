@@ -1,13 +1,9 @@
 import React from "react";
-import { useRouter } from "next/navigation";
+
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
 
-import writeIcon from "@public/src/images/GDGoC_icon.png";
-
 export default function RoundImageButton({ imageLink, color, isDisabled, handleClick }) {
-    const router = useRouter();
-
     return (
         <div className="fixed bottom-6 right-6">
             <Button

@@ -1,33 +1,37 @@
 import { useEffect, useState } from 'react';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import { getStudyList } from '@/mock/studyMocks';
+import { getStudiesGDGOC, getStudiesPERSONAL } from "@/mock/studyMock";
 
 export const useStudyList = () => {
     const { apiClient } = useAuthenticatedApi();
-    const [studyInfo, setStudyInfo] = useState([]);
+
+    const [studyListGDGOC, setStudyListGDGOC] = useState([]);
+    const [studyListPERSONAL, setStudyListPERSONAL] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchStudyListData = async () => {
             try {
                 if (process.env.NODE_ENV === 'development') {
-                    setStudyInfo(getStudyList.data.studyList);
+                    setStudyListGDGOC(getStudiesGDGOC.data.studyList);
+                    setStudyListPERSONAL(getStudiesPERSONAL.data.studyList);
                 } else {
-                    const response = await apiClient.get('/study?page=1');
-                    setStudyInfo(response.data.studyList);
+                    const resGDGOC = await apiClient.get('/studies?page=1?creatorType=GDGOC');
+                    const resPERSONAL = await apiClient.get('/studies?page=1?creatorType=PERSONAL');
+                    setStudyListGDGOC(resGDGOC.data.studyList);
+                    setStudyListPERSONAL(resPERSONAL.data.studyList);
                 }
             } catch (err) {
-                console.error('Error fetching study data:', err.message);
                 setError(err);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchData();
+        fetchStudyListData();
     }, []);
 
-    return { studyInfo, isLoading, error };
+    return { studyListGDGOC, studyListPERSONAL, isLoading, error };
 };

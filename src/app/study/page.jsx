@@ -4,23 +4,28 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Spinner } from '@nextui-org/react';
 
+// Hooks
 import { useStudyList } from '@/hooks/study/useStudyList';
 
+// Components
 import StudyHeader from '@/components/study/StudyHeader';
-import CreatorTypeSelector from '@/components/study/CreatorTypeSelector';
+import StudyTypeNav from '@/components/study/ui/nav/StudyTypeNav';
 import StudySection from '@/components/study/StudySection';
 import RoundImageButton from '@/components/ui/button/RoundImageButton';
 import MarginBottom from '@/components/MarginBottom';
-import SubmitButton from "@/components/ui/button/SubmitButton";
 
-import gdgocIcon from '@public/src/images/GDGoC_icon.png';
+// Images
+import writeIcon from '@public/ui/pencil.png';
 
 export default function Study() {
     const router = useRouter();
     const [creatorType, setCreatorType] = useState('PERSONAL');
 
     // API: useStudyList
-    const { studyInfo, isLoading, error: studyError } = useStudyList();
+    const { studyListGDGOC, studyListPERSONAL, isLoading, error }= useStudyList();
+
+    // Set the studyList based on creatorType
+    const studyList = creatorType === 'GDGOC' ? (studyListGDGOC || []) : (studyListPERSONAL || []);
 
     // GDGOC or PERSONAL
     const handleCreatorTypeChange = (type) => {
@@ -48,17 +53,17 @@ export default function Study() {
                         </h1>
                     </header>
 
-                    {/* creatorType Selection */}
-                    <CreatorTypeSelector
+                    {/* Study Type Nav */}
+                    <StudyTypeNav
                         creatorType={creatorType}
                         onChange={handleCreatorTypeChange}
                     />
 
-                    {/* Study List by creatorType*/}
-                    <StudySection creatorType={creatorType} studyInfo={studyInfo} />
+                    {/* StudyList by creatorType*/}
+                    <StudySection creatorType={creatorType} studyList={studyList} />
 
                     {/* Create New PERSONAL Study */}
-                    <RoundImageButton imageLink={gdgocIcon} color={"danger"} isDisabled={false} type={"submit"} handleClick={() => router.push(`/study/create`)} />
+                    <RoundImageButton imageLink={writeIcon} color={"danger"} isDisabled={false} type={"submit"} handleClick={() => router.push(`/study/create`)} />
 
                     {/* Margin Bottom to prevent Bottom touch */}
                     <MarginBottom />

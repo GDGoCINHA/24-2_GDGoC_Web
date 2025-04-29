@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
-import StudyCard from '@/components/ui/card/StudyCard';
+// components
+import StudyCard from '@/components/study/ui/card/StudyCard';
 
-export default function StudySection({ creatorType, studyInfo }) {
+export default function StudySection({ creatorType, studyList }) {
     // Filter study based on creatorType
     const filterStudy = creatorType
-        ? studyInfo.filter((study) => study.creatorType === creatorType)
-        : studyInfo;
+        ? studyList.filter((study) => study.creatorType === creatorType)
+        : studyList;
 
     // Render study cards
     const renderStudyCard = useCallback((status, title, intro) => {
@@ -21,6 +22,7 @@ export default function StudySection({ creatorType, studyInfo }) {
                     {filteredStudies.map((study) => (
                         <div key={study.id}>
                             <StudyCard
+                                id={study.id}
                                 title={study.title}
                                 description={study.simpleIntroduce}
                                 status={study.status}
@@ -34,13 +36,12 @@ export default function StudySection({ creatorType, studyInfo }) {
         );
     }, [filterStudy]);
 
-
     return (
         <div className="relative flex justify-center items-center space-y-4 mobile:px-[24px]">
             {(creatorType === 'GDGOC' || creatorType === 'PERSONAL') && (
                 <div className="w-full max-w-4xl">
-                    {renderStudyCard("RECRUITING", '현재 모집 중인 스터디', '마감일 확인하시고 원하시는 스터디에 지원하세요!')}
-                    {renderStudyCard("RECRUITED", '지난 스터디 구경하기', 'GDGoC에서 진행했던 스터디들을 구경해보세요!')}
+                    {renderStudyCard("RECRUITING", '현재 모집 중인 스터디', '모집 마감일 확인하시고 원하시는 스터디에 지원하세요!')}
+                    {renderStudyCard("RECRUITED", '지난 스터디 구경하기', '과거에 진행했던 스터디들을 구경해보세요!')}
                 </div>
             )}
         </div>
