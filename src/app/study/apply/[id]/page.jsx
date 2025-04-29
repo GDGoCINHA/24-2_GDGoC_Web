@@ -24,9 +24,27 @@ export default function Apply() {
     const studyId =  decodeURIComponent(pathParams.id);
 
     // API: useStudyDetail
-    const { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error } = useStudyDetail(studyId);
+    const { studyDetail, isRecruiting, isApplied, isLoading, error } = useStudyDetail(studyId);
 
-    // formdata
+    // Check if the study detail is loaded
+    if (!studyDetail) {
+        alert("스터디 신청 정보를 불러올 수 없습니다.");
+        router.push(`/study/detail/${encodeURIComponent(studyId)}`);
+    }
+
+    // Check if the study is recruiting
+    if (!isRecruiting) {
+        alert("해당 스터디는 모집 중이 아닙니다.");
+        router.push(`/study/detail/${encodeURIComponent(studyId)}`);
+    }
+
+    // Check if the user is already applied
+    if (isApplied) {
+        alert("이미 신청한 스터디입니다.");
+        router.push(`/study/my`);
+    }
+
+    // FormData
     const [formData, setFormData] = useState({
         introduce: "",
         activityTime: "",
@@ -44,7 +62,7 @@ export default function Apply() {
             await apiClient.post(`/study/${studyId}/applications`, formData);
             alert("신청이 완료되었습니다!");
 
-            router.push(`/study/detail/${encodeURIComponent(studyId)}`);
+            router.push(`/study/my`);
         } catch (error) {
             console.error("error submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
