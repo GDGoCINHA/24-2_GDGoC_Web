@@ -1,30 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useParams, useSearchParams} from 'next/navigation';
+import React, { useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { Spinner } from '@nextui-org/react';
 import Image from 'next/image';
 
+// hooks
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import { useStudyApplyPreCheck } from "@/hooks/study/useStudyApplyPreCheck";
+import { useStudyDetail } from "@/hooks/study/useStudyDetail";
 
+// components
 import Header from '@/components/study/StudyHeader';
 import SubmitButton from "@/components/ui/button/SubmitButton";
 import MarginBottom from "@/components/MarginBottom";
 
+// images
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
 export default function Apply() {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
-    const urlParams = useSearchParams();
     const pathParams = useParams();
-    const studyTitle =  decodeURIComponent(pathParams.title);
+    const studyId =  decodeURIComponent(pathParams.id);
 
-    // API: useStudyApplyPreCheck
-    const { studyInfo, isLoading, error } = useStudyApplyPreCheck();
+    // API: useStudyDetail
+    const { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error } = useStudyDetail(studyId);
 
-    // NEED EDIT
+    // formdata
     const [formData, setFormData] = useState({
         introduce: "",
         activityTime: "",
@@ -39,12 +41,10 @@ export default function Apply() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await apiClient.post(`/study/${studyInfo.id}/attendee`, {
-                formData
-            });
+            await apiClient.post(`/study/${studyId}/applications`, formData);
             alert("신청이 완료되었습니다!");
 
-            router.push(`/study/detail/${encodeURIComponent(studyTitle)}`);
+            router.push(`/study/detail/${encodeURIComponent(studyId)}`);
         } catch (error) {
             console.error("error submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
@@ -64,10 +64,10 @@ export default function Apply() {
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] items-center justify-center text-center">
                         <div className="flex flex-col mobile:flex-col items-center gap-2 mt-4 mobile:mt-2">
                             <div className="flex items-center gap-2">
-                                {studyInfo ? (
+                                {studyDetail ? (
                                     <Image
-                                        src={studyInfo.imagePath}
-                                        alt={`${studyTitle} Icon`}
+                                        src={studyDetail.imagePath}
+                                        alt={`${studyDetail.title} Icon`}
                                         width="30"
                                         height="30"
                                         className="object-contain mobile:w-[25px]"
@@ -82,7 +82,7 @@ export default function Apply() {
                                     />
                                 )}
                                 <h1 className="text-white text-3xl text-center mobile:text-xl">
-                                    {studyTitle} 신청하기
+                                    {studyDetail?.title ? studyDetail.title + " 신청하기" : "신청 정보가 없습니다."}
                                 </h1>
                             </div>
                         </div>
@@ -90,7 +90,7 @@ export default function Apply() {
 
                     <div className="flex justify-center items-center mt-10 bg-black text-white">
                         <div className="w-full max-w-2xl px-6">
-                            {studyInfo ? (
+                            {studyDetail ? (
                                 <>
                                     {/* Form */}
                                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -101,7 +101,7 @@ export default function Apply() {
                                         <textarea
                                             name="introduce"
                                             value={formData.introduce}
-                                            onChange={handleChange}
+                                            onChange={ handleChange }
                                             placeholder="스터디에 참여하고 싶습니다."
                                             className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
                                             required
@@ -114,14 +114,14 @@ export default function Apply() {
                                         <input
                                             name="activityTime"
                                             value={formData.activityTime}
-                                            onChange={handleChange}
+                                            onChange={ handleChange }
                                             placeholder="Ex) 월 17-19시, 화 15시-"
                                             className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                             required
                                         />
 
                                         {/* Submit */}
-                                        <SubmitButton text="제출하기" isDisabled={false} type={"submit"} handleClick={() => {}} />
+                                        <SubmitButton type="submit" text="제출하기" isDisabled={ false } handleClick={() => {}} />
 
                                         {/* Margin Bottom to prevent Bottom touch */}
                                         <MarginBottom />

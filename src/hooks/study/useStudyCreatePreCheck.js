@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
-import {useRouter, useSearchParams} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
-import { getStudyList, getStudyAttendee1 } from '@/mock/studyMocks';
-import { getUser } from "@/mock/userMocks";
+import { getStudyList, getStudyAttendee1 } from '@/mock/studyMock';
 
-export const useStudyCreatePreCheck = () => {
+export const useStudyCreatePreCheck = (studyId) => {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
-    const urlParams = useSearchParams();
-    const studyTitle = urlParams.get('title');
     const [studyInfo, setStudyInfo] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -35,7 +32,7 @@ export const useStudyCreatePreCheck = () => {
         };
 
         fetchData();
-    }, [studyTitle]);
+    }, [studyId]);
 
     return { studyInfo, isLoading, error };
 };
