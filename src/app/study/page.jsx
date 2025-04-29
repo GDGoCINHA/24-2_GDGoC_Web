@@ -9,8 +9,11 @@ import { useStudyList } from '@/hooks/study/useStudyList';
 import StudyHeader from '@/components/study/StudyHeader';
 import CreatorTypeSelector from '@/components/study/CreatorTypeSelector';
 import StudySection from '@/components/study/StudySection';
-import CreateStudyButton from '@/components/ui/button/CreateStudyButton';
+import RoundImageButton from '@/components/ui/button/RoundImageButton';
 import MarginBottom from '@/components/MarginBottom';
+import SubmitButton from "@/components/ui/button/SubmitButton";
+
+import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
 export default function Study() {
     const router = useRouter();
@@ -55,7 +58,7 @@ export default function Study() {
                     <StudySection creatorType={creatorType} studyInfo={studyInfo} />
 
                     {/* Create New PERSONAL Study */}
-                    <CreateStudyButton />
+                    <RoundImageButton imageLink={gdgocIcon} color={"danger"} isDisabled={false} type={"submit"} handleClick={() => router.push(`/study/create`)} />
 
                     {/* Margin Bottom to prevent Bottom touch */}
                     <MarginBottom />
