@@ -12,7 +12,7 @@ export default function CreateStudyButton() {
         <div className="fixed bottom-6 right-6">
             <Button
                 color="danger"
-                onPress={() => router.push(`/study/createStudy`)}
+                onPress={() => router.push(`/study/create`)}
                 className="rounded-full p-0 shadow-lg flex items-center justify-center w-14 h-14"
                 isIconOnly
             >

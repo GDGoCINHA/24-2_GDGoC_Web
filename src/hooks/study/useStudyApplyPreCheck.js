@@ -3,8 +3,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
-import studyList from '@/mock/studyData';
-import {attendee} from "@/mock/userData";
+import { getStudyList, getStudyAttendee1 } from '@/mock/studyMocks';
 
 export const useStudyApplyPreCheck = () => {
     const router = useRouter();
@@ -25,10 +24,10 @@ export const useStudyApplyPreCheck = () => {
                 }
 
                 if (process.env.NODE_ENV === 'development') {
-                    const studyData = studyList.data.studyList.find(study => study.title === studyTitle);
+                    const studyData = getStudyList.data.studyList.find(study => study.title === studyTitle);
                     setStudyInfo(studyData);
 
-                    const userApplication = attendee.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
+                    const userApplication = getStudyAttendee1.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
                     if (userApplication) { // 당신은 이미 지원을 했다!
                         router.push(`/study/detail?title=${encodeURIComponent(studyTitle)}`);
                     }

@@ -8,9 +8,9 @@ import Image from 'next/image';
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { useStudyCreatePreCheck } from "@/hooks/study/useStudyCreatePreCheck";
 
-import Header from '../components/common/Header';
+import StudyHeader from '@/components/study/StudyHeader';
 
-import studyList from "@/mock/studyData";
+import studyList from "@/mock/studyMocks";
 
 export default function CreateStudy() {
     const router = useRouter();
@@ -111,8 +111,8 @@ export default function CreateStudy() {
                 </div>
             ) : (
                 <>
-                    {/* Header */}
-                    <Header />
+                    {/* StudyHeader */}
+                    <StudyHeader />
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] items-center justify-center text-center">
                         <div className="flex flex-col mobile:flex-col items-center gap-2 mt-4 mobile:mt-2">
                             <div className="flex items-center gap-2">

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import ResultView from "./components/view/ApplyResult";
-import AttendanceView from "./components/view/Attendance";
-import WeeklyView from "./components/view/WeeklyInfo";
+import ResultView from "./components/my/ApplyResult";
+import AttendanceView from "./components/my/Attendance";
+import WeeklyView from "./components/my/WeeklyInfo";
+
+import ResultViewAdmin from "./components/admin/ApplyResult";
 
 export default function InfoArea({ currentMenu, isAdmin }) {
     const renderContent = () => {
@@ -24,9 +26,7 @@ export default function InfoArea({ currentMenu, isAdmin }) {
     const renderAdminContent = () => {
         switch(currentMenu) {
             case 'applyResultAdmin':
-                alert("현재 기능 준비 중입니다.");
-                return;
-                //return <ResultViewAdmin />;
+                return <ResultViewAdmin />;
             case 'attendance':
                 alert("현재 기능 준비 중입니다.");
                 return;

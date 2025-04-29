@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import { Chip } from '@nextui-org/react';
 import Image from 'next/image';
 
-import { formatDate } from '@/utils/studyUtils';
+import { formatDate } from '@/utils/formatDate';
 
 export default function StudyCard({ title, description, status, reqEnd, icon }) {
     const router = useRouter();

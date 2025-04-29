@@ -3,8 +3,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
-import studyList from '@/mock/studyData';
-import { attendee, user } from "@/mock/userData";
+import studyList from '@/mock/studyMocks';
+import { attendee, user } from "@/mock/userMocks";
 
 export const useStudyDetail = () => {
     const router = useRouter();

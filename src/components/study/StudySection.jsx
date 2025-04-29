@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-import StudyCard from './StudyCard';
+import StudyCard from '@/components/ui/card/StudyCard';
 
 export default function StudySection({ creatorType, studyInfo }) {
     // Filter study based on creatorType

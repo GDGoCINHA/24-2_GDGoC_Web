@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import studyList from '@/mock/studyData';
+import { getStudyList } from '@/mock/studyMocks';
 
 export const useStudyList = () => {
     const { apiClient } = useAuthenticatedApi();
@@ -13,7 +13,7 @@ export const useStudyList = () => {
         const fetchData = async () => {
             try {
                 if (process.env.NODE_ENV === 'development') {
-                    setStudyInfo(studyList.data.studyList);
+                    setStudyInfo(getStudyList.data.studyList);
                 } else {
                     const response = await apiClient.get('/study?page=1');
                     setStudyInfo(response.data.studyList);

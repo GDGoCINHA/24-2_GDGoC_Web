@@ -6,11 +6,11 @@ import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
 
 import { useStudyDetail } from '@/hooks/study/useStudyDetail';
-import { formatDate } from '@/utils/studyUtils';
+import { formatDate } from '@/utils/formatDate';
 
-import Header from '../components/common/Header';
-import SubmitButton from '../components/ui/SubmitButton';
-import MarginBottom from '../components/common/MarginBottom';
+import StudyHeader from '@/components/study/StudyHeader';
+import SubmitButton from '@/components/ui/button/SubmitButton';
+import MarginBottom from '@/components/study/MarginBottom';
 
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
@@ -68,8 +68,8 @@ export default function Detail() {
                 </div>
             ) : (
                 <>
-                    {/* Header */}
-                    <Header />
+                    {/* StudyHeader */}
+                    <StudyHeader />
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] items-center justify-center text-center">
                         <div className="flex flex-col mobile:flex-col items-center gap-2 mt-4 mobile:mt-2">
                             <div className="flex items-center gap-2">
