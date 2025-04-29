@@ -24,7 +24,7 @@ export const useStudyDetail = (studyId) => {
                         setStudyDetail(getStudyDetails.data);
                         setStudyLead(getStudyDetails.data.creator);
                         setIsRecruiting(getStudyDetails.data.status === "RECRUITING");
-                        if (getMyStudyApplyResult.data.recruiting.find(application => application.studyId === studyId)) {
+                        if (getMyStudyApplyResult.data.recruiting.some(application => application.studyId === Number(studyId))) {
                             setIsApplied(true);
                         }
                     }

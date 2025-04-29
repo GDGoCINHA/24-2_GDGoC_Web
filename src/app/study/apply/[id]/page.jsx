@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Spinner } from '@nextui-org/react';
 import Image from 'next/image';
@@ -26,23 +26,23 @@ export default function Apply() {
     // API: useStudyDetail
     const { studyDetail, isRecruiting, isApplied, isLoading, error } = useStudyDetail(studyId);
 
-    // Check if the study detail is loaded
-    if (!studyDetail) {
-        alert("스터디 신청 정보를 불러올 수 없습니다.");
-        router.push(`/study/detail/${encodeURIComponent(studyId)}`);
-    }
+    useEffect(() => {
+        if (studyDetail) {
+            // Check if the study is recruiting
+            if (isRecruiting === false) {
+                alert("해당 스터디는 모집 중이 아닙니다.");
+                router.push(`/study/detail/${encodeURIComponent(studyId)}`);
+                return;
+            }
 
-    // Check if the study is recruiting
-    if (!isRecruiting) {
-        alert("해당 스터디는 모집 중이 아닙니다.");
-        router.push(`/study/detail/${encodeURIComponent(studyId)}`);
-    }
-
-    // Check if the user is already applied
-    if (isApplied) {
-        alert("이미 신청한 스터디입니다.");
-        router.push(`/study/my`);
-    }
+            // Check if the user is already applied
+            if (isApplied) {
+                alert("이미 신청한 스터디입니다.");
+                router.push(`/study/my`);
+                return;
+            }
+        }
+    }, [studyDetail, isRecruiting, isApplied, router, studyId]);
 
     // FormData
     const [formData, setFormData] = useState({
