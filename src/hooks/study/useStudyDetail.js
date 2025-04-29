@@ -35,7 +35,7 @@ export const useStudyDetail = (studyId) => {
                     setIsRecruiting(resStudyDetail.data.status === "RECRUITING");
 
                     const resApplications = await apiClient.get('/studies/applicated');
-                    if (resApplications.data.recruiting.some((application) => application.studyId === studyId)) {
+                    if (resApplications.data.recruiting.some((application) => application.studyId === Number(studyId))) {
                         setIsApplied(true);
                     }
                 }
