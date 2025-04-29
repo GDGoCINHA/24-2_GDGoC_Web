@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { Spinner } from "@nextui-org/react";
 import StudyHeader from '@/components/study/StudyHeader';
-import Navigation from "../Navigation";
-import InfoArea from "../InfoArea";
+import StudyDashboardNav from "@/components/ui/nav/StudyDashboardNav";
+import InfoArea from "@/components/study/dashboard/InfoArea";
 
 export default function MyStudy() {
     const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +28,7 @@ export default function MyStudy() {
                     <StudyHeader />
                     <div className="container mx-auto px-4 py-8">
                         <div className="flex flex-col md:flex-row gap-6 mt-6 md:mt-10">
-                            <Navigation
+                            <StudyDashboardNav
                                 isAdminPage={true}
                                 currentMenu={activeMenu}
                                 onMenuClick={handleMenuClick}

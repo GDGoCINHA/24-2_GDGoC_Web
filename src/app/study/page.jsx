@@ -10,7 +10,7 @@ import StudyHeader from '@/components/study/StudyHeader';
 import CreatorTypeSelector from '@/components/study/CreatorTypeSelector';
 import StudySection from '@/components/study/StudySection';
 import CreateStudyButton from '@/components/ui/button/CreateStudyButton';
-import MarginBottom from '@/components/study/MarginBottom';
+import MarginBottom from '@/components/MarginBottom';
 
 export default function Study() {
     const router = useRouter();

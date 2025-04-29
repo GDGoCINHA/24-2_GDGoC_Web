@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import ResultView from "./components/my/ApplyResult";
-import AttendanceView from "./components/my/Attendance";
-import WeeklyView from "./components/my/WeeklyInfo";
+import ResultView from "@/components/study/dashboard/my/ApplyResult";
+import AttendanceView from "@/components/study/dashboard/my/Attendance";
+import WeeklyView from "@/components/study/dashboard/my/WeeklyInfo";
 
-import ResultViewAdmin from "./components/admin/ApplyResult";
+import ResultViewAdmin from "@/components/study/dashboard/admin/ApplyResult";
 
 export default function InfoArea({ currentMenu, isAdmin }) {
     const renderContent = () => {

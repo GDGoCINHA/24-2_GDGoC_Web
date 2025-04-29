@@ -10,7 +10,7 @@ import { formatDate } from '@/utils/formatDate';
 
 import StudyHeader from '@/components/study/StudyHeader';
 import SubmitButton from '@/components/ui/button/SubmitButton';
-import MarginBottom from '@/components/study/MarginBottom';
+import MarginBottom from '@/components/MarginBottom';
 
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
