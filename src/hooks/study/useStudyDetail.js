@@ -1,67 +1,53 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useRouter, useParams, useSearchParams} from 'next/navigation';
+import React, { useEffect, useState } from "react";
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
-import { getStudyDetails, getStudyAttendee1 } from '@/mock/studyMocks';
-import { getUser } from "@/mock/userMocks";
+import { getStudyDetails, getMyStudyApplyResult } from '@/mock/studyMock';
 
-export const useStudyDetail = () => {
-    const router = useRouter();
+export const useStudyDetail = (studyId) => {
     const { apiClient } = useAuthenticatedApi();
-    const urlParams = useSearchParams();
-    const pathParams = useParams();
-    const studyTitle =  decodeURIComponent(pathParams.title);
-    const [studyInfo, setStudyInfo] = useState(null);
-    const [studyLeadInfo, setStudyLeadInfo] = useState(null);
+
+    const [studyDetail, setStudyDetail] = useState(null);
+    const [studyLead, setStudyLead] = useState(null);
+    const [isRecruiting, setIsRecruiting] = useState(false);
     const [isApplied, setIsApplied] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Call API
     useEffect(() => {
-        const fetchData = async () => {
+        if (!studyId) return;
+
+        const fetchStudyDetailData = async () => {
             try {
-                // Check if studyTitle is provided
-                if (!studyTitle || studyTitle === "null") { // 타이틀이 없는 자, 너는 여길 지나갈수 없다!
-                    router.push(`/study`);
-                    return;
-                }
-
                 if (process.env.NODE_ENV === 'development') {
-                    const studyData = getStudyDetails.data;
-                    const leadData = getUser.data.find(usr => usr.studentId === studyData.creatorId);
-                    const userApplication = getStudyAttendee1.data.applications.find(usr => usr.attendeeId === 12253956 && usr.studyId === studyData.id);
-                    setStudyInfo(studyData);
-                    setStudyLeadInfo(leadData);
-                    if (userApplication) setIsApplied(true);
+                    if (studyId === "1") {
+                        setStudyDetail(getStudyDetails.data);
+                        setStudyLead(getStudyDetails.data.creator);
+                        setIsRecruiting(getStudyDetails.data.status === "RECRUITING");
+                        if (getMyStudyApplyResult.data.recruiting.find(application => application.studyId === studyId)) {
+                            setIsApplied(true);
+                        }
+                    }
                 } else {
-                    // Fetch study info
-                    const { data: studyDataRes } = await apiClient.get('/study?page=1');
-                    const studyData = studyDataRes.studyList.find(study => study.title === studyTitle);
-                    setStudyInfo(studyData);
+                    const resStudyDetail = await apiClient.get(`/studies/${studyId}`);
+                    setStudyDetail(resStudyDetail.data);
+                    setStudyLead(resStudyDetail.data.creator);
+                    setIsRecruiting(resStudyDetail.data.status === "RECRUITING");
 
-                    // Fetch study lead info
-                    const { data: studyLeadData } = await apiClient.get(`/user?id=${studyData.creatorId}`);
-                    setStudyLeadInfo(studyLeadData);
-
-                    // Fetch user's application status
-                    const thisUserId = 12253956;
-                    const { data: userApplications } = await apiClient.get(`/study/${studyData.id}/attendee`);
-                    if (userApplications.applications.filter((application) => application.attendeeId === thisUserId).length > 0) {
+                    const resApplications = await apiClient.get('/studies/applicated');
+                    if (resApplications.data.recruiting.some((application) => application.studyId === studyId)) {
                         setIsApplied(true);
                     }
                 }
             } catch (error) {
-                console.error('error fetching study data');
                 setError(error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchData();
-    }, [studyTitle]);
+        fetchStudyDetailData();
+    }, [apiClient, studyId]);
 
-    return { studyInfo, studyLeadInfo, isApplied, isLoading, error };
+    return { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error };
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@nextui-org/react";
 
-export default function SubmitButton({ text, isDisabled, type, handleClick }) {
+export default function SubmitButton({ type, text, isDisabled, handleClick }) {
     return (
         <div className="flex justify-center mt-4">
             <Button

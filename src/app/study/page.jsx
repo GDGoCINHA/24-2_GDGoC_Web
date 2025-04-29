@@ -22,7 +22,7 @@ export default function Study() {
     const [creatorType, setCreatorType] = useState('PERSONAL');
 
     // API: useStudyList
-    const { studyListGDGOC, studyListPERSONAL, isLoading, error }= useStudyList();
+    const { studyListGDGOC, studyListPERSONAL, isLoading, error } = useStudyList();
 
     // Set the studyList based on creatorType
     const studyList = creatorType === 'GDGOC' ? (studyListGDGOC || []) : (studyListPERSONAL || []);

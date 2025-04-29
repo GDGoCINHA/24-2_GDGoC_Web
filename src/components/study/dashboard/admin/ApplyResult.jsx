@@ -1,15 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from "next/navigation";
+
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
+import { useStudyDetail } from "@/hooks/study/useStudyDetail";
+
+import { getStudyAttendee1 } from '@/mock/studyMocks';
 
 export default function BackendStudyManagement() {
     const pathParams = useParams();
     const studyTitle =  decodeURIComponent(pathParams.title);
+    const { apiClient } = useAuthenticatedApi();
+    const [applications, setApplications] = useState([]);
 
-    const [applications, setApplications] = useState([
-        { id: 1, name: "이재아", place: "컴퓨터공학과", date: "12243954", grade: "2", selected: false },
-        { id: 2, name: "이재아", place: "컴퓨터공학과", date: "12243954", grade: "2", selected: false },
-        { id: 3, name: "이재아", place: "컴퓨터공학과", date: "12243954", grade: "2", selected: false }
-    ]);
+    // API: useStudyDetail
+    const { studyInfo, studyLeadInfo, isApplied, isLoading, error: studyDetailError } = useStudyDetail();
+
+    // API: get applications
+    useEffect(() => {
+        const fetchApplications = async () => {
+            try {
+                if (process.env.NODE_ENV === 'development') {
+                    const mockData = getStudyAttendee1.data.applications
+                        .filter(app => app.studyId === studyInfo.id)
+                        .map(app => ({ ...app, selected: false }));
+                    setApplications(mockData);
+                } else {
+                    const response = await apiClient.get(`/study/${studyInfo.id}/attendees`);
+                    const realData = response.data.applications.map(app => ({ ...app, selected: false }));
+                    setApplications(realData);
+                }
+            } catch (error) {
+                console.error("Failed to fetch applications:", error);
+            }
+        };
+
+        if (studyInfo?.id) {
+            fetchApplications();
+        }
+    }, [studyInfo?.id]);
 
     // Toggle selection for an applicant
     const toggleSelection = (id) => {
@@ -19,15 +47,24 @@ export default function BackendStudyManagement() {
     };
 
     // Handle final approval
-    const handleApproval = () => {
-        // Process approvals and rejections
+    const handleApproval = async () => {
+        const updateRequests = applications.map(user =>
+            apiClient.patch(`/study/${studyInfo.id}/attendee`, {
+                studyId: studyInfo.id,
+                attendeeId: user.id,
+                status: user.selected ? "APPROVED" : "REJECTED"
+            })
+        );
+
+        await Promise.all(updateRequests);
+
         const approvedUsers = applications.filter(app => app.selected);
         const rejectedUsers = applications.filter(app => !app.selected);
 
         console.log("Approved users:", approvedUsers);
         console.log("Rejected users:", rejectedUsers);
 
-        alert(`${approvedUsers.length} 명의 지원자가 합격되었습니다.`);
+        alert(`${approvedUsers.length}명 합격, ${rejectedUsers.length}명 불합격 처리되었습니다.`);
     };
 
     // Study notification section
@@ -57,7 +94,7 @@ export default function BackendStudyManagement() {
                     className="w-6 h-6 mx-auto border border-gray-300 cursor-pointer flex items-center justify-center"
                     onClick={() => toggleSelection(appId)}
                 >
-                    {isSelected ? "O" : ""}
+                    {isSelected ? "√" : ""} {/* 수학적 감성 무단으로 집어 넣기 */}
                 </div>
             );
         };
@@ -73,7 +110,6 @@ export default function BackendStudyManagement() {
                             <th className="py-3 text-left">이름</th>
                             <th className="py-3 text-left">학과</th>
                             <th className="py-3 text-left">학번</th>
-                            <th className="py-3 text-center">학년</th>
                             <th className="py-3 text-center">합격 여부</th>
                         </tr>
                         </thead>
@@ -81,9 +117,8 @@ export default function BackendStudyManagement() {
                         {applications.map((app) => (
                             <tr key={app.id} className="border-b border-gray-200">
                                 <td className="py-4">{app.name}</td>
-                                <td className="py-4">{app.place}</td>
-                                <td className="py-4">{app.date}</td>
-                                <td className="py-4 text-center">{app.grade}</td>
+                                <td className="py-4">{app.major}</td>
+                                <td className="py-4">{app.studentId}</td>
                                 <td className="py-4 text-center">
                                     {renderCheckbox(app.id, app.selected)}
                                 </td>

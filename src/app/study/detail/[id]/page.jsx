@@ -5,60 +5,55 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
 
+// hooks
 import { useStudyDetail } from '@/hooks/study/useStudyDetail';
-import { formatDate } from '@/utils/formatDate';
 
+// components
 import StudyHeader from '@/components/study/StudyHeader';
 import SubmitButton from '@/components/ui/button/SubmitButton';
 import MarginBottom from '@/components/MarginBottom';
+
+// utils
+import { formatDate } from '@/utils/formatDate';
 
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
 export default function Detail() {
     const router = useRouter();
-    const urlParams = useSearchParams();
     const pathParams = useParams();
-    const studyTitle =  decodeURIComponent(pathParams.title);
-    const [isRecruiting, setIsRecruiting] = useState(false);
-    const [leadDetail, setLeadDetail] = useState(false);
-
-    console.log(studyTitle);
+    const studyId =  decodeURIComponent(pathParams.id);
+    const [leadInfoToggle, setLeadInfoToggle] = useState(false);
 
     // API: useStudyDetail
-    const { studyInfo, studyLeadInfo, isApplied, isLoading, error: studyDetailError } = useStudyDetail();
-
-    // Get recruiting status
-    useEffect(() => {
-        if (studyInfo) {
-            setIsRecruiting(studyInfo.status === "RECRUITING");
-        } else {
-            setIsRecruiting(false);
-        }
-    }, [studyInfo]);
+    const { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error } = useStudyDetail(studyId);
 
     // toggle lead detail
     const toggleLeadDetail = () => {
-        setLeadDetail(!leadDetail);
+        setLeadInfoToggle(!leadInfoToggle);
     };
 
-    // onClick to apply
-    const handleClick = useCallback(() => {
-        if (studyInfo) {
-            router.push(`/study/apply/${encodeURIComponent(studyInfo.title)}`);
+    // onClick to Apply
+    const sendToApply = useCallback(() => {
+        if (studyId) {
+            router.push(`/study/apply/${encodeURIComponent(studyId)}`);
         }
-    }, [studyInfo]);
+    }, [router, studyId]);
+
+    // onClick to MyPage
+    const sendToMyPage = useCallback(() => {
+        router.push(`/study/my/`);
+    }, [router]);
 
     // Check if the user is already applied
     const renderSubmitButton = () => {
         if (!isRecruiting) return null;
 
-        const isAlreadyApplied = isApplied !== false;
-
         return (
             <SubmitButton
-                text={isAlreadyApplied ? "신청 완료" : "신청하기"}
-                isDisabled={isAlreadyApplied}
-                handleClick={isAlreadyApplied ? () => {} : handleClick}
+                type="button"
+                text={isApplied ? "신청 완료" : "신청하기"}
+                isDisabled={false}
+                handleClick={isApplied ? sendToMyPage : sendToApply}
             />
         );
     };
@@ -76,10 +71,10 @@ export default function Detail() {
                     <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] items-center justify-center text-center">
                         <div className="flex flex-col mobile:flex-col items-center gap-2 mt-4 mobile:mt-2">
                             <div className="flex items-center gap-2">
-                                {studyInfo ? (
+                                {studyDetail ? (
                                     <Image
-                                        src={studyInfo.imagePath}
-                                        alt={`${studyTitle} Icon`}
+                                        src={studyDetail.imagePath}
+                                        alt={`${studyDetail.title} Icon`}
                                         width="30"
                                         height="30"
                                         className="object-contain mobile:w-[25px]"
@@ -94,7 +89,7 @@ export default function Detail() {
                                     />
                                 )}
                                 <h1 className="text-white text-3xl text-center mobile:text-xl">
-                                    {studyTitle}
+                                    { studyDetail?.title || '존재하지 않는 스터디' }
                                 </h1>
                             </div>
                         </div>
@@ -104,43 +99,42 @@ export default function Detail() {
                     <div className="relative flex flex-col items-center justify-center w-full px-[96px] mobile:px-[24px] py-8">
                         <div className="w-full max-w-[800px] border border-white rounded-lg p-7 mobile:pb-2 relative overflow-hidden">
                             <div className="text-white relative">
-                                {studyInfo ? (
+                                {studyDetail ? (
                                     <>
                                         <div className="mb-6">
-                                            <p className="text-xl mobile:text-sm">{studyInfo.simpleIntroduce}</p>
+                                            <p className="text-xl mobile:text-sm">{studyDetail.simpleIntroduce}</p>
                                         </div>
 
                                         <div className="mb-6 border-l-2 border-yellow-500 pl-4">
-                                            <p className="mb-2 text-lg mobile:text-sm">모집 기간: {studyInfo.recruitStartDate ? formatDate(studyInfo.recruitStartDate) : '정보 없음'} ~ {studyInfo.recruitEndDate ? formatDate(studyInfo.recruitEndDate) : '정보 없음'}</p>
-                                            <p className="text-lg mobile:text-sm">활동 기간: {studyInfo.activityStartDate ? formatDate(studyInfo.activityStartDate) : '정보 없음'} ~ {studyInfo.activityEndDate ? formatDate(studyInfo.activityEndDate) : '정보 없음'}</p>
+                                            <p className="mb-2 text-lg mobile:text-sm">모집 기간: {studyDetail.recruitStartDate ? formatDate(studyDetail.recruitStartDate) : '정보 없음'} ~ {studyDetail.recruitEndDate ? formatDate(studyDetail.recruitEndDate) : '정보 없음'}</p>
+                                            <p className="text-lg mobile:text-sm">활동 기간: {studyDetail.activityStartDate ? formatDate(studyDetail.activityStartDate) : '정보 없음'} ~ {studyDetail.activityEndDate ? formatDate(studyDetail.activityEndDate) : '정보 없음'}</p>
                                         </div>
 
                                         <div className="mb-6">
-                                            <p className="mb-4 text-lg mobile:text-sm">{studyInfo.activityIntroduce}</p>
+                                            <p className="mb-4 text-lg mobile:text-sm">{studyDetail.activityIntroduce}</p>
                                         </div>
 
                                         <div className="bg-[#1f1f1f] p-4 rounded">
-                                            <p className="mb-2 text-lg mobile:text-sm">장소: {studyInfo.expectedPlace}</p>
-                                            <p className="text-lg mobile:text-sm">진행 시간: {studyInfo.expectedTime}</p>
+                                            <p className="mb-2 text-lg mobile:text-sm">장소: {studyDetail.expectedPlace}</p>
+                                            <p className="text-lg mobile:text-sm">진행 시간: {studyDetail.expectedTime}</p>
                                         </div>
                                         <div className="mt-6 mobile:pt-0 mobile:p-4 rounded">
                                             <Button
                                                 onPress={toggleLeadDetail}
                                                 className="items-center justify-center bg-[#1f1f1f] rounded text-left"
                                             >
-                                                <span className="ml-2 text-white transition-transform duration-200" style={{ transform: leadDetail ? 'rotate(90deg)' : 'rotate(0)' }}>
+                                                <span className="ml-2 text-white transition-transform duration-200" style={{ transform: leadInfoToggle ? 'rotate(90deg)' : 'rotate(0)' }}>
                                                     {'▶'}
                                                 </span>
-                                                <p className="text-white text-sm">스터디장 {studyLeadInfo.name} (정보 펼치기)</p>
+                                                <p className="text-white text-sm">스터디장 {studyLead.name} (정보 펼치기)</p>
                                             </Button>
 
-                                            {leadDetail && (
+                                            {leadInfoToggle && (
                                                 <div className="mt-2 p-4 bg-[#1f1f1f] rounded border border-white animate-fadeIn">
-                                                    <p className="mb-2 text-lg mobile:text-sm">이름: {studyLeadInfo.name}</p>
-                                                    <p className="mb-2 text-lg mobile:text-sm">학번: {studyLeadInfo.studentId}</p>
-                                                    <p className="mb-2 text-lg mobile:text-sm">전공: {studyLeadInfo.major}</p>
-                                                    <p className="mb-2 text-lg mobile:text-sm">학년: {studyLeadInfo.grade}학년</p>
-                                                    <p className="text-lg mobile:text-sm">연락처: {studyLeadInfo.phoneNumber}</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">이름: {studyLead.name}</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">학번: {studyLead.studentId}</p>
+                                                    <p className="mb-2 text-lg mobile:text-sm">전공: {studyLead.major}</p>
+                                                    <p className="text-lg mobile:text-sm">연락처: {studyLead.phoneNumber}</p>
                                                 </div>
                                             )}
                                         </div>
