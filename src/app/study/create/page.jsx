@@ -5,38 +5,42 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
 
+// hooks
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import { useStudyCreatePreCheck } from "@/hooks/study/useStudyCreatePreCheck";
 
+// components
 import StudyHeader from '@/components/study/StudyHeader';
-
-import studyList from "@/mock/studyMocks";
+import SubmitButton from '@/components/ui/button/SubmitButton';
 
 export default function CreateStudy() {
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
-    const urlParams = useSearchParams();
-    const [imagePreview, setImagePreview] = useState(null);
 
-    // API: useStudyCreatePreCheck
-    const { studyInfo, isLoading, error } = useStudyCreatePreCheck();
+    const [isLoading, setIsLoading] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
 
     const getCurrentDate = () => {
         const now = new Date();
         return now.toISOString().slice(0, 10);
     };
 
-    // NEED EDIT
+    const addTime = (dateStr) => {
+        if (!dateStr) return "";
+        return new Date(dateStr).toISOString();
+    };
+
+    // DataFormat
     const [formData, setFormData] = useState({
         title: "",
-        introduce: "",
+        simpleIntroduce: "",
         activityIntroduce: "",
-        recruitStartTime: getCurrentDate(),
-        recruitEndTime: "",
-        activityStartTime: "",
-        activityEndTime: "",
-        expectedPlace: "",
+        creatorType: "PERSONAL",
+        recruitStartDate: getCurrentDate(),
+        recruitEndDate: "",
+        activityStartDate: "",
+        activityEndDate: "",
         expectedTime: "",
+        expectedPlace: "",
         imagePath: null
     });
 
@@ -61,48 +65,39 @@ export default function CreateStudy() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const addTime = (dateStr) => {
-            if (!dateStr) return "";
-            return new Date(dateStr).toISOString();
-        };
-
         // add time 00:00:00
         const updateFormData = {
             ...formData,
-            recruitStartTime: addTime(formData.recruitStartTime),
-            recruitEndTime: addTime(formData.recruitEndTime),
-            activityStartTime: addTime(formData.activityStartTime),
-            activityEndTime: addTime(formData.activityEndTime),
+            recruitStartDate: addTime(formData.recruitStartDate),
+            recruitEndDate: addTime(formData.recruitEndDate),
+            activityStartDate: addTime(formData.activityStartDate),
+            activityEndDate: addTime(formData.activityEndDate),
         };
 
         try {
             const multipartForm = new FormData();
             multipartForm.append("title", updateFormData.title);
-            multipartForm.append("introduce", updateFormData.introduce);
+            multipartForm.append("simpleIntroduce", updateFormData.simpleIntroduce);
             multipartForm.append("activityIntroduce", updateFormData.activityIntroduce);
-            multipartForm.append("recruitStartTime", updateFormData.recruitStartTime);
-            multipartForm.append("recruitEndTime", updateFormData.recruitEndTime);
-            multipartForm.append("activityStartTime", updateFormData.activityStartTime);
-            multipartForm.append("activityEndTime", updateFormData.activityEndTime);
-            multipartForm.append("expectedPlace", updateFormData.expectedPlace);
+            multipartForm.append("creatorType", updateFormData.creatorType);
+            multipartForm.append("recruitStartDate", updateFormData.recruitStartDate);
+            multipartForm.append("recruitEndDate", updateFormData.recruitEndDate);
+            multipartForm.append("activityStartDate", updateFormData.activityStartDate);
+            multipartForm.append("activityEndDate", updateFormData.activityEndDate);
             multipartForm.append("expectedTime", updateFormData.expectedTime);
+            multipartForm.append("expectedPlace", updateFormData.expectedPlace);
             multipartForm.append("imagePath", updateFormData.imagePath);
 
-            await apiClient.post('/study', multipartForm, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+            await apiClient.post('/studies', multipartForm);
 
             alert("스터디 개설이 완료되었습니다!");
-            router.push(`/study/detail/${encodeURIComponent(updateFormData.title)}`);
+            router.push(`/study/admin`);
         } catch (error) {
             console.error("error submitting form");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
 
-    // input need data control like length, etc. char100, etc.
     return (
         <>
             {isLoading ? (
@@ -134,7 +129,7 @@ export default function CreateStudy() {
                                     value={formData.title}
                                     onChange={handleChange}
                                     placeholder="스터디 명을 적어주세요."
-                                    maxLength="15" // need adjust
+                                    maxLength="50" // need adjust
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -143,11 +138,11 @@ export default function CreateStudy() {
                                     한 줄 소개 <span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    name="introduce"
-                                    value={formData.introduce}
+                                    name="simpleIntroduce"
+                                    value={formData.simpleIntroduce}
                                     onChange={handleChange}
                                     placeholder="한 줄 소개글을 적어주세요."
-                                    maxLength="100"
+                                    maxLength="150"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -156,8 +151,8 @@ export default function CreateStudy() {
                                     모집 기간 <span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    name="recruitStartTime"
-                                    value={formData.recruitStartTime}
+                                    name="recruitStartDate"
+                                    value={formData.recruitStartDate}
                                     onChange={handleChange}
                                     type="date"
                                     placeholder="모집 시작일"
@@ -166,8 +161,8 @@ export default function CreateStudy() {
                                     required
                                 />
                                 <input
-                                    name="recruitEndTime"
-                                    value={formData.recruitEndTime}
+                                    name="recruitEndDate"
+                                    value={formData.recruitEndDate}
                                     onChange={handleChange}
                                     type="date"
                                     placeholder="모집 종료일"
@@ -180,8 +175,8 @@ export default function CreateStudy() {
                                     활동 기간 <span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    name="activityStartTime"
-                                    value={formData.activityStartTime}
+                                    name="activityStartDate"
+                                    value={formData.activityStartDate}
                                     onChange={handleChange}
                                     type="date"
                                     placeholder="활동 시작일"
@@ -190,8 +185,8 @@ export default function CreateStudy() {
                                     required
                                 />
                                 <input
-                                    name="activityEndTime"
-                                    value={formData.activityEndTime}
+                                    name="activityEndDate"
+                                    value={formData.activityEndDate}
                                     onChange={handleChange}
                                     type="date"
                                     placeholder="활동 종료일"
@@ -277,14 +272,7 @@ export default function CreateStudy() {
                                 )}
 
                                 {/* 제출 버튼 */}
-                                <div className="flex justify-center mt-4">
-                                    <Button
-                                        type="submit"
-                                        className="w-3/4 max-w-sm h-14 bg-red-500 text-white text-lg font-semibold rounded-lg"
-                                    >
-                                        제출하기
-                                    </Button>
-                                </div>
+                                <SubmitButton type="submit" text="제출하기" isDisabled={ false } handleClick={() => {}} />
                             </form>
                         </div>
                     </div>
