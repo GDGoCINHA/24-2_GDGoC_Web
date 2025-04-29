@@ -21,6 +21,11 @@ export default function Study() {
     const router = useRouter();
     const [creatorType, setCreatorType] = useState('PERSONAL');
 
+    /**
+     * @warning 현재 studyListGDGOC는 비활성화 되어 있습니다. 필요시 useStudyList에서 활성화 해주세요.
+     * @warning 또한, 현제 StudyTypeNav는 "PERSONAL" 선택지만 지원합니다. 필요시 StudyTypeNav에서 활성화 해주세요.
+     */
+
     // API: useStudyList
     const { studyListGDGOC, studyListPERSONAL, isLoading, error } = useStudyList();
 

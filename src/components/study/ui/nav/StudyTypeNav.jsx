@@ -6,7 +6,8 @@ export default function StudyTypeNav({ creatorType, onChange }) {
             <p className="text-white text-right pt-[3px]">
                 <span
                     className={`cursor-pointer ${creatorType === 'GDGOC' ? 'font-bold' : ''}`}
-                    onClick={() => onChange('GDGOC')}
+                    //onClick={() => onChange('GDGOC')}
+                    onClick={() => alert("현재 정규 스터디 신청은 비활성화 되어 있습니다.")}
                 >
                     정규
                 </span>
