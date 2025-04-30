@@ -8,6 +8,8 @@ import {Spinner} from "@nextui-org/react";
 import { useAuthenticatedApi } from "@/hooks/useAuthenticatedApi";
 import { useAppliedStudyList } from "@/hooks/study/useAppliedStudyList";
 
+// components
+
 // utils
 import { formatDate } from "@/utils/formatDate";
 
@@ -19,12 +21,11 @@ export default function AppliedStudies() {
     const { recruitingAppliedStudyList, recruitedAppliedStudyList, isLoading, error } = useAppliedStudyList(apiClient);
 
     const getStatusBadge = (status) => {
-        const baseClasses = "px-3 py-1 rounded-full text-sm font-medium text-white";
         if (status === 'APPROVED')
-            return `${baseClasses} bg-blue-500`;
+            return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
         if (status === 'REJECTED')
-            return `${baseClasses} bg-red-500`;
-        return `${baseClasses} bg-yellow-500`;
+            return "bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+        return "bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium";
     };
 
     const getStatusName = (status) => {
@@ -46,48 +47,67 @@ export default function AppliedStudies() {
             <h2 className="text-xl md:text-2xl font-bold mb-6">{title}</h2>
 
             <div className="overflow-x-auto">
-                <div className="border border-gray-800 rounded-lg bg-gray-900">
-                    <div className="grid grid-cols-4 py-4 px-4 bg-gray-800">
-                        <div className="font-bold">스터디</div>
-                        <div className="font-bold">모집 마감일</div>
-                        <div className="font-bold text-center">상태</div>
-                        <div></div>
-                    </div>
-
+                <table className="w-full text-sm">
+                    <thead>
+                    <tr className="border-b border-gray-200">
+                        <th className="py-3 text-left">스터디</th>
+                        <th className="py-3 text-left hidden md:table-cell">모집 마감일</th>
+                        <th className="py-3 text-center">상태</th>
+                        <th className="py-3 text-right hidden md:table-cell"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     {data.length > 0 ? (
                         data.map((data) => (
-                            <div key={data.studyId} onClick={() => handleMyDetailClick(data.studyId)} className="grid grid-cols-4 py-4 px-4 border-t border-gray-800 hover:bg-blue-900 transition-colors duration-200 cursor-pointer">
-                                <div>{data.title}</div>
-                                <div>{formatDate(data.recruitEndDate)}</div>
-                                <div className="text-center">
-                                    <span className={getStatusBadge(data.status)}>{getStatusName(data.status)}</span>
-                                </div>
-                                <div className="text-right">
-                                    <button onClick={(e) => { e.stopPropagation(); handleDetailClick(data.studyId); }} className="text-blue-500 hover:text-blue-300 text-sm z-99">정보 보기</button>
-                                </div>
-                            </div>
+                            <tr
+                                key={data.studyId}
+                                className="border-b border-gray-200 hover:bg-gray-800 cursor-pointer"
+                                onClick={() => handleMyDetailClick(data.studyId)}
+                            >
+                                <td className="py-4">{data.title}</td>
+                                <td className="py-4 hidden md:table-cell">{formatDate(data.recruitEndDate)}</td>
+                                <td className="py-4 text-center">
+                                        <span className={getStatusBadge(data.status)}>
+                                            {getStatusName(data.status)}
+                                        </span>
+                                </td>
+                                <td className="py-4 text-right hidden md:table-cell">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDetailClick(data.studyId);
+                                        }}
+                                        className="text-blue-500 hover:text-blue-700 text-sm"
+                                    >
+                                        정보 보기
+                                    </button>
+                                </td>
+                            </tr>
                         ))
                     ) : (
-                        <div className="py-8 px-4 text-center text-gray-500">
-                            데이터가 없습니다.
-                        </div>
+                        <tr>
+                            <td colSpan="4" className="py-4 text-center text-gray-500">
+                                데이터가 없습니다.
+                            </td>
+                        </tr>
                     )}
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
     );
 
     return (<>
-        {isLoading ? (
-            <div className='flex justify-center items-center h-screen'>
-                <Spinner />
-            </div>
-        ) : (
-            <>
-                {renderTable("모집 중인 스터디", recruitingAppliedStudyList)}
-                {renderTable("모집 완료된 스터디", recruitedAppliedStudyList)}
-            </>
-        )}
+            {isLoading ? (
+                <div className='flex justify-center items-center h-screen'>
+                    <Spinner />
+                </div>
+            ) : (
+                <>
+                    {renderTable("모집 중인 스터디", recruitingAppliedStudyList)}
+                    {renderTable("모집 완료된 스터디", recruitedAppliedStudyList)}
+                </>
+            )}
         </>
     );
 }
