@@ -3,18 +3,17 @@
 import React, { useState } from "react";
 import { useParams } from 'next/navigation';
 import { Spinner } from "@nextui-org/react";
+
+// components
 import StudyHeader from '@/components/study/StudyHeader';
-import StudyDashboardNav from "@/components/ui/nav/StudyDashboardNav";
+import StudyDashboardNav from "@/components/study/ui/nav/StudyDashboardNav";
 import InfoArea from "@/components/study/dashboard/InfoArea";
 
-export default function MyStudy() {
+export default function AdminDetailDashboard() {
     const [isLoading, setIsLoading] = useState(false);
-    const [activeMenu, setActiveMenu] = useState('applyResultAdmin');
+    const [activeMenu, setActiveMenu] = useState('applyResult');
     const pathParams = useParams();
-    const studyTitle =  decodeURIComponent(pathParams.title);
-
-    // check if logged in
-    // check if admin
+    const studyId =  decodeURIComponent(pathParams.id);
 
     const handleMenuClick = (menuId) => {
         setActiveMenu(menuId);
@@ -33,10 +32,11 @@ export default function MyStudy() {
                         <div className="flex flex-col md:flex-row gap-6 mt-6 md:mt-10">
                             <StudyDashboardNav
                                 isAdminPage={true}
+                                studyId={ studyId }
                                 currentMenu={activeMenu}
                                 onMenuClick={handleMenuClick}
                             />
-                            <InfoArea currentMenu={activeMenu} isAdmin={true} />
+                            <InfoArea isAdminPage={true} studyId={ studyId } currentMenu={activeMenu} />
                         </div>
                     </div>
                 </>
