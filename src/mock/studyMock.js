@@ -86,7 +86,7 @@ const getStudyDetails = {
     data: {
         id: 20,
         creator: {
-            id: 23,
+            id: 1,
             name: "김소연",
             major: "컴퓨터공학과",
             studentId: "12211234",
@@ -157,7 +157,7 @@ const getCreatedStudiesByStatus = {
     data: {
         recruiting: [
             {
-                id: 1,
+                id: 20,
                 title: "AI 스터디",
                 activityStartDate: "2025-05-01T00:00:00Z",
                 activityEndDate: "2025-06-30T00:00:00Z"
@@ -259,7 +259,7 @@ const getMyStudyApplyResult = {
     data: {
         recruiting: [
             {
-                studyId: 1,
+                studyId: 20,
                 title: "AI 스터디",
                 recruitEndDate: "2025-05-10T23:59:59Z",
                 myStatus: "REQUESTED"

@@ -16,7 +16,7 @@ export const useStudyDetail = (apiClient, studyId) => {
         const fetchStudyDetailData = async () => {
             try {
                 if (process.env.NODE_ENV === 'development') {
-                    if (studyId === "1") {
+                    if (studyId === "20") {
                         setStudyDetail(getStudyDetails.data);
                         setStudyLead(getStudyDetails.data.creator);
                         setIsRecruiting(getStudyDetails.data.status === "RECRUITING");

@@ -12,7 +12,7 @@ export const useStudyAccessCheck = (apiClient, studyId) => {
         const fetchPermissionData = async () => {
             try {
                 if (process.env.NODE_ENV === 'development') {
-                    setIsStudyApplicant(getMyStudyApplyResult.data.attendees.some(applicant => applicant.id === Number(studyId) && applicant.status === "RECRUITED"));
+                    setIsStudyApplicant(getMyStudyApplyResult.data.recruiting.some(applicant => applicant.studyId === Number(studyId)) || getMyStudyApplyResult.data.recruited.some(applicant => applicant.studyId === Number(studyId)));
                     setIsStudyLead(getCreatedStudiesByStatus.data.recruiting.some(study => study.id === Number(studyId)) || getCreatedStudiesByStatus.data.recruited.some(study => study.id === Number(studyId)));
                 } else {
                     const resAppliedStudy = await apiClient.get(`/studies/applicated`);
@@ -30,7 +30,8 @@ export const useStudyAccessCheck = (apiClient, studyId) => {
         fetchPermissionData();
         // 여기 apiClient 포함하면 infinite loop 발생 왜지?
         // 왜 여기만 난리지????????? 로직이 이상한건가?
-    }, [studyId]);
+        // 내 잘못이구나 ㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂ
+    }, [apiClient, studyId]);
 
     // 이 스터디가 네놈의 것이 맞느냐?
     // 홀홀 그대는 정직한 유저구나 true를 반환하여주겠다
