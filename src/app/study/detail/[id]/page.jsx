@@ -6,6 +6,7 @@ import { Button, Spinner } from "@nextui-org/react";
 import Image from 'next/image';
 
 // hooks
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { useStudyDetail } from '@/hooks/study/useStudyDetail';
 
 // components
@@ -20,12 +21,13 @@ import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
 export default function Detail() {
     const router = useRouter();
+    const { apiClient } = useAuthenticatedApi();
     const pathParams = useParams();
     const studyId =  decodeURIComponent(pathParams.id);
     const [leadInfoToggle, setLeadInfoToggle] = useState(false);
 
     // API: useStudyDetail
-    const { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error } = useStudyDetail(studyId);
+    const { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error } = useStudyDetail(apiClient, studyId);
 
     // toggle lead detail
     const toggleLeadDetail = () => {

@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react';
 
-import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { getStudiesGDGOC, getStudiesPERSONAL } from "@/mock/studyMock";
 
-export const useStudyList = () => {
-    const { apiClient } = useAuthenticatedApi();
-
+export const useStudyList = (apiClient) => {
     const [studyListGDGOC, setStudyListGDGOC] = useState([]);
     const [studyListPERSONAL, setStudyListPERSONAL] = useState([]);
     const [isLoading, setIsLoading] = useState(true);

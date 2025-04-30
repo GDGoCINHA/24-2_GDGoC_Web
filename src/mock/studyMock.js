@@ -84,7 +84,7 @@ const getStudiesPERSONAL = {
  */
 const getStudyDetails = {
     data: {
-        id: 1,
+        id: 20,
         creator: {
             id: 23,
             name: "김소연",
@@ -153,7 +153,7 @@ const applyStudyResult = {
  * @method GET
  * @returns {object} recruiting과 recruited 배열 및 meta 정보를 반환.
  */
-const getStudiesByStatus = {
+const getCreatedStudiesByStatus = {
     data: {
         recruiting: [
             {
@@ -259,7 +259,7 @@ const getMyStudyApplyResult = {
     data: {
         recruiting: [
             {
-                studyId: 20,
+                studyId: 1,
                 title: "AI 스터디",
                 recruitEndDate: "2025-05-10T23:59:59Z",
                 myStatus: "REQUESTED"
@@ -288,7 +288,7 @@ export {
     getStudiesGDGOC,
     getStudiesPERSONAL,
     getStudyDetails,
-    getStudiesByStatus,
+    getCreatedStudiesByStatus,
     getAttendeesByStudyId,
     getAttendeeDetailsByStudyId,
     getMyStudyApplyResult

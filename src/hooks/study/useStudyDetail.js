@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-
 import { getStudyDetails, getMyStudyApplyResult } from '@/mock/studyMock';
 
-export const useStudyDetail = (studyId) => {
-    const { apiClient } = useAuthenticatedApi();
-
+export const useStudyDetail = (apiClient, studyId) => {
     const [studyDetail, setStudyDetail] = useState(null);
     const [studyLead, setStudyLead] = useState(null);
     const [isRecruiting, setIsRecruiting] = useState(false);

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
 // components
-import ApplyResult from "@/components/study/dashboard/admin/detail/ApplyResult";
+import ReviewApplication from "@/components/study/dashboard/admin/detail/ReviewApplication";
 // import Attendance from "@/components/study/dashboard/my/detail/Attendance";
 // import Weekly from "@/components/study/dashboard/my/detail/Weekly";
 
 export default function AdminDetailArea({ studyId, currentMenu }) {
     const renderContent = () => {
         switch(currentMenu) {
-            case 'applyResult':
-                return <ApplyResult studyId={studyId} />;
+            case 'reviewApplication':
+                return <ReviewApplication studyId={studyId} />;
             case 'attendance':
                 alert("현재 기능 준비 중입니다.");
                 return;
@@ -19,9 +19,7 @@ export default function AdminDetailArea({ studyId, currentMenu }) {
                 return;
             //return <Weekly studyId={studyId} />;
             default:
-                alert("현재 기능 준비 중입니다.");
-                return;
-            //return <ApplyResult studyId={studyId} />;
+                return <ReviewApplication studyId={studyId} />;
         }
     };
 

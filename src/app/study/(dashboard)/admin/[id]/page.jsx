@@ -11,7 +11,7 @@ import InfoArea from "@/components/study/dashboard/InfoArea";
 
 export default function AdminDetailDashboard() {
     const [isLoading, setIsLoading] = useState(false);
-    const [activeMenu, setActiveMenu] = useState('applyResult');
+    const [activeMenu, setActiveMenu] = useState('reviewApplication');
     const pathParams = useParams();
     const studyId =  decodeURIComponent(pathParams.id);
 

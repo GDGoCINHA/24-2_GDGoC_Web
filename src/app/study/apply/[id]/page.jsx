@@ -24,7 +24,7 @@ export default function Apply() {
     const studyId =  decodeURIComponent(pathParams.id);
 
     // API: useStudyDetail
-    const { studyDetail, isRecruiting, isApplied, isLoading, error } = useStudyDetail(studyId);
+    const { studyDetail, isRecruiting, isApplied, isLoading, error } = useStudyDetail(apiClient, studyId);
 
     useEffect(() => {
         if (studyDetail) {

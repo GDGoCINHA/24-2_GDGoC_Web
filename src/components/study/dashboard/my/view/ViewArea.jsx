@@ -9,7 +9,7 @@ export default function MyViewArea({ currentMenu }) {
             case 'appliedStudies':
                 return <AppliedStudies />;
             default:
-            return <AppliedStudies />;
+                return <AppliedStudies />;
         }
     };
 

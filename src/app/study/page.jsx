@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Spinner } from '@nextui-org/react';
 
 // Hooks
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { useStudyList } from '@/hooks/study/useStudyList';
 
 // Components
@@ -19,6 +20,7 @@ import writeIcon from '@public/ui/pencil.png';
 
 export default function Study() {
     const router = useRouter();
+    const { apiClient } = useAuthenticatedApi();
     const [creatorType, setCreatorType] = useState('PERSONAL');
 
     /**
@@ -27,7 +29,7 @@ export default function Study() {
      */
 
     // API: useStudyList
-    const { studyListGDGOC, studyListPERSONAL, isLoading, error } = useStudyList();
+    const { studyListGDGOC, studyListPERSONAL, isLoading, error } = useStudyList(apiClient);
 
     // Set the studyList based on creatorType
     const studyList = creatorType === 'GDGOC' ? (studyListGDGOC || []) : (studyListPERSONAL || []);
