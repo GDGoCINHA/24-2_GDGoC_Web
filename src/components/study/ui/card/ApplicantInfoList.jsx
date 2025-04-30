@@ -5,11 +5,11 @@ import React from 'react';
 import GreenTextButton from "@/components/ui/button/GreenTextButton";
 
 export default function ApplicantInfoList({ applications, studyDetail, error, handleApplicantDetailPopup, toggleSelection, handleApproval }) {
-    if (error) return <div className="text-red-500 text-center">에러 발생: {error.message}</div>;
+    if (error) return <div className="text-red-500 text-center">알수없는 에러 발생!</div>;
 
     return (
         <div>
-            <h2 className="text-3xl font-bold mb-6">{studyDetail?.title} 스터디</h2>
+            <h2 className="text-3xl font-bold mb-6">{studyDetail?.title}</h2>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
