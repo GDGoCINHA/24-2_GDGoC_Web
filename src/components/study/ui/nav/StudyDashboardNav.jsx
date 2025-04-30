@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from 'react';
 
-export default function StudyDashboardNav({ isAdminPage = false, currentMenu, onMenuClick }) {
-    const myMenuItems = [
+export default function StudyDashboardNav({ isAdminPage = false, studyId= null, currentMenu, onMenuClick }) {
+    const myViewMenuItems = [
+        { id: 'applyResult', label: '스터디 지원 결과' }
+    ];
+    const myDetailMenuItems = [
         { id: 'applyResult', label: '스터디 지원 결과' },
         /*{ id: 'attendance', label: '스터디 출석기록' },*/
         /*{ id: 'weakly', label: '스터디 주차별 기록' }*/
     ];
-    const adminMenuItems = [
-        { id: 'applyResultAdmin', label: '스터디 신청자 현황' },
+
+    const adminViewMenuItems = [
+        { id: 'createdStudies', label: '스터디 관리 리스트' }
+    ];
+    const adminDetailMenuItems = [
+        { id: 'applyResult', label: '스터디 신청자 현황' },
         /*{ id: 'attendanceAdmin', label: '스터디 출석기록' },*/
         /*{ id: 'weaklyAdmin', label: '스터디 주차별 기록' }*/
     ];
 
-    const menuOption = isAdminPage ? adminMenuItems : myMenuItems;
+    const menuOption = isAdminPage ? (studyId == null ? adminViewMenuItems : adminDetailMenuItems) : (studyId == null ? myViewMenuItems : myDetailMenuItems);
 
     return (
         <div className="w-full md:w-1/4 bg-black text-white p-4 md:p-6 rounded-lg">

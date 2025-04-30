@@ -4,9 +4,7 @@ import { useParams } from "next/navigation";
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 import { useStudyDetail } from "@/hooks/study/useStudyDetail";
 
-import { getStudyAttendee1 } from '@/mock/studyMocks';
-
-export default function BackendStudyManagement() {
+export default function ApplyResult() {
     const pathParams = useParams();
     const studyTitle =  decodeURIComponent(pathParams.title);
     const { apiClient } = useAuthenticatedApi();
