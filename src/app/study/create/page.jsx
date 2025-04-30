@@ -41,7 +41,7 @@ export default function CreateStudy() {
         activityEndDate: "",
         expectedTime: "",
         expectedPlace: "",
-        imagePath: null
+        image: null
     });
 
     const handleChange = (e) => {
@@ -86,7 +86,7 @@ export default function CreateStudy() {
             multipartForm.append("activityEndDate", updateFormData.activityEndDate);
             multipartForm.append("expectedTime", updateFormData.expectedTime);
             multipartForm.append("expectedPlace", updateFormData.expectedPlace);
-            multipartForm.append("imagePath", updateFormData.imagePath);
+            multipartForm.append("image", updateFormData.image);
 
             await apiClient.post('/studies', multipartForm);
 
@@ -236,7 +236,7 @@ export default function CreateStudy() {
                                     썸네일 로고 업로드 (1대1 사이즈)<span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    name="imagePath"
+                                    name="image"
                                     onChange={handleChange}
                                     accept="image/*"
                                     type="file"
@@ -262,8 +262,8 @@ export default function CreateStudy() {
                                             size="sm"
                                             onPress={() => {
                                                 setImagePreview(null);
-                                                setFormData({...formData, imagePath: null});
-                                                document.querySelector('input[name="imagePath"]').value = '';
+                                                setFormData({...formData, image: null});
+                                                document.querySelector('input[name="image"]').value = '';
                                             }}
                                         >
                                             이미지 제거

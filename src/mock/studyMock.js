@@ -123,6 +123,7 @@ const getStudyDetails = {
  *    activityEndDate: "2025-04-15T23:59:59Z", (ISO 8601 datetime 포맷, 필수)
  *    expectedTime: "매주 목요일 오후 7시 - 9시", (필수)
  *    expectedPlace: "정석학술정보도서관 지하1층" (선택)
+ *    image: {object} (필수)
  * }
  * @returns {object} 등록 결과 데이터와 meta 정보를 반환.
  */
