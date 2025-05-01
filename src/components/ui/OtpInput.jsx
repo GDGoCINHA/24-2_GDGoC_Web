@@ -1,4 +1,3 @@
-// OtpInput.jsx
 import React from 'react';
 import { Button, InputOtp, Form } from '@nextui-org/react';
 
