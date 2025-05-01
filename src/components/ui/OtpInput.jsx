@@ -1,7 +1,16 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Button, InputOtp, Form } from '@nextui-org/react';
 
 export default function OtpInput({ setOtp, label, isDisabled, onSubmitOtp, isOtpVerified }) {
+  useEffect(() => {
+    if (!isDisabled) {
+      const firstInput = document.querySelector('input[name="otp"]:not([disabled])');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }
+  }, [isDisabled]);
+
   return (
     <>
       <p className='text-white text-sm mt-[5px] mb-[-15px] ml-[2px] mobile:text-sm'>{label}</p>
