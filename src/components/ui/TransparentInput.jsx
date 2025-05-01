@@ -13,9 +13,11 @@ const TransparentInput = ({
   className = "",
   autoComplete,
   inputMode,
+  isDisabled,
 }) => {
   return (
     <Input
+      isDisabled={isDisabled}
       isRequired={isRequired}
       autoComplete={autoComplete ? 'on' : 'off'}
       className={`mobile:!mt-[45px] w-full rounded-full ${className}`}
