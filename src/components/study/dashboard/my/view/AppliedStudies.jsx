@@ -50,9 +50,9 @@ export default function AppliedStudies() {
                 <table className="w-full text-sm">
                     <thead>
                     <tr className="border-b border-gray-200">
-                        <th className="py-3 text-left">스터디</th>
+                        <th className="py-3 text-left w-fit">스터디</th>
                         <th className="py-3 text-left hidden md:table-cell">모집 마감일</th>
-                        <th className="py-3 text-center">상태</th>
+                        <th className="py-3 text-centr w-28">상태</th>
                         <th className="py-3 text-right hidden md:table-cell"></th>
                     </tr>
                     </thead>
@@ -64,9 +64,9 @@ export default function AppliedStudies() {
                                 className="border-b border-gray-200 hover:bg-gray-800 cursor-pointer"
                                 onClick={() => handleMyDetailClick(data.studyId)}
                             >
-                                <td className="py-4">{data.title}</td>
+                                <td className="py-4 w-fit">{data.title}</td>
                                 <td className="py-4 hidden md:table-cell">{formatDate(data.recruitEndDate)}</td>
-                                <td className="py-4 text-center">
+                                <td className="py-4 text-center w-28">
                                         <span className={getStatusBadge(data.status)}>
                                             {getStatusName(data.status)}
                                         </span>
