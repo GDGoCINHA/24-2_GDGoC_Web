@@ -20,12 +20,11 @@ export default function CreatedStudies() {
     const { recruitingCreatedStudyList, recruitedCreatedStudyList, isLoading, error } = useCreatedStudyList(apiClient);
 
     const getStatusBadge = (status) => {
-        const baseClasses = "px-3 py-1 rounded-full text-sm font-medium text-white";
         if (status === 'APPROVED')
-            return `${baseClasses} bg-blue-500`;
+            return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
         if (status === 'REJECTED')
-            return `${baseClasses} bg-red-500`;
-        return `${baseClasses} bg-yellow-500`;
+            return "bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+        return "bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium";
     };
 
     const getStatusName = (status) => {
@@ -47,52 +46,50 @@ export default function CreatedStudies() {
             <h2 className="text-xl md:text-2xl font-bold mb-6">{title}</h2>
 
             <div className="overflow-x-auto">
-                <div className="border border-gray-800 rounded-lg bg-gray-900">
-                    <table className="w-full table-auto">
-                        <thead>
-                        <tr className="bg-gray-800">
-                            <th className="hidden md:table-cell w-16 py-3 px-4 text-center font-medium">ID</th>
-                            <th className="py-3 px-4 text-left font-medium">스터디명</th>
-                            <th className="hidden md:table-cell w-64 py-3 px-4 text-center font-medium">활동기간</th>
-                            <th className="hidden md:table-cell w-24 py-3 px-4 text-center font-medium"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {Array.isArray(data) && data.length > 0 ? (
-                            data.map((data) => (
-                                <tr
-                                    key={data.id}
-                                    onClick={() => handleMyDetailClick(data.id)}
-                                    className="border-t border-gray-800 hover:bg-blue-900 transition-colors duration-200 cursor-pointer"
-                                >
-                                    <td className="hidden md:table-cell py-3 px-4 text-center">{data.id}</td>
-                                    <td className="py-3 px-4">{data.title}</td>
-                                    <td className="hidden md:table-cell py-3 px-4 text-center whitespace-nowrap">
-                                        {formatDate(data.activityStartDate)} ~ {formatDate(data.activityEndDate)}
-                                    </td>
-                                    <td className="hidden md:table-cell py-3 px-4 text-right">
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleDetailClick(data.id);
-                                            }}
-                                            className="text-blue-500 hover:text-blue-300 text-sm"
-                                        >
-                                            상세 보기
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="4" className="py-8 px-4 text-center text-gray-500">
-                                    데이터가 없습니다.
+                <table className="w-full text-sm">
+                    <thead>
+                    <tr className="border-b border-gray-200">
+                        <th className="py-3 text-left w-6">ID</th>
+                        <th className="py-3 text-left w-7/12">스터디명</th>
+                        <th className="hidden md:table-cell py-3 text-left w-32">활동기간</th>
+                        <th className="py-3 text-right w-12"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {Array.isArray(data) && data.length > 0 ? (
+                        data.map((data) => (
+                            <tr
+                                key={data.id}
+                                onClick={() => handleMyDetailClick(data.id)}
+                                className="border-b border-gray-200 hover:bg-gray-800 cursor-pointer"
+                            >
+                                <td className="py-4">{data.id}</td>
+                                <td className="py-4 w-7/12">{data.title}</td>
+                                <td className="hidden md:table-cell py-4 whitespace-nowrap">
+                                    {formatDate(data.activityStartDate)} ~ {formatDate(data.activityEndDate)}
+                                </td>
+                                <td className="py-4 text-right">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDetailClick(data.id);
+                                        }}
+                                        className="text-blue-500 hover:text-blue-700 text-sm"
+                                    >
+                                        상세 보기
+                                    </button>
                                 </td>
                             </tr>
-                        )}
-                        </tbody>
-                    </table>
-                </div>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="4" className="py-4 text-center text-gray-500">
+                                데이터가 없습니다.
+                            </td>
+                        </tr>
+                    )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

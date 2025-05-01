@@ -29,7 +29,7 @@ const getStudiesGDGOC = {
                 simpleIntroduce: "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
                 status: "RECRUITING",
                 recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
-                recruitEndDate: "모집 마감일 (ISO 8601 datetime 포맷, 예: 2025-04-15T23:59:59Z).",
+                recruitEndDate: "2025-04-15T23:59:59Z",
                 creatorType: "GDGOC",
                 imagePath: "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
             }
@@ -97,7 +97,7 @@ const getStudyDetails = {
         activityIntroduce: "활동에 대한 소개입니다.",
         status: "RECRUITING",
         recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
-        recruitEndDate: "모집 마감일 (ISO 8601 datetime 포맷, 예: 2025-04-15T23:59:59Z).",
+        recruitEndDate: "2025-05-15T00:00:00Z",
         activityStartDate: "활동 시작일 (ISO 8601 datetime 포맷).",
         activityEndDate: "활동 마감일 (ISO 8601 datetime 포맷).",
         expectedTime: "예상 활동 시간입니다.",
@@ -158,7 +158,7 @@ const getCreatedStudiesByStatus = {
         recruiting: [
             {
                 id: 20,
-                title: "AI 스터디",
+                title: "AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디",
                 activityStartDate: "2025-05-01T00:00:00Z",
                 activityEndDate: "2025-06-30T00:00:00Z"
             }
@@ -189,14 +189,16 @@ const getAttendeesByStudyId = {
             {
                 id: 1,
                 name: "김소연",
-                major: "컴퓨터공학과",
-                studentId: "12211234"
+                major: "컴퓨터공학과컴퓨터공학과",
+                studentId: "12211234",
+                status: "REQEUSTED"
             },
             {
                 id: 2,
                 name: "김ㅇㅇ",
                 major: "컴퓨터공학과",
-                studentId: "12211235"
+                studentId: "12211235",
+                status: "REQEUSTED"
             }
         ]
     },
@@ -260,7 +262,7 @@ const getMyStudyApplyResult = {
         recruiting: [
             {
                 studyId: 20,
-                title: "AI 스터디",
+                title: "AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI ",
                 recruitEndDate: "2025-05-10T23:59:59Z",
                 myStatus: "REQUESTED"
             },
