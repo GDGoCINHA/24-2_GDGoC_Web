@@ -189,9 +189,9 @@ const getAttendeesByStudyId = {
             {
                 id: 1,
                 name: "김소연",
-                major: "컴퓨터공학과컴퓨터공학과",
+                major: "문화컨텐츠경영학과",
                 studentId: "12211234",
-                status: "REQEUSTED"
+                status: "APPROVED"
             },
             {
                 id: 2,
