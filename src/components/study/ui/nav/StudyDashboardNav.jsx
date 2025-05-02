@@ -5,7 +5,7 @@ export default function StudyDashboardNav({ isAdminPage = false, studyId= null, 
         { id: 'appliedStudies', label: '스터디 지원 결과' }
     ];
     const myDetailMenuItems = [
-        { id: 'studyDetail', label: '스터디 지원 결과' },
+        { id: 'studyDetail', label: '스터디 정보' },
         /*{ id: 'attendance', label: '스터디 출석기록' },*/
         /*{ id: 'weakly', label: '스터디 주차별 기록' }*/
     ];
