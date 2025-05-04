@@ -206,6 +206,7 @@ export default function CreateStudy() {
                                     value={formData.expectedPlace}
                                     onChange={handleChange}
                                     placeholder="활동 예정 장소를 적어주세요. (ex. 동방, Google Meet 등)"
+                                    maxLength="90"
                                     type="text"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
@@ -218,6 +219,7 @@ export default function CreateStudy() {
                                     value={formData.expectedTime}
                                     onChange={handleChange}
                                     placeholder="활동 예정 시간대를 모두 적어주세요. (ex. 월 17-19시, 화 15시~)"
+                                    maxLength="90"
                                     type="text"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
@@ -231,6 +233,7 @@ export default function CreateStudy() {
                                     value={formData.activityIntroduce}
                                     onChange={handleChange}
                                     placeholder="스터디 활동 내역을 적어주세요."
+                                    /*maxLength="500"*/
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
                                     required
                                 />
