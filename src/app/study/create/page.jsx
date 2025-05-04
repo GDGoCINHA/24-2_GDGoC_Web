@@ -131,8 +131,8 @@ export default function CreateStudy() {
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
-                                    placeholder="스터디 명을 적어주세요."
-                                    maxLength="20"
+                                    placeholder="스터디 명을 적어주세요. (14자)"
+                                    maxLength="14"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
@@ -145,7 +145,7 @@ export default function CreateStudy() {
                                     value={formData.simpleIntroduce}
                                     onChange={handleChange}
                                     placeholder="한 줄 소개글을 적어주세요."
-                                    maxLength="60"
+                                    maxLength="55"
                                     className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
                                     required
                                 />
