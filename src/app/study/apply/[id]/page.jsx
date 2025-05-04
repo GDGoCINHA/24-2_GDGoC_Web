@@ -107,49 +107,51 @@ export default function Apply() {
                     </header>
 
                     <div className="relative flex flex-col items-center justify-center w-full px-[96px] mobile:px-[24px] py-8">
-                        <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
-                            {studyDetail ? (
-                                <>
-                                    {/* Form */}
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        <label className="block">
-                                            <p className="text-lg font-semibold text-white">자기소개 <span className="text-red-500">*</span></p>
-                                            <p className="text-sm text-white">자기 소개 및 활동 포부를 적어주세요.</p>
-                                        </label>
-                                        <textarea
-                                            name="introduce"
-                                            value={formData.introduce}
-                                            onChange={ handleChange }
-                                            placeholder="스터디에 참여하고 싶습니다."
-                                            className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
-                                            required
-                                        />
+                        <div className="w-full max-w-[800px] border border-white rounded-lg p-7 mobile:pb-2 relative overflow-hidden">
+                            <div className="text-white relative">
+                                {studyDetail ? (
+                                    <>
+                                        {/* Form */}
+                                        <form onSubmit={handleSubmit} className="space-y-6">
+                                            <label className="block">
+                                                <p className="text-lg font-semibold text-white">자기소개 <span className="text-red-500">*</span></p>
+                                                <p className="text-sm text-white">자기 소개 및 활동 포부를 적어주세요.</p>
+                                            </label>
+                                            <textarea
+                                                name="introduce"
+                                                value={formData.introduce}
+                                                onChange={ handleChange }
+                                                placeholder="스터디에 참여하고 싶습니다."
+                                                className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white h-40"
+                                                required
+                                            />
 
-                                        <label className="block">
-                                            <p className="text-lg font-semibold text-white">활동 가능한 시간대 <span className="text-red-500">*</span></p>
-                                            <p className="text-sm text-white">활동 가능한 시간대를 모두 적어주세요.</p>
-                                        </label>
-                                        <input
-                                            name="activityTime"
-                                            value={formData.activityTime}
-                                            onChange={ handleChange }
-                                            placeholder="Ex) 월 17-19시, 화 15시-"
-                                            className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
-                                            required
-                                        />
+                                            <label className="block">
+                                                <p className="text-lg font-semibold text-white">활동 가능한 시간대 <span className="text-red-500">*</span></p>
+                                                <p className="text-sm text-white">활동 가능한 시간대를 모두 적어주세요.</p>
+                                            </label>
+                                            <input
+                                                name="activityTime"
+                                                value={formData.activityTime}
+                                                onChange={ handleChange }
+                                                placeholder="Ex) 월 17-19시, 화 15시-"
+                                                className="w-full bg-[#1f1f1f] border-none rounded-lg p-4 text-white"
+                                                required
+                                            />
 
-                                        {/* Submit */}
-                                        <SubmitButton type="submit" text="제출하기" isDisabled={ false } handleClick={() => {}} />
-                                    </form>
-                                </>
-                            ) : (
-                                <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
-                                    <div className="text-white relative z-10">
-                                        <h1 className="text-center text-xl">스터디 신청 정보를 불러올 수 없습니다.</h1>
-                                        <p className="text-center">URL을 다시 확인해주세요.</p>
+                                            {/* Submit */}
+                                            <SubmitButton type="submit" text="제출하기" isDisabled={ false } handleClick={() => {}} />
+                                        </form>
+                                    </>
+                                ) : (
+                                    <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
+                                        <div className="text-white relative z-10">
+                                            <h1 className="text-center text-xl">스터디 신청 정보를 불러올 수 없습니다.</h1>
+                                            <p className="text-center">URL을 다시 확인해주세요.</p>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
                 </>

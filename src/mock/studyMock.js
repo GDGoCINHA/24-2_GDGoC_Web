@@ -48,8 +48,8 @@ const getStudiesPERSONAL = {
             {
                 "id": 3,
                 "creatorId": 12243954,
-                "title": "블록체인 보안 PERSONAL 스터디",
-                "simpleIntroduce": "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
+                "title": "가가가가가가가가가가가가가가",
+                "simpleIntroduce": "가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가",
                 "status": "RECRUITING",
                 "recruitStartDate": "2025-04-01T00:00:00Z",
                 "recruitEndDate": "2025-04-15T23:59:59Z",
@@ -59,8 +59,8 @@ const getStudiesPERSONAL = {
             {
                 "id": 4,
                 "creatorId": 12243954,
-                "title": "블록체인 보안 PERSONAL 스터디",
-                "simpleIntroduce": "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
+                "title": "가가가가가가가가가가가가가가가가가가",
+                "simpleIntroduce": "가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가가",
                 "status": "RECRUITING",
                 "recruitStartDate": "2025-04-01T00:00:00Z",
                 "recruitEndDate": "2025-04-15T23:59:59Z",
