@@ -19,18 +19,22 @@ export default function StudySection({ creatorType, studyList }) {
                     <p className="text-white text-sm text-left">{intro}</p>
                 </div>
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {filteredStudies.map((study) => (
-                        <div key={study.id}>
-                            <StudyCard
-                                id={study.id}
-                                title={study.title}
-                                description={study.simpleIntroduce}
-                                status={study.status}
-                                reqEnd={study.recruitEndDate}
-                                icon={study.imagePath}
-                            />
-                        </div>
-                    ))}
+                    {filteredStudies.length > 0 ? (
+                        filteredStudies.map((study) => (
+                            <div key={study.id}>
+                                <StudyCard
+                                    id={study.id}
+                                    title={study.title}
+                                    description={study.simpleIntroduce}
+                                    status={study.status}
+                                    reqEnd={study.recruitEndDate}
+                                    icon={study.imagePath}
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-red-200 text-sm">아직 존재하는 스터디가 없습니다ㅠㅠ</p>
+                    )}
                 </div>
             </>
         );
