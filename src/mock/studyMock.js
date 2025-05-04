@@ -54,7 +54,7 @@ const getStudiesPERSONAL = {
                 recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
                 recruitEndDate: "모집 마감일 (ISO 8601 datetime 포맷, 예: 2025-04-15T23:59:59Z).",
                 creatorType: "PERSONAL",
-                imagePath: "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
+                imagePath: "https://no-cdn.shortpixel.ai/client/to_avif,q_lossy,ret_wait/https://shortpixel.com/blog/wp-content/uploads/2023/12/nyan-cat.gif"
             },
             {
                 id: 4,
@@ -103,7 +103,7 @@ const getStudyDetails = {
         expectedTime: "예상 활동 시간입니다.",
         expectedPlace: "예상 활동 장소입니다.",
         creatorType: "PERSONAL",
-        imagePath: "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
+        imagePath: "https://no-cdn.shortpixel.ai/client/to_avif,q_lossy,ret_wait/https://shortpixel.com/blog/wp-content/uploads/2023/12/nyan-cat.gif"
     },
     meta: null
 }
