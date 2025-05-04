@@ -9,69 +9,69 @@
  */
 // GDGOC
 const getStudiesGDGOC = {
-    data: {
-        studyList: [
+    "data": {
+        "studyList": [
             {
-                id: 1,
-                creatorId: 102,
-                title: "블록체인 GDGOC 스터디",
-                simpleIntroduce: "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
-                status: "RECRUITING",
-                recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
-                recruitEndDate: "모집 마감일 (ISO 8601 datetime 포맷, 예: 2025-04-15T23:59:59Z).",
-                creatorType: "GDGOC",
-                imagePath: "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
+                "id": 1,
+                "creatorId": 102,
+                "title": "블록체인 GDGOC 스터디",
+                "simpleIntroduce": "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
+                "status": "RECRUITING",
+                "recruitStartDate": "2025-04-01T00:00:00Z",
+                "recruitEndDate": "2025-04-15T23:59:59Z",
+                "creatorType": "GDGOC",
+                "imagePath": "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
             },
             {
-                id: 2,
-                creatorId: 103,
-                title: "블록체인 보안 GDGOC 스터디",
-                simpleIntroduce: "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
-                status: "RECRUITING",
-                recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
-                recruitEndDate: "2025-04-15T23:59:59Z",
-                creatorType: "GDGOC",
-                imagePath: "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
+                "id": 2,
+                "creatorId": 103,
+                "title": "블록체인 보안 GDGOC 스터디",
+                "simpleIntroduce": "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
+                "status": "RECRUITING",
+                "recruitStartDate": "2025-04-01T00:00:00Z",
+                "recruitEndDate": "2025-04-15T23:59:59Z",
+                "creatorType": "GDGOC",
+                "imagePath": "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
             }
         ]
     },
-    meta: {
-        page: 1, // 현재 페이지 번호.
-        pageCount: 10 // 전체 페이지 수.
+    "meta": {
+        "page": 1, // 현재 페이지 번호.
+        "pageCount": 10 // 전체 페이지 수.
     }
 }
 
 // PERSONAL
 const getStudiesPERSONAL = {
-    data: {
-        studyList: [
+    "data": {
+        "studyList": [
             {
-                id: 3,
-                creatorId: 12243954,
-                title: "블록체인 보안 PERSONAL 스터디",
-                simpleIntroduce: "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
-                status: "RECRUITING",
-                recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
-                recruitEndDate: "모집 마감일 (ISO 8601 datetime 포맷, 예: 2025-04-15T23:59:59Z).",
-                creatorType: "PERSONAL",
-                imagePath: "https://no-cdn.shortpixel.ai/client/to_avif,q_lossy,ret_wait/https://shortpixel.com/blog/wp-content/uploads/2023/12/nyan-cat.gif"
+                "id": 3,
+                "creatorId": 12243954,
+                "title": "블록체인 보안 PERSONAL 스터디",
+                "simpleIntroduce": "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
+                "status": "RECRUITING",
+                "recruitStartDate": "2025-04-01T00:00:00Z",
+                "recruitEndDate": "2025-04-15T23:59:59Z",
+                "creatorType": "PERSONAL",
+                "imagePath": "https://no-cdn.shortpixel.ai/client/to_avif,q_lossy,ret_wait/https://shortpixel.com/blog/wp-content/uploads/2023/12/nyan-cat.gif"
             },
             {
-                id: 4,
-                creatorId: 12243954,
-                title: "블록체인 보안 PERSONAL 스터디",
-                simpleIntroduce: "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
-                status: "RECRUITING",
-                recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
-                recruitEndDate: "모집 마감일 (ISO 8601 datetime 포맷, 예: 2025-04-15T23:59:59Z).",
-                creatorType: "PERSONAL",
-                imagePath: "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
+                "id": 4,
+                "creatorId": 12243954,
+                "title": "블록체인 보안 PERSONAL 스터디",
+                "simpleIntroduce": "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
+                "status": "RECRUITING",
+                "recruitStartDate": "2025-04-01T00:00:00Z",
+                "recruitEndDate": "2025-04-15T23:59:59Z",
+                "creatorType": "PERSONAL",
+                "imagePath": "https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM="
             }
         ]
     },
-    meta: {
-        page: 1, // 현재 페이지 번호.
-        pageCount: 10 // 전체 페이지 수.
+    "meta": {
+        "page": 1, // 현재 페이지 번호.
+        "pageCount": 10 // 전체 페이지 수.
     }
 }
 
@@ -83,29 +83,29 @@ const getStudiesPERSONAL = {
  * @returns {object} 스터디 상세 정보와 meta 데이터를 반환.
  */
 const getStudyDetails = {
-    data: {
-        id: 20,
-        creator: {
-            id: 1,
-            name: "김소연",
-            major: "컴퓨터공학과",
-            studentId: "12211234",
-            phoneNumber: "010-1234-1234"
+    "data": {
+        "id": 20,
+        "creator": {
+            "id": 1,
+            "name": "김소연",
+            "major": "컴퓨터공학과",
+            "studentId": "12211234",
+            "phoneNumber": "010-1234-1234"
         },
-        title: "블록체인 보안 스터디",
-        simpleIntroduce: "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
-        activityIntroduce: "활동에 대한 소개입니다.",
-        status: "RECRUITING",
-        recruitStartDate: "모집 시작일 (ISO 8601 datetime 포맷, 예: 2025-04-01T00:00:00Z).",
-        recruitEndDate: "2025-05-15T00:00:00Z",
-        activityStartDate: "활동 시작일 (ISO 8601 datetime 포맷).",
-        activityEndDate: "활동 마감일 (ISO 8601 datetime 포맷).",
-        expectedTime: "예상 활동 시간입니다.",
-        expectedPlace: "예상 활동 장소입니다.",
-        creatorType: "PERSONAL",
-        imagePath: "https://no-cdn.shortpixel.ai/client/to_avif,q_lossy,ret_wait/https://shortpixel.com/blog/wp-content/uploads/2023/12/nyan-cat.gif"
+        "title": "블록체인 보안 스터디",
+        "simpleIntroduce": "블록체인의 보안 측면을 이해하고, 암호화와 데이터 무결성에 대해 알아봅니다.",
+        "activityIntroduce": "활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.활동에 대한 소개입니다.",
+        "status": "RECRUITING",
+        "recruitStartDate": "2025-04-01T00:00:00Z",
+        "recruitEndDate": "2025-05-15T00:00:00Z",
+        "activityStartDate": "2025-04-01T00:00:00Z",
+        "activityEndDate": "2025-04-15T23:59:59Z",
+        "expectedTime": "매주 목요일 오후 7시 - 9시",
+        "expectedPlace": "정석학술정보도서관 지하1층",
+        "creatorType": "PERSONAL",
+        "imagePath": "https://no-cdn.shortpixel.ai/client/to_avif,q_lossy,ret_wait/https://shortpixel.com/blog/wp-content/uploads/2023/12/nyan-cat.gif"
     },
-    meta: null
+    "meta": null
 }
 
 /**
@@ -128,8 +128,8 @@ const getStudyDetails = {
  * @returns {object} 등록 결과 데이터와 meta 정보를 반환.
  */
 const createStudyResult = {
-    data: null,
-    meta: null
+    "data": null,
+    "meta": null
 }
 
 /**
@@ -143,8 +143,8 @@ const createStudyResult = {
  * @returns {object} 신청 결과 데이터와 meta 정보를 반환.
  */
 const applyStudyResult = {
-    data: null,
-    meta: null
+    "data": null,
+    "meta": null
 }
 
 /**
@@ -154,25 +154,25 @@ const applyStudyResult = {
  * @returns {object} recruiting과 recruited 배열 및 meta 정보를 반환.
  */
 const getCreatedStudiesByStatus = {
-    data: {
-        recruiting: [
+    "data": {
+        "recruiting": [
             {
-                id: 20,
-                title: "AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디",
-                activityStartDate: "2025-05-01T00:00:00Z",
-                activityEndDate: "2025-06-30T00:00:00Z"
+                "id": 20,
+                "title": "AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디",
+                "activityStartDate": "2025-05-01T00:00:00Z",
+                "activityEndDate": "2025-06-30T00:00:00Z"
             }
         ],
-        recruited: [
+        "recruited": [
             {
-                id: 2,
-                title: "웹 백엔드 심화 스터디",
-                activityStartDate: "2025-04-20T00:00:00Z",
-                activityEndDate: "2025-06-01T00:00:00Z"
+                "id": 2,
+                "title": "웹 백엔드 심화 스터디",
+                "activityStartDate": "2025-04-20T00:00:00Z",
+                "activityEndDate": "2025-06-01T00:00:00Z"
             }
         ]
     },
-    meta: null
+    "meta": null
 }
 
 /**
@@ -184,27 +184,27 @@ const getCreatedStudiesByStatus = {
  * @returns {object} attendees 배열과 meta 정보(page, pageCount)를 반환.
  */
 const getAttendeesByStudyId = {
-    data: {
-        attendees: [
+    "data": {
+        "attendees": [
             {
-                id: 1,
-                name: "김소연",
-                major: "문화컨텐츠경영학과",
-                studentId: "12211234",
-                status: "APPROVED"
+                "id": 1,
+                "name": "김소연",
+                "major": "문화컨텐츠경영학과",
+                "studentId": "12211234",
+                "status": "APPROVED"
             },
             {
-                id: 2,
-                name: "김ㅇㅇ",
-                major: "컴퓨터공학과",
-                studentId: "12211235",
-                status: "REQEUSTED"
+                "id": 2,
+                "name": "김ㅇㅇ",
+                "major": "컴퓨터공학과",
+                "studentId": "12211235",
+                "status": "REQEUSTED"
             }
         ]
     },
-    meta: {
-        page: 0, // 현재 페이지 번호.
-        pageCount: 2 // 전체 페이지 수.
+    "meta": {
+        "page": 0, // 현재 페이지 번호.
+        "pageCount": 2 // 전체 페이지 수.
     }
 }
 
@@ -217,15 +217,15 @@ const getAttendeesByStudyId = {
  * @returns {object} 지원자 상세 정보를 반환.
  */
 const getAttendeeDetailsByStudyId = {
-    data: {
-        name: "김소연",
-        phone: "010-1234-5678",
-        major: "컴퓨터공학과",
-        studentId: "12212444",
-        introduce: "저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!",
-        activityTime: "수요일만 아니면 다 5시 이후로 가능!"
+    "data": {
+        "name": "김소연",
+        "phone": "010-1234-5678",
+        "major": "컴퓨터공학과",
+        "studentId": "12212444",
+        "introduce": "저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!저는 사실 엄청 멋있는 사람입니다!",
+        "activityTime": "수요일만 아니면 다 5시 이후로 가능!"
     },
-    meta: null
+    "meta": null
 }
 
 /**
@@ -247,8 +247,8 @@ const getAttendeeDetailsByStudyId = {
  * @returns {object} 상태 업데이트 결과와 meta 정보를 반환.
  */
 const updateAttendeeStatusResult = {
-    data: null,
-    meta: null
+    "data": null,
+    "meta": null
 }
 
 /**
@@ -258,31 +258,31 @@ const updateAttendeeStatusResult = {
  * @returns {object} recruiting과 recruited 배열 및 meta 정보를 반환.
  */
 const getMyStudyApplyResult = {
-    data: {
-        recruiting: [
+    "data": {
+        "recruiting": [
             {
-                studyId: 20,
-                title: "AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI ",
-                recruitEndDate: "2025-05-10T23:59:59Z",
-                myStatus: "REQUESTED"
+                "studyId": 20,
+                "title": "AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI 스터디AI ",
+                "recruitEndDate": "2025-05-10T23:59:59Z",
+                "myStatus": "REQUESTED"
             },
             {
-                studyId: 27,
-                title: "프론트엔드 스터디",
-                recruitEndDate: "2025-05-10T23:59:59Z",
-                myStatus: "REJECTED"
+                "studyId": 27,
+                "title": "프론트엔드 스터디",
+                "recruitEndDate": "2025-05-10T23:59:59Z",
+                "myStatus": "REJECTED"
             }
         ],
-        recruited: [
+        "recruited": [
             {
-                studyId: 21,
-                title: "블록체인 보안 스터디",
-                recruitEndDate: "2025-05-07T23:59:59Z",
-                myStatus: "APPROVED"
+                "studyId": 21,
+                "title": "블록체인 보안 스터디",
+                "recruitEndDate": "2025-05-07T23:59:59Z",
+                "myStatus": "APPROVED"
             }
         ]
     },
-    meta: null
+    "meta": null
 }
 
 // 모듈 export
