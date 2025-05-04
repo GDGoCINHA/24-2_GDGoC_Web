@@ -12,7 +12,6 @@ import { useStudyDetail } from '@/hooks/study/useStudyDetail';
 // components
 import StudyHeader from '@/components/study/StudyHeader';
 import SubmitButton from '@/components/ui/button/SubmitButton';
-import MarginBottom from '@/components/MarginBottom';
 
 // utils
 import { formatDate } from '@/utils/formatDate';
@@ -120,7 +119,7 @@ export default function Detail() {
                                             <p className="mb-2 text-lg mobile:text-sm">장소: {studyDetail.expectedPlace}</p>
                                             <p className="text-lg mobile:text-sm">진행 시간: {studyDetail.expectedTime}</p>
                                         </div>
-                                        <div className="mt-6 mobile:pt-0 mobile:p-4 rounded">
+                                        <div className="mt-6 mb-6 mobile:pt-0 mobile:p-4 rounded">
                                             <Button
                                                 onPress={toggleLeadDetail}
                                                 className="items-center justify-center bg-[#1f1f1f] rounded text-left"
@@ -140,6 +139,9 @@ export default function Detail() {
                                                 </div>
                                             )}
                                         </div>
+
+                                        {/* 제출 버튼 */}
+                                        {renderSubmitButton()}
                                     </>
                                 ) : (
                                     <div className="mobile:pb-7">
@@ -150,12 +152,6 @@ export default function Detail() {
                             </div>
                         </div>
                     </div>
-
-                    {/* 제출 버튼 */}
-                    {renderSubmitButton()}
-
-                    {/* Margin Bottom to prevent Bottom touch */}
-                    <MarginBottom />
                 </>
             )}
         </>
