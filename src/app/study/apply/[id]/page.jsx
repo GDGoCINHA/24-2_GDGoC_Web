@@ -106,15 +106,15 @@ export default function Apply() {
                         </div>
                     </header>
 
-                    <div className="flex justify-center items-center mt-10 bg-black text-white">
-                        <div className="w-full max-w-2xl px-6">
+                    <div className="relative flex flex-col items-center justify-center w-full px-[96px] mobile:px-[24px] py-8">
+                        <div className="w-full max-w-[800px] border border-white rounded-lg p-8 relative overflow-hidden">
                             {studyDetail ? (
                                 <>
                                     {/* Form */}
                                     <form onSubmit={handleSubmit} className="space-y-6">
                                         <label className="block">
-                                            <p className="text-lg font-semibold">자기소개 <span className="text-red-500">*</span></p>
-                                            <p className="text-sm">자기 소개 및 활동 포부를 적어주세요.</p>
+                                            <p className="text-lg font-semibold text-white">자기소개 <span className="text-red-500">*</span></p>
+                                            <p className="text-sm text-white">자기 소개 및 활동 포부를 적어주세요.</p>
                                         </label>
                                         <textarea
                                             name="introduce"
@@ -126,8 +126,8 @@ export default function Apply() {
                                         />
 
                                         <label className="block">
-                                            <p className="text-lg font-semibold">활동 가능한 시간대 <span className="text-red-500">*</span></p>
-                                            <p className="text-sm">활동 가능한 시간대를 모두 적어주세요.</p>
+                                            <p className="text-lg font-semibold text-white">활동 가능한 시간대 <span className="text-red-500">*</span></p>
+                                            <p className="text-sm text-white">활동 가능한 시간대를 모두 적어주세요.</p>
                                         </label>
                                         <input
                                             name="activityTime"
@@ -140,9 +140,6 @@ export default function Apply() {
 
                                         {/* Submit */}
                                         <SubmitButton type="submit" text="제출하기" isDisabled={ false } handleClick={() => {}} />
-
-                                        {/* Margin Bottom to prevent Bottom touch */}
-                                        <MarginBottom />
                                     </form>
                                 </>
                             ) : (
