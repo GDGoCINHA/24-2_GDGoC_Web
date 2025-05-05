@@ -15,9 +15,9 @@ export const useStudyAccessCheck = (apiClient, studyId) => {
                     setIsStudyApplicant(getMyStudyApplyResult.data.recruiting.some(applicant => applicant.studyId === Number(studyId)) || getMyStudyApplyResult.data.recruited.some(applicant => applicant.studyId === Number(studyId)));
                     setIsStudyLead(getCreatedStudiesByStatus.data.recruiting.some(study => study.id === Number(studyId)) || getCreatedStudiesByStatus.data.recruited.some(study => study.id === Number(studyId)));
                 } else {
-                    const resAppliedStudy = await apiClient.get(`/studies/applicated`);
+                    const resAppliedStudy = await apiClient.get(`/study/attendee/result`);
                     setIsStudyApplicant(resAppliedStudy.data.recruiting.some(study => study.studyId === Number(studyId)) || resAppliedStudy.data.recruited.some(study => study.studyId === Number(studyId)));
-                    const resCreatedStudy = await apiClient.get('/studies/created');
+                    const resCreatedStudy = await apiClient.get('/study/me');
                     setIsStudyLead(resCreatedStudy.data.recruiting.some(study => study.id === Number(studyId)) || resCreatedStudy.data.recruited.some(study => study.id === Number(studyId)));
                 }
             } catch (err) {
@@ -28,9 +28,6 @@ export const useStudyAccessCheck = (apiClient, studyId) => {
         };
 
         fetchPermissionData();
-        // 여기 apiClient 포함하면 infinite loop 발생 왜지?
-        // 왜 여기만 난리지????????? 로직이 이상한건가?
-        // 내 잘못이구나 ㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂㅅㅂ
     }, [apiClient, studyId]);
 
     // 이 스터디가 네놈의 것이 맞느냐?

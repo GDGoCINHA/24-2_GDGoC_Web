@@ -59,7 +59,7 @@ export default function Apply() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await apiClient.post(`/study/${studyId}/applications`, formData);
+            await apiClient.post(`/study/${studyId}/attendee`, formData);
             alert("신청이 완료되었습니다!");
 
             router.push(`/study/my`);

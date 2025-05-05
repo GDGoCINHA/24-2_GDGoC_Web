@@ -176,7 +176,7 @@ export default function ReviewApplication({ studyId }) {
                 return;
             }
 
-            await apiClient.patch(`/studies/${studyId}/applicants/status`, payload);
+            await apiClient.patch(`/study/${studyId}/attendee`, payload);
 
             // 로컬스토리지 데이터 삭제
             removeFromStorage(`sAL${studyId}Hambugi`);
@@ -218,7 +218,7 @@ export default function ReviewApplication({ studyId }) {
                 return;
             }
 
-            await apiClient.patch(`/studies/${studyId}/applicants/status`, payload);
+            await apiClient.patch(`/study/${studyId}/attendee`, payload);
 
             // 로컬스토리지 데이터 삭제
             removeFromStorage(`sAL${studyId}Hambugi`);

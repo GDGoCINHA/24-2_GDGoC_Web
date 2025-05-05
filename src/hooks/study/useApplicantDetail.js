@@ -13,7 +13,7 @@ export const useApplicantDetail = (apiClient, studyId, applicantId) => {
                 if (process.env.NODE_ENV === 'development') {
                     setApplicantDetail(getAttendeeDetailsByStudyId.data);
                 } else {
-                    const resApplicantDetail = await apiClient.get(`/studies/${studyId}/applicants/${applicantId}`);
+                    const resApplicantDetail = await apiClient.get(`/study/${studyId}/attendee/${applicantId}`);
                     setApplicantDetail(resApplicantDetail.data);
                 }
             } catch (err) {

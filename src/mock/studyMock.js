@@ -1,6 +1,6 @@
 /**
  * 스터디 리스트 정보를 불러옵니다.
- * @url URL/studies?page=1
+ * @url URL/study?page=1
  * @method GET
  * @param {number} page - 페이지 번호. (필수)
  * @param {string} status - 스터디 상태, 예: "RECRUITING". (선택)
@@ -77,7 +77,7 @@ const getStudiesPERSONAL = {
 
 /**
  * 스터디 상세 정보를 불러옵니다.
- * @url URL/studies/{studyId}
+ * @url URL/study/{studyId}
  * @method GET
  * @param {number} studyId - 스터디 ID. (필수)
  * @returns {object} 스터디 상세 정보와 meta 데이터를 반환.
@@ -110,7 +110,7 @@ const getStudyDetails = {
 
 /**
  * 스터디를 등록합니다.
- * @url URL/studies
+ * @url URL/study
  * @method POST
  * @body {
  *    title: "정석 공부팟", (필수)
@@ -134,7 +134,7 @@ const createStudyResult = {
 
 /**
  * 스터디 지원자 정보를 등록합니다 (스터디 신청).
- * @url URL/study/{studyId}/applications
+ * @url URL/study/{studyId}/attendee
  * @method POST
  * @body {
  *    introduce: "저는 사실 엄청 멋있는 사람입니다!", (필수)
@@ -149,7 +149,7 @@ const applyStudyResult = {
 
 /**
  * [스터디 관리] 모집 중인 스터디와 모집 완료된 스터디를 나누어 조회합니다.
- * @url URL/studies/created
+ * @url URL/study/me
  * @method GET
  * @returns {object} recruiting과 recruited 배열 및 meta 정보를 반환.
  */
@@ -177,7 +177,7 @@ const getCreatedStudiesByStatus = {
 
 /**
  * [스터디 관리] 특정 스터디의 지원자 목록을 조회합니다.
- * @url /studies/{studyId}/applicants?page=1
+ * @url /study/{studyId}/attendee?page=1
  * @method GET
  * @param {number} studyId - 스터디 ID. (필수)
  * @param {number} page - 페이지 번호. (선택)
@@ -210,7 +210,7 @@ const getAttendeesByStudyId = {
 
 /**
  * [스터디 관리] 특정 스터디의 특정 지원자 지원서 상세 정보를 조회합니다.
- * @url /studies/{studyId}/applicants/{attendeeId}
+ * @url /study/{studyId}/attendee/{attendeeId}
  * @method GET
  * @param {number} studyId - 스터디 ID. (필수)
  * @param {number} attendeeId - 지원자 ID. (필수)
@@ -230,7 +230,7 @@ const getAttendeeDetailsByStudyId = {
 
 /**
  * [스터디 관리] 지원자 상태를 업데이트합니다.
- * @url /studies/{studyId}/applicants/status
+ * @url /study/{studyId}/attendee
  * @method PATCH
  * @body {
  *    attendees: [
@@ -253,7 +253,7 @@ const updateAttendeeStatusResult = {
 
 /**
  * [스터디 관리] 내가 신청한 스터디 지원 결과를 조회합니다.
- * @url /studies/applicated
+ * @url /study/attendee/result
  * @method GET
  * @returns {object} recruiting과 recruited 배열 및 meta 정보를 반환.
  */

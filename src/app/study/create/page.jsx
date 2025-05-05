@@ -68,9 +68,10 @@ export default function CreateStudy() {
 
         try {
             const imageFile = formData.image;
-            const filename = imageFile.name;
-            const fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
-            const s3key = `/study/${Date.now()}.${fileExtension}`;
+            //const filename = imageFile.name;
+            //const fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
+            //const s3key = `/study/${Date.now()}.${fileExtension}`;
+            const s3key = `/study/`;
 
             const s3Form = new FormData();
             s3Form.append('file', imageFile);
@@ -89,7 +90,7 @@ export default function CreateStudy() {
                 imagePath: getS3Key
             };
 
-            await apiClient.post('/studies', updateFormData);
+            await apiClient.post('/study', updateFormData);
 
             alert("스터디 개설이 완료되었습니다!");
             router.push(`/study/admin`);

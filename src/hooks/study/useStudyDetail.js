@@ -25,12 +25,12 @@ export const useStudyDetail = (apiClient, studyId) => {
                         }
                     }
                 } else {
-                    const resStudyDetail = await apiClient.get(`/studies/${studyId}`);
+                    const resStudyDetail = await apiClient.get(`/study/${studyId}`);
                     setStudyDetail(resStudyDetail.data);
                     setStudyLead(resStudyDetail.data.creator);
                     setIsRecruiting(resStudyDetail.data.status === "RECRUITING");
 
-                    const resApplications = await apiClient.get('/studies/applicated');
+                    const resApplications = await apiClient.get('/study/attendee/result');
                     if (resApplications.data.recruiting.some((application) => application.studyId === Number(studyId))) {
                         setIsApplied(true);
                     }

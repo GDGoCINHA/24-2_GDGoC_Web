@@ -15,8 +15,8 @@ export const useStudyList = (apiClient) => {
                     setStudyListGDGOC(getStudiesGDGOC.data.studyList);
                     setStudyListPERSONAL(getStudiesPERSONAL.data.studyList);
                 } else {
-                    //const resGDGOC = await apiClient.get('/studies?page=1?creatorType=GDGOC');
-                    const resPERSONAL = await apiClient.get('/studies?page=1?creatorType=PERSONAL');
+                    //const resGDGOC = await apiClient.get('/study?page=1&creatorType=GDGOC');
+                    const resPERSONAL = await apiClient.get('/study?page=1&creatorType=PERSONAL');
                     //setStudyListGDGOC(resGDGOC.data.studyList);
                     setStudyListPERSONAL(resPERSONAL.data.studyList);
                 }
