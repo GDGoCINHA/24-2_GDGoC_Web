@@ -33,7 +33,7 @@ export default function AuthLogin({ router, onSubmit, errors, password, setPassw
             mainWrapper: 'relative',
             helperWrapper: 'absolute -bottom-6 left-0',
             input: '!text-white',
-            errorMessage: 'text-[#EA4336]',
+            errorMessage: 'mobile:!text-[11px] text-[#EA4336]',
           }}
           label='아이디'
           labelPlacement='outside'
@@ -61,7 +61,7 @@ export default function AuthLogin({ router, onSubmit, errors, password, setPassw
             mainWrapper: 'relative',
             helperWrapper: 'absolute -bottom-6 left-0',
             input: '!text-white',
-            errorMessage: 'text-[#EA4336]',
+            errorMessage: 'mobile:!text-[11px] text-[#EA4336]',
           }}
           label='비밀번호'
           labelPlacement='outside'
