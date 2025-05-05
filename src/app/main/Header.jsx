@@ -7,7 +7,8 @@ import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi.js';
 
 export default function Header() {
 
-  const { apiclient, handLeLogout }= useAuthenticatedApi();
+  const { apiClient, handleLogout }= useAuthenticatedApi();
+
   return (
     <Navbar className=" pl-[32px] min-h-[105px]" maxWidth="full">
       <NavbarBrand className="flex flex-row gap-x-[16px] cursor-pointer flex-grow-0 basis-auto">
@@ -24,7 +25,7 @@ export default function Header() {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#">
+          <Link color="foreground" className="text-white" href="/study">
             스터디
           </Link>
         </NavbarItem>
@@ -45,7 +46,7 @@ export default function Header() {
           <Heart className="w-9 h-9 text-white cursor-pointer" />
         </NavbarItem>
         <NavbarItem>
-          <User className="w-9 h-9 text-white cursor-pointer" onClick={handLeLogout} />
+          <User className="w-9 h-9 text-white cursor-pointer" onClick={() => handleLogout()} />
         </NavbarItem>
       </NavbarContent>
     </Navbar>

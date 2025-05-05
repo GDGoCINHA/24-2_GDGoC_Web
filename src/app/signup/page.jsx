@@ -11,7 +11,7 @@ export default function Signup() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
 
-    const { apiclient, handLeLogout }= useAuthenticatedApi();
+    const { apiClient, handLeLogout }= useAuthenticatedApi();
     
     // 사용자 정보 상태
     const [name, setName] = useState("");
@@ -102,23 +102,10 @@ export default function Signup() {
             studentId: studentId,
             phoneNumber: phoneNumber
         }
-        
-        // 콘솔에 상세 정보 출력
-        console.log("===== 회원가입 정보 =====");
-        console.log(`이름: ${name}`);
-        console.log(`이메일: ${email}`);
-        console.log(`비밀번호: ${password}`);
-        console.log(`전공: ${major}`);
-        console.log(`학번: ${studentId}`);
-        console.log(`전화번호: ${phoneNumber}`);
-        console.log("=======================");
-        console.log("회원가입 정보 객체:", userinfo);
 
         try {
-            const res = await apiClient.get('/auth/signup', {
-                params: { userinfo },
-            });
-            console. log (res);
+            const res = await apiClient.post('/auth/signup', userinfo);
+            console.log(res);
         } catch (error) {
             console.log(error);
         }
