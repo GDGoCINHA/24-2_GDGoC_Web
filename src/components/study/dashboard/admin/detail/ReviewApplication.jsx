@@ -182,7 +182,7 @@ export default function ReviewApplication({ studyId }) {
             removeFromStorage(`sAL${studyId}Hambugi`);
 
         } catch (e) {
-            console.error('자동 승인 처리 중 오류 발생:', e);
+            console.error('자동 승인 처리 중 오류 발생');
         }
     };
 
@@ -223,13 +223,14 @@ export default function ReviewApplication({ studyId }) {
             // 로컬스토리지 데이터 삭제
             removeFromStorage(`sAL${studyId}Hambugi`);
 
+            // 나중에 삭제 처리 필요할 듯?
             alert(`${approved.length}명 합격, ${rejected.length}명 불합격 처리되었습니다.`);
 
             // 버튼 비활성화 및 상태 업데이트
             setHasProcessedApplicants(true);
             setIsApprovalButtonDisabled(true);
         } catch (e) {
-            console.error('승인 처리 중 오류 발생:', e);
+            console.error('승인 처리 중 오류 발생');
             alert('처리 중 오류가 발생했습니다.');
         }
     };

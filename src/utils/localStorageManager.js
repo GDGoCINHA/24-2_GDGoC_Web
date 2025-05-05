@@ -10,7 +10,7 @@ const saveToStorage = (storageName, data) => {
         const jsonData = JSON.stringify(data);
         localStorage.setItem(storageName, jsonData);
     } catch (err) {
-        console.error('저장 중 오류 발생:', err);
+        console.error('저장 중 오류 발생');
         throw err;
     }
 };
@@ -28,7 +28,7 @@ const loadFromStorage = (storageName, setData) => {
         const parsed = JSON.parse(raw);
         setData(parsed);
     } catch (err) {
-        console.error('로드 중 오류 발생:', err);
+        console.error('로드 중 오류 발생');
         throw err;
     }
 };
@@ -41,7 +41,7 @@ const removeFromStorage = (storageName) => {
     try {
         localStorage.removeItem(storageName);
     } catch (err) {
-        console.error('삭제 중 오류 발생:', err);
+        console.error('삭제 중 오류 발생');
         throw err;
     }
 };
@@ -54,7 +54,7 @@ const clearStorage = () => {
     try {
         localStorage.clear();
     } catch (err) {
-        console.error('전체 초기화 중 오류 발생:', err);
+        console.error('전체 초기화 중 오류 발생');
         throw err;
     }
 };
