@@ -2,6 +2,7 @@ import * as React from "react";
 import "./globals.css";
 import { NextUIProvider } from "@nextui-org/react";
 import localFont from "next/font/local";
+import { AuthProvider } from '@/app/context/AuthProvider';
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -40,7 +41,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ko" className={`${pretendard.variable} ${ocra.variable}`}>
+    <html lang='ko' className={`${pretendard.variable} ${ocra.variable}`}>
       <head>
         {/* <meta name="description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
         <meta property="og:title" content="GDGoC INHA" />
@@ -49,11 +50,13 @@ export default function RootLayout({ children }) {
         <meta property="og:site_name" content="GDGoC INHA" />
         <meta property="og:image" content="/logo.png" />
         <meta property="og:type" content="website" /> */}
-        <script src="https://unpkg.com/type-hangul" async></script>
+        <script src='https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js' async></script>
       </head>
       <body className={pretendard.className}>
         <NextUIProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </NextUIProvider>
       </body>
     </html>
