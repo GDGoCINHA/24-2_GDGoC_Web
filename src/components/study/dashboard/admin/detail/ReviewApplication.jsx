@@ -81,7 +81,7 @@ export default function ReviewApplication({ studyId }) {
             // 지원자 목록 설정 (기존 상태 유지하면서 새 지원자 추가)
             setApplications(applicantList.map(app => {
                 // 로컬스토리지에서 해당 지원자의 선택 상태 찾기
-                const selectionId = `${studyId}${studyId}${app.id}`;
+                const selectionId = `${studyId}${app.id}`;
                 const storedSelection = storedSelections.find(item => item.id === selectionId);
 
                 return {
@@ -119,7 +119,7 @@ export default function ReviewApplication({ studyId }) {
     // 로컬스토리지에 선택 상태 저장
     const saveSelectionToStorage = (apps) => {
         const selections = apps.map(app => ({
-            id: `${studyId}${studyId}${app.id}`,
+            id: `${studyId}${app.id}`,
             status: !!app.selected
         }));
 
@@ -159,7 +159,7 @@ export default function ReviewApplication({ studyId }) {
             const payload = {
                 attendees: applications.map(app => {
                     // 로컬스토리지에 있는 지원자는 해당 상태로, 없는 지원자는 기본 불합격
-                    const selectionId = `${studyId}${studyId}${app.id}`;
+                    const selectionId = `${studyId}${app.id}`;
                     const storedSelection = storedSelections.find(item => item.id === selectionId);
                     const isSelected = storedSelection ? storedSelection.status : false;
 
