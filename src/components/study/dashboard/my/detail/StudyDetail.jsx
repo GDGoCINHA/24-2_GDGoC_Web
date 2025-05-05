@@ -20,12 +20,6 @@ export default function StudyDetail({ studyId }) {
     const isLoading = isAppliedLoading || isDetailLoading;
     const error = appliedError || detailError;
 
-    useEffect(() => {
-        if (!studyDetail) {
-            console.warn("studyDetail is missing for studyId:", studyId);
-        }
-    }, [studyDetail, studyId]);
-
     return (<>
         {isLoading ? (
             <div className='flex justify-center items-center h-screen'>
