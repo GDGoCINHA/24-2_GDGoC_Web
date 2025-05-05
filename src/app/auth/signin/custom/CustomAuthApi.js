@@ -1,12 +1,16 @@
 'use client';
 import axios from 'axios';
 
-const CUSTOM_AUTH_URL = 'https://gdgocinha.site/auth';
+// 기존 직접 요청 URL
+// const CUSTOM_AUTH_URL = 'https://gdgocinha.site/auth';
+
+// 새로운 프록시 URL (상대 경로 사용)
+const PROXY_AUTH_URL = '/api/signin';
 
 export const login = async (email, password) => {
   try {
     const response = await axios.post(
-      `${CUSTOM_AUTH_URL}/login`,
+      PROXY_AUTH_URL,
       { email, password },
       {
         headers: { 'Content-Type': 'application/json' },
