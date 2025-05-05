@@ -236,6 +236,7 @@ export default function ReviewApplication({ studyId }) {
                 console.log(`불합격자: ${rejected.length}명`);
                 alert(`${approved.length}명 합격, ${rejected.length}명 불합격 처리되었습니다.`);
                 removeFromStorage(`sAL${studyId}Hambugi`);
+                router.reload();
                 return;
             }
 
