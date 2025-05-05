@@ -19,8 +19,7 @@ export default function AuthResetRequest({ handleNextStep, handleBackToLogin, se
       setLoading(true);
       const response = await axios.post(`${API_AUTH_URL}/password-reset/request`, { name, email });
       if (response.status === 200) {
-        alert(`${email} 로 인증번호 전송이 완료되었습니다. 스팸 메일함도 확인해주세요!
-               (유효시간 5분)`);
+        alert(`${email} 로 인증번호 전송이 완료되었습니다. 스팸 메일함도 확인해주세요! (유효시간 5분)`);
         setLoading(false);
         setIsOtpDisabled(false);
       }

@@ -21,7 +21,7 @@ export default function Page() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState([]);
   const { handleGoogleLogin } = GoogleLogin();
-  const [isRendering, setIsRendering] = useState(0); //0으로 변경해야함
+  const [isRendering, setIsRendering] = useState(0);
   const { setAccessToken } = useAuth();
   const [loading, setLoading] = useState(false);
 
@@ -63,7 +63,7 @@ export default function Page() {
         }
       
         setAccessToken(access_token);
-        router.push('/main'); // 임시
+        router.push('/main');
       } catch (error) {
         console.error('로그인 실패:', error);
         alert('로그인 중 오류가 발생했습니다.');
