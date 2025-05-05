@@ -25,7 +25,7 @@ export const GoogleAuthComponent = () => {
         const { exists, access_token, email, name } = res.data.data;
         if (exists) {
           setAccessToken(access_token);
-          router.push('/');
+          router.push('/main');
         } else {
           alert('회원 정보가 없습니다. 회원가입을 완료해주세요.');
           sessionStorage.setItem('signup_email', email);
