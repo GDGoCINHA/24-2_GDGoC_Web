@@ -1,29 +1,35 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+
 import loginBg from '@public/src/images/bgimg.png';
 import Header from './screen/Header';
-import { useRouter } from 'next/navigation';
-import { GoogleLogin } from './google/GoogleLogin';
 import AuthLogin from './screen/AuthLogin';
 import AuthFindId from './screen/AuthFindId';
 import AuthResetPassword from './screen/AuthResetPassword';
 import AuthResetRequest from './screen/AuthResetRequest';
+import Loader from '@/components/ui/Loader.jsx';
+
+import { GoogleLogin } from './google/GoogleLogin';
+import { login } from './custom/CustomAuthApi';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Page() {
   const router = useRouter();
-  const [submitted, setSubmitted] = useState(null);
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState([]);
   const { handleGoogleLogin } = GoogleLogin();
-  const [isRendering, setIsRendering] = useState(0);
+  const [isRendering, setIsRendering] = useState(0); //0으로 변경해야함
+  const { setAccessToken } = useAuth();
+  const [loading, setLoading] = useState(false);
 
+  const handleBackToLogin = () => setIsRendering(0);
   const handleFindIdClick = () => setIsRendering(1);
   const handleResetPasswordClick = () => setIsRendering(2);
-  const handleResetPasswordNext = () => setIsRendering(3);
-  const handleBackToLogin = () => setIsRendering(0);
   const handleBackToResetRequest = () => setIsRendering(2);
+  const handleResetPasswordNext = () => setIsRendering(3);
 
   const validatePassword = (password) => {
     const newErrors = [];
@@ -33,8 +39,9 @@ export default function Page() {
     return newErrors;
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+
     const formData = Object.fromEntries(new FormData(e.currentTarget));
     const passwordErrors = validatePassword(password);
 
@@ -42,20 +49,34 @@ export default function Page() {
       setErrors(passwordErrors);
     } else {
       setErrors([]);
-      setSubmitted(formData);
-      console.log('Submitted data:', formData);
+
+      try {
+        const { email, password } = formData;
+        setLoading(true);
+        const res = await login(email, password);
+        const { exists, access_token } = res.data.data;
+      
+        if (!exists) {
+          alert('아이디 혹은 비밀번호가 올바르지 않습니다.');
+          setLoading(false);
+          return;
+        }
+      
+        setAccessToken(access_token);
+        router.push('/main'); // 임시
+      } catch (error) {
+        console.error('로그인 실패:', error);
+        alert('로그인 중 오류가 발생했습니다.');
+        setLoading(false);
+      }
     }
   };
 
   return (
     <div className='min-h-screen flex flex-col overflow-hidden relative'>
+      <Loader isLoading={loading} />
       <Header />
-      <Image
-        src={loginBg}
-        alt='loginBg'
-        fill
-        className='absolute top-0 left-0 -z-10 object-cover opacity-70 blur-sm'
-      />
+      <Image src={loginBg} alt='loginBg' fill className='absolute top-0 left-0 -z-10 object-cover opacity-70 blur-sm' />
       <div className='flex justify-center items-center flex-1 relative'>
         {/* 로그인 화면 */}
         <div
@@ -91,10 +112,16 @@ export default function Page() {
         <div
           key='screen3'
           className={`absolute w-full transition-all duration-500 ease-in-out transform ${
-            isRendering === 2 ? 'translate-x-0 opacity-100' : `${isRendering === 3 ? '-translate-x-full' : 'translate-x-full'} opacity-0`
+            isRendering === 2
+              ? 'translate-x-0 opacity-100'
+              : `${isRendering === 3 ? '-translate-x-full' : 'translate-x-full'} opacity-0`
           } flex justify-center items-center`}
         >
-          <AuthResetRequest handleNextStep={handleResetPasswordNext} handleBackToLogin={handleBackToLogin} />
+          <AuthResetRequest 
+            handleNextStep={handleResetPasswordNext} 
+            handleBackToLogin={handleBackToLogin} 
+            setLoading={setLoading}
+          />
         </div>
 
         {/* 비밀번호 재설정 화면 2 */}
@@ -104,7 +131,11 @@ export default function Page() {
             isRendering === 3 ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
           } flex justify-center items-center`}
         >
-          <AuthResetPassword handleBackToResetRequest={handleBackToResetRequest} />
+          <AuthResetPassword
+            handleBackToLogin={handleBackToLogin}
+            handleBackToResetRequest={handleBackToResetRequest}
+            setLoading={setLoading}
+          />
         </div>
       </div>
     </div>
