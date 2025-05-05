@@ -3,36 +3,34 @@
 import { useState } from 'react';
 import TransparentInput from '@/components/ui/TransparentInput';
 import { Button } from '@nextui-org/react';
+import axios from 'axios';
 
-export default function AuthResetPassword({ handleBackToLogin, handleBackToResetRequest }) {
-  const [currentPassword, setCurrentPassword] = useState('');
+export default function AuthResetPassword({ handleBackToLogin, handleBackToResetRequest, setLoading }) {
+  const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [verifyNewPassword, setVerifyNewPassword] = useState('');
+  const API_AUTH_URL = 'https://gdgocinha.site/auth';
 
   const handleNewPassword = async () => {
     if (newPassword !== verifyNewPassword) {
       alert('새로운 비밀번호가 일치하지 않습니다. 다시 한 번 시도해주세요');
       return;
     }
-    if (currentPassword === newPassword) {
-      alert('현재 비밀번호와 변경하려는 비밀번호가 같습니다. 다른 비밀번호를 입력해주세요');
-      return;
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API_AUTH_URL}/password-reset/confirm`, {
+        email,
+        password: newPassword,
+      });
+      if (response.status === 200) {
+        alert('비밀번호가 성공적으로 변경되었습니다.');
+        setLoading(false);
+        handleBackToLogin();
+      }
+    } catch (error) {
+      alert('비밀번호 변경에 실패했습니다. 네트워크 상태를 확인해주세요.');
+      setLoading(false);
     }
-    alert('비밀번호가 성공적으로 변경되었습니다.');
-    handleBackToLogin();
-    // try {
-    //   const response = await axios.post('/api/reset-password', {
-    //     currentPassword,
-    //     newPassword,
-    //   });
-  
-    //   if (response.status === 200) {
-    //     alert('비밀번호가 성공적으로 변경되었습니다.');
-    //     // 필요 시 이동 또는 상태 초기화
-    //   }
-    // } catch (error) {
-    //   alert('비밀번호 변경에 실패했습니다. 현재 비밀번호가 올바른지 확인해주세요.');
-    // }
   };
   return (
     <div className='flex flex-col w-full gap-3 max-w-[349px] mx-[24px] my-[53px] mobile:mt-[40px] mobile:mb-[60px] select-none mobile:mx-[32px]'>
@@ -41,14 +39,14 @@ export default function AuthResetPassword({ handleBackToLogin, handleBackToReset
       </div>
       <p className='text-white'>새로운 비밀번호를 입력하세요.</p>
       <TransparentInput
-        type='password'
-        name='name'
-        value={currentPassword}
+        type='test'
+        name='email'
+        value={email}
         autoComplete={false}
-        onChange={(e) => setCurrentPassword(e.target.value)}
+        onChange={(e) => setEmail(e.target.value)}
         className='!mt-[40px]'
-        label='현재 비밀번호'
-        placeholder='현재 비밀번호를 입력해주세요'
+        label='이메일'
+        placeholder='이메일을 입력해주세요'
       />
       <TransparentInput 
         type='password'

@@ -6,45 +6,50 @@ import TransparentInput from '@/components/ui/TransparentInput';
 import OtpInput from '@/components/ui/OtpInput';
 import axios from 'axios';
 
-export default function AuthResetRequest({ handleNextStep, handleBackToLogin }) {
+export default function AuthResetRequest({ handleNextStep, handleBackToLogin, setLoading }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtpDisabled, setIsOtpDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
+  const API_AUTH_URL = 'https://gdgocinha.site/auth';
 
   const handleSendOtp = async () => {
-    alert(`${email}로 인증번호 전송이 완료되었습니다.`);
-    setIsOtpDisabled(false);
-    // try {
-    //   const response = await axios.post('/api/send-otp', { name, email });
-    //   if (response.status === 200) {
-    //     setIsOtpDisabled(false);
-    //   }
-    // } catch (error) {
-    //   alert('존재하지 않거나 옳지 않은 정보입니다');
-    // }
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API_AUTH_URL}/password-reset/request`, { name, email });
+      if (response.status === 200) {
+        alert(`${email} 로 인증번호 전송이 완료되었습니다. 스팸 메일함도 확인해주세요!
+               (유효시간 5분)`);
+        setLoading(false);
+        setIsOtpDisabled(false);
+      }
+    } catch (error) {
+      alert('존재하지 않거나 옳지 않은 정보입니다. 다시 시도해주세요.');
+      setLoading(false);
+    }
   };
 
   const handleVerifyOtp = async (submittedOtp) => {
-    alert('인증이 완료되었습니다.');
-    setIsNextDisabled(false);
-    setIsOtpDisabled(true);
-    // try {
-    //   const response = await axios.post('/api/verify-otp', {
-    //     email,
-    //     otp: submittedOtp,
-    //   });
-    //   if (response.status === 200) {
-    //         setIsNextDisabled(false);
-    //         setIsOtpDisabled(true);
-    //         alert('인증이 완료되었습니다.')
-    //   } else {
-    //     alert('인증번호가 올바르지 않습니다');
-    //   }
-    // } catch (error) {
-    //   alert('인증번호가 올바르지 않습니다');
-    // }
+    try {
+      setLoading(true);
+      const response = await axios.post(`${API_AUTH_URL}/password-reset/verify`, {
+        email,
+        code: submittedOtp,
+      });
+      if (response.data.data.isEqual === true) {
+            setIsNextDisabled(false);
+            setIsOtpDisabled(true);
+            alert('인증이 완료되었습니다.')
+            setLoading(false);
+      } else {
+        alert('인증번호가 올바르지 않습니다');
+        setLoading(false);
+      }
+    } catch (error) {
+      alert('서버와의 연결이 원활하지 않습니다. 다시 시도해주세요.');
+      setLoading(false);
+    }
   };
 
   return (
