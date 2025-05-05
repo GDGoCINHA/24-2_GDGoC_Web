@@ -1,10 +1,12 @@
 'use client'
 
 import axios from 'axios';
+import { useAuth } from '@/hooks/useAuth';
 
 const API_AUTH_URL = 'https://gdgocinha.site/auth';
 
 export const useAuthApi = () => {
+  const { accessToken } = useAuth();
 
   // Access Token 갱신 함수
   const refreshAccessToken = async () => {
@@ -17,9 +19,8 @@ export const useAuthApi = () => {
       return response;
     } catch (error) {
       if(error.response?.status === 401) {
-        console.warn('리프레시 토큰 만료')
-      }
-      else {
+        console.warn('리프레시 토큰 만료');
+      } else {
         console.error('Access Token 갱신 오류: ', error);
       }
       throw error;
@@ -29,7 +30,16 @@ export const useAuthApi = () => {
   // 로그아웃 함수
   const logout = async () => {
     try {
-      await axios.post(`${API_AUTH_URL}/logout`, {}, { withCredentials: true });
+      await axios.post(
+        `${API_AUTH_URL}/logout`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
     } catch (error) {
       console.error('로그아웃 요청 오류 발생:', error);
       throw error;
