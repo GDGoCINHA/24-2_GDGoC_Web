@@ -127,18 +127,18 @@ export default function ReviewApplication({ studyId }) {
     };
 
     // 이벤트 핸들러
-    useEffect(() => {
-        const handleToggleEvent = (e) => {
-            const { applicantId } = e.detail;
-            toggleSelection(applicantId);
-        };
+    const handleToggleEvent = React.useCallback((e) => {
+        const { applicantId } = e.detail;
+        toggleSelection(applicantId);
+    }, []);
 
+    useEffect(() => {
         window.addEventListener("toggle-applicant-selection", handleToggleEvent);
 
         return () => {
             window.removeEventListener("toggle-applicant-selection", handleToggleEvent);
         };
-    }, [applications]);
+    }, [handleToggleEvent]);
 
     // 지원자 상세 정보 팝업
     const handleApplicantDetailPopup = (applicantId) => {
