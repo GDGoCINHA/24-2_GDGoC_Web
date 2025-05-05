@@ -19,6 +19,24 @@ import ApplicantDetailModal from "@/components/study/ui/modal/ApplicantDetailMod
 import { loadFromStorage, removeFromStorage, saveToStorage } from "@/utils/localStorageManager";
 
 export default function ReviewApplication({ studyId }) {
+
+
+
+    /**
+     *
+     *
+     *
+     *
+     * 여기 인원 확정 처리하는 부분 로직 조금 수상하다
+     * 인원 확정 이후 버튼 비활성화 및 메시지 처리 필요
+     * 수정?????????? 확인 필요할듯
+     *
+     *
+     *
+     *
+     */
+
+
     const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
     const [applications, setApplications] = useState([]);
@@ -181,6 +199,9 @@ export default function ReviewApplication({ studyId }) {
             // 로컬스토리지 데이터 삭제
             removeFromStorage(`sAL${studyId}Hambugi`);
 
+            // 데이터 업데이트를 위한 페이지 리로딩
+            router.reload();
+
         } catch (e) {
             console.error('자동 승인 처리 중 오류 발생');
         }
@@ -229,6 +250,9 @@ export default function ReviewApplication({ studyId }) {
             // 버튼 비활성화 및 상태 업데이트
             setHasProcessedApplicants(true);
             setIsApprovalButtonDisabled(true);
+
+            // 데이터 업데이트를 위한 페이지 리로딩
+            router.reload();
         } catch (e) {
             console.error('승인 처리 중 오류 발생');
             alert('처리 중 오류가 발생했습니다.');
