@@ -39,7 +39,7 @@ export const useAuthenticatedApi = () => {
   //로그인 이후 api 요청
   const apiClient = useMemo(() => {
     const client = axios.create({
-      baseURL: 'https://gdgocinha.site/',
+      baseURL: 'https://gdgocinha.com/api',
       headers: { 'Content-Type': 'application/json' },
       withCredentials: true,
     });

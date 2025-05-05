@@ -63,7 +63,7 @@ export default function Page() {
         }
       
         setAccessToken(access_token);
-        router.push('/main');
+        router.push('/study');
       } catch (error) {
         console.error('로그인 실패:', error);
         alert('로그인 중 오류가 발생했습니다.');
