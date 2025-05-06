@@ -17,8 +17,8 @@ export const useStudyList = (apiClient) => {
                 } else {
                     //const resGDGOC = await apiClient.get('/study?page=1&creatorType=GDGOC');
                     const resPERSONAL = await apiClient.get('/study?page=1&creatorType=PERSONAL');
-                    //setStudyListGDGOC(resGDGOC.data.studyList);
-                    setStudyListPERSONAL(resPERSONAL.data.studyList);
+                    //setStudyListGDGOC(resGDGOC?.data?.data?.studyList);
+                    setStudyListPERSONAL(resPERSONAL?.data?.data?.studyList);
                 }
             } catch (err) {
                 setError(err);
@@ -28,7 +28,7 @@ export const useStudyList = (apiClient) => {
         };
 
         fetchStudyListData();
-    }, [apiClient]);
+    }, []);
 
     return { studyListGDGOC, studyListPERSONAL, isLoading, error };
 };

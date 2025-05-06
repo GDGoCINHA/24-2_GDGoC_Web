@@ -57,7 +57,7 @@ export default function AppliedStudies() {
                     </tr>
                     </thead>
                     <tbody>
-                    {data.length > 0 ? (
+                    {data?.length > 0 ? (
                         data.map((data) => (
                             <tr
                                 key={data.studyId}

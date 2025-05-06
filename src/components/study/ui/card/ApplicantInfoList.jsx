@@ -45,7 +45,7 @@ export default function ApplicantInfoList({
                     </tr>
                     </thead>
                     <tbody>
-                    {applications.length === 0 ? (
+                    {applications?.length === 0 ? (
                         <tr>
                             <td colSpan="4" className="py-4 text-center text-gray-500">
                                 아직 지원자가 없습니다. ㅠㅠ
