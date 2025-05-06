@@ -56,7 +56,7 @@ export default function CreatedStudies() {
                     </tr>
                     </thead>
                     <tbody>
-                    {Array.isArray(data) && data.length > 0 ? (
+                    {Array.isArray(data) && data?.length > 0 ? (
                         data.map((data) => (
                             <tr
                                 key={data.id}
