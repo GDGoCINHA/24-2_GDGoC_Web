@@ -38,16 +38,16 @@ export default function MainCarousel({ slides }) {
                     <Image className='w-full h-full object-cover blur-lg opacity-50' src={slide.background} alt='event background' />
                     </div>
                     <div className="z-10 flex flex-row w-full h-full">
-                    <div className='flex justify-center items-center w-1/2'>
-                        <Image src={slide.poster} width={375} height={500} alt='event poster' />
+                    <div className='flex justify-center items-center w-1/2 mobile:hidden'>
+                        <Image src={slide.poster} width={20} height={27} alt='event poster' className='w-[20vw] h-[46vh] object-contain' />
                     </div>
-                    <div className='flex justify-center items-start w-1/2 flex-col'>
+                    <div className='flex justify-center items-start w-1/2 flex-col pr-10 mobile:pl-10 mobile:w-full'>
                         <div className="justify-start items-start flex flex-col gap-y-5">
                         <div className='flex flex-row gap-x-5'>
-                            <div className='border-3 border-[#E94335] rounded-3xl px-9 py-1 text-[#E94335] font-bold text-xl'>
+                            <div className='border-3 border-[#E94335] rounded-3xl text-[#E94335] font-bold text-xl flex items-center justify-center mobile:text-sm px-9 mobile:px-5 mobile:border-2'>
                             {slide.tag1}
                             </div>
-                            <div className='border-3 border-[#34A853] rounded-3xl px-9 py-1 text-[#34A853] font-bold text-xl'>
+                            <div className='border-3 border-[#34A853] rounded-3xl text-[#34A853] font-bold text-xl flex items-center justify-center mobile:text-sm px-9 mobile:px-5 mobile:border-2'>
                             {slide.tag2}
                             </div>
                         </div>

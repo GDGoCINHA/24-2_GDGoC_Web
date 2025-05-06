@@ -43,7 +43,7 @@ export default function Page() {
       <div className="w-full flex flex-col justify-center">
         <MainCarousel slides={slidesWithImages} />
         
-        <div className='flex flex-col max-w-[1300px] w-full mx-auto justify-start pt-[130px]'>
+        <div className='flex flex-col max-w-[1300px] w-full mx-auto justify-start pt-[130px] px-5'>
           <CardCarousel id="card-carousel-1" title="진행중인 행사">
             {renderEventCards(ongoingEvents)}
           </CardCarousel>
@@ -52,7 +52,6 @@ export default function Page() {
             {renderEventCards(ongoingStudies)}
           </CardCarousel>
           
-          {/* FAQ 섹션 */}
           <FAQ />
         </div>
       </div>

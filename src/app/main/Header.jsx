@@ -2,7 +2,7 @@ import React from 'react';
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 import Image from 'next/image';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from "@nextui-org/react";
-import { Heart, User } from "lucide-react";
+import { Heart, User, LogOut } from "lucide-react";
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi.js';
 
 export default function Header() {
@@ -20,33 +20,33 @@ export default function Header() {
       
       <NavbarContent className="hidden sm:flex gap-16 ml-[70px]" justify="start">
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#">
-            공지사항
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
           <Link color="foreground" className="text-white" href="/study">
             스터디
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#">
+          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
+            공지사항
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
             프로젝트
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#">
+          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
             멤버
           </Link>
         </NavbarItem>
       </NavbarContent>
 
       <NavbarContent justify="end" className='mr-5 gap-x-11'>
-        <NavbarItem>
+        {/* <NavbarItem>
           <Heart className="w-9 h-9 text-white cursor-pointer" />
-        </NavbarItem>
+        </NavbarItem> */}
         <NavbarItem>
-          <User className="w-9 h-9 text-white cursor-pointer" onClick={() => handleLogout()} />
+          <LogOut className="w-9 h-9 text-white cursor-pointer" onClick={() => handleLogout()} />
         </NavbarItem>
       </NavbarContent>
     </Navbar>
