@@ -43,7 +43,7 @@ export const useStudyDetail = (apiClient, studyId) => {
         };
 
         fetchStudyDetailData();
-    }, [apiClient, studyId]);
+    }, []);
 
     return { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error };
 };

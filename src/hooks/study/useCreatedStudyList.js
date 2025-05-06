@@ -27,7 +27,7 @@ export const useCreatedStudyList = (apiClient) => {
         };
 
         fetchCreatedStudyListData();
-    }, [apiClient]);
+    }, []);
 
     return { recruitingCreatedStudyList, recruitedCreatedStudyList, isLoading, error };
 };
