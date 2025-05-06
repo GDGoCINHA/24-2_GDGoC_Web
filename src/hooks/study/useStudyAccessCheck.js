@@ -28,7 +28,7 @@ export const useStudyAccessCheck = (apiClient, studyId) => {
         };
 
         fetchPermissionData();
-    }, [apiClient, studyId]);
+    }, []);
 
     // 이 스터디가 네놈의 것이 맞느냐?
     // 홀홀 그대는 정직한 유저구나 true를 반환하여주겠다

@@ -27,7 +27,7 @@ export const useAppliedStudyList = (apiClient) => {
         };
 
         fetchAppliedStudyListData();
-    }, [apiClient]);
+    }, []);
 
     return { recruitingAppliedStudyList, recruitedAppliedStudyList, isLoading, error };
 };
