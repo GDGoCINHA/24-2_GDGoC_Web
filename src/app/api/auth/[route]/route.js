@@ -6,7 +6,7 @@ const API_BASE_URL = 'https://gdgocinha.com/api/auth'; // 프록시 대상 주�
 
 export async function POST(req, { params }) {
   const action = params.action; // 'refresh' or 'logout'
-  const targetUrl = `${API_BASE_URL}/${action}`;
+  const targetUrl = `${API_BASE_URL.replace(/\/$/, '')}/${action.replace(/^\//, '')}`;
 
   try {
     const cookies = req.headers.get('cookie') || '';
