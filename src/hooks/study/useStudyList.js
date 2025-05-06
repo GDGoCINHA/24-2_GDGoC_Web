@@ -28,7 +28,7 @@ export const useStudyList = (apiClient) => {
         };
 
         fetchStudyListData();
-    }, [apiClient]);
+    }, []);
 
     return { studyListGDGOC, studyListPERSONAL, isLoading, error };
 };

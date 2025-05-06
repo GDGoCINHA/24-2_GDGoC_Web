@@ -3,7 +3,8 @@
 import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
 
-const API_AUTH_URL = 'https://gdgocinha.site/auth';
+// const API_AUTH_URL = 'https://gdgocinha.site/auth';
+const API_AUTH_URL = '/api/auth';
 
 export const useAuthApi = () => {
   const { accessToken } = useAuth();

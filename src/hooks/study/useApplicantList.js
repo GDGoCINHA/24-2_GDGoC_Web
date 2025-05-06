@@ -24,7 +24,7 @@ export const useApplicantList = (apiClient, studyId) => {
         };
 
         fetchApplicantListData();
-    }, [apiClient, studyId]);
+    }, []);
 
     return { applicantList, isLoading, error };
 };

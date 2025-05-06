@@ -24,7 +24,7 @@ export const useApplicantDetail = (apiClient, studyId, applicantId) => {
         };
 
         fetchApplicantDetailData();
-    }, [apiClient, studyId, applicantId]);
+    }, []);
 
     return { applicantDetail, isLoading, error };
 };
