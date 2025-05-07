@@ -7,6 +7,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
+# .env 파일을 먼저 복사
+COPY .env ./
+
 # 이후 전체 파일 복사
 COPY . .
 
@@ -30,6 +33,9 @@ WORKDIR /app
 # 프로덕션 의존성만 가져오기
 COPY package*.json ./
 RUN npm install --omit=dev
+
+# .env 파일 복사
+COPY .env ./
 
 # 빌드된 결과물 가져오기
 COPY --from=builder /app/.next ./.next
