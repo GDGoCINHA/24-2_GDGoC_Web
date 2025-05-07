@@ -1,4 +1,3 @@
-// 예시: /api/auth/[action]/route.js
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
