@@ -26,13 +26,15 @@ export const useStudyDetail = (apiClient, studyId) => {
                     }
                 } else {
                     const resStudyDetail = await apiClient.get(`/study/${studyId}`);
-                    setStudyDetail(resStudyDetail.data);
-                    setStudyLead(resStudyDetail.data.creator);
-                    setIsRecruiting(resStudyDetail.data.status === "RECRUITING");
+                    setStudyDetail(resStudyDetail?.data?.data);
+                    setStudyLead(resStudyDetail?.data?.data?.creator);
+                    setIsRecruiting(resStudyDetail?.data?.data?.status === "RECRUITING");
 
                     const resApplications = await apiClient.get('/study/attendee/result');
-                    if (resApplications.data.recruiting.some((application) => application.studyId === Number(studyId))) {
+                    if (resApplications?.data?.data?.recruiting?.some((study) => study?.studyId === Number(studyId))) {
                         setIsApplied(true);
+                    } else {
+                        setIsApplied(false);
                     }
                 }
             } catch (error) {
@@ -43,7 +45,7 @@ export const useStudyDetail = (apiClient, studyId) => {
         };
 
         fetchStudyDetailData();
-    }, []);
+    }, [studyId]);
 
     return { studyDetail, studyLead, isRecruiting, isApplied, isLoading, error };
 };
