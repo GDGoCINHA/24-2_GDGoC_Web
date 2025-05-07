@@ -30,9 +30,11 @@ jobs:
     - name: Create Deployment Package
       run: |
         cp scripts/deploy.sh ./deploy.sh
-        echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" >> .env
+        # Create .env file with all required environment variables
+        echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
         echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID}}" >> .env
         echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}}" >> .env
+        # Add any other environment variables you need here
 
         zip -r deploy.zip .env docker-compose.yml deploy.sh appspec.yml \
             Dockerfile package.json package-lock.json next.config.mjs \
