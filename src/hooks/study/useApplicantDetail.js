@@ -14,7 +14,7 @@ export const useApplicantDetail = (apiClient, studyId, applicantId) => {
                     setApplicantDetail(getAttendeeDetailsByStudyId.data);
                 } else {
                     const resApplicantDetail = await apiClient.get(`/study/${studyId}/attendee/${applicantId}`);
-                    setApplicantDetail(resApplicantDetail.data);
+                    setApplicantDetail(resApplicantDetail?.data?.data);
                 }
             } catch (err) {
                 setError(err);
@@ -24,7 +24,7 @@ export const useApplicantDetail = (apiClient, studyId, applicantId) => {
         };
 
         fetchApplicantDetailData();
-    }, []);
+    }, [studyId, applicantId]);
 
     return { applicantDetail, isLoading, error };
 };

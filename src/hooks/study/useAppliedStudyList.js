@@ -16,8 +16,8 @@ export const useAppliedStudyList = (apiClient) => {
                     setRecruitedAppliedStudyList(getMyStudyApplyResult.data.recruited);
                 } else {
                     const resCreatedStudy = await apiClient.get('/study/attendee/result');
-                    setRecruitingAppliedStudyList(resCreatedStudy.data.recruiting);
-                    setRecruitedAppliedStudyList(resCreatedStudy.data.recruited);
+                    setRecruitingAppliedStudyList(resCreatedStudy?.data?.data?.recruiting);
+                    setRecruitedAppliedStudyList(resCreatedStudy?.data?.data?.recruited);
                 }
             } catch (err) {
                 setError(err);
