@@ -21,21 +21,38 @@ export const viewport = {
   initialScale: 1.0,
   maximumScale: 1.0,
   minimumScale: 1.0,
+  themeColor: "#4285F4",
 };
 
 export const metadata = {
   title: "GDGoC INHA",
-  description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
+  description: "Google Developer Student Clubs Gochang - 구글 개발자 학생 클럽 고창",
+  manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.ico", 
+    icon: "/favicon.ico",
+    apple: "/icons/icon-192x192.png",
   },
   openGraph: {
     title: "GDGoC INHA",
-    description: "개발자와 비개발자가 같이 성장하는 즐거움 with Google",
+    description: "Google Developer Student Clubs Gochang - 구글 개발자 학생 클럽 고창",
     url: "https://gdgocinha.com",
     siteName: "GDGoC INHA",
-    images: "https://gdgocinha.com/logo.png",
+    images: [
+      {
+        url: "https://gdgocinha.com/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "GDGoC INHA Logo"
+      }
+    ],
     type: "website",
+    locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GDGoC INHA",
+    description: "Google Developer Student Clubs Gochang - 구글 개발자 학생 클럽 고창",
+    images: ["https://gdgocinha.com/logo.png"],
   },
 };
 
@@ -43,13 +60,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang='ko' className={`${pretendard.variable} ${ocra.variable}`}>
       <head>
-        {/* <meta name="description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
-        <meta property="og:title" content="GDGoC INHA" />
-        <meta property="og:description" content="개발자와 비개발자가 같이 성장하는 즐거움 with Google" />
-        <meta property="og:url" content="https://gdgocinha.com" />
-        <meta property="og:site_name" content="GDGoC INHA" />
-        <meta property="og:image" content="/logo.png" />
-        <meta property="og:type" content="website" /> */}
+        <link rel="manifest" href="/manifest.json" />
         <script src='https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js' async></script>
       </head>
       <body className={pretendard.className}>
