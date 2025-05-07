@@ -13,12 +13,17 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    - name: Create .env file
+      run: |
+        echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
+        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID}}" >> .env
+        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}}" >> .env
+
     - name: Login to DockerHub (Optional)
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
 
     - name: Build and Push Docker Image
       run: |
@@ -26,21 +31,12 @@ jobs:
         docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest ls -la /app
         docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest
 
-      
     - name: Create Deployment Package
       run: |
         cp scripts/deploy.sh ./deploy.sh
-        # Create .env file with all required environment variables
-        echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
-        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID}}" >> .env
-        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}}" >> .env
-        # Add any other environment variables you need here
-
         zip -r deploy.zip .env docker-compose.yml deploy.sh appspec.yml \
             Dockerfile package.json package-lock.json next.config.mjs \
             pages public .next
-
-
 
     - name: Configure AWS credentials
       run: |
@@ -48,11 +44,9 @@ jobs:
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws configure set region ${{ secrets.AWS_REGION }}
 
-
     - name: Upload Deployment Package to S3
       run: |
         aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy.zip
-
 
     - name: Trigger CodeDeploy (CLI)
       env:
