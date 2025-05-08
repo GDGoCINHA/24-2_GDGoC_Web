@@ -91,8 +91,6 @@ export default function CreateStudy() {
                 imagePath: getS3Key
             };
 
-            console.log(updateFormData);
-
             await apiClient.post('/study', updateFormData);
 
             alert("스터디 개설이 완료되었습니다!");
