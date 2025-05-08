@@ -16,7 +16,7 @@ import gdgocIcon from "@public/src/images/GDGoC_icon.png";
  * @property {Error} error - The error object
  * @property {() => void} reset - Function to reset the error state
  */
-export default function Error({ error, reset }) {
+export default function Error({ error, reset = () => {} }) {
     const [countdown, setCountdown] = useState(5);
     const errorCode = error?.statusCode || error?.status || 500;
     const errorTitle = error?.title || 'Internal Server Error';
