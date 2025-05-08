@@ -11,15 +11,9 @@ export default function NotFound() {
     const router = useRouter();
 
     const handleClick = () => {
-        if (window.history.length > 1) {
-            const referrer = document.referrer;
-            const currentHost = window.location.host;
-
-            if (referrer.includes(currentHost)) {
-                router.back();
-            } else {
-                router.push("/");
-            }
+        const sameOrigin = document.referrer.startsWith(window.location.origin);
+        if (sameOrigin) {
+            router.back();
         } else {
             router.push("/");
         }
