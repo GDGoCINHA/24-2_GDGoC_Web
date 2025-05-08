@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import { Button } from "@nextui-org/react";
 import Image from 'next/image';
 
+// components
+import Forbidden from '@/app/forbidden';
+import Unauthorized from '@/app/unauthorized';
+
 // resource
 import gdgocIcon from "@public/src/images/GDGoC_icon.png";
 
@@ -13,13 +17,14 @@ import gdgocIcon from "@public/src/images/GDGoC_icon.png";
  * @property {() => void} reset - Function to reset the error state
  */
 export default function Error({ error, reset }) {
-    const [countdown, setCountdown] = useState(3);
-    const errorCode = error?.statusCode || error?.status || 'Internal Server';
+    const [countdown, setCountdown] = useState(5);
+    const errorCode = error?.statusCode || error?.status || 500;
+    const errorTitle = error?.title || 'Internal Server Error';
     const errorMessage = error?.message || 'Unknown Error has occurred';
 
     useEffect(() => {
         if (process.env.NODE_ENV === 'development') {
-            console.error(error);
+            console.log(error || 'Unknown Error has occurred');
         }
     }, []);
 
@@ -34,6 +39,15 @@ export default function Error({ error, reset }) {
         reset();
         window.location.reload();
     };
+
+    // Handle specific error codes
+    if (errorCode === 401) {
+        return <Unauthorized />;
+    }
+
+    if (errorCode === 403) {
+        return <Forbidden />;
+    }
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
@@ -63,7 +77,8 @@ export default function Error({ error, reset }) {
 
                     {/* 오류 내용 */}
                     <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-                        <span className="text-red-500">{errorCode}</span> Error
+                        <p className="text-red-500 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">{errorCode}</p>
+                        <span className="block text-white text-base sm:text-lg md:text-xl lg:text-2xl">{errorTitle}</span>
                     </h1>
                     <div className="w-12 sm:w-16 h-1 bg-gradient-to-r from-red-500 to-red-400 rounded-full mb-3 sm:mb-4" aria-hidden="true"></div>
 
