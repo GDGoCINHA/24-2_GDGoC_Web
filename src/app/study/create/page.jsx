@@ -79,8 +79,8 @@ export default function CreateStudy() {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            const getS3Key = resS3?.data?.s3Key;
-            if (!getS3Key) throw new Error('S3 이미지 업로드 실패');
+            const getS3Key = resS3?.data?.data?.s3Key;
+            if (!getS3Key) console.error("Error: uploaded image's S3Key Not Found");
 
             const updateFormData = {
                 ...formData,
@@ -91,12 +91,14 @@ export default function CreateStudy() {
                 imagePath: getS3Key
             };
 
+            console.log(updateFormData);
+
             await apiClient.post('/study', updateFormData);
 
             alert("스터디 개설이 완료되었습니다!");
             router.push(`/study/admin`);
         } catch (error) {
-            console.error("Error during submission");
+            console.error("Error during submission:");
             alert("신청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
