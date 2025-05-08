@@ -79,7 +79,7 @@ export default function CreateStudy() {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            const getS3Key = resS3?.data?.s3key;
+            const getS3Key = resS3?.data?.s3Key;
             if (!getS3Key) throw new Error('S3 이미지 업로드 실패');
 
             const updateFormData = {
