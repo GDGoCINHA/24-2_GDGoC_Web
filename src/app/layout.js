@@ -114,17 +114,17 @@ export default function RootLayout({ children }) {
   return (
       <html lang='ko' className={`${pretendard.variable} ${ocra.variable}`} suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#000000" />
-        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000"/>
+        <link rel="manifest" href="/manifest.json"/>
         {/* PWA 관련 메타 태그 */}
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="GDGoC INHA" />
-        <link rel="apple-touch-icon" href="/icons/apple-icon-180x180.png" />
+        <meta name="mobile-web-app-capable" content="yes"/>
+        <meta name="mobile-web-app-status-bar-style" content="default"/>
+        <meta name="mobile-web-app-title" content="GDGoC INHA"/>
+        <link rel="touch-icon" href="/icons/apple-icon-180x180.png"/>
         {/* 외부 스크립트 */}
         <Script
-          src="https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js"
-          strategy="beforeInteractive"
+            src="https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js"
+            strategy="beforeInteractive"
         />
       </head>
       <body className={`${pretendard.className} antialiased`}>
