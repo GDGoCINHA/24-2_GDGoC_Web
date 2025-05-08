@@ -1,5 +1,3 @@
-import React from 'react';
-
 // components
 import MyViewArea from "@/components/study/dashboard/my/view/ViewArea";
 import MyDetailArea from "@/components/study/dashboard/my/detail/DetailArea";

@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Spinner } from "@nextui-org/react";
 
 // hooks
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import { useStudyDetail } from "@/hooks/study/useStudyDetail";
-import { useApplicantList } from "@/hooks/study/useApplicantList";
-import { useStudyAccessCheck } from "@/hooks/study/useStudyAccessCheck";
+
+// API services
+import { useStudyDetail } from "@/services/study/useStudyDetail";
+import { useApplicantList } from "@/services/study/useApplicantList";
+import { useStudyAccessCheck } from "@/services/study/useStudyAccessCheck";
 
 // components
 import NoticeBanner from "@/components/study/ui/card/NoticeBanner";
@@ -37,8 +39,9 @@ export default function ReviewApplication({ studyId }) {
      */
 
 
-    const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
+    const router = useRouter();
+
     const [applications, setApplications] = useState([]);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);

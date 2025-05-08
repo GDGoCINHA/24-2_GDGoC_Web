@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 // components
 import StudyCard from '@/components/study/ui/card/StudyCard';
