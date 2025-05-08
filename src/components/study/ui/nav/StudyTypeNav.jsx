@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function StudyTypeNav({ creatorType, onChange }) {
     return (
         <div className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:mt-14">

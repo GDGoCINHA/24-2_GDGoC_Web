@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
-import {Spinner} from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 
 // hooks
 import { useAuthenticatedApi } from "@/hooks/useAuthenticatedApi";
-import { useAppliedStudyList } from "@/hooks/study/useAppliedStudyList";
+
+// API Services
+import { useAppliedStudyList } from "@/services/study/useAppliedStudyList";
 
 // components
 
@@ -14,8 +15,8 @@ import { useAppliedStudyList } from "@/hooks/study/useAppliedStudyList";
 import { formatDate } from "@/utils/formatDate";
 
 export default function AppliedStudies() {
-    const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
+    const router = useRouter();
 
     // API: useAppliedStudyList
     const { recruitingAppliedStudyList, recruitedAppliedStudyList, isLoading, error } = useAppliedStudyList(apiClient);

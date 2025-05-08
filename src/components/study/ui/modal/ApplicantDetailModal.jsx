@@ -1,25 +1,22 @@
 'use client';
-import React from 'react';
-import { Spinner } from "@nextui-org/react";
-import { useApplicantDetail } from '@/hooks/study/useApplicantDetail';
 
-export default function ApplicantDetailModal({
-                                                 apiClient,
-                                                 studyId,
-                                                 selectedApplicant,
-                                                 setIsModalOpen,
-                                                 disableSelection = false
-                                             }) {
+import { useEffect } from 'react';
+import { Spinner } from "@nextui-org/react";
+
+// API Services
+import { useApplicantDetail } from '@/services/study/useApplicantDetail';
+
+export default function ApplicantDetailModal({ apiClient, studyId, selectedApplicant, setIsModalOpen, disableSelection = false }) {
     const { applicantDetail, isLoading, error } = useApplicantDetail(apiClient, studyId, selectedApplicant?.id);
 
-    React.useEffect(() => {
+    useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = '';
         };
     }, []);
 
-    // 상태에 따른 뱃지 스타일 반환
+    // Status badge styles
     const getStatusBadge = (status) => {
         if (status === 'APPROVED')
             return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
@@ -28,7 +25,7 @@ export default function ApplicantDetailModal({
         return "bg-gray-300 text-gray-700 px-3 py-1 rounded-full text-sm font-medium";
     };
 
-    // 상태에 따른 텍스트 반환
+    // Status text
     const getStatusName = (status) => {
         if (status === 'APPROVED') return '합격';
         if (status === 'REJECTED') return '불합격';

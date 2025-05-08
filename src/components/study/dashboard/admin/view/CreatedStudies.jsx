@@ -1,24 +1,26 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
-import {Spinner} from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 
 // hooks
 import {useAuthenticatedApi} from "@/hooks/useAuthenticatedApi";
-import {useCreatedStudyList} from "@/hooks/study/useCreatedStudyList";
-import { useAppliedStudyList } from "@/hooks/study/useAppliedStudyList";
+
+// API services
+import { useCreatedStudyList } from "@/services/study/useCreatedStudyList";
+import { useAppliedStudyList } from "@/services/study/useAppliedStudyList";
 
 // utils
 import { formatDate } from "@/utils/formatDate";
 
 export default function CreatedStudies() {
-    const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
+    const router = useRouter();
 
     // API: useCreatedStudyList
     const { recruitingCreatedStudyList, recruitedCreatedStudyList, isLoading, error } = useCreatedStudyList(apiClient);
 
+    // Status color
     const getStatusBadge = (status) => {
         if (status === 'APPROVED')
             return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
@@ -27,6 +29,7 @@ export default function CreatedStudies() {
         return "bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium";
     };
 
+    // Status text
     const getStatusName = (status) => {
         if (status === 'APPROVED') return '합격';
         if (status === 'REJECTED') return '불합격';

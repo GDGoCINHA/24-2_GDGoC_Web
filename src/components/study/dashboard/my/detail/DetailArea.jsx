@@ -1,5 +1,3 @@
-import React, { useEffect, useState } from 'react';
-
 // components
 import StudyDetail from "@/components/study/dashboard/my/detail/StudyDetail";
 // import Attendance from "@/components/study/dashboard/my/detail/Attendance";
