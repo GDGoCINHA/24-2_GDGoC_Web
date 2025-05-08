@@ -1,6 +1,6 @@
 {
-    "name": "GDGoC INHA University",
-    "short_name": "GDGoC Inha Univ.",
+    "name": "GDGoC INHA Univ.",
+    "short_name": "GDGoC INHA",
     "description": "Google Developer Group on Campus at Inha University",
     "start_url": "/",
     "display": "standalone",
@@ -34,7 +34,7 @@
         },
         {
             "src": "/icons/icon-144x144.png",
-            "sizes": "144x144",
+            "sizes": "144x70",
             "type": "image/png",
             "purpose": "any maskable"
         },
@@ -110,7 +110,7 @@
             "sizes": "1280x720",
             "type": "image/png",
             "platform": "wide",
-            "label": "GDGoC INHA 홈페이지"
+            "label": "GDGoC INHA Home"
         }
     ]
 } 

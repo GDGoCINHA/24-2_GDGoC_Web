@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 export default function NoticeBanner() {
     return (
         <div className="bg-gray-900 p-6 rounded-md mb-6">
