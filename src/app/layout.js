@@ -43,11 +43,11 @@ export const metadata = {
   metadataBase: new URL('https://gdgocinha.com'),
   title: {
     template: '%s | GDGoC INHA',
-    default: 'GDGoC INHA University'
+    default: 'GDGoC INHA'
   },
   description: "Google Developer Group on Campus at Inha University",
   manifest: "/manifest.json",
-  applicationName: "GDGoC INHA University",
+  applicationName: "GDGoC INHA",
   keywords: [
     "google", "education", "technology", "developer", "gdg", "gdsc", "gdgoc",
     "google developer group", "google for developers", "google developer groups on campus",
@@ -68,15 +68,7 @@ export const metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any", type: "image/x-icon" },
-      { url: "/icons/icon-72x72.png", sizes: "72x72", type: "image/png" },
-      { url: "/icons/icon-96x96.png", sizes: "96x96", type: "image/png" },
-      { url: "/icons/icon-128x128.png", sizes: "128x128", type: "image/png" },
-      { url: "/icons/icon-144x144.png", sizes: "144x144", type: "image/png" },
-      { url: "/icons/icon-152x152.png", sizes: "152x152", type: "image/png" },
-      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-384x384.png", sizes: "384x384", type: "image/png" },
-      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" }
+      { url: "/favicon.ico", sizes: "any", type: "image/x-icon" }
     ],
     apple: [
       { url: "/icons/apple-icon-180x180.png", sizes: "180x180", type: "image/png" }
@@ -84,7 +76,7 @@ export const metadata = {
     shortcut: ["/favicon.ico"]
   },
   openGraph: {
-    title: "GDGoC INHA University",
+    title: "GDGoC INHA Univ.",
     description: "Google Developer Group on Campus at Inha University",
     url: "https://gdgocinha.com",
     siteName: "GDGoC INHA",
@@ -93,7 +85,7 @@ export const metadata = {
         url: "https://gdgocinha.com/screenshots/home.png",
         width: 1280,
         height: 720,
-        alt: "GDGoC INHA 홈페이지"
+        alt: "GDGoC INHA Home"
       }
     ],
     type: "website",
@@ -101,7 +93,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GDGoC INHA University",
+    title: "GDGoC INHA Univ.",
     description: "Google Developer Group on Campus at Inha University",
     images: ["https://gdgocinha.com/screenshots/home.png"],
     creator: "GDGoC INHA Tech Team",
