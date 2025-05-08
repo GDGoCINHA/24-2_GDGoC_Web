@@ -24,7 +24,7 @@
     "gsap": "^3.12.7",
     "hangul-js": "^0.2.6",
     "lucide-react": "^0.507.0",
-    "next": "15.0.2",
+    "next": ">=15.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^6.0.0",
