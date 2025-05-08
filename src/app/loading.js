@@ -8,7 +8,7 @@ import gdgocIcon from "@public/src/images/GDGoC_icon.png";
 
 const LOADING_TEXTS = [
     '페이지를 불러오는 중',
-    '데이터를 준비하는 중',
+    '데이터를 가져오는 중',
     '잠시만 기다려주세요',
     '거의 다 왔습니다'
 ];
@@ -46,60 +46,87 @@ export default function Loading() {
             role="status"
             aria-label="페이지 로딩 중"
         >
-            {/* 물결 효과 배경 */}
-            <div className="absolute w-screen h-screen top-0 left-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJ3YXZlIiB4PSIwIiB5PSIwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgMjVjMjAgMCA0MCAxNSA1MCAxNXMzMC0xNSA1MC0xNSA0MCAxNSA1MCAxNSAzMC0xNSA1MC0xNXY1MGMtMjAgMC00MCAxNS01MCAxNXMtMzAtMTUtNTAtMTUtNDAgMTUtNTAgMTUtMzAtMTUtNTAtMTV6IiBmaWxsPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMDMpIiAvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCN3YXZlKSIgLz48L3N2Zz4=')] opacity-30 animate-pulse"></div>
-
-            <div className="z-10 flex flex-col items-center justify-center">
-                {/* 로딩 아이콘 애니메이션 */}
-                <div className="relative mb-8">
-                    <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-ping"></div>
-                    <div className="relative">
-                        {!imageError ? (
-                            <Image
-                                src={gdgocIcon}
-                                alt="GDGoC Icon"
-                                width={120}
-                                height={120}
-                                className="animate-pulse"
-                                onError={() => setImageError(true)}
-                            />
-                        ) : (
-                            <div className="w-[120px] h-[120px] bg-gray-700 rounded-full flex items-center justify-center">
-                                <span className="text-white text-2xl">GDGoC</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* 회전하는 로딩 원 */}
-                    <div className="absolute inset-0 w-full h-full">
-                        <svg className="absolute inset-0 w-full h-full animate-spin-slow" viewBox="0 0 100 100">
-                            <circle
-                                cx="50"
-                                cy="50"
-                                r="48"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeDasharray="1, 8"
-                                className="text-blue-500/60"
-                            />
-                        </svg>
-                    </div>
+            {/* 아이콘 배경 */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none z-0" aria-hidden="true">
+                <div className="relative">
+                    <Image
+                        src={gdgocIcon}
+                        alt="GDGoC Icon"
+                        width={600}
+                        height={600}
+                        className="animate-pulse"
+                        priority
+                    />
                 </div>
+            </div>
 
-                {/* 로딩 텍스트 */}
-                <div 
-                    className="bg-gray-800/70 backdrop-blur-sm py-4 px-8 rounded-xl shadow-lg border border-gray-700 max-w-md"
-                    aria-live="polite"
-                >
-                    <h2 className="text-2xl font-medium text-white text-center">
-                        {loadingText}<span className="inline-block min-w-8">{loadingDots}</span>
+            {/* 로딩 박스 */}
+            <div className="z-10 bg-gray-800/70 backdrop-blur-sm p-4 sm:p-8 rounded-xl shadow-2xl border border-blue-500/20 max-w-[90%] sm:max-w-md w-full mx-4">
+                <div className="flex flex-col items-center justify-center text-center">
+                    {/* 로딩 아이콘 */}
+                    <div className="relative mb-4 sm:mb-6">
+                        <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-ping"></div>
+                        <div className="relative">
+                            {!imageError ? (
+                                <Image
+                                    src={gdgocIcon}
+                                    alt="GDGoC Icon"
+                                    width={80}
+                                    height={80}
+                                    className="animate-pulse"
+                                    onError={() => setImageError(true)}
+                                />
+                            ) : (
+                                <div className="w-[80px] h-[80px] bg-blue-500/10 rounded-full flex items-center justify-center">
+                                    <span className="text-blue-500 text-xl">GDGoC</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 회전하는 로딩 원 */}
+                        <div className="absolute inset-0 w-full h-full">
+                            <svg className="absolute inset-0 w-full h-full animate-spin-slow" viewBox="0 0 100 100">
+                                <circle
+                                    cx="50"
+                                    cy="50"
+                                    r="48"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeDasharray="1, 8"
+                                    className="text-blue-500"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {/* 로딩 텍스트 */}
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                        <span className="text-blue-500">Loading</span>
                     </h2>
-                </div>
+                    <div className="w-12 sm:w-16 h-1 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full mb-3 sm:mb-4" aria-hidden="true"></div>
 
-                {/* 로딩 프로그레스 바 */}
-                <div className="mt-8 w-64 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full loading-progress"></div>
+                    <div className="bg-blue-500/10 py-3 px-6 rounded-lg border border-blue-500/20">
+                        <p className="text-lg sm:text-xl text-blue-100">
+                            {loadingText}<span className="inline-block min-w-8 text-blue-400">{loadingDots}</span>
+                        </p>
+                    </div>
+
+                    {/* 로딩 프로그레스 바 */}
+                    <div className="mt-6 sm:mt-8 w-full max-w-[280px] h-1.5 bg-blue-500/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full loading-progress"></div>
+                    </div>
+
+                    {/* 작은 로고 */}
+                    <div className="mt-4 sm:mt-6">
+                        <Image
+                            src={gdgocIcon}
+                            alt="GDGoC Small Icon"
+                            width={32}
+                            height={32}
+                            className="opacity-50"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -111,7 +138,7 @@ export default function Loading() {
 
                 @media (min-width: 768px) {
                     html, body {
-                    overflow: auto;
+                        overflow: auto;
                     }
                 }
 
