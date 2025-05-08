@@ -74,8 +74,12 @@ export default function CreateStudy() {
             s3Form.append('file', imageFile);
             s3Form.append('s3key', s3key);
 
-            const resS3 = await apiClient.post('/resource/image', s3Form);
-            const getS3Key = resS3?.s3key;
+            const resS3 = await apiClient.post('/resource/image', s3Form, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            const getS3Key = resS3?.data?.s3key;
             if (!getS3Key) throw new Error('S3 이미지 업로드 실패');
 
             const updateFormData = {
