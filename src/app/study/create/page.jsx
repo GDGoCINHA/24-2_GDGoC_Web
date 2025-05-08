@@ -68,7 +68,7 @@ export default function CreateStudy() {
 
         try {
             const imageFile = formData.image;
-            const s3key = `/study/`;
+            const s3key = `study`;
 
             const s3Form = new FormData();
             s3Form.append('file', imageFile);
