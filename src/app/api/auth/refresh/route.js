@@ -5,6 +5,7 @@ const API_BASE_URL = 'https://gdgocinha.site/auth'; // 프록시 대상 주소
 
 export async function POST(req) {
   const targetUrl = `${API_BASE_URL}/refresh`;
+  const isProd = process.env.NODE_ENV === 'production';
 
   try {
     const cookies = req.headers.get('cookie') || '';
@@ -33,8 +34,8 @@ export async function POST(req) {
         nextResponse.cookies.set(name, value, {
           path: '/',
           httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          secure: isProd,
+          sameSite: isProd ? 'none' : 'lax',
         });
       });
     }
