@@ -1,4 +1,4 @@
-name: Build Docker and Upload to S3
+name: Build and Deploy GDGOC WebPage FE App
 
 on:
   push:
@@ -10,52 +10,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Create .env file
-      run: |
-        echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
-        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID}}" >> .env
-        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}}" >> .env
+      - name: Create .env file
+        run: |
+          mkdir -p gdgocinha-fe
+          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
+          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}" >> .env
+          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}" >> .env
 
-    - name: Login to DockerHub (Optional)
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-    - name: Build and Push Docker Image
-      run: |
-        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest .
-        docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest ls -la /app
-        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/gdgocinha-fe:latest .
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gdgocinha-fe:latest
 
-    - name: Create Deployment Package
-      run: |
-        cp scripts/deploy.sh ./deploy.sh
-        zip -r deploy.zip .env docker-compose.yml deploy.sh appspec.yml \
-            Dockerfile package.json package-lock.json next.config.mjs \
-            pages public .next
+      - name: Create Deployment Package
+        run: |
+          mkdir -p deploy-package
+          cp scripts/deploy.sh deploy-package/
+          cp docker-compose.yml deploy-package/
+          cp appspec.yml deploy-package/
+          cp .env deploy-package/
+          zip -r deploy-gdgocinha-fe.zip deploy-package/
 
-    - name: Configure AWS credentials
-      run: |
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set region ${{ secrets.AWS_REGION }}
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
 
-    - name: Upload Deployment Package to S3
-      run: |
-        aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy.zip
+      - name: Upload Deployment Package to S3
+        run: |
+          aws s3 cp deploy-gdgocinha-fe.zip s3://${{ secrets.AWS_S3_BUCKET }}/gdgocinha-fe/deploy-gdgocinha-fe.zip
 
-    - name: Trigger CodeDeploy (CLI)
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ap-northeast-2
-      run: |
-        aws deploy create-deployment \
-          --application-name ${{ secrets.AWS_CODEDEPLOY_APP }} \
-          --deployment-group-name ${{ secrets.AWS_CODEDEPLOY_GROUP }} \
-          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=deploy.zip \
-          --file-exists-behavior OVERWRITE
+      - name: Trigger CodeDeploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-northeast-2
+        run: |
+          aws deploy create-deployment \
+            --application-name ${{ secrets.AWS_CODEDEPLOY_APP }} \
+            --deployment-group-name ${{ secrets.AWS_CODEDEPLOY_GROUP }} \
+            --s3-location bucket=${{ secrets.AWS_S3_BUCKET }},bundleType=zip,key=gdgocinha-fe/deploy-gdgocinha-fe.zip \
+            --file-exists-behavior OVERWRITE

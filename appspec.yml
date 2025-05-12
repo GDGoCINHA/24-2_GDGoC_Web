@@ -2,10 +2,19 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ubuntu/gdgoc-fe-app
+    destination: /home/ubuntu/gdgocinha-fe
+    overwrite: true
 
 hooks:
+  BeforeInstall:
+    - location: deploy.sh
+      timeout: 300
+      runas: root
   AfterInstall:
+    - location: deploy.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
     - location: deploy.sh
       timeout: 300
       runas: root

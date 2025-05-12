@@ -2,13 +2,19 @@ version: "3.8"
 
 services:
   frontend:
-    image: "${DOCKER_HUB_USERNAME}/gdgoc-fe-app:latest"
-    container_name: gdgoc-fe-app
+    image: "${DOCKER_HUB_USERNAME}/gdgocinha-fe:latest"
+    container_name: gdgocinha-fe
     restart: always
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: production
+      - NODE_ENV=production
     working_dir: /app
     command: "npm run start"
+    networks:
+      - gdgocinha-network
+
+networks:
+  gdgocinha-network:
+    driver: bridge
 
