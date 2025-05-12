@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function StudyDashboardNav({ isAdminPage = false, studyId = null, currentMenu, onMenuClick }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -34,14 +34,14 @@ export default function StudyDashboardNav({ isAdminPage = false, studyId = null,
 
     return (
         <div className="w-full md:w-auto bg-black text-white py-2 px-3 rounded-lg mb-4">
-            {/* 타이틀 영역 */}
+            {/* Title Area */}
             <div className="flex justify-between items-center border-b border-white pb-2">
                 <div className="flex items-center">
                     <h2 className="text-lg font-bold mr-7">
                         MY 스터디 | {isAdminPage ? "관리" : "참여"}
                     </h2>
 
-                    {/* 모바일에서 첫 번째 메뉴 항목을 타이틀 옆에 버튼으로 표시 */}
+                    {/* Mobile */}
                     {menuOption.length > 0 && (
                         <div
                             className="md:hidden bg-blue-600 mb-0 text-white text-sm py-1 px-3 rounded-full cursor-pointer"
@@ -69,7 +69,7 @@ export default function StudyDashboardNav({ isAdminPage = false, studyId = null,
                 </button>
             </div>
 
-            {/* 데스크탑 메뉴 - 좌측으로 표시 */}
+            {/* Desktop */}
             <div className="hidden md:flex md:flex-col md:gap-4 md:pt-2">
                 {menuOption.map((item) => (
                     <div
@@ -86,7 +86,7 @@ export default function StudyDashboardNav({ isAdminPage = false, studyId = null,
                 ))}
             </div>
 
-            {/* 모바일 드롭다운 메뉴 */}
+            {/* Mobile Dropdown */}
             {isMobileMenuOpen && (
                 <div className="md:hidden flex flex-col pt-2">
                     {menuOption.map((item) => (

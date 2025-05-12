@@ -1,7 +1,3 @@
-import React from "react";
-
-import { Button } from "@nextui-org/react";
-
 export default function GreenTextButton({ text, isDisabled, handleClick }) {
     return (
         <div className="mt-6 text-center">

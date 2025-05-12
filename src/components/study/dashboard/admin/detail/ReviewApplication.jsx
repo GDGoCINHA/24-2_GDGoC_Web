@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Spinner } from "@nextui-org/react";
 
 // hooks
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-import { useStudyDetail } from "@/hooks/study/useStudyDetail";
-import { useApplicantList } from "@/hooks/study/useApplicantList";
-import { useStudyAccessCheck } from "@/hooks/study/useStudyAccessCheck";
+
+// API services
+import { useStudyDetail } from "@/services/study/useStudyDetail";
+import { useApplicantList } from "@/services/study/useApplicantList";
+import { useStudyAccessCheck } from "@/services/study/useStudyAccessCheck";
 
 // components
 import NoticeBanner from "@/components/study/ui/card/NoticeBanner";
@@ -37,8 +39,9 @@ export default function ReviewApplication({ studyId }) {
      */
 
 
-    const router = useRouter();
     const { apiClient } = useAuthenticatedApi();
+    const router = useRouter();
+
     const [applications, setApplications] = useState([]);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -145,7 +148,7 @@ export default function ReviewApplication({ studyId }) {
     };
 
     // 이벤트 핸들러
-    const handleToggleEvent = React.useCallback((e) => {
+    const handleToggleEvent = useCallback((e) => {
         const { applicantId } = e.detail;
         toggleSelection(applicantId);
     }, []);
@@ -235,7 +238,15 @@ export default function ReviewApplication({ studyId }) {
                 console.log(`합격자: ${approved.length}명`);
                 console.log(`불합격자: ${rejected.length}명`);
                 alert(`${approved.length}명 합격, ${rejected.length}명 불합격 처리되었습니다.`);
+
+                // 로컬스토리지 데이터 삭제
                 removeFromStorage(`sAL${studyId}Hambugi`);
+
+                // 버튼 비활성화 및 상태 업데이트
+                setHasProcessedApplicants(true);
+                setIsApprovalButtonDisabled(true);
+
+                // 데이터 업데이트를 위한 페이지 리로딩
                 router.reload();
                 return;
             }

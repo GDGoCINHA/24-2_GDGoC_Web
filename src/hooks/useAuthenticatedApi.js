@@ -40,13 +40,16 @@ export const useAuthenticatedApi = () => {
   const apiClient = useMemo(() => {
     const client = axios.create({
       baseURL: 'https://gdgocinha.site/',
-      headers: { 'Content-Type': 'application/json' },
       withCredentials: true,
     });
 
     // 요청 인터셉터
     client.interceptors.request.use(
       (config) => {
+        if (!config.headers['Content-Type']) {
+          config.headers['Content-Type'] = 'application/json';
+        }
+
         if (accessTokenRef.current) {
           config.headers.Authorization = `Bearer ${accessTokenRef.current}`;
         }

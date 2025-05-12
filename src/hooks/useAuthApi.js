@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
 
 const API_AUTH_URL = 'https://gdgocinha.site/auth';
+const ROUTE_API_URL = '/api/auth';
 
 export const useAuthApi = () => {
   const { accessToken } = useAuth();
@@ -11,10 +12,15 @@ export const useAuthApi = () => {
   // Access Token 갱신 함수
   const refreshAccessToken = async () => {
     try {
-      const response = await axios.post(`${API_AUTH_URL}/refresh`, {}, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      });
+      const response = await axios.post(
+        `${ROUTE_API_URL}/refresh`,
+        {},
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+          credentials: 'include',
+        }
+      );
 
       return response;
     } catch (error) {

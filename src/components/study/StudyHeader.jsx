@@ -1,6 +1,6 @@
-import React from 'react';
 import Image from 'next/image';
 
+// Resources
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 
 export default function StudyHeader() {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Chip } from '@nextui-org/react';
 import Image from 'next/image';
@@ -9,7 +8,7 @@ import { formatDate } from '@/utils/formatDate';
 export default function StudyCard({ id, title, description, status, reqEnd, icon }) {
     const router = useRouter();
 
-    // get status color
+    // Status color
     const getStatusStyle = (status) => {
         switch (status.toUpperCase()) {
             case 'RECRUITED':
@@ -23,7 +22,7 @@ export default function StudyCard({ id, title, description, status, reqEnd, icon
         }
     };
 
-    // get status text
+    // Status text
     const getStatusText = (status) => {
         switch (status.toUpperCase()) {
             case 'RECRUITED':

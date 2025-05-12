@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+// components
 import GreenTextButton from "@/components/ui/button/GreenTextButton";
 
 export default function ApplicantInfoList({
@@ -13,9 +13,7 @@ export default function ApplicantInfoList({
                                               isApprovalButtonDisabled,
                                               hasProcessedApplicants
                                           }) {
-    if (error) return <div className="text-red-500 text-center">알수없는 에러 발생!</div>;
-
-    // 상태에 따른 뱃지 스타일 반환
+    // Status badge styles
     const getStatusBadge = (status) => {
         if (status === 'APPROVED')
             return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
@@ -24,7 +22,7 @@ export default function ApplicantInfoList({
         return "bg-gray-300 text-gray-700 px-3 py-1 rounded-full text-sm font-medium";
     };
 
-    // 상태에 따른 텍스트 반환
+    // Status text
     const getStatusName = (status) => {
         if (status === 'APPROVED') return '합격';
         if (status === 'REJECTED') return '불합격';
@@ -45,7 +43,7 @@ export default function ApplicantInfoList({
                     </tr>
                     </thead>
                     <tbody>
-                    {applications.length === 0 ? (
+                    {applications?.length === 0 ? (
                         <tr>
                             <td colSpan="4" className="py-4 text-center text-gray-500">
                                 아직 지원자가 없습니다. ㅠㅠ

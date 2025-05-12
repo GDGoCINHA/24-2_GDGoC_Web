@@ -1,5 +1,3 @@
-import React from 'react';
-
 // components
 import AppliedStudies from "@/components/study/dashboard/my/view/AppliedStudies";
 

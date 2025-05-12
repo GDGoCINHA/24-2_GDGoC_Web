@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import {Spinner} from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 
 // hooks
 import {useAuthenticatedApi} from "@/hooks/useAuthenticatedApi";
-import { useStudyDetail } from "@/hooks/study/useStudyDetail";
-import {useAppliedStudyList} from "@/hooks/study/useAppliedStudyList";
+
+// API Services
+import { useStudyDetail } from "@/services/study/useStudyDetail";
+import {useAppliedStudyList} from "@/services/study/useAppliedStudyList";
 
 export default function StudyDetail({ studyId }) {
     const { apiClient } = useAuthenticatedApi();
