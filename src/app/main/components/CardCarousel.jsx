@@ -15,6 +15,20 @@ export default function CardCarousel({ id, title, children }) {
         pagination: false,
         drag: true,
         snap: true,
+        breakpoints: {
+          1024: {
+            perPage: 3,
+            gap: '1.5rem',
+          },
+          768: {
+            perPage: 2, 
+            gap: '1rem',
+          },
+          480: {
+            perPage: 1,
+            gap: '0.5rem',
+          },
+        },
       });
 
       cardSplide.mount();
