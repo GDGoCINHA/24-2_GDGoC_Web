@@ -36,6 +36,7 @@ export async function POST(req) {
           httpOnly: true,
           secure: isProd,
           sameSite: isProd ? 'none' : 'lax',
+          domain: isProd ? '.gdgocinha.com' : undefined,
         });
       });
     }
