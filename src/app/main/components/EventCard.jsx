@@ -3,17 +3,17 @@ import {Button} from "@nextui-org/react";
 
 export default function EventCard({ logo, title, statusLabel, statusColor, eventType, eventTypeColor, description, details, isHidden }) {
   return (
-    <div id="card" className='flex flex-col rounded-3xl bg-[#303030] w-full max-w-[28vw] h-full max-h-[70vh] aspect-[0.7] px-6 pt-14 relative'>
+    <div id="card" className='flex flex-col rounded-3xl bg-[#303030] w-full h-full max-h-[70vh] aspect-[0.7] px-6 pt-14 relative'>
       <div className='flex flex-row gap-x-2 mb-5'>
         <Image src={logo} hidden={isHidden} width={38} height={38} alt='logoimg' />
         <p className='text-white text-[2vw] font-bold'>{title}</p>
       </div>
       <div className='flex flex-row gap-x-5 mb-5'>
-        <div className={`flex rounded-3xl w-[115px] h-[35px] bg-[${statusColor}] text-black font-bold text-xl text-center justify-center items-center`}>
+        <div className='border-3 border-[#E94335] bg-[#E94335] rounded-3xl text-black font-bold text-xl flex items-center justify-center mobile:text-sm px-2 mobile:border-2'>
           {statusLabel}
         </div>
-        <div className={`flex rounded-3xl w-[115px] h-[35px] bg-[${eventTypeColor}] text-black font-bold text-xl text-center justify-center items-center`}>
-          {eventType}
+        <div className='border-3 border-[#34A853] bg-[#34A853] rounded-3xl text-black font-bold text-xl flex items-center justify-center mobile:text-sm px-2 mobile:border-2'>
+          {eventType} 
         </div>
       </div>
       <p className='text-white text-[1.5vw] font-bold mb-6'>{description}</p>
