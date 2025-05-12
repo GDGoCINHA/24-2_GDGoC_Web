@@ -12,10 +12,15 @@ export const useAuthApi = () => {
   // Access Token 갱신 함수
   const refreshAccessToken = async () => {
     try {
-      const response = await axios.post(`${ROUTE_API_URL}/refresh`, {}, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      });
+      const response = await axios.post(
+        `${ROUTE_API_URL}/refresh`,
+        {},
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+          credentials: 'include',
+        }
+      );
 
       return response;
     } catch (error) {
