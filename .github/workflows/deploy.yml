@@ -16,9 +16,9 @@ jobs:
       - name: Create .env file
         run: |
           mkdir -p gdgocinha-fe
-          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
-          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}" >> .env
-          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}" >> .env
+          echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > gdgocinha-fe/.env
+          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}" >> gdgocinha-fe/.env
+          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}" >> gdgocinha-fe/.env
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -33,12 +33,31 @@ jobs:
 
       - name: Create Deployment Package
         run: |
-          mkdir -p deploy-package
-          cp scripts/deploy.sh deploy-package/
-          cp docker-compose.yml deploy-package/
-          cp appspec.yml deploy-package/
-          cp .env deploy-package/
-          zip -r deploy-gdgocinha-fe.zip deploy-package/
+          # Create deployment directory structure
+          mkdir -p deploy-package/gdgocinha-fe
+          
+          # Copy necessary files
+          cp scripts/deploy.sh deploy-package/gdgocinha-fe/
+          cp docker-compose.yml deploy-package/gdgocinha-fe/
+          cp appspec.yml deploy-package/gdgocinha-fe/
+          cp gdgocinha-fe/.env deploy-package/gdgocinha-fe/
+          
+          # Copy nginx configuration
+          mkdir -p deploy-package/gdgocinha-fe/nginx
+          cp nginx/gdgocinha.com.conf deploy-package/gdgocinha-fe/nginx/
+          
+          # Create logs directory
+          mkdir -p deploy-package/gdgocinha-fe/logs
+          mkdir -p deploy-package/gdgocinha-fe/logs/docker
+          mkdir -p deploy-package/gdgocinha-fe/logs/app
+          mkdir -p deploy-package/gdgocinha-fe/logs/deploy
+          
+          # Set proper permissions
+          chmod +x deploy-package/gdgocinha-fe/deploy.sh
+          
+          # Create deployment package
+          cd deploy-package
+          zip -r ../deploy-gdgocinha-fe.zip .
 
       - name: Configure AWS credentials
         run: |

@@ -1,20 +1,23 @@
 version: 0.0
 os: linux
 files:
-  - source: /
+  - source: gdgocinha-fe/
     destination: /home/ubuntu/gdgocinha-fe
     overwrite: true
+    mode: 0644
+    owner: ubuntu
+    group: ubuntu
 
 hooks:
   BeforeInstall:
-    - location: deploy.sh
+    - location: gdgocinha-fe/deploy.sh
       timeout: 300
       runas: root
   AfterInstall:
-    - location: deploy.sh
+    - location: gdgocinha-fe/deploy.sh
       timeout: 300
       runas: root
   ApplicationStart:
-    - location: deploy.sh
+    - location: gdgocinha-fe/deploy.sh
       timeout: 300
       runas: root
