@@ -8,13 +8,13 @@ import Lenis from '@studio-freight/lenis';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 
-import HeroSection from '@/components/sections/HeroSection';
-import AboutSection from '@/components/sections/AboutSection';
-import StatsSection from '@/components/sections/StatsSection';
-import ActivitiesSection from '@/components/sections/ActivitiesSection';
-import StudySection from '@/components/sections/StudySection';
-import PartnersSection from '@/components/sections/PartnersSection';
-import CTASection from '@/components/sections/CTASection';
+import HeroSection from '@/components/landing/HeroSection';
+import AboutSection from '@/components/landing/AboutSection';
+import StatsSection from '@/components/landing/StatsSection';
+import ActivitiesSection from '@/components/landing/ActivitiesSection';
+import StudySection from '@/components/landing/StudySection';
+import PartnersSection from '@/components/landing/PartnersSection';
+import CTASection from '@/components/landing/CTASection';
 
 gsap.registerPlugin(ScrollTrigger);
 

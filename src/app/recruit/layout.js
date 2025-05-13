@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loader from '@/components/ui/Loader.jsx';
+import Loader from '@/components/ui/common/Loader.jsx';
 
 export const metadata = {
     title: "Recruit",

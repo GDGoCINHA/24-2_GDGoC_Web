@@ -1,12 +1,11 @@
 'use client';
 import axios from 'axios';
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 // 기존 직접 요청 URL
 // const CUSTOM_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 
 // 새로운 프록시 URL (상대 경로 사용)
-const PROXY_AUTH_URL = '/api/signin';
+const PROXY_AUTH_URL = '/api/auth/signin';
 
 export const login = async (email, password) => {
   try {

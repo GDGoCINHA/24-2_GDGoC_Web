@@ -4,15 +4,14 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-
 import Header from '@/components/auth/screen/Header';
 import AuthLogin from '@/components/auth/screen/AuthLogin';
 import AuthFindId from '@/components/auth/screen/AuthFindId';
 import AuthResetPassword from '@/components/auth/screen/AuthResetPassword';
 import AuthResetRequest from '@/components/auth/screen/AuthResetRequest';
-import Loader from '@/components/ui/Loader.jsx';
+import Loader from '@/components/ui/common/Loader.jsx';
 
-import { GoogleLogin } from './google/GoogleLogin';
+import { GoogleLogin } from '@/services/auth/signin/google/GoogleLogin';
 import { login } from '@/services/auth/signin/custom/CustomAuthApi';
 
 import { useAuth } from '@/hooks/useAuth';

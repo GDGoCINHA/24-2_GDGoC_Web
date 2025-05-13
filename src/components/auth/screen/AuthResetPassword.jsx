@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@nextui-org/react';
 import axios from 'axios';
 
-import TransparentInput from '@/components/ui/TransparentInput';
+import TransparentInput from '@/components/ui/input/TransparentInput';
 
 export default function AuthResetPassword({ handleBackToLogin, handleBackToResetRequest, setLoading }) {
   const [email, setEmail] = useState('');

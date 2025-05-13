@@ -5,7 +5,7 @@ import { Button } from '@nextui-org/react';
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/react';
 import axios from 'axios';
 
-import TransparentInput from '@/components/ui/TransparentInput';
+import TransparentInput from '@/components/ui/input/TransparentInput';
 
 import { majorOptions } from '@/constant/majorOptions';
 

@@ -2,9 +2,12 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { exchangeGoogleToken } from '../GoogleAuthApi';
+
+import Loader from '@/components/ui/common/Loader'
+
 import { useAuth } from '@/hooks/useAuth';
-import Loader from '@/components/ui/Loader'
+
+import { exchangeGoogleToken } from '@/services/auth/signin/google/GoogleAuthApi';
 
 export const GoogleAuthComponent = () => {
   const { setAccessToken } = useAuth();

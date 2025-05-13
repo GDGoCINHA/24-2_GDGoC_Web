@@ -3,7 +3,7 @@ import NextImage from "next/image";
 import { Button } from "@nextui-org/react";
 import gsap from 'gsap';
 
-import Header from "@/components/Header";
+import Header from "@/components/ui/common/Header";
 
 import bg from "@public/images/bgimg.png";
 

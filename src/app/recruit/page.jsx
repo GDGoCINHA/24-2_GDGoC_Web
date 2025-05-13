@@ -5,7 +5,7 @@ import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-import Loader from '@/components/ui/Loader.jsx';
+import Loader from '@/components/ui/common/Loader.jsx';
 import VerticalProgressBar from '@/components/ui/progressbar/VerticalProgressBar.jsx';
 import HorizontalProgressBar from '@/components/ui/progressbar/HorizontalProgressBar.jsx';
 
