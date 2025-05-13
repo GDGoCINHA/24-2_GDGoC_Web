@@ -1,5 +1,6 @@
 'use client';
 import axios from 'axios';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 // 기존 직접 요청 URL
 // const CUSTOM_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -10,7 +11,7 @@ const PROXY_AUTH_URL = '/api/signin';
 export const login = async (email, password) => {
   try {
     const response = await axios.post(
-      PROXY_AUTH_URL,
+        PROXY_AUTH_URL,
       { email, password },
       {
         headers: { 'Content-Type': 'application/json' },
