@@ -38,8 +38,8 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
             <ul>
               <li className='text-base font-semibold'>• 👛 입금 계좌</li>
               <li className='ml-[8px] mb-[15px]'>
-                : <strong className='text-[#34A853]'>카카오뱅크 3333252211505</strong> | 예금주명
-                <strong> 엄수빈</strong>
+                : <strong className='text-[#34A853]'>토스뱅크 1001-9049-2082</strong> | 예금주명
+                <strong> GDGoC INHA</strong>
               </li>
 
               <li className='text-base font-semibold'>• 💵 25-1 회비</li>
