@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Button } from '@nextui-org/react';
 import clsx from 'clsx';
 
-export default function UserDetailsModal({ user, isOpen, onClose }) {
+export default function UserDetailModal({ user, isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Table,
   TableHeader,
@@ -14,11 +15,14 @@ import {
   Input,
   Spinner,
 } from '@nextui-org/react';
-import Header from './Header';
-import UserDetailsModal from './UserDetailModal';
-import { users } from './users';
 import { IoSearch } from 'react-icons/io5';
-import { useRouter } from 'next/navigation';
+
+
+import AdminHeader from '@/components/admin/AdminHeader';
+import UserDetailsModal from '@/components/admin/UserDetailModal';
+
+import { users } from '@/mock/users';
+
 export const columns = [
   { name: 'NAME', uid: 'name' },
   { name: 'MAJOR / ID', uid: 'major' },
@@ -124,7 +128,7 @@ export default function Page() {
         </div>
       ) : (
         <div>
-          <Header />
+          <AdminHeader />
           <Table
           className='dark py-[30px] px-[96px] mobile:px-[10px]'
           aria-label='Example table with custom cells'

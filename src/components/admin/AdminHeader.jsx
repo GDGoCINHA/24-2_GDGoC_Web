@@ -2,7 +2,7 @@ import React from 'react';
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 import Image from 'next/image';
 
-export default function Header() {
+export default function AdminHeader() {
   return (
     <div className='flex flex-row select-none pt-[53px] px-[96px] mobile:justify-center mobile:px-[0px]'>
       <div className='flex flex-row gap-x-[16px] w-fit cursor-pointer'>
