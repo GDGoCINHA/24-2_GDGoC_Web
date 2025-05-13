@@ -1,14 +1,11 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@nextui-org/react';
 import axios from 'axios';
 
-// 이건 머죠 경로 정상화 처리 필요할듯?
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
-
-import Loader from '@/components/ui/Loader.jsx';
+import Loader from '@/components/ui/common/Loader.jsx';
 import VerticalProgressBar from '@/components/ui/progressbar/VerticalProgressBar.jsx';
 import HorizontalProgressBar from '@/components/ui/progressbar/HorizontalProgressBar.jsx';
 
@@ -28,6 +25,7 @@ import { formatRecruitData } from '@/utils/formatRecruitData.js';
 
 export default function Recruit() {
   const router = useRouter();
+
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
   const [mount, setMount] = useState(1);

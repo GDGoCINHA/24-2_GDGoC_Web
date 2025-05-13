@@ -1,9 +1,10 @@
-import { useAuth } from './useAuth';
-import { useAuthApi } from './useAuthApi';
 import { useMemo, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
+
+import { useAuth } from './useAuth';
+import { useAuthApi } from './useAuthApi';
+
 
 export const useAuthenticatedApi = () => {
   const { accessToken, setAccessToken, clearAuth } = useAuth();

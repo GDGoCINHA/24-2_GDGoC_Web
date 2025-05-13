@@ -9,7 +9,7 @@ import Forbidden from '@/app/forbidden';
 import Unauthorized from '@/app/unauthorized';
 
 // resource
-import gdgocIcon from "@public/src/images/GDGoC_icon.png";
+import gdgocIcon from "@public/icons/logo.png";
 
 /**
  * @typedef {Object} ErrorProps
