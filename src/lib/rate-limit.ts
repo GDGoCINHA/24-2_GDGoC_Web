@@ -15,7 +15,6 @@ export function rateLimit({ interval, uniqueTokenPerInterval = 500 }: RateLimitO
   return {
     check: async (limit: number, token: string): Promise<number> => {
       const now = Date.now();
-      const tokenKey = `${token}_${now}`;
       
       // 이전 토큰들 정리
       for (const [key, value] of tokens.entries()) {
