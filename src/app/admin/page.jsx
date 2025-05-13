@@ -17,11 +17,11 @@ import {
 } from '@nextui-org/react';
 import { IoSearch } from 'react-icons/io5';
 
-import UserDetailsModal from '@/components/admin/UserDetailModal';
+import UserDetailsModal from '@/components/admin/UserDetailsModal';
 
 import { users } from '@/mock/users';
 
-export const columns = [
+const columns = [
   { name: 'NAME', uid: 'name' },
   { name: 'MAJOR / ID', uid: 'major' },
   { name: 'PAYMENT', uid: 'status' },
