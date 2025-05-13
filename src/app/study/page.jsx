@@ -3,19 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Hooks
-import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
-
-// API Services
-import { useStudyList } from '@/services/study/useStudyList';
-
-// Components
-import StudyHeader from '@/components/study/StudyHeader';
 import StudyTypeNav from '@/components/study/ui/nav/StudyTypeNav';
-import StudySection from '@/components/study/StudySection';
+import StudySection from '@/components/study/ui/table/StudySection';
 import RoundImageButton from '@/components/ui/button/RoundImageButton';
 
-// Resources
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
+
+import { useStudyList } from '@/services/study/useStudyList';
+
 import writeIcon from '@public/icons/ui/pencil.png';
 
 export default function Study() {
@@ -44,8 +39,6 @@ export default function Study() {
 
     return (
         <>
-            {/* StudyHeader */}
-            <StudyHeader />
             <header className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] mobile:justify-self-center">
                 <h1 className="text-white text-xl text-left mobile:text-center mobile:text-lg">
                     GDGoC Inha에서는 높은 수준의 멤버들과

@@ -1,8 +1,5 @@
 "use client";
 
-import React from 'react';
-
-import Header from '@/components/main/Header';
 import MainCarousel from '@/components/main/MainCarousel';
 import CardCarousel from '@/components/main/CardCarousel';
 import EventCard from '@/components/main/EventCard';
@@ -42,7 +39,6 @@ export default function Page() {
 
   return (
     <div className="min-h-screen bg-black mb-64">
-      <Header />
       <div className="w-full flex flex-col justify-center">
         <MainCarousel slides={slidesWithImages} />
         

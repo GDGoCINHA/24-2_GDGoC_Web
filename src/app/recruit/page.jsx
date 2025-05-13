@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@nextui-org/react';
 import axios from 'axios';
 
 import Loader from '@/components/ui/common/Loader.jsx';
@@ -25,6 +25,7 @@ import { formatRecruitData } from '@/utils/formatRecruitData.js';
 
 export default function Recruit() {
   const router = useRouter();
+
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
   const [mount, setMount] = useState(1);

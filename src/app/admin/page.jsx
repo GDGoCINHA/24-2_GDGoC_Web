@@ -17,7 +17,6 @@ import {
 } from '@nextui-org/react';
 import { IoSearch } from 'react-icons/io5';
 
-import AdminHeader from '@/components/admin/AdminHeader';
 import UserDetailsModal from '@/components/admin/UserDetailModal';
 
 import { users } from '@/mock/users';
@@ -127,7 +126,6 @@ export default function Page() {
         </div>
       ) : (
         <div>
-          <AdminHeader />
           <Table
           className='dark py-[30px] px-[96px] mobile:px-[10px]'
           aria-label='Example table with custom cells'

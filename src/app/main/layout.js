@@ -1,4 +1,5 @@
 //import { Suspense } from "react";
+import MenuHeader from "@/components/ui/common/MenuHeader";
 
 export const metadata = {
     title: "Home",
@@ -8,6 +9,7 @@ export const metadata = {
 export default function HomeLayout({ children }) {
     return (
         <>
+            <MenuHeader />
             {children}
         </>
     );

@@ -10,8 +10,6 @@ import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 // API Services
 import { useStudyDetail } from "@/services/study/useStudyDetail";
 
-// components
-import Header from '@/components/study/StudyHeader';
 import SubmitButton from "@/components/ui/button/SubmitButton";
 
 // Resources
@@ -71,8 +69,6 @@ export default function Apply() {
 
     return (
         <>
-            {/* StudyHeader */}
-            <Header/>
             <header
                 className="relative flex flex-col select-none pt-[35px] px-[96px] mobile:px-[24px] items-center justify-center text-center">
                 <div className="flex flex-col mobile:flex-col items-center gap-2 mt-4 mobile:mt-2">

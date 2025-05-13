@@ -1,4 +1,5 @@
 //import { Suspense } from "react";
+import Header from "@/components/ui/common/Header";
 
 export const metadata = {
     title: "SignUp",
@@ -8,6 +9,7 @@ export const metadata = {
 export default function SignUpLayout({ children }) {
     return (
         <>
+            <Header />
             {children}
         </>
     );

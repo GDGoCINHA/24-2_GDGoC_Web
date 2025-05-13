@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link } from "@nextui-org/react";
 import { Heart, User, LogOut } from "lucide-react";
@@ -7,7 +9,7 @@ import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi.js';
 
 import gdgocIcon from '@public/icons/logo.png';
 
-export default function Header() {
+export default function MenuHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { apiClient, handleLogout }= useAuthenticatedApi();
 

@@ -1,20 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+import { Button } from "@nextui-org/react";
 
 import ProfileInfoForm from "@/components/auth/signup/ProfileInfoForm";
 import AdditionalInfoForm from "@/components/auth/signup/AdditionalInfoForm";
 
-import usePasswordValidation from "@/hooks/usePasswordValidation";
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi.js';
+import usePasswordValidation from "@/hooks/usePasswordValidation";
 
 export default function Signup() {
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
-
     const { apiClient, handLeLogout }= useAuthenticatedApi();
+
+    const [isLoading, setIsLoading] = useState(true);
     
     // 사용자 정보 상태
     const [name, setName] = useState("");
