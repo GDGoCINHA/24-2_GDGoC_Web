@@ -5,6 +5,7 @@ import { Button } from '@nextui-org/react';
 import TransparentInput from '@/components/ui/TransparentInput';
 import OtpInput from '@/components/ui/OtpInput';
 import axios from 'axios';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 export default function AuthResetRequest({ handleNextStep, handleBackToLogin, setLoading }) {
   const [name, setName] = useState('');
@@ -12,7 +13,7 @@ export default function AuthResetRequest({ handleNextStep, handleBackToLogin, se
   const [otp, setOtp] = useState('');
   const [isOtpDisabled, setIsOtpDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
-  const API_AUTH_URL = 'https://gdgocinha.site/auth';
+  const API_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth';
 
   const handleSendOtp = async () => {
     try {

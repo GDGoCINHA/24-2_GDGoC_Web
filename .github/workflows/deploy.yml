@@ -16,6 +16,7 @@ jobs:
     - name: Create .env file
       run: |
         echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
+        echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
         echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID}}" >> .env
         echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}}" >> .env
 
@@ -46,7 +47,7 @@ jobs:
 
     - name: Upload Deployment Package to S3
       run: |
-        aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/deploy.zip
+        aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/main-deploy.zip
 
     - name: Trigger CodeDeploy (CLI)
       env:
@@ -57,5 +58,5 @@ jobs:
         aws deploy create-deployment \
           --application-name ${{ secrets.AWS_CODEDEPLOY_APP }} \
           --deployment-group-name ${{ secrets.AWS_CODEDEPLOY_GROUP }} \
-          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=deploy.zip \
+          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=main-deploy.zip \
           --file-exists-behavior OVERWRITE

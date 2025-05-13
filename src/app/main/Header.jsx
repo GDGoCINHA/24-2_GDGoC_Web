@@ -1,41 +1,60 @@
-import React from 'react';
+import React, { useState } from 'react';
 import gdgocIcon from '@public/src/images/GDGoC_icon.png';
 import Image from 'next/image';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link } from "@nextui-org/react";
-import { Heart, User } from "lucide-react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link } from "@nextui-org/react";
+import { Heart, User, LogOut } from "lucide-react";
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi.js';
 
 export default function Header() {
-
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { apiClient, handleLogout }= useAuthenticatedApi();
 
+  const menuItems = [
+    { name: "스터디", href: "/study" },
+    { name: "공지사항", href: "#", onClick: () => alert('준비중입니다.') },
+    { name: "프로젝트", href: "#", onClick: () => alert('준비중입니다.') },
+    { name: "멤버", href: "#", onClick: () => alert('준비중입니다.') },
+    { name: "로그아웃", href: "#", onClick: handleLogout }
+  ];
+
   return (
-    <Navbar className=" pl-[32px] min-h-[105px]" maxWidth="full">
-      <NavbarBrand className="flex flex-row gap-x-[16px] cursor-pointer flex-grow-0 basis-auto">
-        <Image className='w-[62px] h-[28px]' src={gdgocIcon} alt='gdgocIcon' />
-        <div className='text-white text-[16px] pt-[3px]'>
-          <strong>GDGoC</strong> Inha univ.
-        </div>
-      </NavbarBrand>
+    <Navbar 
+      //className=" min-h-[105px]" 
+      height="6rem"
+      maxWidth="full"
+      onMenuOpenChange={setIsMenuOpen}
+    >
+      <NavbarContent>
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="hidden mobile:inline text-white "
+        />
+        <NavbarBrand className="flex flex-row gap-x-[16px] cursor-pointer flex-grow-0 basis-auto">
+          <Image className='w-[62px] h-[28px]' src={gdgocIcon} alt='gdgocIcon' />
+          <div className='text-white text-[16px] pt-[3px]'>
+            <strong>GDGoC</strong> Inha univ.
+          </div>
+        </NavbarBrand>
+      </NavbarContent>
       
-      <NavbarContent className="hidden sm:flex gap-16 ml-[70px]" justify="start">
-        <NavbarItem>
-          <Link color="foreground" className="text-white" href="#">
-            공지사항
-          </Link>
-        </NavbarItem>
+      <NavbarContent className="mobile:hidden flex gap-16 ml-[70px]" justify="start">
         <NavbarItem>
           <Link color="foreground" className="text-white" href="/study">
             스터디
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#">
+          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
+            공지사항
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
             프로젝트
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#">
+          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
             멤버
           </Link>
         </NavbarItem>
@@ -43,12 +62,24 @@ export default function Header() {
 
       <NavbarContent justify="end" className='mr-5 gap-x-11'>
         <NavbarItem>
-          <Heart className="w-9 h-9 text-white cursor-pointer" />
-        </NavbarItem>
-        <NavbarItem>
-          <User className="w-9 h-9 text-white cursor-pointer" onClick={() => handleLogout()} />
+          <LogOut className="w-9 h-9 text-white cursor-pointer mobile:hidden" onClick={() => handleLogout()} />
         </NavbarItem>
       </NavbarContent>
+
+      <NavbarMenu>
+        {menuItems.map((item, index) => (
+          <NavbarMenuItem key={`${item.name}-${index}`}>
+            <Link
+              className={`w-full text-white ${index === 4 ? "text-red-500 font-bold" : ""}`}
+              href={item.href}
+              size="lg"
+              onClick={item.onClick}
+            >
+              {item.name}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
     </Navbar>
   );
 }
