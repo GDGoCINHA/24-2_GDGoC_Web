@@ -12,7 +12,7 @@ export async function POST(request) {
 
     // gdgocinha.site/auth/login으로 요청 전달
     const response = await axios.post(
-      `${ORIGINAL_AUTH_URL}/login`,
+      `${ORIGINAL_AUTH_URL}/auth/login`,
       { email, password },
       {
         headers: { 'Content-Type': 'application/json' },
