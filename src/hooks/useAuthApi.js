@@ -38,7 +38,7 @@ export const useAuthApi = () => {
   const logout = async () => {
     try {
       await axios.post(
-        `${API_AUTH_URL}/logout`,
+        `${ROUTE_API_URL}/signout`,
         {},
         {
           withCredentials: true,
