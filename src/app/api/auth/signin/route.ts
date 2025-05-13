@@ -59,7 +59,18 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const isProd = process.env.NODE_ENV === 'production';
 
-    const response = await axios.post(
+    // 기존 refresh_token 쿠키 삭제
+    const response = NextResponse.json({});
+    response.cookies.set('refresh_token', '', {
+      path: '/',
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      domain: isProd ? '.gdgocinha.com' : undefined,
+      expires: new Date(0),
+    });
+
+    const authResponse = await axios.post(
       `${ORIGINAL_AUTH_URL}/auth/login`,
       { email, password },
       {
@@ -68,15 +79,15 @@ export async function POST(request: Request): Promise<NextResponse> {
       }
     );
 
-    const data = response.data;
+    const data = authResponse.data;
 
     const nextResponse = NextResponse.json(data, {
-      status: response.status,
-      statusText: response.statusText,
+      status: authResponse.status,
+      statusText: authResponse.statusText,
     });
 
     // 원본 응답의 쿠키가 있으면 추출하여 현재 도메인에 설정
-    const cookies = response.headers['set-cookie'];
+    const cookies = authResponse.headers['set-cookie'];
     if (cookies) {
       cookies.forEach((cookie: string) => {
         const cookieParts = cookie.split(';')[0].split('=');
