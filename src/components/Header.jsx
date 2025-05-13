@@ -1,7 +1,7 @@
 import React from 'react';
 import NextImage from 'next/image';
 
-import gdgocIcon from "@public/src/images/GDGoC_icon.png";
+import gdgocIcon from "@public/icons/logo.png";
 
 function Header() {
     return (

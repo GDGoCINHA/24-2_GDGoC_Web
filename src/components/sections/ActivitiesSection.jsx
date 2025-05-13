@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import gsap from 'gsap';
 
-import seminar from '@public/src/images/activity/seminar.jpg';
-import snack from '@public/src/images/activity/snack.jpg';
-import party from '@public/src/images/activity/party.jpg';
-import conf from '@public/src/images/activity/conf.jpg';
-import googleconf from '@public/src/images/activity/googleconf.jpg';
-import christmas from '@public/src/images/activity/christmas.jpg';
+import seminar from '@public/images/activity/seminar.jpg';
+import snack from '@public/images/activity/snack.jpg';
+import party from '@public/images/activity/party.jpg';
+import conf from '@public/images/activity/conf.jpg';
+import googleconf from '@public/images/activity/googleconf.jpg';
+import christmas from '@public/images/activity/christmas.jpg';
 
 function ActivitiesSection() {
 

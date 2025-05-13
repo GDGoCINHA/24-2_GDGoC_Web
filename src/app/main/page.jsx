@@ -1,14 +1,17 @@
 "use client";
 
 import React from 'react';
+
 import Header from './Header';
 import MainCarousel from './components/MainCarousel';
 import CardCarousel from './components/CardCarousel';
 import EventCard from './components/EventCard';
 import FAQ from './components/FAQ';
+
 import { mainSlides, ongoingEvents, ongoingStudies } from './data/events';
-import eventbg from '@public/src/images/songdo_conf.jpg';
-import eventposter from '@public/src/images/study/study1.jpg';
+
+import eventbg from '@public/images/activity/songdo_conf.jpg';
+import eventposter from '@public/images/study/study1.jpg';
 
 export default function Page() {
   // 이미지 임포트 문제 해결을 위한 실제 슬라이드 데이터

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import gdgocIcon from '@public/src/images/GDGoC_icon.png';
-import Image from 'next/image';
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link } from "@nextui-org/react";
 import { Heart, User, LogOut } from "lucide-react";
+import Image from 'next/image';
+
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi.js';
+
+import gdgocIcon from '@public/icons/logo.png';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

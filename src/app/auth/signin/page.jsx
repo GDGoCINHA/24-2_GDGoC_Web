@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-import loginBg from '/public/images/bgimg.png';
+
 import Header from '@/components/auth/screen/Header';
 import AuthLogin from '@/components/auth/screen/AuthLogin';
 import AuthFindId from '@/components/auth/screen/AuthFindId';
@@ -14,7 +14,10 @@ import Loader from '@/components/ui/Loader.jsx';
 
 import { GoogleLogin } from './google/GoogleLogin';
 import { login } from './custom/CustomAuthApi';
+
 import { useAuth } from '@/hooks/useAuth';
+
+import loginBg from '@public/images/bgimg.png';
 
 export default function Page() {
   const router = useRouter();

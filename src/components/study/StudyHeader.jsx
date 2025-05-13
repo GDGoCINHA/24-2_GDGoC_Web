@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 // Resources
-import gdgocIcon from '@public/src/images/GDGoC_icon.png';
+import gdgocIcon from '@public/icons/logo.png';
 
 export default function StudyHeader() {
   return (

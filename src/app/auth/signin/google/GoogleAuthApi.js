@@ -1,6 +1,5 @@
 'use client'
 import axios from 'axios';
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 const GOOGLE_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth/oauth2/google';
 

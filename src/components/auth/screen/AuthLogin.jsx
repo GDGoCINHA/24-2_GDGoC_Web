@@ -1,9 +1,10 @@
 'use client'
 
 import { Button, Form, Input, Spinner } from '@nextui-org/react';
-import googleIcon from '@public/src/images/google_icon.png';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import googleIcon from '@public/icons/logo.png';
 
 export default function AuthLogin({ router, onSubmit, errors, password, setPassword, setErrors, handleGoogleLogin, handleFindIdClick, handleResetPasswordClick }) {
   return (

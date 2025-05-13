@@ -1,7 +1,9 @@
 "use client"
+
 import { useState, useEffect } from "react";
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
+
 import ProfileInfoForm from "./components/ProfileInfoForm";
 import AdditionalInfoForm from "./components/AdditionalInfoForm";
 import usePasswordValidation from "./hooks/usePasswordValidation";

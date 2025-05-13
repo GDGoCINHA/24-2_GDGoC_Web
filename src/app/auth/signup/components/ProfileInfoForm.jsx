@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react";
+
 import { Input } from "@nextui-org/react";
 
 export default function ProfileInfoForm({ 

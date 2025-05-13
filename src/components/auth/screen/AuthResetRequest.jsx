@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { Button } from '@nextui-org/react';
+import axios from 'axios';
+
 import TransparentInput from '@/components/ui/TransparentInput';
 import OtpInput from '@/components/ui/OtpInput';
-import axios from 'axios';
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 export default function AuthResetRequest({ handleNextStep, handleBackToLogin, setLoading }) {
   const [name, setName] = useState('');

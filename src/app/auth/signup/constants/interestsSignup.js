@@ -1,4 +1,4 @@
-export const interests = [
+export const interestsSignup = [
   { key: "FrontEnd", value: "FrontEnd" },
   { key: "BackEnd", value: "BackEnd" },
   { key: "UX/UI", value: "UX/UI" },

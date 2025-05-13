@@ -6,11 +6,11 @@ import { Splide, SplideSlide } from '@splidejs/splide';
 import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
 import '@splidejs/splide/css';
 
-import study1 from '@public/src/images/study/study1.jpg';
-import study2 from '@public/src/images/study/study2.jpg';
-import study3 from '@public/src/images/study/study3.jpg';
-import study4 from '@public/src/images/study/study4.jpg';
-import study5 from '@public/src/images/study/study5.jpg';
+import study1 from '@public/images/study/study1.jpg';
+import study2 from '@public/images/study/study2.jpg';
+import study3 from '@public/images/study/study3.jpg';
+import study4 from '@public/images/study/study4.jpg';
+import study5 from '@public/images/study/study5.jpg';
 
 function StudySection() {
 

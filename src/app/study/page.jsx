@@ -16,7 +16,7 @@ import StudySection from '@/components/study/StudySection';
 import RoundImageButton from '@/components/ui/button/RoundImageButton';
 
 // Resources
-import writeIcon from '@public/ui/pencil.png';
+import writeIcon from '@public/icons/ui/pencil.png';
 
 export default function Study() {
     const { apiClient } = useAuthenticatedApi();

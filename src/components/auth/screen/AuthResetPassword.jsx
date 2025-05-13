@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react';
-import TransparentInput from '@/components/ui/TransparentInput';
 import { Button } from '@nextui-org/react';
 import axios from 'axios';
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
+
+import TransparentInput from '@/components/ui/TransparentInput';
 
 export default function AuthResetPassword({ handleBackToLogin, handleBackToResetRequest, setLoading }) {
   const [email, setEmail] = useState('');

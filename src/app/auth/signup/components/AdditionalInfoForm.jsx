@@ -1,7 +1,8 @@
 "use client"
+
 import { Autocomplete, AutocompleteItem, AutocompleteSection, Input } from "@nextui-org/react";
-import { majors } from "../constants/majors";
-import { useState } from "react";
+
+import { majorOptions } from "@/constant/majorOptions";
 
 export default function AdditionalInfoForm({
   major, setMajor,
@@ -49,7 +50,7 @@ export default function AdditionalInfoForm({
           selectedKeys={major ? new Set([major]) : new Set([])}
           onSelectionChange={setMajor}
         >
-          {majors.map((collegeGroup) => (
+          {majorOptions.map((collegeGroup) => (
             <AutocompleteSection key={collegeGroup.title} title={collegeGroup.title} showDivider>
               {collegeGroup.items.map((majorItem) => (
                 <AutocompleteItem 

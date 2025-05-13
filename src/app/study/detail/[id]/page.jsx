@@ -19,7 +19,7 @@ import SubmitButton from '@/components/ui/button/SubmitButton';
 import { formatDate } from '@/utils/formatDate';
 
 // Resources
-import gdgocIcon from '@public/src/images/GDGoC_icon.png';
+import gdgocIcon from '@public/icons/logo.png';
 
 export default function Detail() {
     const { apiClient } = useAuthenticatedApi();

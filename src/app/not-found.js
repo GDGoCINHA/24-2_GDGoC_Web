@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/react";
 import Image from 'next/image';
 
 // resource
-import gdgocIcon from "@public/src/images/GDGoC_icon.png";
+import gdgocIcon from "@public/icons/logo.png";
 
 export default function NotFound() {
     const router = useRouter();

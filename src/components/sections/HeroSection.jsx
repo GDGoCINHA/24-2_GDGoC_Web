@@ -4,7 +4,8 @@ import { Button } from "@nextui-org/react";
 import gsap from 'gsap';
 
 import Header from "@/components/Header";
-import bg from "@public/src/images/bgimg.png";
+
+import bg from "@public/images/bgimg.png";
 
 export default function HeroSection({ router }) {
     const subTitleRef = useRef(null);

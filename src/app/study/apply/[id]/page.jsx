@@ -15,7 +15,7 @@ import Header from '@/components/study/StudyHeader';
 import SubmitButton from "@/components/ui/button/SubmitButton";
 
 // Resources
-import gdgocIcon from '@public/src/images/GDGoC_icon.png';
+import gdgocIcon from '@public/icons/logo.png';
 
 export default function Apply() {
     const { apiClient } = useAuthenticatedApi();

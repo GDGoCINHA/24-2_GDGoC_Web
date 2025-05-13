@@ -1,10 +1,10 @@
-import inhalogo from '@public/src/images/logo/inha.png';
+import inhalogo from '@public/icons/logo/inha.png';
 
 // 메인 캐러셀 슬라이드 데이터
 export const mainSlides = [
   {
-    background: '/src/images/songdo_conf.jpg',
-    poster: '/src/images/study/study1.jpg',
+    background: '@public/images/activity/songdo_conf.jpg',
+    poster: '@public/images/study/study1.jpg',
     tag1: '모집',
     tag2: '외부행사',
     title: 'GDG 인천 HELLO WORLD 행사 운영 스태프 모집 안내',

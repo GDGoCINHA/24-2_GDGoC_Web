@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 import gsap from 'gsap';
 
-import gdg from '@public/src/images/logo/gdg.png';
-import gpters from '@public/src/images/logo/gpters.png';
-import inha from '@public/src/images/logo/inha.png';
-import kang from '@public/src/images/logo/강쌤과외.png';
-import dongyeon from '@public/src/images/logo/동연.png';
-import chajidan from '@public/src/images/logo/창지단.png';
+import gdg from '@public/icons/logo/gdgoc.png';
+import gpters from '@public/icons/logo/gpters.png';
+import inha from '@public/icons/logo/inha.png';
+import kang from '@public/icons/logo/강쌤과외.png';
+import dongyeon from '@public/icons/logo/동연.png';
+import chajidan from '@public/icons/logo/창지단.png';
 
 function PartnersSection() {
 
