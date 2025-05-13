@@ -11,7 +11,7 @@ import Error from "@/app/error";
 import { AuthProvider } from '@/app/context/AuthProvider';
 
 // css
-import "./globals.css";
+import "@/styles/globals.css";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
