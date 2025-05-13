@@ -6,6 +6,7 @@ import { Button } from '@nextui-org/react';
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/react';
 import { majors } from '@/app/recruit/majors';
 import axios from 'axios';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 export default function AuthFindId({ handleBackToLogin }) {
   const [name, setName] = useState('');
@@ -15,7 +16,7 @@ export default function AuthFindId({ handleBackToLogin }) {
   const handleSubmitFindId = async () => {
     try {
       const response = await axios.post(
-        'https://api.gdgocinha.com/auth/findId', {
+        process.env.NEXT_PUBLIC_BASE_API_URL + '/auth/findId', {
           name,
           major,
           phoneNumber,

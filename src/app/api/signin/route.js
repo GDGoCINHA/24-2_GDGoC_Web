@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { NextResponse } from 'next/server';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
-const ORIGINAL_AUTH_URL = 'https://api.gdgocinha.com/auth';
+const ORIGINAL_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 
 export async function POST(request) {
   try {

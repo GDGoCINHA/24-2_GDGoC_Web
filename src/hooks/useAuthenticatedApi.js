@@ -3,6 +3,7 @@ import { useAuthApi } from './useAuthApi';
 import { useMemo, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 export const useAuthenticatedApi = () => {
   const { accessToken, setAccessToken, clearAuth } = useAuth();
@@ -39,7 +40,7 @@ export const useAuthenticatedApi = () => {
   //로그인 이후 api 요청
   const apiClient = useMemo(() => {
     const client = axios.create({
-      baseURL: 'https://api.gdgocinha.com/',
+      baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
       withCredentials: true,
     });
 

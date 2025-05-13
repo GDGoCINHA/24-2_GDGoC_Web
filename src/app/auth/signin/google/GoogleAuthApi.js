@@ -1,7 +1,8 @@
 'use client'
 import axios from 'axios';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
-const GOOGLE_AUTH_URL = 'https://api.gdgocinha.com/auth/oauth2/google';
+const GOOGLE_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth/oauth2/google';
 
 // Google 로그인 코드 교환 함수
 export const exchangeGoogleToken = async (code) => {

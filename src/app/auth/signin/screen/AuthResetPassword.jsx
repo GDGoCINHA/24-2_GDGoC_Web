@@ -4,12 +4,13 @@ import { useState } from 'react';
 import TransparentInput from '@/components/ui/TransparentInput';
 import { Button } from '@nextui-org/react';
 import axios from 'axios';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 export default function AuthResetPassword({ handleBackToLogin, handleBackToResetRequest, setLoading }) {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [verifyNewPassword, setVerifyNewPassword] = useState('');
-  const API_AUTH_URL = 'https://api.gdgocinha.com/auth';
+  const API_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth';
 
   const handleNewPassword = async () => {
     if (newPassword !== verifyNewPassword) {

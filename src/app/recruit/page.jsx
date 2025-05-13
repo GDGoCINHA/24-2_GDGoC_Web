@@ -21,6 +21,7 @@ import Recruit11 from '@/app/recruit/screen/Recruit11';
 import Loader from '@/components/ui/Loader.jsx';
 import VerticalProgressBar from './VerticalProgressBar.jsx';
 import HorizontalProgressBar from './HorizontalProgressBar.jsx';
+import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 export default function Recruit() {
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
@@ -41,7 +42,7 @@ export default function Recruit() {
         const formattedData = formatRecruitData(mainRecruitData);
         try {
           setLoading(true)
-          const response = await axios.post("https://api.gdgocinha.com/apply", formattedData);
+          const response = await axios.post(process.env.NEXT_PUBLIC_BASE_API_URL + "/apply", formattedData);
           router.push("/recruit/submit");
         } catch (error) {
           if (error.response && error.response.status === 500) {
