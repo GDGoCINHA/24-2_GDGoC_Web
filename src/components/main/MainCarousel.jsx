@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { Splide } from '@splidejs/splide';
-import '@splidejs/splide/css';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Splide } from '@splidejs/splide';
+import '@splidejs/splide/css';
 
 export default function MainCarousel({ slides }) {
     const splideRef = useRef(null);

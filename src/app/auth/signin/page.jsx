@@ -13,7 +13,7 @@ import AuthResetRequest from '@/components/auth/screen/AuthResetRequest';
 import Loader from '@/components/ui/Loader.jsx';
 
 import { GoogleLogin } from './google/GoogleLogin';
-import { login } from './custom/CustomAuthApi';
+import { login } from '@/services/auth/signin/custom/CustomAuthApi';
 
 import { useAuth } from '@/hooks/useAuth';
 

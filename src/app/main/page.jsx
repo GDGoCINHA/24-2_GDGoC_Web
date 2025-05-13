@@ -2,13 +2,13 @@
 
 import React from 'react';
 
-import Header from './Header';
-import MainCarousel from './components/MainCarousel';
-import CardCarousel from './components/CardCarousel';
-import EventCard from './components/EventCard';
-import FAQ from './components/FAQ';
+import Header from '@/components/main/Header';
+import MainCarousel from '@/components/main/MainCarousel';
+import CardCarousel from '@/components/main/CardCarousel';
+import EventCard from '@/components/main/EventCard';
+import FAQ from '@/components/main/FAQ';
 
-import { mainSlides, ongoingEvents, ongoingStudies } from './data/events';
+import { mainSlides, ongoingEvents, ongoingStudies } from '@/mock/events';
 
 import eventbg from '@public/images/activity/songdo_conf.jpg';
 import eventposter from '@public/images/study/study1.jpg';
