@@ -4,7 +4,7 @@ import axios from 'axios';
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
 
 export async function POST(req) {
-  const targetUrl = `${API_BASE_URL}/refresh`;
+  const targetUrl = `${API_BASE_URL}/auth/refresh`;
   const isProd = process.env.NODE_ENV === 'production';
 
   try {
