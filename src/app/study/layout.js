@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Loading from "./loading";
 
 export const metadata = {
-    title: "Study | GDGoC",
+    title: "Study",
     description: "Study group management and participation platform",
 };
 
