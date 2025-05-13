@@ -1,4 +1,6 @@
 name: Build Docker and Upload to S3
+permissions:
+  contents: read
 
 on:
   push:
