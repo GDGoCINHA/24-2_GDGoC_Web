@@ -1,7 +1,7 @@
 'use client'
 import axios from 'axios';
 
-const GOOGLE_AUTH_URL = 'https://gdgocinha.site/auth/oauth2/google';
+const GOOGLE_AUTH_URL = 'https://api.gdgocinha.com/auth/oauth2/google';
 
 // Google 로그인 코드 교환 함수
 export const exchangeGoogleToken = async (code) => {

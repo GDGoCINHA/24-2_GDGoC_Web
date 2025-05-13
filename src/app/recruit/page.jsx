@@ -41,7 +41,7 @@ export default function Recruit() {
         const formattedData = formatRecruitData(mainRecruitData);
         try {
           setLoading(true)
-          const response = await axios.post("https://www.gdgocinha.site/apply", formattedData);
+          const response = await axios.post("https://api.gdgocinha.com/apply", formattedData);
           router.push("/recruit/submit");
         } catch (error) {
           if (error.response && error.response.status === 500) {

@@ -12,7 +12,7 @@ export default function AuthResetRequest({ handleNextStep, handleBackToLogin, se
   const [otp, setOtp] = useState('');
   const [isOtpDisabled, setIsOtpDisabled] = useState(true);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
-  const API_AUTH_URL = 'https://gdgocinha.site/auth';
+  const API_AUTH_URL = 'https://api.gdgocinha.com/auth';
 
   const handleSendOtp = async () => {
     try {

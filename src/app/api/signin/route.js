@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { NextResponse } from 'next/server';
 
-const ORIGINAL_AUTH_URL = 'https://gdgocinha.site/auth';
+const ORIGINAL_AUTH_URL = 'https://api.gdgocinha.com/auth';
 
 export async function POST(request) {
   try {

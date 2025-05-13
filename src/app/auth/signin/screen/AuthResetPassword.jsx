@@ -9,7 +9,7 @@ export default function AuthResetPassword({ handleBackToLogin, handleBackToReset
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [verifyNewPassword, setVerifyNewPassword] = useState('');
-  const API_AUTH_URL = 'https://gdgocinha.site/auth';
+  const API_AUTH_URL = 'https://api.gdgocinha.com/auth';
 
   const handleNewPassword = async () => {
     if (newPassword !== verifyNewPassword) {

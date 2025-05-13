@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-const API_BASE_URL = 'https://gdgocinha.site/auth'; // 프록시 대상 주소
+const API_BASE_URL = 'https://api.gdgocinha.com/auth'; // 프록시 대상 주소
 
 export async function POST(req) {
   const targetUrl = `${API_BASE_URL}/refresh`;

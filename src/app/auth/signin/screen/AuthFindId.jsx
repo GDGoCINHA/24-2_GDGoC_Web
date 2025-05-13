@@ -15,7 +15,7 @@ export default function AuthFindId({ handleBackToLogin }) {
   const handleSubmitFindId = async () => {
     try {
       const response = await axios.post(
-        'https://www.gdgocinha.site/auth/findId', {
+        'https://api.gdgocinha.com/auth/findId', {
           name,
           major,
           phoneNumber,
