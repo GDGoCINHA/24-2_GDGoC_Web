@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
 
 const API_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth';
+const API_REFRESH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/refresh';
 const ROUTE_API_URL = '/api/auth';
 
 export const useAuthApi = () => {
@@ -24,7 +25,7 @@ export const useAuthApi = () => {
 
       return response;
     } catch (error) {
-      if(error.response?.status === 401) {
+      if (error.response?.status === 401) {
         console.warn('리프레시 토큰 만료');
       } else {
         console.error('Access Token 갱신 오류: ', error);

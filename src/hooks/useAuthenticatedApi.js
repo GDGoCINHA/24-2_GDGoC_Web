@@ -66,7 +66,8 @@ export const useAuthenticatedApi = () => {
       async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 403 && !originalRequest._retry) {
+        // 401 또는 403 에러이고, 아직 재시도하지 않은 경우
+        if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
           originalRequest._retry = true;
 
           try {
