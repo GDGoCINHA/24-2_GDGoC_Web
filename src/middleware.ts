@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_API_URL;
+
 // 보호된 경로 목록
 const protectedPaths = [
   '/admin',
@@ -28,7 +30,7 @@ export async function middleware(request: NextRequest) {
     // 리프레시 토큰이 있는 경우 토큰 재발급 API 호출
     if (refreshToken) {
       try {
-        const response = await fetch(`${request.nextUrl.origin}/api/auth/refresh`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
