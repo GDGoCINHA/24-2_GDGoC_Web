@@ -14,7 +14,7 @@ import { AuthProvider } from '@/app/context/AuthProvider';
 import "@/styles/globals.css";
 
 const pretendard = localFont({
-  src: "../../public/fonts/PretendardVariable.woff2",
+  src: "../../public/fonts/pretendard/PretendardVariable.woff2",
   display: "swap",
   variable: "--font-pretendard",
   preload: true,

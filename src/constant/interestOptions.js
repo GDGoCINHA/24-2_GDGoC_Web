@@ -1,0 +1,18 @@
+export const interestOptions = [
+    'UI/UX',
+    'IT 기획 및 경영',
+    'PM',
+    '스타트업',
+    '디지털 마케팅 / 브랜딩',
+    '비즈니스 개발',
+    'Frontend',
+    'Backend',
+    'Mobile',
+    'Game',
+    '3D 디자인',
+    'AI / ML',
+    'Data Science / Big Data',
+    'Embedded Systems / IoT',
+    'Cybersecurity',
+    'Blockchain / Web3',
+];

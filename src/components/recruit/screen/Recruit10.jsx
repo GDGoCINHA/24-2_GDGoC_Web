@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Textarea } from '@nextui-org/react';
-import SingleSelectBox from '../../../components/listbox/SingleSelectBox';
+
+import SingleSelectBox from '@/components/ui/input/select/SingleSelectBox';
 
 export default function Recruit10({ step, setChecked, updateRecruitData }) {
   const gdgFeedbackOptions = ['저는 신입 멤버입니다', '피드백 사항이 없습니다', 'GDGoC에 원하는 사항이 있습니다'];
@@ -26,9 +27,9 @@ export default function Recruit10({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex w-full h-full bg-transparent transition-all duration-500 ease-in-out 
-        ${step - 1 == 10 ? 'opacity-0' : step == 10 ? '' : step + 1 == 10 ? 'opacity-0' : 'hidden'} 
+        ${step - 1 === 10 ? 'opacity-0' : step === 10 ? '' : step + 1 === 10 ? 'opacity-0' : 'hidden'} 
         ${
-          step - 1 == 10 ? '-translate-y-full' : step == 10 ? 'translate-y-0' : step + 1 == 10 ? 'translate-y-full' : ''
+          step - 1 === 10 ? '-translate-y-full' : step === 10 ? 'translate-y-0' : step + 1 === 10 ? 'translate-y-full' : ''
         }`}
     >
       <div className='flex flex-col w-full h-full mx-[10px] text-white'>

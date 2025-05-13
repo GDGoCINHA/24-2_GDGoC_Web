@@ -19,9 +19,9 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex w-full h-full bg-transparent transition-all duration-500 ease-in-out 
-        ${step - 1 == 11 ? 'opacity-0' : step == 11 ? '' : step + 1 == 11 ? 'opacity-0' : 'hidden'} 
+        ${step - 1 === 11 ? 'opacity-0' : step === 11 ? '' : step + 1 === 11 ? 'opacity-0' : 'hidden'} 
         ${
-          step - 1 == 11 ? '-translate-y-full' : step == 11 ? 'translate-y-0' : step + 1 == 11 ? 'translate-y-full' : ''
+          step - 1 === 11 ? '-translate-y-full' : step === 11 ? 'translate-y-0' : step + 1 === 11 ? 'translate-y-full' : ''
         }`}
     >
       <div className='flex flex-col w-full h-full mx-[10px] text-white'>

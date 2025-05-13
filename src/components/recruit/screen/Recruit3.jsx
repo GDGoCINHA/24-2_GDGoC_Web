@@ -58,7 +58,7 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
 
   const handleCheckDuplicate = async () => {
     try {
-      const response = await axios.get(`https://www.gdgocinha.site/check/phoneNumber`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/check/phoneNumber`, {
         params: { phoneNumber },
       });
       setIsValidButtonClicked(true);
@@ -73,8 +73,8 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex flex-col w-full h-full transition-all duration-500 ease-in-out 
-        ${step - 1 == 3 ? 'opacity-0' : step == 3 ? '' : step + 1 == 3 ? 'opacity-0' : 'hidden'} 
-        ${step - 1 == 3 ? '-translate-y-full' : step == 3 ? 'translate-y-0' : step + 1 == 3 ? 'translate-y-full' : ''}`}
+        ${step - 1 === 3 ? 'opacity-0' : step === 3 ? '' : step + 1 === 3 ? 'opacity-0' : 'hidden'} 
+        ${step - 1 === 3 ? '-translate-y-full' : step === 3 ? 'translate-y-0' : step + 1 === 3 ? 'translate-y-full' : ''}`}
     >
       <div className='flex flex-col w-full h-full text-white overflow-y-scroll relative'>
         <p className='text-white text-2xl font-semibold mb-[15px] mobile:text-xl'>필수 개인정보를 적어주세요</p>

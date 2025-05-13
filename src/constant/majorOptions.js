@@ -1,4 +1,4 @@
-export const majors = [
+export const majorOptions = [
     {
       title: '소프트웨어융합대학',
       items: [

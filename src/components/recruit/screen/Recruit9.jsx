@@ -3,30 +3,14 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@nextui-org/react';
 
-import MultipleSelectBox from '../../../components/listbox/MultipleSelectBox';
+import MultipleSelectBox from '@/components/ui/input/select/MultipleSelectBox';
+
+import { wishOptions } from '@/constant/wishOptions';
+import { expectOptions } from '@/constant/expectOptions';
+
 export default function Recruit9({ step, setChecked, updateRecruitData }) {
-  const gdgWishOptions = [
-    '네트워킹',
-    '공부 메이트 & 스터디',
-    '프로젝트 경험 & 파트너',
-    '취업 & 진로 준비',
-    '타 대학과의 교류',
-    '구글 관련 활동 & 혜택',
-    'IT & 개발 지식',
-    '기타',
-  ];
   const [gdgWish, setGdgWish] = useState([]);
   const [etcGdgWish, setEtcGdgWish] = useState(''); //기타 입력 상태
-
-  const gdgExpectOptions = [
-    '해커톤 참여',
-    '스터디 참여',
-    '네트워킹 참여',
-    '현직자 강연',
-    '선배/현직자 멘토링',
-    '토이 프로젝트 참여',
-    '기타',
-  ];
   const [gdgExpect, setGdgExpect] = useState([]);
   const [etcGdgExpect, setEtcGdgExpect] = useState(''); //기타 입력 상태
 
@@ -59,8 +43,8 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex w-full h-full bg-transparent transition-all duration-500 ease-in-out 
-        ${step - 1 == 9 ? 'opacity-0' : step == 9 ? '' : step + 1 == 9 ? 'opacity-0' : 'hidden'} 
-        ${step - 1 == 9 ? '-translate-y-full' : step == 9 ? 'translate-y-0' : step + 1 == 9 ? 'translate-y-full' : ''}`}
+        ${step - 1 === 9 ? 'opacity-0' : step === 9 ? '' : step + 1 === 9 ? 'opacity-0' : 'hidden'} 
+        ${step - 1 === 9 ? '-translate-y-full' : step === 9 ? 'translate-y-0' : step + 1 === 9 ? 'translate-y-full' : ''}`}
     >
       <div className='flex flex-col w-full h-full mx-[10px] text-white overflow-y-scroll'>
         <div className='text-xl my-[10px] mobile:text-lg'>
@@ -70,7 +54,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         <MultipleSelectBox
           label='얻어가고 싶은 것'
           labelVisible={false}
-          options={gdgWishOptions}
+          options={wishOptions}
           maxSelection={6}
           selectedValue={gdgWish}
           setSelectedValue={setGdgWish}
@@ -108,7 +92,7 @@ export default function Recruit9({ step, setChecked, updateRecruitData }) {
         <MultipleSelectBox
           label='희망하는 활동'
           labelVisible={false}
-          options={gdgExpectOptions}
+          options={expectOptions}
           maxSelection={3}
           selectedValue={gdgExpect}
           setSelectedValue={setGdgExpect}

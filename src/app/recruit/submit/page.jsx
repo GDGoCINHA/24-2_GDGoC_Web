@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation'
 import { Button } from "@nextui-org/react";
+import { useRouter } from 'next/navigation';
 
 export default function RecruitSubmit() {
   const router = useRouter()

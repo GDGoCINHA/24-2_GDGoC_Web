@@ -20,8 +20,8 @@ export default function Recruit7({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex w-full h-full bg-transparent transition-all duration-500 ease-in-out 
-        ${step - 1 == 7 ? 'opacity-0' : step == 7 ? '' : step + 1 == 7 ? 'opacity-0' : 'hidden'} 
-        ${step - 1 == 7 ? '-translate-y-full' : step == 7 ? 'translate-y-0' : step + 1 == 7 ? 'translate-y-full' : ''}`}
+        ${step - 1 === 7 ? 'opacity-0' : step === 7 ? '' : step + 1 === 7 ? 'opacity-0' : 'hidden'} 
+        ${step - 1 === 7 ? '-translate-y-full' : step === 7 ? 'translate-y-0' : step + 1 === 7 ? 'translate-y-full' : ''}`}
     >
       <div className='flex flex-col text-white p-2 w-full h-full max-w-4xl mx-auto overflow-y-scroll'>
         <div className='text-2xl font-semibold mobile:text-xl'>지원자의 삶과 진로 경험 & 이야기 (선택)</div>

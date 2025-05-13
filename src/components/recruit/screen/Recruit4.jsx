@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Input, Checkbox, Select, SelectItem } from '@nextui-org/react';
 
+import { domainOptions } from '@/constant/domainOptions';
+
 export default function Recruit4({ step, setChecked, updateRecruitData }) {
   const [emailId, setEmailId] = useState('');
   const [emailDomain, setEmailDomain] = useState('');
@@ -10,15 +12,6 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
   const [gender, setGender] = useState('');
   const [birth, setBirth] = useState('');
   const [isSelectBoxOpen, setIsSelectBoxOpen] = useState(false);
-
-  const domains = [
-    { label: 'inha.edu', value: 'inha.edu' },
-    { label: 'gmail.com', value: 'gmail.com' },
-    { label: 'naver.com', value: 'naver.com' },
-    { label: 'daum.net', value: 'daum.net' },
-    { label: 'kakao.com', value: 'kakao.com' },
-    { label: '기타', value: 'custom' },
-  ];
 
   useEffect(() => {
     const isEmailFilled = emailId.trim() !== '';
@@ -46,8 +39,8 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex flex-col w-full h-full transition-all duration-500 ease-in-out 
-        ${step - 1 == 4 ? 'opacity-0' : step == 4 ? '' : step + 1 == 4 ? 'opacity-0' : 'hidden'} 
-        ${step - 1 == 4 ? '-translate-y-full' : step == 4 ? 'translate-y-0' : step + 1 == 4 ? 'translate-y-full' : ''}`}
+        ${step - 1 === 4 ? 'opacity-0' : step === 4 ? '' : step + 1 === 4 ? 'opacity-0' : 'hidden'} 
+        ${step - 1 === 4 ? '-translate-y-full' : step === 4 ? 'translate-y-0' : step + 1 === 4 ? 'translate-y-full' : ''}`}
     >
       <div className='flex flex-col w-full h-full text-white overflow-y-scroll'>
       <p className='text-white text-2xl font-semibold mobile:text-xl'>필수 개인정보를 적어주세요</p>
@@ -111,11 +104,10 @@ export default function Recruit4({ step, setChecked, updateRecruitData }) {
               value: '!text-white text-lg mobile:text-base',
               listbox: 'bg-[#181818] text-white',
               popoverContent: 'bg-[#181818]',
-              selectorIcon: 'invert',
-              selectorIcon: 'text-white',
+              selectorIcon: 'invert text-white'
             }}
           >
-            {domains.map((domain) => (
+            {domainOptions.map((domain) => (
               <SelectItem key={domain.value} value={domain.value} className='text-white'>
                 {domain.label}
               </SelectItem>

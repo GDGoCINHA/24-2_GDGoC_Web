@@ -41,7 +41,7 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
   const handleCheckDuplicate = async () => {
 
     try {
-      const response = await axios.get(`https://www.gdgocinha.site/check/studentId`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/check/studentId`, {
         params: { studentId },
       });
       setIsValidButtonClicked(true);

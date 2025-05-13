@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { majors } from '../majors';
 import { Autocomplete, AutocompleteItem, AutocompleteSection, Input } from '@nextui-org/react';
+
+import { majorOptions } from '@/constant/majorOptions';
 
 export default function Recruit5({ step, setChecked, updateRecruitData }) {
   const [major, setMajor] = useState('');
@@ -29,8 +30,8 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex flex-col w-full h-full transition-all duration-500 ease-in-out 
-        ${step - 1 == 5 ? 'opacity-0' : step == 5 ? '' : step + 1 == 5 ? 'opacity-0' : 'hidden'} 
-        ${step - 1 == 5 ? '-translate-y-full' : step == 5 ? 'translate-y-0' : step + 1 == 5 ? 'translate-y-full' : ''}`}
+        ${step - 1 === 5 ? 'opacity-0' : step === 5 ? '' : step + 1 === 5 ? 'opacity-0' : 'hidden'} 
+        ${step - 1 === 5 ? '-translate-y-full' : step === 5 ? 'translate-y-0' : step + 1 === 5 ? 'translate-y-full' : ''}`}
     >
       <p className='text-white text-2xl font-semibold mobile:text-xl'>필수 개인정보를 적어주세요</p>
       <Autocomplete
@@ -65,7 +66,7 @@ export default function Recruit5({ step, setChecked, updateRecruitData }) {
         selectedKeys={major}
         onSelectionChange={setMajor}
       >
-        {majors.map((major) => (
+        {majorOptions.map((major) => (
           <AutocompleteSection title={major.title} key={major.title} showDivider>
             {major.items.map((item) => (
               <AutocompleteItem key={item.key} aria-label={item.value} value={item.value}>

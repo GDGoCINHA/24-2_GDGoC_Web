@@ -4,7 +4,7 @@ import { useState } from 'react';
 import TransparentInput from '@/components/ui/TransparentInput';
 import { Button } from '@nextui-org/react';
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/react';
-import { majors } from '@/app/recruit/majors';
+import { majorOptions } from '@/constant/majorOptions';
 import axios from 'axios';
 import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
@@ -92,7 +92,7 @@ export default function AuthFindId({ handleBackToLogin }) {
         selectedKeys={major}
         onSelectionChange={setMajor}
       >
-        {majors.map((major) => (
+        {majorOptions.map((major) => (
           <AutocompleteSection title={major.title} key={major.title} showDivider>
             {major.items.map((item) => (
               <AutocompleteItem key={item.key} aria-label={item.value} value={item.value}>

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Checkbox } from "@nextui-org/react"
 
-
 export default function Recruit1({ step, setChecked, updateRecruitData }) {
   const [isAgree, setIsAgree] = useState(false);
 
@@ -16,8 +15,8 @@ export default function Recruit1({ step, setChecked, updateRecruitData }) {
   return (
     <div
       className={`absolute flex flex-col w-full h-full transition-all duration-500 ease-in-out ${
-        step - 1 == 1 ? 'opacity-0' : step == 1 ? '' : step + 1 == 1 ? 'opacity-0' : 'hidden'
-      } ${step - 1 == 1 ? '-translate-y-full' : step == 1 ? 'translate-y-0' : step + 1 == 1 ? 'translate-y-full' : ''}`}
+        step - 1 === 1 ? 'opacity-0' : step === 1 ? '' : step + 1 === 1 ? 'opacity-0' : 'hidden'
+      } ${step - 1 === 1 ? '-translate-y-full' : step === 1 ? 'translate-y-0' : step + 1 === 1 ? 'translate-y-full' : ''}`}
     >
       <p className='text-white text-3xl font-semibold mobile:text-xl'>
         아래와 같이 개인정보를 처리하고 제3자에게 제공하는데 동의하십니까?
