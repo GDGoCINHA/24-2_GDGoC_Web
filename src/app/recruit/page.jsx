@@ -5,9 +5,6 @@ import { Button } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
-// 이건 머죠 경로 정상화 처리 필요할듯?
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
-
 import Loader from '@/components/ui/Loader.jsx';
 import VerticalProgressBar from '@/components/ui/progressbar/VerticalProgressBar.jsx';
 import HorizontalProgressBar from '@/components/ui/progressbar/HorizontalProgressBar.jsx';
