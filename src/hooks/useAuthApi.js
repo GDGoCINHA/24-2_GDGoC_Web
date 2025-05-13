@@ -2,7 +2,6 @@
 
 import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
 
 const API_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth';
 const ROUTE_API_URL = '/api/auth';

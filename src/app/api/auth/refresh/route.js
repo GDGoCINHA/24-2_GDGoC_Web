@@ -43,7 +43,9 @@ export async function POST(req) {
 
     return nextResponse;
   } catch (error) {
-    console.error('[AUTH PROXY ERROR] /refresh', error.response?.data || error.message);
-    return NextResponse.json({ error: 'AUTH PROXY ERROR' }, { status: error.response?.status || 500 });
+    const status = error?.response?.status || 500;
+    const message = (error && error.response && error.response.data) || error.message || 'Unknown error';
+    console.error('[AUTH PROXY ERROR] /refresh', message);
+    return NextResponse.json({ error: 'AUTH PROXY ERROR' }, { status });
   }
 }

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true, // change later : false
+    "checkJs": false, // change later : true
+    "skipLibCheck": true,
+    "strict": false, // change later : true
+    "noImplicitAny": false, // change later : true
+    "strictNullChecks": false, // change later : true
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"],
+      "@public/*": ["../public/*"]
+    }
+  },
+  // Note: To ignore specific Next.js AppDir export errors from .jsx, move invalid exports (e.g., columns) to separate modules.
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

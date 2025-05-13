@@ -8,13 +8,13 @@ import { NextUIProvider } from "@nextui-org/react";
 // components
 import Loading from "@/app/loading";
 import Error from "@/app/error";
-import { AuthProvider } from '@/app/context/AuthProvider';
+import { AuthProvider } from '@/context/AuthProvider';
 
 // css
-import "./globals.css";
+import "@/styles/globals.css";
 
 const pretendard = localFont({
-  src: "../../public/fonts/PretendardVariable.woff2",
+  src: "../../public/fonts/pretendard/PretendardVariable.woff2",
   display: "swap",
   variable: "--font-pretendard",
   preload: true,
@@ -71,7 +71,7 @@ export const metadata = {
       { url: "/favicon.ico", sizes: "any", type: "image/x-icon" }
     ],
     apple: [
-      { url: "/icons/apple-icon-180x180.png", sizes: "180x180", type: "image/png" }
+      { url: "/icons/gdgocIcon/180x180.png", sizes: "180x180", type: "image/png" }
     ],
     shortcut: ["/favicon.ico"]
   },
@@ -120,7 +120,7 @@ export default function RootLayout({ children }) {
         <meta name="mobile-web-app-capable" content="yes"/>
         <meta name="mobile-web-app-status-bar-style" content="default"/>
         <meta name="mobile-web-app-title" content="GDGoC INHA"/>
-        <link rel="touch-icon" href="/icons/apple-icon-180x180.png"/>
+        <link rel="touch-icon" href="/icons/gdgocIcon/180x180.png"/>
         {/* 외부 스크립트 */}
         <Script
             src="https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js"

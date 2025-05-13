@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useParams } from 'next/navigation';
 
-// components
-import StudyHeader from '@/components/study/StudyHeader';
 import StudyDashboardNav from "@/components/study/ui/nav/StudyDashboardNav";
 import InfoArea from "@/components/study/dashboard/InfoArea";
 
@@ -21,7 +19,6 @@ export default function MyDetailDashboard() {
 
     return (
         <>
-            <StudyHeader />
             {/* 추후 StudyDashboardNav는 고정, InfoArea는 스크롤되도록 변경 */}
             {/* 또한 모바일 버전에는 dropDown으로 StudyDashboardNav 표기하는게 나을듯? */}
             <div className="container mx-auto px-4 py-8">

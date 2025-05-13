@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 // resource
-import gdgocIcon from "@public/src/images/GDGoC_icon.png";
+import gdgocIcon from "@public/icons/logo.png";
 
 const LOADING_TEXTS = [
     '페이지를 불러오는 중',

@@ -1,28 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-import loginBg from '@public/src/images/bgimg.png';
-import Header from './screen/Header';
-import AuthLogin from './screen/AuthLogin';
-import AuthFindId from './screen/AuthFindId';
-import AuthResetPassword from './screen/AuthResetPassword';
-import AuthResetRequest from './screen/AuthResetRequest';
-import Loader from '@/components/ui/Loader.jsx';
+import Header2 from '@/components/ui/common/Header2';
+import Loader from '@/components/ui/common/Loader';
 
-import { GoogleLogin } from './google/GoogleLogin';
-import { login } from './custom/CustomAuthApi';
+import AuthLogin from '@/components/auth/screen/AuthLogin';
+import AuthFindId from '@/components/auth/screen/AuthFindId';
+import AuthResetPassword from '@/components/auth/screen/AuthResetPassword';
+import AuthResetRequest from '@/components/auth/screen/AuthResetRequest';
+
+import { GoogleLogin } from '@/services/auth/signin/google/GoogleLogin';
+import { login } from '@/services/auth/signin/custom/CustomAuthApi';
+
 import { useAuth } from '@/hooks/useAuth';
+
+import loginBg from '@public/images/bgimg.png';
 
 export default function Page() {
   const router = useRouter();
+  const { setAccessToken } = useAuth();
+  const { handleGoogleLogin } = GoogleLogin();
+
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState([]);
-  const { handleGoogleLogin } = GoogleLogin();
   const [isRendering, setIsRendering] = useState(0);
-  const { setAccessToken } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const handleBackToLogin = () => setIsRendering(0);
@@ -73,9 +77,8 @@ export default function Page() {
   };
 
   return (
-    <div className='min-h-screen flex flex-col overflow-hidden relative'>
+      <>
       <Loader isLoading={loading} />
-      <Header />
       <Image src={loginBg} alt='loginBg' fill className='absolute top-0 left-0 -z-10 object-cover opacity-70 blur-sm' />
       <div className='flex justify-center items-center flex-1 relative'>
         {/* 로그인 화면 */}
@@ -138,6 +141,6 @@ export default function Page() {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }

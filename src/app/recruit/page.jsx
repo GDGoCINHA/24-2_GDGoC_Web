@@ -1,35 +1,36 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import axios from 'axios';
-import { Button } from '@nextui-org/react';
-import { formatRecruitData } from '../utils/formatRecruitData.js';
+import { useState, useCallback } from "react";
 import { useRouter } from 'next/navigation';
+import { Button } from '@nextui-org/react';
+import axios from 'axios';
 
-import Recruit1 from '@/app/recruit/screen/Recruit1';
-import Recruit2 from '@/app/recruit/screen/Recruit2';
-import Recruit3 from '@/app/recruit/screen/Recruit3';
-import Recruit4 from '@/app/recruit/screen/Recruit4';
-import Recruit5 from '@/app/recruit/screen/Recruit5';
-import Recruit6 from '@/app/recruit/screen/Recruit6';
-import Recruit7 from '@/app/recruit/screen/Recruit7';
-import Recruit8 from '@/app/recruit/screen/Recruit8';
-import Recruit9 from '@/app/recruit/screen/Recruit9';
-import Recruit10 from '@/app/recruit/screen/Recruit10';
-import Recruit11 from '@/app/recruit/screen/Recruit11';
+import Loader from '@/components/ui/common/Loader.jsx';
+import VerticalProgressBar from '@/components/ui/progressbar/VerticalProgressBar.jsx';
+import HorizontalProgressBar from '@/components/ui/progressbar/HorizontalProgressBar.jsx';
 
-import Loader from '@/components/ui/Loader.jsx';
-import VerticalProgressBar from './VerticalProgressBar.jsx';
-import HorizontalProgressBar from './HorizontalProgressBar.jsx';
-import process from "next/dist/build/webpack/loaders/resolve-url-loader/lib/postcss";
+import Recruit1 from '@/components/recruit/screen/Recruit1';
+import Recruit2 from '@/components/recruit/screen/Recruit2';
+import Recruit3 from '@/components/recruit/screen/Recruit3';
+import Recruit4 from '@/components/recruit/screen/Recruit4';
+import Recruit5 from '@/components/recruit/screen/Recruit5';
+import Recruit6 from '@/components/recruit/screen/Recruit6';
+import Recruit7 from '@/components/recruit/screen/Recruit7';
+import Recruit8 from '@/components/recruit/screen/Recruit8';
+import Recruit9 from '@/components/recruit/screen/Recruit9';
+import Recruit10 from '@/components/recruit/screen/Recruit10';
+import Recruit11 from '@/components/recruit/screen/Recruit11';
+
+import { formatRecruitData } from '@/utils/formatRecruitData.js';
 
 export default function Recruit() {
+  const router = useRouter();
+
   const [mainRecruitData, setMainRecruitData] = useState(new Map());
   const [step, setStep] = useState(1);
   const [mount, setMount] = useState(1);
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleNext = async () => {
     if (!checked) {
