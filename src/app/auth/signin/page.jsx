@@ -4,12 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-import loginBg from '@public/src/images/bgimg.png';
-import Header from './screen/Header';
-import AuthLogin from './screen/AuthLogin';
-import AuthFindId from './screen/AuthFindId';
-import AuthResetPassword from './screen/AuthResetPassword';
-import AuthResetRequest from './screen/AuthResetRequest';
+import loginBg from '/public/images/bgimg.png';
+import Header from '@/components/auth/screen/Header';
+import AuthLogin from '@/components/auth/screen/AuthLogin';
+import AuthFindId from '@/components/auth/screen/AuthFindId';
+import AuthResetPassword from '@/components/auth/screen/AuthResetPassword';
+import AuthResetRequest from '@/components/auth/screen/AuthResetRequest';
 import Loader from '@/components/ui/Loader.jsx';
 
 import { GoogleLogin } from './google/GoogleLogin';
