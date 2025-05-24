@@ -1,22 +1,43 @@
 import inhalogo from '@public/icons/logo/inha.png';
+import django from '@public/icons/logo/django.png';
+import figma from '@public/icons/logo/figma.png';
+import chatgpt from '@public/icons/logo/chatgpt.png';
+import python from '@public/icons/logo/python.png';
+
+
+import songdo_conf from '@public/images/activity/songdo_conf.jpg';
+import study1 from '@public/images/study/study1.jpg';
+import buildwithai from '@public/images/activity/buildwithai.png';
+import seminar_bg from '@public/images/activity/seminar_bg.png';
+
+
 
 // 메인 캐러셀 슬라이드 데이터
 export const mainSlides = [
   {
-    background: '@public/images/activity/songdo_conf.jpg',
-    poster: '@public/images/study/study1.jpg',
-    tag1: '모집',
+    background: songdo_conf,
+    poster: buildwithai,
+    tag1: '마감',
     tag2: '외부행사',
     title: 'GDG 인천 HELLO WORLD 행사 운영 스태프 모집 안내',
     description: 'AI와 개발의 만남! 다양한 개발자 세션과 함께하는 GDG Incheon Build with AI: Hello World가 여러분을 찾아갑니다',
-    link: 'https://gdg.community.dev/gdg-incheon-build-with-ai-hello-world/'
+    link: 'https://gdg.community.dev/events/details/google-gdg-incheon-presents-hello-world-amp-build-with-ai-in-incheon/cohost-gdg-on-campus-inha-university-incheon-south-korea'
+  },
+  {
+    background: seminar_bg,
+    poster: 'none',
+    tag1: '모집중',
+    tag2: '내부행사',
+    title: 'GDGoC INHA 3회 정기총회 및 특강 진행안내',
+    description: '25-1 마지막 정기 총회 및 특강을 진행합니다. GDG Organizer 고영민님께서 AI와 관련한 이야기로 특강을 진행합니다.',
+    link: 'https://docs.google.com/forms/d/e/1FAIpQLSfMr2yWRVrYf6xdA5i_HaC4UHfBAySOUsp5nvNW0RwVdmbAug/viewform'
   },
 ];
 
 export const ongoingStudies = [
   {
-    logo: inhalogo,
-    title: '25-1 백엔드 스터디',
+    logo: django,
+    title: '백엔드 스터디',
     statusLabel: '마감',
     statusColor: '#FBBC04',
     eventType: '내부행사',
@@ -30,172 +51,127 @@ export const ongoingStudies = [
     }
   },
   {
-    logo: inhalogo,
-    title: '프론트엔드 스터디',
+    logo: figma,
+    title: 'UX/UI 스터디',
     statusLabel: '모집중',
     statusColor: '#34A853',
     eventType: '내부행사', 
     eventTypeColor: '#34A853',
-    description: 'React와 Next.js를 활용한 모던 웹 개발을 함께 공부해요!',
+    description: 'UX/UI 기본개념부터 Figma실습까지! 디자인 감각을 키워봐요!',
     isHidden: false,
     details: {
-      purpose: 'React 기반 프론트엔드 개발 실력 향상',
-      schedule: '매주 수요일 18:00~20:00 / 오프라인',
-      target: '웹 프론트엔드에 관심있는 분\nHTML/CSS/JS 기초 지식 보유자\n리액트를 처음 시작하시는 분'
+      purpose: 'UX 실습: 사용자 경험 분석, UI 실습: 프로토타입 제작',
+      schedule: '매주 화요일 20~21시 / 온라인',
+      target: 'UX/UI 디자인 입문자\n프로젝트 경험이 필요한 학생\n1인, 프론트 엔드(FE) 개발자'
     }
   },
   {
-    logo: inhalogo,
-    title: 'AI/ML 기초 스터디',
+    logo: chatgpt,
+    title: '인공지능 스터디',
     statusLabel: '모집중',
     statusColor: '#34A853',
     eventType: '내부행사',
     eventTypeColor: '#34A853',
-    description: '파이썬으로 시작하는 인공지능과 머신러닝의 기초',
+    description: '인공지능 처음이어도 괜찮아요! 비전공자와 1학년도 함께하는 AI 스터디!',
     isHidden: false,
     details: {
-      purpose: '머신러닝 기초 개념 학습 및 실습',
-      schedule: '매주 금요일 17:00~19:00 / 하이브리드',
-      target: '인공지능에 관심이 있는 분\n파이썬 기초 문법을 아시는 분\n데이터 분석을 시작하고 싶은 분'
+      purpose: '수식 없이 예제를 통해 AI 접해보기',
+      schedule: '매주 수요일 17~18시 / 오프라인',
+      target: '비전공자\n인공지능에 관심은 있으나 초보자이신 분'
     }
   },
   {
-    logo: inhalogo,
-    title: '클라우드 기술 세미나',
+    logo: python,
+    title: '파이썬 기초 스터디',
     statusLabel: '준비중',
     statusColor: '#FBBC04',
     eventType: '외부행사',
     eventTypeColor: '#4089E2',
-    description: 'AWS와 GCP를 활용한 클라우드 서비스 구축 및 운영 노하우',
+    description: '파이썬 왕초보를 위한, 처음부터 시작하는 파이썬 기초 스터디!',
     isHidden: false,
     details: {
-      purpose: '클라우드 서비스 실무 역량 강화',
-      schedule: '5/15 14:00~18:00 / 오프라인',
-      target: '클라우드 서비스에 관심있는 분\n서버 인프라를 공부하고 싶은 분\nDevOps에 관심이 있는 분'
+      purpose: '프로그래밍 지식이 없는 왕초보들을 위한 기초 스터디',
+      schedule: '매주 금요일 17~20시 / 오프라인',
+      target: '비전공자\n파이썬에 대한 지식이 전혀 없으신 분'
     }
   },
   {
-    logo: inhalogo,
-    title: '오픈소스 컨트리뷰션',
-    statusLabel: '모집예정',
-    statusColor: '#FBBC04',
-    eventType: '외부행사',
-    eventTypeColor: '#4089E2',
-    description: '실제 오픈소스 프로젝트에 기여하면서 성장하는 프로그램',
-    isHidden: false,
-    details: {
-      purpose: '오픈소스 프로젝트 기여 경험 쌓기',
-      schedule: '6/1~7/31 / 온라인',
-      target: 'Git/Github 사용 경험이 있는 분\n기본적인 코딩 능력을 갖춘 분\n오픈소스 생태계에 관심있는 분'
-    }
-  },
-  {
-    logo: inhalogo,
-    title: '클라우드 기술 세미나',
+    logo: python,
+    title: '파이썬 데이터 분석',
     statusLabel: '준비중',
     statusColor: '#FBBC04',
     eventType: '외부행사',
     eventTypeColor: '#4089E2',
-    description: 'AWS와 GCP를 활용한 클라우드 서비스 구축 및 운영 노하우',
+    description: '파이썬으로 데이터 분석기초부터, 실습까지! 함께 시작해봐요!',
     isHidden: false,
     details: {
-      purpose: '클라우드 서비스 실무 역량 강화',
-      schedule: '5/15 14:00~18:00 / 오프라인',
-      target: '클라우드 서비스에 관심있는 분\n서버 인프라를 공부하고 싶은 분\nDevOps에 관심이 있는 분'
+      purpose: '데이터 분석을 해보고 ML으로 솔루션을 개발',
+      schedule: '매주 화요일 20시~21시 / 온라인  ',
+      target: '데이터 사이언티스트\n엔지니어링에 관심이 있는 분\n데이터 분석 프로젝트 프로세스를 배워보고 싶은 분'
     }
   },
-  {
-    logo: inhalogo,
-    title: '오픈소스 컨트리뷰션',
-    statusLabel: '모집예정',
-    statusColor: '#FBBC04',
-    eventType: '외부행사',
-    eventTypeColor: '#4089E2',
-    description: '실제 오픈소스 프로젝트에 기여하면서 성장하는 프로그램',
-    isHidden: false,
-    details: {
-      purpose: '오픈소스 프로젝트 기여 경험 쌓기',
-      schedule: '6/1~7/31 / 온라인',
-      target: 'Git/Github 사용 경험이 있는 분\n기본적인 코딩 능력을 갖춘 분\n오픈소스 생태계에 관심있는 분'
-    }
-  }
 
 ];
 
 export const ongoingEvents = [
   {
     logo: inhalogo,
-    title: '인공지능 세미나',
-    statusLabel: '모집중',
+    title: 'Build With AI / Hello World',
+    statusLabel: '모집마감',
     statusColor: '#34A853',
     eventType: '외부행사',
     eventTypeColor: '#4089E2',
-    description: '최신 AI 기술 트렌드와 실제 적용 사례를 공유하는 세미나',
+    description: 'AI와 개발의 만남! 다양한 개발자가 세션을 진행하는 행사',
     isHidden: true,
     details: {
-      purpose: 'AI 기술의 실무 적용 사례 학습',
-      schedule: '5/25 13:00~17:00 / 오프라인',
-      target: 'AI/ML에 관심있는 개발자\n데이터 사이언스 분야 종사자\n최신 기술 트렌드에 관심있는 분'
+      purpose: '다양한 인사이트 공유 및 개발 세미나 진행',
+      schedule: '4/5 13:00~17:00 / 60주년기념관',
+      target: 'AI/ML에 관심있는 개발자\nGoogle 세션에 관심있는 누구나\n최신 기술 트렌드에 관심있는 분'
     }
   },
   {
     logo: inhalogo,
-    title: '블록체인 해커톤',
-    statusLabel: '모집예정',
+    title: 'Pre Sollution Challenge',
+    statusLabel: '모집 마감',
     statusColor: '#FBBC04',
-    eventType: '외부행사', 
+    eventType: '내부행사', 
     eventTypeColor: '#4089E2',
-    description: '블록체인 기술을 활용한 혁신적인 서비스 개발 대회',
+    description: 'APAC Sollution Challenge pre 행사',
     isHidden: true,
     details: {
-      purpose: '블록체인 기반 서비스 개발 및 네트워킹',
-      schedule: '6/10~6/11 / 오프라인',
-      target: '블록체인 개발에 관심있는 분\n스마트 컨트랙트 개발 경험자\n웹3.0 생태계에 관심있는 분'
+      purpose: '본선진출을 위한, 인하 챕터 내부 pre 행사',
+      schedule: '4/20 ~ 5/16',
+      target: 'SDGs 문제에 관심있는 학생\n해커톤에 나가보고 싶은 누구나'
     }
   },
   {
     logo: inhalogo,
-    title: '코딩 대회',
+    title: '스타트업 비즈니스 솔루션 콘테스트',
     statusLabel: '진행중',
-    statusColor: '#34A853',
-    eventType: '외부행사',
-    eventTypeColor: '#4089E2', 
-    description: '알고리즘 문제 해결 능력을 겨루는 프로그래밍 대회',
-    isHidden: true,
-    details: {
-      purpose: '알고리즘 실력 향상 및 문제해결 능력 개발',
-      schedule: '5/1~5/31 / 온라인',
-      target: '알고리즘에 관심있는 학생\n코딩 테스트 준비생\n프로그래밍 실력 향상을 원하는 분'
-    }
-  },
-  {
-    logo: inhalogo,
-    title: 'UX/UI 디자인 워크샵',
-    statusLabel: '모집중',
-    statusColor: '#34A853',
-    eventType: '외부행사',
-    eventTypeColor: '#4089E2',
-    description: '사용자 중심의 디자인 프로세스를 배우는 실무 워크샵',
-    isHidden: true,
-    details: {
-      purpose: 'UX/UI 디자인 실무 역량 강화',
-      schedule: '5/20 10:00~18:00 / 오프라인',
-      target: '디자인에 관심있는 개발자\nUX/UI 디자이너\n제품 기획자'
-    }
-  },
-  {
-    logo: inhalogo,
-    title: '모바일 앱 개발 컨퍼런스',
-    statusLabel: '준비중',
     statusColor: '#FBBC04',
-    eventType: '외부행사',
-    eventTypeColor: '#4089E2',
-    description: '모바일 앱 개발의 최신 트렌드와 기술을 공유하는 컨퍼런스',
+    eventType: '연합행사',
+    eventTypeColor: '#4089E2', 
+    description: '스타트업에 적합한 새로운 아이디어를 가지고 경쟁하는 행사',
     isHidden: true,
     details: {
-      purpose: '모바일 앱 개발 역량 강화 및 네트워킹',
-      schedule: '6/15 09:00~18:00 / 오프라인',
-      target: '앱 개발자\n모바일 서비스 기획자\n크로스플랫폼 개발에 관심있는 분'
+      purpose: '스타트업들의 다양한 문제를 해결하는 솔루션 개발',
+      schedule: '5/1~5/31 / 오프라인',
+      target: '비즈니스 솔루션 개발에 관심있는 학생\n솔루션 개발 경험이 있는 학생\n창업에 관심이 있는 학생'
     }
-  }
+  },
+  {
+    logo: inhalogo,
+    title: 'Google I/O Extended',
+    statusLabel: '준비중',
+    statusColor: '#4089E2',
+    eventType: '외부행사',
+    eventTypeColor: '#4089E2',
+    description: 'Google I/O Extended 행사',
+    isHidden: true,
+    details: {
+      purpose: 'Google I/O Extended 행사',
+      schedule: '7/25 10:00~18:00 / 오프라인',
+      target: 'Google I/O에 관심있는 누구나'
+    }
+  },
 ]; 
