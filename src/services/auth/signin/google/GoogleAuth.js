@@ -33,7 +33,7 @@ export const GoogleAuthComponent = () => {
           alert('회원 정보가 없습니다. 회원가입을 완료해주세요.');
           sessionStorage.setItem('signup_email', email);
           sessionStorage.setItem('signup_name', name);
-          router.push('/signup');
+          router.push('/auth/signup');
         }
       })
       .catch(() => {
