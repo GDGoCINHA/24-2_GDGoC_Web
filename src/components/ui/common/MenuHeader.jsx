@@ -16,7 +16,7 @@ export default function MenuHeader() {
   const menuItems = [
     { name: "스터디", href: "/study" },
     { name: "공지사항", href: "#", onClick: () => alert('준비중입니다.') },
-    { name: "프로젝트", href: "#", onClick: () => alert('준비중입니다.') },
+    { name: "프로젝트", href: "https://solution.gdgocinha.com" },
     { name: "멤버", href: "#", onClick: () => alert('준비중입니다.') },
     { name: "로그아웃", href: "#", onClick: handleLogout }
   ];

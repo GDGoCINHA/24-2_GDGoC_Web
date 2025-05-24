@@ -93,7 +93,7 @@ export default function AuthLogin({ router, onSubmit, errors, password, setPassw
       </Form>
       <Button
         onPress={() => {
-          router.push('/signup');
+          router.push('/auth/signup');
         }}
         color='success'
         className='!mt-[15px] h-[48px] mobile:h-[44px] w-full rounded-full !bg-white'
