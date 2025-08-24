@@ -1,4 +1,5 @@
 export const semesterOptions = [
+    '25-2',
     '25-1',
     '24-2',
     '24-1',
@@ -6,6 +7,5 @@ export const semesterOptions = [
     '23-1',
     '22-2',
     '22-1',
-    '21-2',
-    '21-1'
+    '21-2'
 ];
