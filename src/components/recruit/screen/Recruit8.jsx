@@ -60,7 +60,7 @@ export default function Recruit8({ step, setChecked, updateRecruitData }) {
             <li>
               • 현재 지원 기수 및 기존 활동 기수를 <strong className='text-[#EF4444]'>모두</strong> 선택해주세요.
             </li>
-            <li>• 신입 멤버는 &apos;25-1&apos; 하나만 선택해주시면 됩니다.</li>
+            <li>• 신입 멤버는 &apos;25-2&apos; 하나만 선택해주시면 됩니다.</li>
           </ul>
         </div>
         <MultipleSelectBox

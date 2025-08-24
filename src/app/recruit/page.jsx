@@ -78,7 +78,7 @@ export default function Recruit() {
             <strong className='text-[#34A853]'>D</strong>
             <strong className='text-[#F9AB00]'>G</strong>
             <strong className='text-[#4285F4]'>o</strong>
-            <strong className='text-[#EA4335]'>C</strong> INHA 25-1 <br className='pc:hidden' />
+            <strong className='text-[#EA4335]'>C</strong> INHA 25-2 <br className='pc:hidden' />
             멤버에 지원해보세요
           </p>
           <HorizontalProgressBar step={step} />
