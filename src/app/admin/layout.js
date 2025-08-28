@@ -2,6 +2,7 @@
 
 
 import MenuHeader from '@/components/ui/common/MenuHeader';
+import ApiCodeGuard from '@/components/auth/ApiCodeGuard.jsx';
 
 export const metadata = {
     title: "Admin",
@@ -10,9 +11,11 @@ export const metadata = {
 
 export default function AdminLayout({ children }) {
     return (
-        <>
-            <MenuHeader />
-            {children}
-        </>
+        <ApiCodeGuard>
+            <>
+                <MenuHeader />
+                {children}
+            </>
+        </ApiCodeGuard>
     );
 }

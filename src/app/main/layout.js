@@ -1,5 +1,6 @@
 //import { Suspense } from "react";
 import MenuHeader from "@/components/ui/common/MenuHeader";
+import ApiCodeGuard from '@/components/auth/ApiCodeGuard.jsx';
 
 export const metadata = {
     title: "Home",
@@ -8,9 +9,11 @@ export const metadata = {
 
 export default function HomeLayout({ children }) {
     return (
-        <>
-            <MenuHeader />
-            {children}
-        </>
+        <ApiCodeGuard>
+            <>
+                <MenuHeader />
+                {children}
+            </>
+        </ApiCodeGuard>
     );
 }
