@@ -84,25 +84,25 @@ export default function AuthResetRequest({ handleNextStep, handleBackToLogin, se
           isDisabled={!isNextDisabled}
         />
 
-        <Button 
-          onPress={handleSendOtp} 
+        <Button
+          onPress={handleSendOtp}
           isDisabled={!isNextDisabled}
-          color='default' 
+          color='default'
           className='!mt-[20px] h-[40px] mobile:h-[44px] w-full rounded-full !bg-[#DCDCDC]'
         >
           {isOtpDisabled ? '인증번호 보내기' : '인증번호 재전송'}
         </Button>
 
-        <OtpInput 
-          label='인증번호' 
-          setOtp={setOtp} 
+        <OtpInput
+          label='인증번호'
+          setOtp={setOtp}
           isDisabled={isOtpDisabled}
           isOtpVerified={!isNextDisabled}
           onSubmitOtp={handleVerifyOtp}
         />
 
         <Button
-          onPress={handleNextStep}
+          onPress={() => handleNextStep(email)}
           isDisabled={isNextDisabled}
           color='primary'
           className='!mt-[20px] h-[48px] mobile:h-[44px] w-full rounded-full !bg-[#EA4336]'
