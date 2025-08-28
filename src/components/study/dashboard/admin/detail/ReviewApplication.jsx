@@ -29,11 +29,22 @@ export default function ReviewApplication({ studyId }) {
      *
      *
      *
-     * 여기 인원 확정 처리하는 부분 로직 조금 수상하다
+     * 여기 인원 확정 처리하는 부분 로직 뭔가 조금 수상하다...?
+     * 백엔드 단에서 마감일자 지나면 자동으로 처리해주면 좋을거 같은데.......ㅠ
      * 인원 확정 이후 버튼 비활성화 및 메시지 처리 필요
      * 수정?????????? 확인 필요할듯
      *
-     *
+     * == 현재 로직 ==
+     * 1. applicantList API로 지원자 목록을 불러온다.
+     * 2. 지원자 목록 중 이미 승인(“APPROVED”) 또는 거절(“REJECTED”) 상태인 지원자가 있는지 확인한다.
+     * 3. 이미 처리된 지원자가 있다면 hasProcessedApplicants를 true로 설정하고, 이후 지원자 선택(토글)은 비활성화된다.
+     * 4. 로컬스토리지에서 이전에 선택했던 지원자 선택 상태를 불러와서 applicantList와 매칭하여 applications state에 반영한다.
+     * 5. 마감일이 지났고, 아직 처리되지 않은 지원자 중 상태가 “REQUESTED”인 경우, 자동으로 handleAutomaticApproval()을 호출하여 지원자들의 승인/거절을 확정 처리한다.
+     * 6. 마감일 이후거나 이미 처리된 지원자가 있으면 승인 버튼을 비활성화한다(isApprovalButtonDisabled = true).
+     * 7. 수동 승인 처리 시(handleApproval), 현재 applications 상태(선택된 지원자)를 기반으로 승인/거절 payload를 생성하고, API로 일괄 PATCH 요청을 보낸다.
+     * 8. 승인/거절 처리 후 로컬스토리지에 저장된 선택 상태를 삭제한다.
+     * 9. 처리 후 router.reload()로 페이지 전체를 새로고침하여 최신 상태를 반영한다.
+     * 10. 처리 후 버튼을 비활성화하고 hasProcessedApplicants를 true로 갱신한다.
      *
      *
      */

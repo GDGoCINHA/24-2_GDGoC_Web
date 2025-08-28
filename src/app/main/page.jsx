@@ -7,16 +7,9 @@ import FAQ from '@/components/main/FAQ';
 
 import { mainSlides, ongoingEvents, ongoingStudies } from '@/mock/events';
 
-import eventbg from '@public/images/activity/songdo_conf.jpg';
-import eventposter from '@public/images/study/study1.jpg';
-
 export default function Page() {
   // 이미지 임포트 문제 해결을 위한 실제 슬라이드 데이터
-  const slidesWithImages = mainSlides.map(slide => ({
-    ...slide,
-    background: eventbg,
-    poster: eventposter
-  }));
+  
 
   // 카드 아이템을 SplideSlide로 감싸는 함수
   const renderEventCards = (events) => {
@@ -40,7 +33,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-black mb-64">
       <div className="w-full flex flex-col justify-center">
-        <MainCarousel slides={slidesWithImages} />
+        <MainCarousel slides={mainSlides} />
         
         <div className='flex flex-col max-w-[1300px] w-full mx-auto justify-start pt-[130px] px-5'>
           <CardCarousel id="card-carousel-1" title="진행중인 행사">

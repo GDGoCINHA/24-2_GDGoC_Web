@@ -28,7 +28,7 @@ export default function Recruit7({ step, setChecked, updateRecruitData }) {
         <div className='text-base text-[#eeeeee] mt-[5px] mobile:text-[15px]'>
           <ul>
             <li>
-              • GDG on campus INHA 24-2 가입 이전, 어떤 활동 및 공부를 하고 계셨나요? 여러분에 대한 정보를 편하게
+              • GDG on campus INHA 25-2 가입 이전, 어떤 활동 및 공부를 하고 계셨나요? 여러분에 대한 정보를 편하게
               알려주세요! <br /> 기존 멤버분들께서는 간단하게 적어주셔도 됩니다 😀
             </li>
             <li>
