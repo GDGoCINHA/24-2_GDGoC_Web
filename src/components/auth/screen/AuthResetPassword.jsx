@@ -6,8 +6,7 @@ import axios from 'axios';
 
 import TransparentInput from '@/components/ui/input/TransparentInput';
 
-export default function AuthResetPassword({ handleBackToLogin, handleBackToResetRequest, setLoading }) {
-  const [email, setEmail] = useState('');
+export default function AuthResetPassword({ email, handleBackToLogin, handleBackToResetRequest, setLoading }) {
   const [newPassword, setNewPassword] = useState('');
   const [verifyNewPassword, setVerifyNewPassword] = useState('');
   const API_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth';
@@ -44,34 +43,34 @@ export default function AuthResetPassword({ handleBackToLogin, handleBackToReset
         name='email'
         value={email}
         autoComplete={false}
-        onChange={(e) => setEmail(e.target.value)}
+        isDisabled={true}
         className='!mt-[40px]'
         label='이메일'
         placeholder='이메일을 입력해주세요'
       />
-      <TransparentInput 
+      <TransparentInput
         type='password'
         name='name'
         value={newPassword}
         autoComplete={false}
         onChange={(e) => setNewPassword(e.target.value)}
-        className='!mt-[40px]' 
-        label='새 비밀번호' 
-        placeholder='새 비밀번호를 입력해주세요' 
+        className='!mt-[40px]'
+        label='새 비밀번호'
+        placeholder='새 비밀번호를 입력해주세요'
       />
-      <TransparentInput 
+      <TransparentInput
         type='password'
         name='name'
         value={verifyNewPassword}
         autoComplete={false}
         onChange={(e) => setVerifyNewPassword(e.target.value)}
         className='!mt-[40px]'
-        label='새 비밀번호 확인' 
+        label='새 비밀번호 확인'
         placeholder='새 비밀번호를 확인'
       />
-      <Button 
-        color='primary' 
-        onPress={handleNewPassword} 
+      <Button
+        color='primary'
+        onPress={handleNewPassword}
         className='!mt-[20px] h-[48px] mobile:h-[44px] w-full rounded-full !bg-[#EA4336]'
       >
         비밀번호 변경

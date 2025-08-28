@@ -28,12 +28,16 @@ export default function Page() {
   const [errors, setErrors] = useState([]);
   const [isRendering, setIsRendering] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState('');
 
   const handleBackToLogin = () => setIsRendering(0);
   const handleFindIdClick = () => setIsRendering(1);
   const handleResetPasswordClick = () => setIsRendering(2);
   const handleBackToResetRequest = () => setIsRendering(2);
-  const handleResetPasswordNext = () => setIsRendering(3);
+  const handleResetPasswordNext = (email) => {
+    setVerifiedEmail(email);
+    setIsRendering(3);
+  };
 
   const validatePassword = (password) => {
     const newErrors = [];
@@ -59,13 +63,13 @@ export default function Page() {
         setLoading(true);
         const res = await login(email, password);
         const { exists, access_token } = res.data.data;
-      
+
         if (!exists) {
           alert('아이디 혹은 비밀번호가 올바르지 않습니다.');
           setLoading(false);
           return;
         }
-      
+
         setAccessToken(access_token);
         router.push('/main');
       } catch (error) {
@@ -77,7 +81,7 @@ export default function Page() {
   };
 
   return (
-      <>
+    <>
       <Loader isLoading={loading} />
       <Image src={loginBg} alt='loginBg' fill className='absolute top-0 left-0 -z-10 object-cover opacity-70 blur-sm' />
       <div className='flex justify-center items-center flex-1 relative'>
@@ -120,9 +124,9 @@ export default function Page() {
               : `${isRendering === 3 ? '-translate-x-full' : 'translate-x-full'} opacity-0`
           } flex justify-center items-center`}
         >
-          <AuthResetRequest 
-            handleNextStep={handleResetPasswordNext} 
-            handleBackToLogin={handleBackToLogin} 
+          <AuthResetRequest
+            handleNextStep={handleResetPasswordNext}
+            handleBackToLogin={handleBackToLogin}
             setLoading={setLoading}
           />
         </div>
@@ -135,6 +139,7 @@ export default function Page() {
           } flex justify-center items-center`}
         >
           <AuthResetPassword
+            email={verifiedEmail}
             handleBackToLogin={handleBackToLogin}
             handleBackToResetRequest={handleBackToResetRequest}
             setLoading={setLoading}
