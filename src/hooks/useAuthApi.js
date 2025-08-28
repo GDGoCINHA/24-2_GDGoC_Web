@@ -4,17 +4,15 @@ import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
 
 const API_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth';
-const API_REFRESH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/refresh';
-const ROUTE_API_URL = '/api/auth';
 
 export const useAuthApi = () => {
   const { accessToken } = useAuth();
 
-  // Access Token 갱신 함수
+  // Access Token 갱신
   const refreshAccessToken = async () => {
     try {
       const response = await axios.post(
-        `${ROUTE_API_URL}/refresh`,
+        `${API_AUTH_URL}/refresh`,
         {},
         {
           headers: { 'Content-Type': 'application/json' },
@@ -22,7 +20,6 @@ export const useAuthApi = () => {
           credentials: 'include',
         }
       );
-
       return response;
     } catch (error) {
       if (error.response?.status === 401) {
@@ -34,11 +31,11 @@ export const useAuthApi = () => {
     }
   };
 
-  // 로그아웃 함수
+  // 로그아웃
   const logout = async () => {
     try {
       await axios.post(
-        `${ROUTE_API_URL}/signout`,
+        `${API_AUTH_URL}/logout`,
         {},
         {
           withCredentials: true,

@@ -33,16 +33,16 @@ const statusColorMap = {
 };
 
 export default function Page() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if(!document.referrer) {
-      router.push('/')
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if(!document.referrer) {
+  //     router.push('/')
+  //   } else {
+  //     setIsLoading(false);
+  //   }
+  // }, []);
   // 추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
   const [page, setPage] = React.useState(1); // 현재 페이지 상태 (추후 페이지 상태에 따라 api 통신으로 데이터 불러오기)
 
