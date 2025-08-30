@@ -100,7 +100,7 @@ export default function AuthLogin({ router, onSubmit, errors, password, setPassw
       >
         회원가입
       </Button>
-      <div className='flex flex-row items-center justify-between max-w-[349px] gap-2'>
+      {/* <div className='flex flex-row items-center justify-between max-w-[349px] gap-2'>
         <hr className='flex-1 border-t border-[#A8A8A8]' />
         <div className='px-2 text-[14px] text-[#A8A8A8]'>또는</div>
         <hr className='flex-1 border-t border-[#A8A8A8]' />
@@ -114,7 +114,7 @@ export default function AuthLogin({ router, onSubmit, errors, password, setPassw
           height={54}
           width={54}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

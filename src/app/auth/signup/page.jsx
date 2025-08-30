@@ -58,7 +58,7 @@ export default function Signup() {
     }, []);
 
     // 첫 번째 화면에서 다음 버튼 클릭 시 처리
-    const handleNext = () => {
+    const handleNext = async () => {
         if (!name || !email || !password || !confirmPassword) {
             alert("모든 칸을 채워주세요.");
             return;
@@ -67,11 +67,24 @@ export default function Signup() {
             alert("비밀번호가 일치하지 않습니다.");
             return;
         }
-        if(email === "pwc2002"){
+
+        const checkEmail =  await apiClient.get('/auth/check', {
+                params: {
+                    email: email
+                }
+        })
+        if(checkEmail.data.data.isDuplicated){
             setIsEmailValid(true);
-            alert("이미 가입된 이메일입니다.");
             return;
         }
+
+        if(checkEmail.data.code != 200){
+            alert("에러가 발생하였습니다.");
+            return;
+        }
+
+
+        
         if(errors.length > 0){
             alert("비밀번호 조건을 만족해주세요.");
             return;
@@ -109,6 +122,12 @@ export default function Signup() {
         try {
             const res = await apiClient.post('/auth/signup', userinfo);
             console.log(res);
+            if(res.data.code == 200){
+                console.log(res.data.message);
+                router.push("/auth/signin");
+            } else {
+                alert(res.data.message);
+            }
         } catch (error) {
             console.log(error);
         }
@@ -128,10 +147,10 @@ export default function Signup() {
 
     return (
         <div className="flex flex-col w-full items-center justify-start h-screen bg-black">
-            <div className="flex flex-col max-w-[414px] w-full h-full pt-[30px] px-5">
-                <p className="text-white text-xl font-bold mb-2">회원가입하기</p>
+            <div className="flex flex-col max-w-[414px] w-full h-full px-5 ">
+                {/* <p className="text-white text-xl font-bold mb-2">회원가입하기</p> */}
                 
-                <div className="relative w-full h-full overflow-y-scroll">
+                <div className="relative w-full h-full overflow-y-scroll flex flex-col justify-center">
                     <div key="screen1" className={`absolute w-full transition-all duration-500 ease-in-out transform ${isAnimating ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"}`}>
                         <ProfileInfoForm 
                             name={name}
@@ -146,6 +165,7 @@ export default function Signup() {
                             isEmailValid={isEmailValid}
                             isNameDisabled={isNameDisabled}
                             isEmailDisabled={isEmailDisabled}
+                            setIsEmailValid={setIsEmailValid}
                         />
                     </div>
 
@@ -167,7 +187,7 @@ export default function Signup() {
                         className="text-white bg-[#EA4336] w-full h-[48px] rounded-full" 
                         style={{boxShadow: "black 0px -10px 20px 10px"}}
                         onPress={isAnimating ? handleSignup : handleNext}
-                        isDisabled={!isAnimating && (!name || !email || !password || !confirmPassword || errors.length > 0 || password !== confirmPassword)}
+                        isDisabled={!isAnimating && (!name || !email || !password || !confirmPassword || errors.length > 0 || password !== confirmPassword || isEmailValid)}
                     >
                         {isAnimating ? "가입하기" : "다음"}
                     </Button>

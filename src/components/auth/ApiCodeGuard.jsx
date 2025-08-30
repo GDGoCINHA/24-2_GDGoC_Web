@@ -27,13 +27,13 @@ export default function ApiCodeGuard({ children }) {
           if (code === 200) {
             setAllowed(true);
           } else {
-            router.replace('/unauthorized');
+            router.replace('/auth/signin');
           }
         }
       } catch (error) {
         if (!cancelled) {
           // 인터셉터에서 401/403 처리로 리다이렉트가 발생할 수 있으므로, 보조적으로 차단
-          router.replace('/unauthorized');
+          router.replace('/auth/signin');
         }
       } finally {
         if (!cancelled) {
