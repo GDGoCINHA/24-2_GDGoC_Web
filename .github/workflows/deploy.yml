@@ -1,64 +1,74 @@
-name: Build Docker and Upload to S3
+name: DEV CI
 permissions:
   contents: read
 
 on:
   push:
-    branches:
-      - master
+    branches: [ develop ]
+    tags: [ 'development-**' ]
+  workflow_dispatch:
+
+concurrency:
+  group: dev-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-upload:
+  deploy:
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: production
+      NEXT_PUBLIC_BASE_API_URL: ${{ secrets.NEXT_PUBLIC_BASE_API_URL }}
+      NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}
+      NEXT_PUBLIC_GOOGLE_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-    - name: Create .env file
-      run: |
-        echo "DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}" > .env
-        echo "NEXT_PUBLIC_BASE_API_URL=${{ secrets.NEXT_PUBLIC_BASE_API_URL }}" >> .env
-        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID}}" >> .env
-        echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI}}" >> .env
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'       # yarn.lock 기반 자동 캐시
 
-    - name: Login to DockerHub (Optional)
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
 
-    - name: Build and Push Docker Image
-      run: |
-        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest .
-        docker run --rm ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest ls -la /app
-        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gdgoc-fe-app:latest
+      - name: Build & Export
+        run: |
+          yarn build
+          yarn export
 
-    - name: Create Deployment Package
-      run: |
-        cp scripts/deploy.sh ./deploy.sh
-        zip -r deploy.zip .env docker-compose.yml deploy.sh appspec.yml \
-            Dockerfile package.json package-lock.json next.config.ts \
-            pages public .next
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Configure AWS credentials
-      run: |
-        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws configure set region ${{ secrets.AWS_REGION }}
+      # (선택) 캐시 헤더 전략: 해시된 자산은 장기 캐시, HTML은 no-cache
+      # 프로젝트에 맞게 include/exclude 패턴 조정
+      - name: Upload static assets (long cache)
+        run: |
+          aws s3 cp ./out s3://${{ secrets.AWS_S3_BUCKET }} \
+            --recursive \
+            --exclude "*" \
+            --include "_next/**" --include "static/**" --include "assets/**" \
+            --cache-control "public, max-age=31536000, immutable" \
+            --metadata-directive REPLACE
+      - name: Upload html (no cache)
+        run: |
+          aws s3 cp ./out s3://${{ secrets.AWS_S3_BUCKET }} \
+            --recursive \
+            --exclude "_next/*" --exclude "static/*" --exclude "assets/*" \
+            --cache-control "no-cache" \
+            --metadata-directive REPLACE
+      # (단순화 원하면 기존 sync 한 줄 유지 가능)
+      # - name: Deploy to S3
+      #   run: aws s3 sync ./out s3://${{ secrets.AWS_S3_BUCKET }} --delete
 
-    - name: Upload Deployment Package to S3
-      run: |
-        aws s3 cp deploy.zip s3://${{ secrets.AWS_S3_BUCKET }}/main-deploy.zip
-
-    - name: Trigger CodeDeploy (CLI)
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ap-northeast-2
-      run: |
-        aws deploy create-deployment \
-          --application-name ${{ secrets.AWS_CODEDEPLOY_APP }} \
-          --deployment-group-name ${{ secrets.AWS_CODEDEPLOY_GROUP }} \
-          --s3-location bucket=${{ secrets.S3_BUCKET }},bundleType=zip,key=main-deploy.zip \
-          --file-exists-behavior OVERWRITE
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} \
+            --paths "/*"
