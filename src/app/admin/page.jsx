@@ -15,6 +15,7 @@ const columns = [
   { name: 'NAME', uid: 'name' },
   { name: 'MAJOR / ID', uid: 'major' },
   { name: 'PAYMENT', uid: 'isPayed' },
+  { name: 'TOGGLE', uid: 'togglePay' },
 ];
 
 const statusColorMap = {
@@ -42,6 +43,7 @@ export default function Page() {
 
   const rowsPerPage = 10; //한 페이지당 표시될 유저 수
 
+  //유저 데이터 조회
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -70,22 +72,69 @@ export default function Page() {
     }
   }, [apiClient, page, rowsPerPage, query]);
 
-  const renderCell = useCallback((user, columnKey) => {
-    const normalizedUser = {
-      ...user,
-      name: user?.name ?? '',
-      major: user?.major ?? '',
-      studentId: user?.studentId ?? '',
-      isPayed: typeof user?.isPayed === 'boolean' ? user.isPayed : '',
-      phoneNumber: user?.phoneNumber ?? '',
-    };
-    return <AdminTableCell user={normalizedUser} columnKey={columnKey} />;
-  }, []);
+  //회비 지불여부 체크박스
+  const handleTogglePay = useCallback(
+    async (userId, nextValue) => {
+      const getItemId = (user) => user?.id;
+      const prevUsers = currentUsers;
 
-  const handleRowClick = (user) => {
+      setCurrentUsers((prev) =>
+        prev.map((u) => {
+          if (getItemId(u) === userId) {
+            const updated = { ...u, isPayed: nextValue };
+            return updated;
+          }
+          return u;
+        })
+      );
+
+      try {
+        await apiClient.patch(`/recruit/members/${userId}/payment`, { isPayed: nextValue });
+      } catch (err) {
+        // rollback
+        setCurrentUsers(prevUsers);
+        alert('결제 상태 변경에 실패했습니다. 다시 시도해주세요.');
+      }
+    },
+    [apiClient, currentUsers]
+  );
+
+  //테이블 요소
+  const renderCell = useCallback(
+    (user, columnKey) => {
+      const normalizedUser = {
+        ...user,
+        name: user?.name ?? '',
+        major: user?.major ?? '',
+        studentId: user?.studentId ?? '',
+        isPayed: typeof user?.isPayed === 'boolean' ? user.isPayed : '',
+        phoneNumber: user?.phoneNumber ?? '',
+        id: user?.id ?? user?.member?.id,
+        memberId: user?.member?.id ?? user?.id,
+      };
+      return <AdminTableCell user={normalizedUser} columnKey={columnKey} onTogglePay={handleTogglePay} />;
+    },
+    [handleTogglePay]
+  );
+
+  //유저 상세 정보
+  const handleRowClick = async (user) => {
     if (modalClosing.current) return; // 모달이 닫히는 중에는 클릭 무시
-    setSelectedUser(user);
-    setModalOpen(true);
+    try {
+      const memberId = user?.id;
+      if (!memberId) {
+        throw new Error('멤버 ID를 확인할 수 없습니다.');
+      }
+      const res = await apiClient.get(`/recruit/members/${memberId}`);
+      const detail = res?.data?.data ?? null;
+      if (!detail) {
+        throw new Error('상세 정보를 불러오지 못했습니다.');
+      }
+      setSelectedUser(detail);
+      setModalOpen(true);
+    } catch (e) {
+      alert('상세 정보를 불러오는 중 오류가 발생했습니다.');
+    }
   };
 
   const handleSearch = () => {
@@ -127,7 +176,11 @@ export default function Page() {
         >
           <TableHeader columns={columns}>
             {(column) => (
-              <TableColumn key={column.uid} align={column.uid === 'actions' ? 'center' : 'start'}>
+              <TableColumn
+                key={column.uid}
+                align={['actions', 'togglePay'].includes(column.uid) ? 'center' : 'start'}
+                className={column.uid === 'togglePay' ? 'text-center' : ''}
+              >
                 {column.name}
               </TableColumn>
             )}
@@ -143,7 +196,11 @@ export default function Page() {
                 key={item.member?.id ?? item.id}
                 onClick={() => handleRowClick(item)}
               >
-                {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                {(columnKey) => (
+                  <TableCell className={columnKey === 'togglePay' ? 'text-center' : ''}>
+                    {renderCell(item, columnKey)}
+                  </TableCell>
+                )}
               </TableRow>
             )}
           </TableBody>
