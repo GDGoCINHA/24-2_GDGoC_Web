@@ -48,17 +48,17 @@ export default function MenuHeader() {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
+          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
             공지사항
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
+          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
             프로젝트
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
+          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
             멤버
           </Link>
         </NavbarItem>
@@ -77,7 +77,7 @@ export default function MenuHeader() {
               className={`w-full text-white ${index === 4 ? "text-red-500 font-bold" : ""}`}
               href={item.href}
               size="lg"
-              onClick={item.onClick}
+              onPress={item.onClick}
             >
               {item.name}
             </Link>
