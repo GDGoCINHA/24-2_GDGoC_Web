@@ -45,6 +45,7 @@ export default function TestAuthPage() {
   return (
     <div className='min-h-screen w-full px-6 py-10 text-white'>
       <h1 className='text-2xl font-bold mb-6'>로그인 테스트</h1>
+      <h1 className='text-2xl font-bold mb-6'>cicd 배포 테스트 입니다.</h1>
 
       <section className='mb-6'>
         <div className='mb-1'>현재 로그인 상태</div>
