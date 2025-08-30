@@ -9,12 +9,12 @@ import AdminTableCell from '@/components/admin/AdminTableCell';
 import AdminTableTopContent from '@/components/admin/AdminTableTopContent';
 import AdminTableBottomContent from '@/components/admin/AdminTableBottomContent';
 
-import { users } from '@/mock/users';
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
 const columns = [
   { name: 'NAME', uid: 'name' },
   { name: 'MAJOR / ID', uid: 'major' },
-  { name: 'PAYMENT', uid: 'status' },
+  { name: 'PAYMENT', uid: 'isPayed' },
 ];
 
 const statusColorMap = {
@@ -24,31 +24,63 @@ const statusColorMap = {
 
 export default function Page() {
   const router = useRouter();
+  const { apiClient } = useAuthenticatedApi();
 
-  // 추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
-  const [page, setPage] = React.useState(1); // 현재 페이지 상태 (추후 페이지 상태에 따라 api 통신으로 데이터 불러오기)
+  const [page, setPage] = React.useState(1);
 
   const [modalOpen, setModalOpen] = React.useState(false); // 모달 열림 상태
   const modalClosing = useRef(false); // 모달이 닫히는 상태를 추적
 
   const [selectedUser, setSelectedUser] = React.useState(null); // 선택된 사용자 데이터
   const [searchValue, setSearchValue] = React.useState(''); // 검색 입력 상태
+  const [query, setQuery] = React.useState(''); // API 호출시 검색 내용
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [currentUsers, setCurrentUsers] = React.useState([]);
+  const [totalUsers, setTotalUsers] = React.useState(0);
+  const [totalPages, setTotalPages] = React.useState(0);
 
   const rowsPerPage = 10; //한 페이지당 표시될 유저 수
-  const totalUsers = 110; //총 유저 수 (총 페이지 표시를 위함)
 
-  // 현재 페이지 데이터 계산 (임시)
-  const currentUsers = React.useMemo(() => {
-    const startIndex = (page - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    return users.slice(startIndex, endIndex);
-  }, [page, rowsPerPage]);
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = {
+        page: page - 1,
+        size: rowsPerPage,
+        sort: 'createdAt',
+        dir: 'DESC',
+        question: query || undefined,
+      };
+      const res = await apiClient.get('/recruit/members', { params });
+      const list = Array.isArray(res?.data?.data) ? res.data.data : [];
+      const total = res?.data?.meta?.totalElements ?? list.length;
+      const computedTotalPages = Math.max(1, Math.ceil(total / rowsPerPage));
 
-  const totalPages = React.useMemo(() => Math.ceil(totalUsers / rowsPerPage), [totalUsers, rowsPerPage]);
+      setCurrentUsers(list);
+      setTotalUsers(total);
+      setTotalPages(computedTotalPages);
+    } catch (err) {
+      setError(String(err?.message || 'failed to load users'));
+      setCurrentUsers([]);
+      setTotalUsers(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiClient, page, rowsPerPage, query]);
 
-  const renderCell = useCallback((user, columnKey) => 
-    <AdminTableCell user={user} columnKey={columnKey} />
-  , []);
+  const renderCell = useCallback((user, columnKey) => {
+    const normalizedUser = {
+      ...user,
+      name: user?.name ?? '',
+      major: user?.major ?? '',
+      studentId: user?.studentId ?? '',
+      isPayed: typeof user?.isPayed === 'boolean' ? user.isPayed : '',
+      phoneNumber: user?.phoneNumber ?? '',
+    };
+    return <AdminTableCell user={normalizedUser} columnKey={columnKey} />;
+  }, []);
 
   const handleRowClick = (user) => {
     if (modalClosing.current) return; // 모달이 닫히는 중에는 클릭 무시
@@ -57,8 +89,8 @@ export default function Page() {
   };
 
   const handleSearch = () => {
-    //추후 api 연결 함수로 변경 예정
-    console.log(searchValue); //임시
+    setPage(1);
+    setQuery((searchValue || '').trim());
   };
 
   const handleCloseModal = () => {
@@ -68,6 +100,17 @@ export default function Page() {
       modalClosing.current = false; // 모달 닫힘 완료 후 상태 변경
     }, 300);
   };
+
+  useEffect(() => {
+    if (searchValue === '' && query !== '') {
+      setPage(1);
+      setQuery('');
+    }
+  }, [searchValue, query]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   return (
     <>
@@ -89,11 +132,15 @@ export default function Page() {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody items={currentUsers}>
+          <TableBody
+            items={currentUsers}
+            isLoading={loading}
+            emptyContent={loading ? '불러오는 중...' : '데이터가 없습니다.'}
+          >
             {(item) => (
               <TableRow
                 className='hover:bg-[#35353b99] cursor-pointer'
-                key={item.member.id}
+                key={item.member?.id ?? item.id}
                 onClick={() => handleRowClick(item)}
               >
                 {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
