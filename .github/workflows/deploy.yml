@@ -16,7 +16,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      NODE_ENV: production
       NEXT_PUBLIC_BASE_API_URL: ${{ secrets.NEXT_PUBLIC_BASE_API_URL }}
       NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}
       NEXT_PUBLIC_GOOGLE_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}
