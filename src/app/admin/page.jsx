@@ -170,7 +170,7 @@ export default function Page() {
           bottomContent={
             <div className='relative'>
               <AdminTableBottomContent page={page} totalPages={totalPages} onChangePage={(newPage) => setPage(newPage)} />
-              <div className='text-white text-base absolute right-0 bottom-0'>총 가입자 수 : {totalUsers}</div>
+              <div className='text-white text-base absolute right-0 bottom-0'>{totalUsers}</div>
             </div>
           }
           topContent={
