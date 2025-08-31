@@ -41,11 +41,11 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
   const handleCheckDuplicate = async () => {
 
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/check/studentId`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/check/student-id`, {
         params: { studentId },
       });
       setIsValidButtonClicked(true);
-      setIsValidStudentId(!response.data.data);
+      setIsValidStudentId(!response.data.data.isExists);
     } catch (error) {
       setIsValidButtonClicked(true);
       console.log('중복확인 오류 발생:', error);
