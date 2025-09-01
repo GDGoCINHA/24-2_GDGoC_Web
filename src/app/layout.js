@@ -4,6 +4,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import localFont from "next/font/local";
 import Script from 'next/script';
 import { NextUIProvider } from "@nextui-org/react";
+import DevHeader from "@/components/ui/common/DevHeader";
 
 // components
 import Loading from "@/app/loading";
@@ -128,6 +129,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${pretendard.className} antialiased`}>
+      {((process.env.NEXT_PUBLIC_APP_ENV ?? process.env.NODE_ENV) !== 'production') && <DevHeader />}
         <NextUIProvider>
           <ErrorBoundary fallback={<Error />}>
             <AuthProvider>
