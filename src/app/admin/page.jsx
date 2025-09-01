@@ -18,11 +18,6 @@ const columns = [
   { name: 'TOGGLE', uid: 'togglePay' },
 ];
 
-const statusColorMap = {
-  true: 'success',
-  false: 'danger',
-};
-
 export default function Page() {
   const router = useRouter();
   const { apiClient } = useAuthenticatedApi();
@@ -75,6 +70,9 @@ export default function Page() {
   //회비 지불여부 체크박스
   const handleTogglePay = useCallback(
     async (userId, nextValue) => {
+      if (modalClosing.current) return; // 모달이 닫히는 중에는 클릭 무시
+      const confirmed = window.confirm('입금 상태를 수정하시겠습니까?');
+      if (!confirmed) return;
       const getItemId = (user) => user?.id;
       const prevUsers = currentUsers;
 
@@ -169,8 +167,12 @@ export default function Page() {
           aria-label='Example table with custom cells'
           bottomContent={
             <div className='relative'>
-              <AdminTableBottomContent page={page} totalPages={totalPages} onChangePage={(newPage) => setPage(newPage)} />
-              <div className='text-white text-base absolute right-0 bottom-0'>{totalUsers}</div>
+              <AdminTableBottomContent
+                page={page}
+                totalPages={totalPages}
+                totalUsers={totalUsers}
+                onChangePage={(newPage) => setPage(newPage)}
+              />
             </div>
           }
           topContent={
