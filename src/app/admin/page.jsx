@@ -2,111 +2,142 @@
 
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  User,
-  Chip,
-  Pagination,
-  Input,
-  Spinner,
-} from '@nextui-org/react';
-import { IoSearch } from 'react-icons/io5';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from '@nextui-org/react';
 
 import UserDetailsModal from '@/components/admin/UserDetailsModal';
+import AdminTableCell from '@/components/admin/AdminTableCell';
+import AdminTableTopContent from '@/components/admin/AdminTableTopContent';
+import AdminTableBottomContent from '@/components/admin/AdminTableBottomContent';
 
-import { users } from '@/mock/users';
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
 const columns = [
   { name: 'NAME', uid: 'name' },
   { name: 'MAJOR / ID', uid: 'major' },
-  { name: 'PAYMENT', uid: 'status' },
+  { name: 'PAYMENT', uid: 'isPayed' },
+  { name: 'TOGGLE', uid: 'togglePay' },
 ];
 
-const statusColorMap = {
-  true: 'success',
-  false: 'danger',
-};
-
 export default function Page() {
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { apiClient } = useAuthenticatedApi();
 
-  useEffect(() => {
-    if(!document.referrer) {
-      router.push('/')
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-  // 추후 users 를 사용해 데이터를 받아오고, totalUsers를 사용해 페이지네이션 만들 예정
-  const [page, setPage] = React.useState(1); // 현재 페이지 상태 (추후 페이지 상태에 따라 api 통신으로 데이터 불러오기)
+  const [page, setPage] = React.useState(1);
 
   const [modalOpen, setModalOpen] = React.useState(false); // 모달 열림 상태
   const modalClosing = useRef(false); // 모달이 닫히는 상태를 추적
 
   const [selectedUser, setSelectedUser] = React.useState(null); // 선택된 사용자 데이터
   const [searchValue, setSearchValue] = React.useState(''); // 검색 입력 상태
+  const [query, setQuery] = React.useState(''); // API 호출시 검색 내용
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [currentUsers, setCurrentUsers] = React.useState([]);
+  const [totalUsers, setTotalUsers] = React.useState(0);
+  const [totalPages, setTotalPages] = React.useState(0);
 
   const rowsPerPage = 10; //한 페이지당 표시될 유저 수
-  const totalUsers = 110; //총 유저 수 (총 페이지 표시를 위함)
 
-  // 현재 페이지 데이터 계산 (임시)
-  const currentUsers = React.useMemo(() => {
-    const startIndex = (page - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    return users.slice(startIndex, endIndex);
-  }, [page, rowsPerPage]);
+  //유저 데이터 조회
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = {
+        page: page - 1,
+        size: rowsPerPage,
+        sort: 'createdAt',
+        dir: 'DESC',
+        question: query || undefined,
+      };
+      const res = await apiClient.get('/recruit/members', { params });
+      const list = Array.isArray(res?.data?.data) ? res.data.data : [];
+      const total = res?.data?.meta?.totalElements ?? list.length;
+      const computedTotalPages = Math.max(1, Math.ceil(total / rowsPerPage));
 
-  const totalPages = React.useMemo(() => Math.ceil(totalUsers / rowsPerPage), [totalUsers, rowsPerPage]);
-
-  const renderCell = useCallback((user, columnKey) => {
-    const cellValue = user.member[columnKey];
-    switch (columnKey) {
-      case 'name':
-        return (
-          <User
-            className='text-white'
-            avatarProps={{
-              className: 'w-0 h-0 overflow-hidden',
-            }}
-            description={user.member.email}
-            name={cellValue}
-          >
-            {user.member.email}
-          </User>
-        );
-      case 'major':
-        return (
-          <div className='flex flex-col'>
-            <p className='text-white text-bold text-sm capitalize'>{user.member.majors.main}</p>
-            <p className='text-bold text-sm capitalize text-default-400'>{user.member.studentId}</p>
-          </div>
-        );
-      case 'status':
-        return (
-          <Chip className='capitalize' color={statusColorMap[user.member.isPayed]} size='sm' variant='flat'>
-            {user.member.isPayed ? '입금' : '미입금'}
-          </Chip>
-        );
-      default:
-        return cellValue;
+      setCurrentUsers(list);
+      setTotalUsers(total);
+      setTotalPages(computedTotalPages);
+    } catch (err) {
+      setError(String(err?.message || 'failed to load users'));
+      setCurrentUsers([]);
+      setTotalUsers(0);
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [apiClient, page, rowsPerPage, query]);
 
-  const handleRowClick = (user) => {
+  //회비 지불여부 체크박스
+  const handleTogglePay = useCallback(
+    async (userId, nextValue) => {
+      if (modalClosing.current) return; // 모달이 닫히는 중에는 클릭 무시
+      const confirmed = window.confirm('입금 상태를 수정하시겠습니까?');
+      if (!confirmed) return;
+      const getItemId = (user) => user?.id;
+      const prevUsers = currentUsers;
+
+      setCurrentUsers((prev) =>
+        prev.map((u) => {
+          if (getItemId(u) === userId) {
+            const updated = { ...u, isPayed: nextValue };
+            return updated;
+          }
+          return u;
+        })
+      );
+
+      try {
+        await apiClient.patch(`/recruit/members/${userId}/payment`, { isPayed: nextValue });
+      } catch (err) {
+        // rollback
+        setCurrentUsers(prevUsers);
+        alert('결제 상태 변경에 실패했습니다. 다시 시도해주세요.');
+      }
+    },
+    [apiClient, currentUsers]
+  );
+
+  //테이블 요소
+  const renderCell = useCallback(
+    (user, columnKey) => {
+      const normalizedUser = {
+        ...user,
+        name: user?.name ?? '',
+        major: user?.major ?? '',
+        studentId: user?.studentId ?? '',
+        isPayed: typeof user?.isPayed === 'boolean' ? user.isPayed : '',
+        phoneNumber: user?.phoneNumber ?? '',
+        id: user?.id ?? user?.member?.id,
+        memberId: user?.member?.id ?? user?.id,
+      };
+      return <AdminTableCell user={normalizedUser} columnKey={columnKey} onTogglePay={handleTogglePay} />;
+    },
+    [handleTogglePay]
+  );
+
+  //유저 상세 정보
+  const handleRowClick = async (user) => {
     if (modalClosing.current) return; // 모달이 닫히는 중에는 클릭 무시
-    setSelectedUser(user);
-    setModalOpen(true);
+    try {
+      const memberId = user?.id;
+      if (!memberId) {
+        throw new Error('멤버 ID를 확인할 수 없습니다.');
+      }
+      const res = await apiClient.get(`/recruit/members/${memberId}`);
+      const detail = res?.data?.data ?? null;
+      if (!detail) {
+        throw new Error('상세 정보를 불러오지 못했습니다.');
+      }
+      setSelectedUser(detail);
+      setModalOpen(true);
+    } catch (e) {
+      alert('상세 정보를 불러오는 중 오류가 발생했습니다.');
+    }
   };
 
   const handleSearch = () => {
-    //추후 api 연결 함수로 변경 예정
-    console.log(searchValue); //임시
+    setPage(1);
+    setQuery((searchValue || '').trim());
   };
 
   const handleCloseModal = () => {
@@ -117,101 +148,71 @@ export default function Page() {
     }, 300);
   };
 
-  // isloading 이 false 일때만 렌더링
+  useEffect(() => {
+    if (searchValue === '' && query !== '') {
+      setPage(1);
+      setQuery('');
+    }
+  }, [searchValue, query]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
   return (
     <>
-      {isLoading ? (
-        <div className='flex justify-center items-center h-screen'>
-          <Spinner />
-        </div>
-      ) : (
-        <div>
-          <Table
+      <div>
+        <Table
           className='dark py-[30px] px-[96px] mobile:px-[10px]'
           aria-label='Example table with custom cells'
           bottomContent={
-            totalPages > 0 ? (
-              <div className='flex w-full justify-center'>
-                <Pagination
-                  isCompact
-                  showControls
-                  showShadow
-                  color='primary'
-                  page={page}
-                  total={totalPages}
-                  onChange={(newPage) => setPage(newPage)}
-                />
-              </div>
-            ) : null
+            <div className='relative'>
+              <AdminTableBottomContent
+                page={page}
+                totalPages={totalPages}
+                totalUsers={totalUsers}
+                onChangePage={(newPage) => setPage(newPage)}
+              />
+            </div>
           }
           topContent={
-            <Input
-              isClearable
-              classNames={{
-                label: 'text-black/50 dark:text-white/90',
-                input: [
-                  'bg-transparent',
-                  'text-black/90 dark:text-white/90',
-                  'placeholder:text-default-700/50 dark:placeholder:text-white/60',
-                ],
-                innerWrapper: 'bg-transparent',
-                inputWrapper: [
-                  'shadow-xl',
-                  'bg-default-200/50',
-                  'dark:bg-default/60',
-                  'backdrop-blur-xl',
-                  'backdrop-saturate-200',
-                  'hover:bg-default-200/70',
-                  'dark:hover:bg-default/70',
-                  'group-data-[focus=true]:bg-default-200/50',
-                  'dark:group-data-[focus=true]:bg-default/60',
-                  '!cursor-text',
-                ],
-              }}
-              placeholder='Type to search...'
-              radius='lg'
-              startContent={
-                <IoSearch
-                  className='text-white cursor-pointer'
-                  onClick={handleSearch} // 클릭시 이벤트 발생 (추후 api 연결로 대체)
-                />
-              }
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
-                  e.preventDefault();
-                  handleSearch(); // 클릭시 이벤트 발생 (추후 api 연결로 대체)
-                }
-              }}
-              onClear={() => setSearchValue('')}
-            />
+            <AdminTableTopContent searchValue={searchValue} setSearchValue={setSearchValue} onSearch={handleSearch} />
           }
         >
           <TableHeader columns={columns}>
             {(column) => (
-              <TableColumn key={column.uid} align={column.uid === 'actions' ? 'center' : 'start'}>
+              <TableColumn
+                key={column.uid}
+                align={['actions', 'togglePay'].includes(column.uid) ? 'center' : 'start'}
+                className={column.uid === 'togglePay' ? 'text-center' : ''}
+              >
                 {column.name}
               </TableColumn>
             )}
           </TableHeader>
-          {/* 나중에 여기 users 로 변경할 것 */}
-          <TableBody items={currentUsers}>
+          <TableBody
+            items={currentUsers}
+            isLoading={loading}
+            emptyContent={loading ? '불러오는 중...' : '데이터가 없습니다.'}
+          >
             {(item) => (
               <TableRow
                 className='hover:bg-[#35353b99] cursor-pointer'
-                key={item.member.id}
+                key={item.member?.id ?? item.id}
                 onClick={() => handleRowClick(item)}
               >
-                {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                {(columnKey) => (
+                  <TableCell className={columnKey === 'togglePay' ? 'text-center' : ''}>
+                    {renderCell(item, columnKey)}
+                  </TableCell>
+                )}
               </TableRow>
             )}
           </TableBody>
         </Table>
 
         <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={handleCloseModal} preventClose />
-    </div>)}
+      </div>
     </>
   );
-
 }

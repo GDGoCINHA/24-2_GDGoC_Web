@@ -14,10 +14,10 @@ export default function MenuHeader() {
   const { apiClient, handleLogout }= useAuthenticatedApi();
 
   const menuItems = [
-    { name: "스터디", href: "/study" },
+    { name: "멤버관리", href: "/admin" },
+    { name: "스터디", href: "#", onClick: () => alert('준비중입니다.') },
     { name: "공지사항", href: "#", onClick: () => alert('준비중입니다.') },
-    { name: "프로젝트", href: "https://solution.gdgocinha.com" },
-    { name: "멤버", href: "#", onClick: () => alert('준비중입니다.') },
+    { name: "프로젝트", href: "#", onClick: () => alert('준비중입니다.') },
     { name: "로그아웃", href: "#", onClick: handleLogout }
   ];
 
@@ -43,23 +43,23 @@ export default function MenuHeader() {
       
       <NavbarContent className="mobile:hidden flex gap-16 ml-[70px]" justify="start">
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="/study">
+          <Link color="foreground" className="text-white" href="/admin" >
+            멤버관리
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
             스터디
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
+          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
             공지사항
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
+          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
             프로젝트
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onClick={() => alert('준비중입니다.')}>
-            멤버
           </Link>
         </NavbarItem>
       </NavbarContent>
@@ -77,7 +77,7 @@ export default function MenuHeader() {
               className={`w-full text-white ${index === 4 ? "text-red-500 font-bold" : ""}`}
               href={item.href}
               size="lg"
-              onClick={item.onClick}
+              onPress={item.onClick}
             >
               {item.name}
             </Link>

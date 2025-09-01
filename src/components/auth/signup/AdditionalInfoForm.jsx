@@ -96,8 +96,20 @@ export default function AdditionalInfoForm({
           placeholder="전화번호를 입력해주세요 (예: 010-1234-5678)" 
           radius="full" 
           className="w-full" 
-          value={phoneNumber} 
-          onValueChange={setPhoneNumber} 
+          value={phoneNumber}
+          onChange={(e) => {
+            const value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length <= 11) {
+              let formattedNumber = value;
+              if (value.length > 3) {
+                formattedNumber = value.slice(0,3) + '-' + value.slice(3);
+              }
+              if (value.length > 7) {
+                formattedNumber = formattedNumber.slice(0,8) + '-' + formattedNumber.slice(8);
+              }
+              setPhoneNumber(formattedNumber);
+            }
+          }}
           classNames={{
             label: "!pb-[10px] !text-white",
             inputWrapper: `h-[48px] rounded-full border-2 border-white/50 caret-white bg-transparent !transition !duration-300 !ease-in-out

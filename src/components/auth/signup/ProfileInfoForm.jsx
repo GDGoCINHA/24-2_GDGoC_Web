@@ -8,8 +8,14 @@ export default function ProfileInfoForm({
   password, setPassword,
   confirmPassword, setConfirmPassword,
   errors, isEmailValid,
-  isNameDisabled, isEmailDisabled
+  isNameDisabled, isEmailDisabled, setIsEmailValid
 }) {
+
+  const emailChange = (e) => {
+    setEmail(e.target.value);
+    setIsEmailValid(false);
+  }
+
   return (
     <div className="w-full">
       <Input 
@@ -42,7 +48,7 @@ export default function ProfileInfoForm({
           radius="full"
           className="w-full"
           value={email}
-          onValueChange={setEmail}
+          onChange={emailChange}
           isDisabled={isEmailDisabled}
           classNames={{
             label: "!pb-[10px] !text-white",

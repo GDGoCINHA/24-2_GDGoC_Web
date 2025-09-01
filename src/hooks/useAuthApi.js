@@ -1,20 +1,19 @@
 'use client'
 
 import axios from 'axios';
+import { useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
 const API_AUTH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/auth';
-const API_REFRESH_URL = process.env.NEXT_PUBLIC_BASE_API_URL + '/refresh';
-const ROUTE_API_URL = '/api/auth';
 
 export const useAuthApi = () => {
   const { accessToken } = useAuth();
 
-  // Access Token 갱신 함수
-  const refreshAccessToken = async () => {
+  // Access Token 갱신 (stable)
+  const refreshAccessToken = useCallback(async () => {
     try {
       const response = await axios.post(
-        `${ROUTE_API_URL}/refresh`,
+        `${API_AUTH_URL}/refresh`,
         {},
         {
           headers: { 'Content-Type': 'application/json' },
@@ -22,7 +21,6 @@ export const useAuthApi = () => {
           credentials: 'include',
         }
       );
-
       return response;
     } catch (error) {
       if (error.response?.status === 401) {
@@ -32,13 +30,13 @@ export const useAuthApi = () => {
       }
       throw error;
     }
-  };
+  }, []);
 
-  // 로그아웃 함수
-  const logout = async () => {
+  // 로그아웃
+  const logout = useCallback(async () => {
     try {
       await axios.post(
-        `${ROUTE_API_URL}/signout`,
+        `${API_AUTH_URL}/logout`,
         {},
         {
           withCredentials: true,
@@ -51,7 +49,7 @@ export const useAuthApi = () => {
       console.error('로그아웃 요청 오류 발생:', error);
       throw error;
     }
-  };
+  }, [accessToken]);
 
   return { refreshAccessToken, logout };
 };

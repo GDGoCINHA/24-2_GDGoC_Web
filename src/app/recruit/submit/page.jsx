@@ -31,7 +31,7 @@ export default function RecruitSubmit() {
           ✓
         </span>
       </div>
-      <div className="text-3xl mt-[50px] font-semibold mobile:text-2xl">25-1 멤버 가입이 완료되었습니다.</div>
+      <div className="text-3xl mt-[50px] font-semibold mobile:text-2xl">25-2 멤버 가입이 완료되었습니다.</div>
         <div className='text-xl mt-[20px] mobile:text-sm items-center justify-center mobile:text-center'>
           <div className='flex justify-center'>신규 멤버 초대는 매주 월요일 오후 3시에 일괄 진행됩니다.</div> 
           <div className='flex mobile:flex-col justify-center'>

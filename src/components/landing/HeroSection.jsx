@@ -79,7 +79,7 @@ export default function HeroSection({ router }) {
                     </span>
                     </div>
                     <p className="text-white/90 mt-32 text-[35px] mobile:text-2xl mobile:mt-[17svh] font-bold">
-                    2025-1 Recruitment
+                    2025-2 Recruitment
                     </p>
                 </div>
                 <Button

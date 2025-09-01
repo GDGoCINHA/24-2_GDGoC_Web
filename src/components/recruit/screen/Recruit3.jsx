@@ -58,11 +58,11 @@ export default function Recruit3({ step, setChecked, updateRecruitData }) {
 
   const handleCheckDuplicate = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/check/phoneNumber`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/check/phone-number`, {
         params: { phoneNumber },
       });
       setIsValidButtonClicked(true);
-      setIsValidPhoneNumber(!response.data.data);
+      setIsValidPhoneNumber(!response.data.data.isExists);
     } catch (error) {
       setIsValidButtonClicked(true);
       console.log('중복확인 오류 발생:', error);
