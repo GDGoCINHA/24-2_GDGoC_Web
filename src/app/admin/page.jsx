@@ -71,6 +71,8 @@ export default function Page() {
   const handleTogglePay = useCallback(
     async (userId, nextValue) => {
       if (modalClosing.current) return; // 모달이 닫히는 중에는 클릭 무시
+      const confirmed = window.confirm('입금 상태를 수정하시겠습니까?');
+      if (!confirmed) return;
       const getItemId = (user) => user?.id;
       const prevUsers = currentUsers;
 
