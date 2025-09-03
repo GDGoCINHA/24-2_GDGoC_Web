@@ -4,7 +4,7 @@ permissions:
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, main ]
     tags: [ 'development-**' ]
   workflow_dispatch:
 
@@ -16,7 +16,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_BASE_API_URL: ${{ secrets.NEXT_PUBLIC_BASE_API_URL }}
       NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}
       NEXT_PUBLIC_GOOGLE_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}
 
@@ -29,6 +28,20 @@ jobs:
         with:
           node-version: '20'
           cache: 'yarn'       # yarn.lock 기반 자동 캐시
+
+      - name: Set env for develop
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          echo "TARGET_BUCKET=${{ secrets.AWS_S3_BUCKET_DEV }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_APP_ENV=dev" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_BASE_API_URL=${{ secrets.NEXT_PUBLIC_BASE_API_URL_DEV }}" >> $GITHUB_ENV
+
+      - name: Set env for main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "TARGET_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_APP_ENV=production" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_BASE_API_URL=${{ secrets.NEXT_PUBLIC_BASE_API_URL }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -47,7 +60,7 @@ jobs:
       # 프로젝트에 맞게 include/exclude 패턴 조정
       - name: Upload static assets (long cache)
         run: |
-          aws s3 cp ./out s3://${{ secrets.AWS_S3_BUCKET }} \
+          aws s3 cp ./out s3://$TARGET_BUCKET \
             --recursive \
             --exclude "*" \
             --include "_next/**" --include "static/**" --include "assets/**" \
@@ -55,14 +68,14 @@ jobs:
             --metadata-directive REPLACE
       - name: Upload html (no cache)
         run: |
-          aws s3 cp ./out s3://${{ secrets.AWS_S3_BUCKET }} \
+          aws s3 cp ./out s3://$TARGET_BUCKET \
             --recursive \
             --exclude "_next/*" --exclude "static/*" --exclude "assets/*" \
             --cache-control "no-cache" \
             --metadata-directive REPLACE
       # (단순화 원하면 기존 sync 한 줄 유지 가능)
       # - name: Deploy to S3
-      #   run: aws s3 sync ./out s3://${{ secrets.AWS_S3_BUCKET }} --delete
+      #   run: aws s3 sync ./out s3://$TARGET_BUCKET --delete
 
       - name: Invalidate CloudFront Cache
         run: |
