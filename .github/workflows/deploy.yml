@@ -37,7 +37,7 @@ jobs:
           echo "NEXT_PUBLIC_BASE_API_URL=${{ secrets.NEXT_PUBLIC_BASE_API_URL_DEV }}" >> $GITHUB_ENV
 
       - name: Set env for main
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/master'
         run: |
           echo "TARGET_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_APP_ENV=production" >> $GITHUB_ENV
