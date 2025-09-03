@@ -4,7 +4,7 @@ permissions:
 
 on:
   push:
-    branches: [ develop, main ]
+    branches: [ develop, master ]
     tags: [ 'development-**' ]
   workflow_dispatch:
 
