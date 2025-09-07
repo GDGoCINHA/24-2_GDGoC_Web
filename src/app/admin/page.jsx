@@ -8,6 +8,7 @@ import UserDetailsModal from '@/components/admin/UserDetailsModal';
 import AdminTableCell from '@/components/admin/AdminTableCell';
 import AdminTableTopContent from '@/components/admin/AdminTableTopContent';
 import AdminTableBottomContent from '@/components/admin/AdminTableBottomContent';
+import AdminDashboard from '@/components/admin/AdminDashboard';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
@@ -35,6 +36,12 @@ export default function Page() {
   const [currentUsers, setCurrentUsers] = React.useState([]);
   const [totalUsers, setTotalUsers] = React.useState(0);
   const [totalPages, setTotalPages] = React.useState(0);
+
+  // 대시보드 통계용 전체 멤버 데이터
+  const [statsUsers, setStatsUsers] = React.useState([]);
+  const [statsTotal, setStatsTotal] = React.useState(0);
+  const [statsLoading, setStatsLoading] = React.useState(false);
+  const [statsError, setStatsError] = React.useState('');
 
   const rowsPerPage = 10; //한 페이지당 표시될 유저 수
 
@@ -66,6 +73,45 @@ export default function Page() {
       setLoading(false);
     }
   }, [apiClient, page, rowsPerPage, query]);
+
+  // 통계용 전체 멤버 데이터 조회 (페이지네이션 병렬 수집)
+  const fetchAllUsersForStats = useCallback(async () => {
+    setStatsLoading(true);
+    setStatsError('');
+    try {
+      const pageSize = 200;
+      const baseParams = { size: pageSize, sort: 'createdAt', dir: 'DESC' };
+
+      const firstRes = await apiClient.get('/recruit/members', { params: { ...baseParams, page: 0 } });
+      const firstList = Array.isArray(firstRes?.data?.data) ? firstRes.data.data : [];
+      const total = firstRes?.data?.meta?.totalElements ?? firstList.length;
+      const totalPagesForStats = Math.max(1, Math.ceil(total / pageSize));
+
+      let all = firstList;
+      if (totalPagesForStats > 1) {
+        const promises = [];
+        for (let p = 1; p < totalPagesForStats; p++) {
+          promises.push(apiClient.get('/recruit/members', { params: { ...baseParams, page: p } }));
+        }
+        const results = await Promise.allSettled(promises);
+        results.forEach((res) => {
+          if (res.status === 'fulfilled') {
+            const list = Array.isArray(res.value?.data?.data) ? res.value.data.data : [];
+            all = all.concat(list);
+          }
+        });
+      }
+
+      setStatsUsers(all);
+      setStatsTotal(total);
+    } catch (e) {
+      setStatsUsers([]);
+      setStatsTotal(0);
+      setStatsError(String(e?.message || 'failed to load stats'));
+    } finally {
+      setStatsLoading(false);
+    }
+  }, [apiClient]);
 
   //회비 지불여부 체크박스
   const handleTogglePay = useCallback(
@@ -159,11 +205,15 @@ export default function Page() {
     fetchUsers();
   }, [fetchUsers]);
 
+  useEffect(() => {
+    fetchAllUsersForStats();
+  }, [fetchAllUsersForStats]);
+
   return (
     <>
       <div>
         <Table
-          className='dark py-[30px] px-[96px] mobile:px-[10px]'
+          className='dark text-white py-[30px] px-[96px] mobile:px-[10px]'
           aria-label='Example table with custom cells'
           bottomContent={
             <div className='relative'>
@@ -197,7 +247,7 @@ export default function Page() {
           >
             {(item) => (
               <TableRow
-                className='hover:bg-[#35353b99] cursor-pointer'
+                className='hover:bg-[#35353b99] cursor-pointer text-white'
                 key={item.member?.id ?? item.id}
                 onClick={() => handleRowClick(item)}
               >
@@ -212,6 +262,15 @@ export default function Page() {
         </Table>
 
         <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={handleCloseModal} preventClose />
+
+        {/* 대시보드 */}
+        {statsError ? (
+          <div className='px-[96px] mobile:px-[10px] text-red-400 py-4'>대시보드 로드 실패: {statsError}</div>
+        ) : statsLoading ? (
+          <div className='px-[96px] mobile:px-[10px] text-white py-4'>대시보드 불러오는 중...</div>
+        ) : (
+          <AdminDashboard members={statsUsers} totalCount={statsTotal} />
+        )}
       </div>
     </>
   );
