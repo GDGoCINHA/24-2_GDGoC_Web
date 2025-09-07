@@ -264,13 +264,13 @@ export default function Page() {
         <UserDetailsModal user={selectedUser} isOpen={modalOpen} onClose={handleCloseModal} preventClose />
 
         {/* 대시보드 */}
-        {statsError ? (
+        {/* {statsError ? (
           <div className='px-[96px] mobile:px-[10px] text-red-400 py-4'>대시보드 로드 실패: {statsError}</div>
         ) : statsLoading ? (
           <div className='px-[96px] mobile:px-[10px] text-white py-4'>대시보드 불러오는 중...</div>
         ) : (
           <AdminDashboard members={statsUsers} totalCount={statsTotal} />
-        )}
+        )} */}
       </div>
     </>
   );
