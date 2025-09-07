@@ -29,7 +29,7 @@ export default function UserDetailsModal({ user, isOpen, onClose, preventClose }
       <div className='max-w-[600px] w-full max-h-[90vh] mobile:max-h-[80vh] bg-[#27272A] rounded-lg shadow-md p-6 overflow-y-auto'>
         <div className='text-lg font-bold text-center text-white mb-4'>User Details</div>
 
-        {/* User Basic Info (신 응답 스키마에 맞춤) */}
+        {/* User Basic Info (공통 + 코어 지원 정보 포함) */}
         <table className='w-full border-collapse border text-white mb-6'>
           <tbody>
             {[
@@ -37,6 +37,10 @@ export default function UserDetailsModal({ user, isOpen, onClose, preventClose }
               ['전공', user?.major],
               ['학번', user?.studentId],
               ['회비 송금 여부', typeof user?.isPayed === 'boolean' ? (user.isPayed ? 'Yes' : 'No') : undefined],
+              ['이메일', user?.email],
+              ['전화번호', user?.phone],
+              ['지원팀', user?.team],
+              ['제출 시각', user?.createdAt],
             ]
               .filter(([, val]) => val !== undefined && val !== null && val !== '')
               .map(([label, userValue], idx) => (
@@ -73,6 +77,39 @@ export default function UserDetailsModal({ user, isOpen, onClose, preventClose }
               </div>
             );
           })}
+
+          {[
+            ['지원 동기', user?.motivation],
+            ['원하는 업무/프로젝트/비전', user?.wish],
+            ['장점/역량', user?.strengths],
+            ['각오', user?.pledge],
+          ]
+            .filter(([, val]) => val !== undefined && val !== null && String(val).trim() !== '')
+            .map(([label, val], idx) => (
+              <div key={`core-${idx}`}>
+                <hr className='border-[#5b5b6699]' />
+                <div className={clsx(infoTextStyle)}>{label}</div>
+                <div className='text-sm whitespace-pre-line'>{val}</div>
+              </div>
+            ))}
+
+          {Array.isArray(user?.fileUrls) && user.fileUrls.length > 0 && (
+            <div>
+              <hr className='border-[#5b5b6699]' />
+              <div className={clsx(infoTextStyle)}>첨부 파일</div>
+              <div className='flex flex-wrap gap-2'>
+                {user.fileUrls.map((url, idx) => (
+                  <Button
+                    key={`${url}-${idx}`}
+                    className='!bg-[#4285F4] !text-white'
+                    onPress={() => window.open(url, '_blank', 'noopener,noreferrer')}
+                  >
+                    바로가기 {idx + 1}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className='flex justify-end mt-6'>

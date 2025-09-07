@@ -15,6 +15,7 @@ export default function MenuHeader() {
 
   const menuItems = [
     { name: "멤버관리", href: "/admin" },
+    { name: "운영자 지원관리", href: "/coreadmin" },
     { name: "스터디", href: "#", onClick: () => alert('준비중입니다.') },
     { name: "공지사항", href: "#", onClick: () => alert('준비중입니다.') },
     { name: "프로젝트", href: "#", onClick: () => alert('준비중입니다.') },
@@ -45,6 +46,11 @@ export default function MenuHeader() {
         <NavbarItem>
           <Link color="foreground" className="text-white" href="/admin" >
             멤버관리
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" className="text-white" href="/coreadmin" >
+            운영자 지원관리
           </Link>
         </NavbarItem>
         <NavbarItem>

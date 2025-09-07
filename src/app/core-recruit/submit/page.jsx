@@ -25,14 +25,12 @@ export default function CoreRecruitSubmit() {
       <div className="text-3xl mt-[50px] font-semibold mobile:text-2xl">코어 멤버 지원서 제출이 완료되었습니다.</div>
       <div className='text-xl mt-[20px] mobile:text-sm items-center justify-center mobile:text-center'>
         <div className="flex flex-col items-start mt-5 justify-center text-white gap-2">
-          <div className="text-xl font-bold mb-2">아래 일정과 안내를 한번더 확인해주세요!</div>
-          <div>✅ 서류 지원 기간 : 2025년 09월 8일 (월) - 2025년 09월 12일 (금) 23:59:59</div>
-          <div>✅ 서류 결과 발표 : ~ 2025년 09월 14일 (일)</div>
-          <div>✅ 면접 진행 기간 : 2025년 09월 15일 (월) - 2025년 09월 19일 (금)</div>
-          <div>✅ 최종 결과 발표 : ~ 2025년 09월 21일 (일)</div>
-          <div className="text-white/70 text-sm mt-3">※ 면접은 지원자와 면접관의 일정에 따라 조정되며, 인하대학교 내부 장소에서 진행됩니다.</div>
-          <div className="text-white/70 text-sm">※ 면접은 대면을 원칙으로 하며, 부득이한 경우에만 비대면으로 진행됩니다.</div>
-          <div className="text-[#EA4336] text-sm mt-3">❗️운영진으로 활동 시, 매주 화요일 19:00~21:00 정기 운영진 회의에 반드시 참석해야 합니다.</div>
+          <div className="text-xl font-bold mb-2">아래 일정을 한번 더 확인해주세요!</div>
+          <div>✅ 서류 지원 기간 : 2025년 09월 8일 (월) ~ 2025년 09월 21일 (일) 11:59:59</div>
+          <div>✅ 서류 결과 발표 : ~ 2025년 09월 21일 (일)</div>
+          <div>✅ 면접 진행 기간 : 2025년 09월 22일 (월) ~ 2025년 09월 26일 (금)</div>
+          <div className="text-white/70 text-sm mb-2">※ 지원자 및 면접관의 일정에 따라 마감 전 조기 면접 진행이 가능할 수 있습니다.</div>
+          <div>✅ 최종 결과 발표 : ~ 2025년 09월 28일 (일)</div>
         </div>
       </div>
       <div className='flex gap-3 mt-[50px] mb-[50px]'>
