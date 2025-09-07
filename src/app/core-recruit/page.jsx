@@ -28,6 +28,7 @@ export default function CoreRecruit() {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   const handleValueChange = (key) => (value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -116,9 +117,22 @@ export default function CoreRecruit() {
 
   return (
     <div className='flex flex-col max-w-[900px] mx-auto min-h-[100svh] justify-start text-white py-16 px-6'>
-      <h1 className='text-4xl font-bold mb-6 flex items-center gap-3'>
+      <h1
+        className={`
+          font-bold mb-6 flex items-center gap-3
+          text-4xl
+          tablet:text-3xl
+          mobile:text-2xl
+        `}
+      >
         {/* 구글 로고 - 커스텀 그라데이션 적용 */}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268.1522 273.8827" width="40" height="40" className="inline-block">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 268.1522 273.8827"
+          width="40"
+          height="40"
+          className="inline-block flex-shrink-0"
+        >
           <defs>
             <linearGradient id="a">
               <stop offset="0" stopColor="#0fbc5c"/>
@@ -222,7 +236,16 @@ export default function CoreRecruit() {
             </g>
           </g>
         </svg>
-        GDGoC INHA Core Member 지원
+        <span
+          className={`
+            leading-tight
+            break-keep
+            whitespace-nowrap
+            mobile:whitespace-normal
+          `}
+        >
+          GDGoC INHA<wbr /> Core Member 지원
+        </span>
       </h1>
 
       <div className='grid grid-cols-1 gap-14 mt-11'>
@@ -464,17 +487,47 @@ export default function CoreRecruit() {
         </div>
 
         <div className='rounded-xl bg-[#111111] p-5 border border-white/10'>
-          <div className='text-lg font-semibold mb-2'>마지막으로 일정을 확인해주시기 바랍니다!</div>
-          <div className='space-y-1 text-white/90'>
-            <div className='text-xl font-bold mb-2'>코어멤버 모집 안내</div>
-            <div>✅ 서류 지원 기간 : 2025년 09월 8일 (월) - 2025년 09월 12일 (금) 23:59:59</div>
-            <div>✅ 서류 결과 발표 : ~ 2025년 09월 14일 (일)</div>
-            <div>✅ 면접 진행 기간 : 2025년 09월 15일 (월) - 2025년 09월 19일 (금)</div>
-            <div>✅ 최종 결과 발표 : ~ 2025년 09월 21일 (일)</div>
-            <div className='text-white/70 text-sm mt-3'>※ 면접은 지원자와 면접관의 일정에 따라 조정되며, 인하대학교 내부 장소에서 진행됩니다.</div>
-            <div className='text-white/70 text-sm'>※ 면접은 대면을 원칙으로 하며, 부득이한 경우에만 비대면으로 진행됩니다.</div>
-            <div className='text-[#EA4336] text-sm mt-3'>❗️운영진으로 활동 시, 매주 화요일 19:00~21:00 정기 운영진 회의에 반드시 참석해야 합니다.</div>
+          <div className='text-lg font-semibold mb-4'>
+            마지막으로 공지 및 일정을 확인해주시기 바랍니다!
           </div>
+          <div className='space-y-6 text-white/90'>
+            <div>
+              <div className='text-xl font-bold mb-4'>모집 일정</div>
+              <div className='mb-2'>✅ 서류 지원 기간 : 2025년 09월 8일 (월) ~ 2025년 09월 21일 (일) 11:59:59</div>
+              <div className='mb-2'>✅ 서류 결과 발표 : ~ 2025년 09월 21일 (일)</div>
+              <div className='mb-2'>✅ 면접 진행 기간 : 2025년 09월 22일 (월) ~ 2025년 09월 26일 (금)</div>
+              <div className='text-white/70 text-sm mb-2'>※ 지원자 및 면접관의 일정에 따라 마감 전 조기 면접 진행이 가능할 수 있습니다.</div>
+              <div className='mb-2'>✅ 최종 결과 발표 : ~ 2025년 09월 28일 (일)</div>
+              <div className='mb-2'>❗️ 첫 온보딩 : 2025년 09월 30일 (화)</div>
+            </div>
+            <div className="border-t border-white/20 my-4" />
+            <div>
+              <div className='text-xl font-bold mb-4'>면접 안내</div>
+              <div className='mb-2'>• 원칙적으로 대면 면접을 진행하며, 부득이한 경우에 한해 비대면으로 조정될 수 있습니다.</div>
+              <div className='mb-2'>• 면접은 인하대학교 내부 장소에서 진행됩니다.</div>
+            </div>
+            <div className="border-t border-white/20 my-4" />
+            <div>
+              <div className='text-xl font-bold mb-4'>활동 안내</div>
+              <div className='mb-2'>• 운영진으로 활동 시, 매주 화요일 19:00~21:00 정기 운영진 회의에 필수참석해야합니다.</div>
+              <div className='mb-2'>• 단, 2시간 전체 참석이 아닌 최소 1시간 이상 필참을 원칙으로 합니다.</div>
+            </div>
+          </div>
+        </div>
+        <div className='flex w-full items-center justify-end'>
+          <Checkbox
+            isSelected={agreed}
+            onValueChange={setAgreed}
+            radius='none'
+            color='danger'
+            className='text-white text-base font-semibold'
+            classNames={{
+              wrapper: 'group-data-[selected=true]:after:bg-red-500',
+              icon: 'bg-red-500',
+            }}
+          >
+            공지사항 및 일정을 확인하였으며, 이에 동의합니다.
+          </Checkbox>
         </div>
 
         <div className='flex justify-end gap-3 mt-6'>
@@ -485,7 +538,7 @@ export default function CoreRecruit() {
           <Button
             className='bg-red-500 text-white rounded-full w-[183px] h-[57px] text-lg font-semibold'
             onPress={handleSubmit}
-            isDisabled={!isValid || uploading || submitting}
+            isDisabled={!isValid || !agreed || uploading || submitting}
             isLoading={uploading || submitting}
           >제출</Button>
         </div>
