@@ -9,6 +9,7 @@ export default function NoticePage() {
     const [category, setCategory] = useState('all');
     const [status, setStatus] = useState('all');
     const [selected, setSelected] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const filtered = useMemo(() => {
         return notices.filter((n) => {
@@ -17,6 +18,14 @@ export default function NoticePage() {
             return categoryOk && statusOk;
         });
     }, [category, status]);
+
+    if (!loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-white">
+                <h2 className="text-2xl font-bold mb-2">Error</h2>
+            </div>
+        );
+    }
 
     return (
         <div className="px-6 tablet:px-10 desktop:px-16 py-10">
