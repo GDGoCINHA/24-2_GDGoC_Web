@@ -42,7 +42,7 @@ export default function Recruit11({ step, setChecked, updateRecruitData }) {
                 <strong> GDGoC INHA</strong>
               </li>
 
-              <li className='text-base font-semibold'>• 💵 25-1 회비</li>
+              <li className='text-base font-semibold'>• 💵 25-2 회비</li>
               <li className='ml-[8px] mb-[15px]'>
                 : <strong className='text-[#F9AB00]'>20,000</strong> 원
               </li>
