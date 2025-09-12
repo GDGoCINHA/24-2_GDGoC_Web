@@ -13,9 +13,9 @@ import AdminDashboard from '@/components/admin/AdminDashboard';
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
 const columns = [
-  { name: 'NAME', uid: 'name' },
-  { name: 'MAJOR / ID', uid: 'major' },
-  { name: 'PAYMENT', uid: 'isPayed' },
+  { name: 'NAME', uid: 'name', sortable: true },
+  { name: 'MAJOR / ID', uid: 'major', sortable: true },
+  { name: 'PAYMENT', uid: 'isPayed', sortable: true },
   { name: 'TOGGLE', uid: 'togglePay' },
 ];
 
@@ -42,6 +42,10 @@ export default function Page() {
   const [statsTotal, setStatsTotal] = React.useState(0);
   const [statsLoading, setStatsLoading] = React.useState(false);
   const [statsError, setStatsError] = React.useState('');
+  const [sortDescriptor, setSortDescriptor] = React.useState({
+    column: 'createdAt',
+    direction: 'descending',
+  });
 
   const rowsPerPage = 10; //한 페이지당 표시될 유저 수
 
@@ -50,11 +54,22 @@ export default function Page() {
     setLoading(true);
     setError('');
     try {
+      // 정렬 컬럼 매핑 (프론트엔드 컬럼명 -> API 파라미터명)
+      const sortColumnMap = {
+        'isPayed': 'isPayed',
+        'name': 'name',
+        'major': 'major',
+        'createdAt': 'createdAt',
+      };
+      
+      const apiSortColumn = sortColumnMap[sortDescriptor.column] || 'createdAt';
+      const apiSortDirection = sortDescriptor.direction === 'ascending' ? 'ASC' : 'DESC';
+      
       const params = {
         page: page - 1,
         size: rowsPerPage,
-        sort: 'createdAt',
-        dir: 'DESC',
+        sort: apiSortColumn,
+        dir: apiSortDirection,
         question: query || undefined,
       };
       const res = await apiClient.get('/recruit/members', { params });
@@ -72,7 +87,7 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  }, [apiClient, page, rowsPerPage, query]);
+  }, [apiClient, page, rowsPerPage, query, sortDescriptor]);
 
   // 통계용 전체 멤버 데이터 조회 (페이지네이션 병렬 수집)
   const fetchAllUsersForStats = useCallback(async () => {
@@ -215,6 +230,8 @@ export default function Page() {
         <Table
           className='dark text-white py-[30px] px-[96px] mobile:px-[10px]'
           aria-label='Example table with custom cells'
+          sortDescriptor={sortDescriptor}
+          onSortChange={setSortDescriptor}
           bottomContent={
             <div className='relative'>
               <AdminTableBottomContent
@@ -235,6 +252,7 @@ export default function Page() {
                 key={column.uid}
                 align={['actions', 'togglePay'].includes(column.uid) ? 'center' : 'start'}
                 className={column.uid === 'togglePay' ? 'text-center' : ''}
+                allowsSorting={column.sortable}
               >
                 {column.name}
               </TableColumn>
