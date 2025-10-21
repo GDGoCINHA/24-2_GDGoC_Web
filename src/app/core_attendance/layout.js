@@ -1,11 +1,15 @@
-import { Suspense } from "react";
-import Loader from "@/components/ui/common/Loader.jsx";
+import MenuHeader from "@/components/ui/common/MenuHeader";
+import ApiCodeGuard from "@/components/auth/ApiCodeGuard.jsx";
 
 export const metadata = {
-    title: "Core Attendance",
-    description: "GDGoC INHA Core Attendance Management",
+    title: "Core Attendance", description: "GDGoC INHA Core Attendance Management",
 };
 
-export default function CoreAttendanceLayout({ children }) {
-    return <Suspense fallback={<Loader />}>{children}</Suspense>;
+export default function CoreAttendanceLayout({children}) {
+    return (<ApiCodeGuard>
+            <>
+                <MenuHeader/>
+                {children}
+            </>
+        </ApiCodeGuard>);
 }
