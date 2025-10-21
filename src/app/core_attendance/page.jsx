@@ -6,46 +6,31 @@ import {Button, Card, CardBody, Checkbox, Divider, Input, Select, SelectItem} fr
 
 /** ===== API 클라이언트 ===== */
 const API = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, '') || 'http://localhost:8080/api/v1/core-attendance',
+    baseURL: (process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, '') || 'http://localhost:8080') + '/api/v1/core-attendance/meetings',
     timeout: 15000,
+    withCredentials: true,
 });
 
 const api = {
-    getDates: async () => (await API.get(`/dates`)).data.data,
-    addDate: async (date) => (await API.post(`/dates`, {date})).data.data,
-    deleteDate: async (date) => (await API.delete(`/dates/${date}`)).data.data,
-    getTeams: async (leadName, teamId) => (await API.get(`/teams`, {params: {leadName, teamId}})).data.data,
-    addMember: async (teamId, name) => (await API.post(`/members`, null, {params: {teamId, name}})).data.data,
-    renameMember: async (teamId, memberId, name) => (await API.put(`/members`, null, {
-        params: {
-            teamId,
-            memberId,
-            name
-        }
-    })).data.data,
-    deleteMember: async (teamId, memberId) => (await API.delete(`/members`, {params: {teamId, memberId}})).data.data,
-    setAttendance: async (date, teamId, memberId, present) => (await API.put(`/records/one`, null, {
-        params: {
-            date,
-            teamId,
-            memberId,
-            present
-        }
-    })).data.data,
-    setAll: async (date, teamId, present) => (await API.put(`/records/all`, null, {
-        params: {
-            date,
-            teamId,
-            present
-        }
-    })).data.data,
-    summary: async (date, leadName, teamId) => (await API.get(`/summary`, {
-        params: {
-            date,
-            leadName,
-            teamId
-        }
-    })).data.data,
+    // Dates
+    getDates: async () => (await API.get(`/`)).data.data, // { dates: [...] }
+    addDate: async (date) => (await API.post(`/`, {date})).data.data,
+    deleteDate: async (date) => (await API.delete(`/${date}`)).data.data,
+
+    // Teams
+    getTeams: async () => (await API.get(`/teams`)).data.data,
+
+    // Members with presence
+    getMembers: async (date, teamId) => (await API.get(`/${date}/members`, {params: teamId ? {team: teamId} : {}})).data.data,
+
+    // Batch save attendance
+    saveAttendance: async (date, userIds, present, teamId) => (await API.put(`/${date}/attendance`, {
+        userIds,
+        present
+    }, {params: teamId ? {team: teamId} : {}})).data.data,
+
+    // Summary
+    summary: async (date, teamId) => (await API.get(`/${date}/summary`, {params: teamId ? {team: teamId} : {}})).data.data,
 };
 
 /** ===== 유틸 ===== */
@@ -54,79 +39,99 @@ const getQS = (k) => typeof window !== 'undefined' ? new URL(window.location.hre
 const setQS = (entries) => {
     if (typeof window === 'undefined') return;
     const u = new URL(window.location.href);
-    Object.entries(entries).forEach(([k, v]) => v ? u.searchParams.set(k, v) : u.searchParams.delete(k),);
+    Object.entries(entries).forEach(([k, v]) => (v ? u.searchParams.set(k, v) : u.searchParams.delete(k)));
     window.history.replaceState({}, '', u.toString());
 };
 
-/** ===== Page Component ===== */
 export default function AttendancePage() {
-    const [leadName, setLeadName] = useState(typeof window !== 'undefined' ? getQS('leadName') : '',);
-    const [teamId, setTeamId] = useState(typeof window !== 'undefined' ? getQS('teamId') : '',);
-    const [date, setDate] = useState(typeof window !== 'undefined' ? getQS('date') || ymd() : ymd(),);
+    // URL state
+    const [date, setDate] = useState(typeof window !== 'undefined' ? getQS('date') || ymd() : ymd());
+    const [teamId, setTeamId] = useState(typeof window !== 'undefined' ? getQS('teamId') : '');
 
+    // data
     const [dates, setDates] = useState([]);
     const [teams, setTeams] = useState([]);
+    const [members, setMembers] = useState([]);
     const [summary, setSummary] = useState(null);
     const [filter, setFilter] = useState('');
 
-    // 서버에 per-member 조회가 없어서, 프론트에서 토글 상태를 임시 보관
+    // UI
     const [presentSet, setPresentSet] = useState(new Set());
+    const [dirty, setDirty] = useState(false);
 
-    const selectedTeam = useMemo(() => teams.find((t) => t.id === teamId) ?? teams[0], [teams, teamId],);
+    const selectedTeam = useMemo(() => teams.find((t) => t.id === teamId) ?? teams[0], [teams, teamId]);
 
     const filteredMembers = useMemo(() => {
-        if (!selectedTeam) return [];
+        const base = members;
         const q = filter.trim();
-        return q ? selectedTeam.members.filter((m) => m.name.includes(q)) : selectedTeam.members;
-    }, [selectedTeam, filter]);
+        if (!q) return base;
+        return base.filter((m) => m.name.includes(q));
+    }, [members, filter]);
 
     /** URL 동기화 */
     useEffect(() => {
-        setQS({
-            date, leadName: leadName || undefined, teamId: teamId || undefined,
-        });
-    }, [date, leadName, teamId]);
+        setQS({date, teamId: teamId || undefined});
+    }, [date, teamId]);
 
     /** 날짜 로드 */
     useEffect(() => {
         (async () => {
             try {
-                const dl = await api.getDates();
+                const dl = await api.getDates(); // { dates: [...] }
                 setDates(dl.dates);
                 if (!dl.dates.includes(date) && dl.dates.length > 0) setDate(dl.dates[0]);
-            } catch (e) {
+            } catch {
                 alert('날짜 목록을 불러오지 못했습니다.');
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    /** 팀 로드 (leadName 변경 시) */
+    /** 팀 로드 */
     useEffect(() => {
         (async () => {
             try {
-                const list = await api.getTeams(leadName || undefined, undefined);
+                const list = await api.getTeams();
                 setTeams(list);
                 if (list.length && !list.find((t) => t.id === teamId)) setTeamId(list[0].id);
-                setPresentSet(new Set());
-            } catch (e) {
+            } catch {
                 alert('팀 목록을 불러오지 못했습니다.');
             }
         })();
-    }, [leadName]); // teamId는 선택 결과이므로 의존 X
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    /** 특정 날짜의 팀원 + 출석 로드 */
+    useEffect(() => {
+        (async () => {
+            if (!date || !selectedTeam) return;
+            try {
+                const rows = await api.getMembers(date, selectedTeam.id);
+                setMembers(rows);
+                const init = new Set();
+                rows.forEach((r) => r.present && init.add(String(r.userId)));
+                setPresentSet(init);
+                setDirty(false);
+            } catch {
+                setMembers([]);
+                setPresentSet(new Set());
+                setDirty(false);
+            }
+        })();
+    }, [date, selectedTeam?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     /** 요약 로드 */
     useEffect(() => {
-        if (!date) return;
         (async () => {
+            if (!date) return;
             try {
-                setSummary(await api.summary(date, leadName || undefined, teamId || undefined));
-            } catch (e) {
+                const s = await api.summary(date, selectedTeam?.id);
+                setSummary(s);
+            } catch {
                 setSummary(null);
-                alert('요약 정보를 불러오지 못했습니다.');
             }
         })();
-    }, [date, leadName, teamId, teams.length]);
+    }, [date, selectedTeam?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     /** 날짜 조작 */
     const addToday = async () => {
@@ -136,98 +141,87 @@ export default function AttendancePage() {
             const dl = await api.getDates();
             setDates(dl.dates);
             setDate(d);
-        } catch (e) {
+        } catch {
             alert('날짜 추가에 실패했습니다.');
         }
     };
+
     const removeDate = async (d) => {
         try {
             await api.deleteDate(d);
             const dl = await api.getDates();
             setDates(dl.dates);
             if (d === date) setDate(dl.dates[0] ?? ymd());
-        } catch (e) {
+        } catch {
             alert('날짜 삭제에 실패했습니다.');
         }
     };
 
-    /** 멤버 조작 */
-    const addMember = async () => {
-        if (!selectedTeam) return;
-        const name = window.prompt('팀원 이름 입력')?.trim();
-        if (!name) return;
-        try {
-            await api.addMember(selectedTeam.id, name);
-            setTeams(await api.getTeams(leadName || undefined));
-            setPresentSet(new Set());
-            await refreshSummary();
-        } catch (e) {
-            alert('팀원 추가에 실패했습니다.');
-        }
-    };
-
-    const renameMember = async (m) => {
-        if (!selectedTeam) return;
-        const name = window.prompt('이름 수정', m.name)?.trim();
-        if (!name) return;
-        try {
-            await api.renameMember(selectedTeam.id, m.id, name);
-            setTeams(await api.getTeams(leadName || undefined));
-            await refreshSummary();
-        } catch (e) {
-            alert('팀원 이름 수정에 실패했습니다.');
-        }
-    };
-
-    const deleteMember = async (m) => {
-        if (!selectedTeam) return;
-        if (!confirm('삭제할까요?')) return;
-        try {
-            await api.deleteMember(selectedTeam.id, m.id);
-            setTeams(await api.getTeams(leadName || undefined));
-            setPresentSet((prev) => {
-                const n = new Set(prev);
-                n.delete(m.id);
-                return n;
-            });
-            await refreshSummary();
-        } catch (e) {
-            alert('팀원 삭제에 실패했습니다.');
-        }
-    };
-
-    /** 출석 체크 */
+    /** 개별 토글: 배치 API로 “단건” 반영 */
     const toggleMember = async (m) => {
         if (!selectedTeam) return;
-        const next = !presentSet.has(m.id);
+        const id = String(m.id ?? m.userId);
+        const next = !presentSet.has(id);
+
+        // UI 낙관적 업데이트
+        setPresentSet((prev) => {
+            const n = new Set(prev);
+            next ? n.add(id) : n.delete(id);
+            return n;
+        });
+        setDirty(true);
+
         try {
-            await api.setAttendance(date, selectedTeam.id, m.id, next);
+            await api.saveAttendance(date, [id], next, selectedTeam.id);
+            await refreshSummary();
+        } catch {
+            alert('출석 변경에 실패했습니다.');
+            // 롤백
             setPresentSet((prev) => {
                 const n = new Set(prev);
-                next ? n.add(m.id) : n.delete(m.id);
+                next ? n.delete(id) : n.add(id);
                 return n;
             });
-            await refreshSummary();
-        } catch (e) {
-            alert('출석 변경에 실패했습니다.');
         }
     };
 
-    const setAll = async (value) => {
+    /** 전체 체크/해제(로컬) */
+    const checkAll = (value) => {
         if (!selectedTeam) return;
+        if (value) {
+            setPresentSet(new Set(members.map((m) => String(m.userId))));
+        } else {
+            setPresentSet(new Set());
+        }
+        setDirty(true);
+    };
+
+    /** 저장(스냅샷) – present=true & present=false 두 번 호출 */
+    const saveSnapshot = async () => {
+        if (!selectedTeam) return;
+        const allIds = members.map((m) => String(m.userId));
+        const presentIds = allIds.filter((id) => presentSet.has(id));
+        const absentIds = allIds.filter((id) => !presentSet.has(id));
+
         try {
-            await api.setAll(date, selectedTeam.id, value);
-            setPresentSet(value ? new Set(selectedTeam.members.map((m) => m.id)) : new Set());
+            if (presentIds.length) {
+                await api.saveAttendance(date, presentIds, true, selectedTeam.id);
+            }
+            if (absentIds.length) {
+                await api.saveAttendance(date, absentIds, false, selectedTeam.id);
+            }
+            setDirty(false);
             await refreshSummary();
-        } catch (e) {
-            alert('전체 출석 변경에 실패했습니다.');
+            alert('저장되었습니다.');
+        } catch {
+            alert('저장 중 오류가 발생했습니다.');
         }
     };
 
     const refreshSummary = async () => {
         try {
-            setSummary(await api.summary(date, leadName || undefined, teamId || undefined));
-        } catch (e) {
+            setSummary(await api.summary(date, selectedTeam?.id));
+        } catch {
             setSummary(null);
         }
     };
@@ -264,24 +258,26 @@ export default function AttendancePage() {
                 {/* 팀 선택 */}
                 <Card>
                     <CardBody className="gap-3">
-                        <b>팀 선택</b>
-                        <Input
-                            label="리드 이름(옵션)"
-                            value={leadName}
-                            onValueChange={(v) => setLeadName(v)}
-                            onBlur={() => setQS({leadName: leadName || undefined})}
-                            variant="bordered"
-                        />
+                        <div className="flex items-center justify-between">
+                            <b>팀 선택</b>
+                            <Button
+                                size="sm"
+                                color="primary"
+                                variant="flat"
+                                onPress={saveSnapshot}
+                                isDisabled={!dirty || !members.length}
+                            >
+                                저장{dirty ? ' *' : ''}
+                            </Button>
+                        </div>
 
-                        {/* ✅ NextUI v2 권장 컨트롤 패턴: onSelectionChange / selectedKeys(Set) */}
                         <Select
                             label="팀"
                             selectedKeys={selectedTeam?.id ? new Set([selectedTeam.id]) : new Set()}
                             onSelectionChange={(keys) => {
                                 const first = Array.from(keys || [])[0] ?? '';
-                                setTeamId(first);
-                                setQS({teamId: first || undefined});
-                                setPresentSet(new Set());
+                                setTeamId(String(first));
+                                setQS({teamId: first ? String(first) : undefined});
                             }}
                             variant="bordered"
                         >
@@ -291,10 +287,10 @@ export default function AttendancePage() {
                         </Select>
 
                         <div className="flex gap-2">
-                            <Button size="sm" onPress={() => setAll(true)} color="success" variant="flat">
+                            <Button size="sm" onPress={() => checkAll(true)} color="success" variant="flat">
                                 전체 체크
                             </Button>
-                            <Button size="sm" onPress={() => setAll(false)} color="warning" variant="flat">
+                            <Button size="sm" onPress={() => checkAll(false)} color="warning" variant="flat">
                                 전체 해제
                             </Button>
                         </div>
@@ -336,9 +332,6 @@ export default function AttendancePage() {
                         </div>
                         <div className="flex gap-2">
                             <Input placeholder="팀원 검색" value={filter} onValueChange={setFilter} size="sm"/>
-                            <Button size="sm" color="primary" onPress={addMember}>
-                                팀원 추가
-                            </Button>
                         </div>
                     </div>
 
@@ -346,20 +339,13 @@ export default function AttendancePage() {
 
                     <div className="max-h-[420px] overflow-auto">
                         {filteredMembers.map((m) => {
-                            const checked = presentSet.has(m.id);
-                            return (<div key={m.id} className="flex items-center justify-between py-2">
+                            const id = String(m.userId);
+                            const checked = presentSet.has(id);
+                            return (<div key={id} className="flex items-center justify-between py-2">
                                     <div className="flex items-center gap-3">
-                                        <Checkbox isSelected={checked} onValueChange={() => toggleMember(m)}>
+                                        <Checkbox isSelected={checked} onValueChange={() => toggleMember({userId: id})}>
                                             {m.name}
                                         </Checkbox>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <Button size="sm" variant="flat" onPress={() => renameMember(m)}>
-                                            수정
-                                        </Button>
-                                        <Button size="sm" color="danger" variant="flat" onPress={() => deleteMember(m)}>
-                                            삭제
-                                        </Button>
                                     </div>
                                 </div>);
                         })}
