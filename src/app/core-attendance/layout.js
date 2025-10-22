@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default function CoreAttendanceLayout({children}) {
-    return (<ApiCodeGuard>
+    return (<ApiCodeGuard requiredRole="LEAD" nextOverride="/core-attendance">
             <>
                 <MenuHeader/>
                 {children}
