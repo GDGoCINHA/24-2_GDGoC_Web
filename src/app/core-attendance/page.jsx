@@ -6,7 +6,7 @@ import {Button, Card, CardBody, Checkbox, Divider, Input, Select, SelectItem} fr
 
 /** ===== API ===== */
 const API = axios.create({
-    baseURL: (process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, '') || 'http://localhost:8080') + '/api/v1/core-attendance/meetings',
+    baseURL: (process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, '') || 'http://localhost:8080') + '/core-attendance/meetings',
     timeout: 15000,
     withCredentials: true,
 });
@@ -27,7 +27,7 @@ API.interceptors.response.use((r) => r, async (err) => {
         original.__retry = true;
         const base = process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, '') || 'http://localhost:8080';
         try {
-            const res = await axios.post(`${base}/api/v1/auth/refresh`, null, {withCredentials: true});
+            const res = await axios.post(`${base}/auth/refresh`, null, {withCredentials: true});
             const newAccess = res.data?.data?.accessToken;
             if (newAccess) {
                 localStorage.setItem('access_token', newAccess);
