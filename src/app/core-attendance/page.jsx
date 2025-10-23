@@ -35,7 +35,7 @@ export default function AttendancePage() {
     /** ===== API 래퍼 (인증 포함) ===== */
     const api = {
         // Dates
-        getDates: async () => (await apiClient.get('/core-attendance/meetings/')).data.data, // { dates: [...] }
+        getDates: async () => (await apiClient.get('/core-attendance/meetings')).data.data, // { dates: [...] }
         addDate: async (d) => (await apiClient.post('/core-attendance/meetings', {date: d})).data.data,
         deleteDate: async (d) => (await apiClient.delete(`/core-attendance/meetings/${d}`)).data.data,
 
