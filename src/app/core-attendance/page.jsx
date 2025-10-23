@@ -10,7 +10,7 @@ const getQS = (k) => typeof window !== 'undefined' ? new URL(window.location.hre
 const setQS = (entries) => {
     if (typeof window === 'undefined') return;
     const u = new URL(window.location.href);
-    Object.entries(entries).forEach(([k, v]) => v ? u.searchParams.set(k, v) : u.searchParams.delete(k));
+    Object.entries(entries).forEach(([k, v]) => (v ? u.searchParams.set(k, v) : u.searchParams.delete(k)));
     window.history.replaceState({}, '', u.toString());
 };
 
@@ -22,17 +22,17 @@ export default function AttendancePage() {
 
     // data
     const [dates, setDates] = useState([]);
-    const [teams, setTeams] = useState([]);           // [{ id, name, lead? }]
-    const [members, setMembers] = useState([]);       // [{userId,name,team(=라벨),present,...}]
+    const [teams, setTeams] = useState([]);     // [{ id, name, lead? }]
+    const [members, setMembers] = useState([]); // [{userId,name,team(=라벨),present,...}]
     const [summary, setSummary] = useState(null);
 
     // UI
     const [filter, setFilter] = useState('');
-    const [teamFilter, setTeamFilter] = useState(''); // 팀 라벨(=members[].team) 기준 필터
-    const [presentSet, setPresentSet] = useState(new Set());
+    const [teamFilter, setTeamFilter] = useState(''); // 팀 라벨 기준 필터
+    const [presentSet, setPresentSet] = useState(new Set()); // Set<string(userId)>
     const [dirty, setDirty] = useState(false);
 
-    /** ===== API 래퍼 (인증 포함) ===== */
+    /** ===== API 래퍼 ===== */
     const api = {
         // Dates
         getDates: async () => (await apiClient.get('/core-attendance/meetings')).data.data, // { dates: [...] }
@@ -51,7 +51,7 @@ export default function AttendancePage() {
             present
         })).data.data,
 
-        // Summary(옵션)
+        // Summary
         summary: async (d) => (await apiClient.get(`/core-attendance/meetings/${d}/summary`)).data.data,
     };
 
@@ -80,7 +80,6 @@ export default function AttendancePage() {
             try {
                 const list = await api.getTeams();
                 setTeams(Array.isArray(list) ? list : []);
-                // 선택된 필터가 없고, 서버가 1개만 보내줬다면 자동 선택(리드인 경우 UX)
                 if (!teamFilter && list?.length === 1) setTeamFilter(list[0].name);
             } catch {
                 setTeams([]);
@@ -108,7 +107,7 @@ export default function AttendancePage() {
         })();
     }, [date]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    /** 요약 로드(옵션) */
+    /** 요약 로드 */
     useEffect(() => {
         (async () => {
             if (!date) return;
@@ -121,10 +120,10 @@ export default function AttendancePage() {
         })();
     }, [date]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // 팀 옵션: 서버에서 내려준 팀 라벨(name) 사용 (members[].team과 동일한 라벨로 필터링)
+    /** 팀 옵션(라벨) */
     const teamOptions = useMemo(() => Array.from(new Set(teams.map((t) => t.name))).filter(Boolean), [teams]);
 
-    // 클라 필터링
+    /** 필터 적용된 멤버 */
     const filteredMembers = useMemo(() => {
         let base = members;
         if (teamFilter) base = base.filter((m) => m.team === teamFilter);
@@ -157,35 +156,21 @@ export default function AttendancePage() {
         }
     };
 
-    /** 개별 토글(낙관적) */
-    const toggleMember = async (m) => {
+    /** 체크 토글(로컬 상태만 변경; 서버 전송 없음) */
+    const toggleMember = (m) => {
         const id = String(m.userId);
         const next = !presentSet.has(id);
-
         setPresentSet((prev) => {
             const n = new Set(prev);
             next ? n.add(id) : n.delete(id);
             return n;
         });
         setDirty(true);
-
-        try {
-            await api.saveAttendance(date, [id], next);
-            await refreshSummary();
-        } catch {
-            alert('출석 변경에 실패했습니다.');
-            // 롤백
-            setPresentSet((prev) => {
-                const n = new Set(prev);
-                next ? n.delete(id) : n.add(id);
-                return n;
-            });
-        }
     };
 
-    /** 전체 체크/해제(로컬) */
+    /** (필터된) 전체 체크/해제(로컬) */
     const checkAll = (value) => {
-        const baseIds = filteredMembers.map((m) => String(m.userId)); // 현재 필터된 목록 기준
+        const baseIds = filteredMembers.map((m) => String(m.userId));
         setPresentSet((prev) => {
             const n = new Set(prev);
             if (value) baseIds.forEach((id) => n.add(id)); else baseIds.forEach((id) => n.delete(id));
@@ -194,11 +179,16 @@ export default function AttendancePage() {
         setDirty(true);
     };
 
-    /** 저장(스냅샷) – present=true & present=false 두 번 호출 */
+    /** 저장(스냅샷) – present=true & present=false 두 번 호출
+     *  ⛳ 서버가 List<Long>을 받으므로 반드시 숫자로 보냄!
+     */
     const saveSnapshot = async () => {
-        const allIds = members.map((m) => String(m.userId));
-        const presentIds = allIds.filter((id) => presentSet.has(id));
-        const absentIds = allIds.filter((id) => !presentSet.has(id));
+        const allIdsStr = members.map((m) => String(m.userId));
+        const presentIdsStr = allIdsStr.filter((id) => presentSet.has(id));
+        const absentIdsStr = allIdsStr.filter((id) => !presentSet.has(id));
+        // 숫자(Long) 배열로 변환
+        const presentIds = presentIdsStr.map((s) => Number(s));
+        const absentIds = absentIdsStr.map((s) => Number(s));
 
         try {
             if (presentIds.length) await api.saveAttendance(date, presentIds, true);
@@ -206,7 +196,7 @@ export default function AttendancePage() {
             setDirty(false);
             await refreshSummary();
             alert('저장되었습니다.');
-        } catch {
+        } catch (e) {
             alert('저장 중 오류가 발생했습니다.');
         }
     };
