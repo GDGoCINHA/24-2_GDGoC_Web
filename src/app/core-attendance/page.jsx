@@ -6,7 +6,7 @@ import {useAuthenticatedApi} from '@/hooks/useAuthenticatedApi';
 
 /** ===== 유틸 ===== */
 const ymd = (d = new Date()) => d.toISOString().slice(0, 10);
-const getQS = (k) => typeof window !== 'undefined' ? new URL(window.location.href).searchParams.get(k) || '' : '';
+const getQS = (k) => (typeof window !== 'undefined' ? new URL(window.location.href).searchParams.get(k) || '' : '');
 const setQS = (entries) => {
     if (typeof window === 'undefined') return;
     const u = new URL(window.location.href);
@@ -28,30 +28,24 @@ export default function AttendancePage() {
 
     // UI
     const [filter, setFilter] = useState('');
-    const [teamFilter, setTeamFilter] = useState(''); // 팀 라벨 기준 필터
+    const [teamFilter, setTeamFilter] = useState(''); // 팀 라벨 기준 필터 (''=전체)
     const [presentSet, setPresentSet] = useState(new Set()); // Set<string(userId)>
     const [dirty, setDirty] = useState(false);
 
     /** ===== API 래퍼 ===== */
     const api = {
-        // Dates
         getDates: async () => (await apiClient.get('/core-attendance/meetings')).data.data, // { dates: [...] }
         addDate: async (d) => (await apiClient.post('/core-attendance/meetings', {date: d})).data.data,
         deleteDate: async (d) => (await apiClient.delete(`/core-attendance/meetings/${d}`)).data.data,
 
-        // Teams
         getTeams: async () => (await apiClient.get('/core-attendance/meetings/teams')).data.data,
-
-        // Members (전체 팀 포함)
         getMembers: async (d) => (await apiClient.get(`/core-attendance/meetings/${d}/members`)).data.data,
 
-        // Batch save
         saveAttendance: async (d, userIds, present) => (await apiClient.put(`/core-attendance/meetings/${d}/attendance`, {
             userIds,
             present
         })).data.data,
 
-        // Summary
         summary: async (d) => (await apiClient.get(`/core-attendance/meetings/${d}/summary`)).data.data,
     };
 
@@ -64,7 +58,7 @@ export default function AttendancePage() {
     useEffect(() => {
         (async () => {
             try {
-                const dl = await api.getDates(); // { dates: [...] }
+                const dl = await api.getDates();
                 setDates(dl.dates);
                 if (!dl.dates.includes(date) && dl.dates.length > 0) setDate(dl.dates[0]);
             } catch {
@@ -80,6 +74,7 @@ export default function AttendancePage() {
             try {
                 const list = await api.getTeams();
                 setTeams(Array.isArray(list) ? list : []);
+                // 자동 선택 UX(리드 등 팀 1개만 내려오면 자동 선택)
                 if (!teamFilter && list?.length === 1) setTeamFilter(list[0].name);
             } catch {
                 setTeams([]);
@@ -105,7 +100,8 @@ export default function AttendancePage() {
                 setDirty(false);
             }
         })();
-    }, [date]); // eslint-disable-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [date]);
 
     /** 요약 로드 */
     useEffect(() => {
@@ -118,7 +114,8 @@ export default function AttendancePage() {
                 setSummary(null);
             }
         })();
-    }, [date]); // eslint-disable-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [date]);
 
     /** 팀 옵션(라벨) */
     const teamOptions = useMemo(() => Array.from(new Set(teams.map((t) => t.name))).filter(Boolean), [teams]);
@@ -179,14 +176,11 @@ export default function AttendancePage() {
         setDirty(true);
     };
 
-    /** 저장(스냅샷) – present=true & present=false 두 번 호출
-     *  ⛳ 서버가 List<Long>을 받으므로 반드시 숫자로 보냄!
-     */
+    /** 저장(스냅샷) – present=true & present=false 두 번 호출 (서버는 List<Long> 기대 → 숫자로 전송) */
     const saveSnapshot = async () => {
         const allIdsStr = members.map((m) => String(m.userId));
         const presentIdsStr = allIdsStr.filter((id) => presentSet.has(id));
         const absentIdsStr = allIdsStr.filter((id) => !presentSet.has(id));
-        // 숫자(Long) 배열로 변환
         const presentIds = presentIdsStr.map((s) => Number(s));
         const absentIds = absentIdsStr.map((s) => Number(s));
 
@@ -196,7 +190,7 @@ export default function AttendancePage() {
             setDirty(false);
             await refreshSummary();
             alert('저장되었습니다.');
-        } catch (e) {
+        } catch {
             alert('저장 중 오류가 발생했습니다.');
         }
     };
@@ -209,13 +203,13 @@ export default function AttendancePage() {
         }
     };
 
-    return (<div className="flex flex-col max-w-[1100px] mx-auto min-h-[100svh] py-16 px-6">
-            <h1 className="font-bold mb-6 text-4xl tablet:text-3xl mobile:text-2xl">출석 관리</h1>
+    return (<div className="dark flex flex-col max-w-[1100px] mx-auto min-h-[100svh] py-16 px-6">
+            <h1 className="font-bold mb-6 text-4xl tablet:text-3xl mobile:text-2xl text-white">출석 관리</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* 날짜 */}
-                <Card>
-                    <CardBody className="gap-3">
+                <Card className="bg-default-100 dark:bg-default-50">
+                    <CardBody className="gap-3 text-white">
                         <div className="flex items-center justify-between">
                             <b>날짜</b>
                             <Button size="sm" color="primary" onPress={addToday}>
@@ -223,25 +217,34 @@ export default function AttendancePage() {
                             </Button>
                         </div>
 
-                        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)}/>
+                        <Input
+                            type="date"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            classNames={{
+                                input: 'bg-transparent text-black/90 dark:text-white/90',
+                                inputWrapper: 'shadow-xl bg-default-200/50 dark:bg-default/60 hover:bg-default-200/70 dark:hover:bg-default/70',
+                            }}
+                        />
+
                         <Divider/>
                         <div className="max-h-[180px] overflow-auto space-y-2">
                             {dates.map((d) => (<div key={d} className="flex items-center justify-between">
-                                    <Button size="sm" variant="light" onPress={() => setDate(d)}>
+                                    <Button size="sm" variant="light" onPress={() => setDate(d)} className="text-white">
                                         {d === date ? <b>{d}</b> : d}
                                     </Button>
                                     <Button size="sm" color="danger" variant="flat" onPress={() => removeDate(d)}>
                                         삭제
                                     </Button>
                                 </div>))}
-                            {dates.length === 0 && (<div className="text-sm text-foreground-500">등록된 날짜가 없습니다.</div>)}
+                            {dates.length === 0 && <div className="text-sm text-foreground-500">등록된 날짜가 없습니다.</div>}
                         </div>
                     </CardBody>
                 </Card>
 
                 {/* 필터 & 저장 */}
-                <Card>
-                    <CardBody className="gap-3">
+                <Card className="bg-default-100 dark:bg-default-50">
+                    <CardBody className="gap-3 text-white">
                         <div className="flex items-center justify-between">
                             <b>필터 / 저장</b>
                             <Button
@@ -255,21 +258,45 @@ export default function AttendancePage() {
                             </Button>
                         </div>
 
+                        {/* 팀 선택(“전체” 포함) */}
                         <Select
                             label="팀(클라이언트 필터)"
-                            selectedKeys={teamFilter ? new Set([teamFilter]) : new Set()}
+                            selectedKeys={teamFilter ? new Set([teamFilter]) : new Set(['전체'])}
                             onSelectionChange={(keys) => {
                                 const first = String(Array.from(keys || [])[0] ?? '');
-                                setTeamFilter(first || '');
+                                setTeamFilter(first === '전체' ? '' : first);
                             }}
                             variant="bordered"
+                            classNames={{
+                                trigger: 'bg-default-200/50 dark:bg-default/60',
+                                label: 'text-black/50 dark:text-white/90',
+                                value: 'text-black/90 dark:text-white/90',
+                                popoverContent: 'bg-default-100 dark:bg-default-50',
+                            }}
                         >
-                            {teamOptions.map((name) => (<SelectItem key={name} value={name}>
+                            <SelectItem key="전체" value="전체" className="text-white">
+                                전체
+                            </SelectItem>
+                            {teamOptions.map((name) => (<SelectItem key={name} value={name} className="text-white">
                                     {name}
                                 </SelectItem>))}
                         </Select>
 
-                        <Input placeholder="이름 검색" value={filter} onValueChange={setFilter} size="sm"/>
+                        {/* 이름 검색 */}
+                        <Input
+                            placeholder="이름 검색"
+                            value={filter}
+                            onValueChange={setFilter}
+                            size="sm"
+                            isClearable
+                            classNames={{
+                                label: 'text-black/50 dark:text-white/90',
+                                input: ['bg-transparent', 'text-black/90 dark:text-white/90', 'placeholder:text-default-700/50 dark:placeholder:text-white/60',],
+                                innerWrapper: 'bg-transparent',
+                                inputWrapper: ['shadow-xl', 'bg-default-200/50', 'dark:bg-default/60', 'backdrop-blur-xl', 'backdrop-saturate-200', 'hover:bg-default-200/70', 'dark:hover:bg-default/70', 'group-data-[focus=true]:bg-default-200/50', 'dark:group-data-[focus=true]:bg-default/60', '!cursor-text',].join(' '),
+                            }}
+                            onClear={() => setFilter('')}
+                        />
 
                         <div className="flex gap-2">
                             <Button size="sm" onPress={() => checkAll(true)} color="success" variant="flat">
@@ -283,8 +310,8 @@ export default function AttendancePage() {
                 </Card>
 
                 {/* 요약 */}
-                <Card>
-                    <CardBody className="gap-3">
+                <Card className="bg-default-100 dark:bg-default-50">
+                    <CardBody className="gap-3 text-white">
                         <b>요약</b>
                         {summary ? (<div className="text-sm">
                                 <div className="mb-2">전체 {summary.present} / {summary.total}</div>
@@ -302,8 +329,8 @@ export default function AttendancePage() {
             </div>
 
             {/* 팀원 목록 */}
-            <Card className="mt-6">
-                <CardBody className="gap-3">
+            <Card className="mt-6 bg-default-100 dark:bg-default-50">
+                <CardBody className="gap-3 text-white">
                     <div className="flex items-center justify-between">
                         <div>
                             <b>팀원</b>
@@ -321,7 +348,11 @@ export default function AttendancePage() {
                             const checked = presentSet.has(id);
                             return (<div key={id} className="flex items-center justify-between py-2">
                                     <div className="flex items-center gap-3">
-                                        <Checkbox isSelected={checked} onValueChange={() => toggleMember(m)}>
+                                        <Checkbox
+                                            isSelected={checked}
+                                            onValueChange={() => toggleMember(m)}
+                                            classNames={{label: 'text-white'}}
+                                        >
                                             {m.name}{' '}
                                             <span className="text-xs text-foreground-500 ml-2">({m.team})</span>
                                         </Checkbox>
