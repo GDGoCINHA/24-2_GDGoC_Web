@@ -5,6 +5,16 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useAuthenticatedApi} from '@/hooks/useAuthenticatedApi';
 import Loader from '@/components/ui/common/Loader';
 
+/**
+ * ApiCodeGuard
+ * - /auth/{role}?next=<...> 를 호출해 200(또는 body.code=200)이면 통과
+ * - 아니면 로그인(/auth/signin?next=...)으로 보냄
+ *
+ * props:
+ *  - requiredRole: 'GUEST'|'MEMBER'|'CORE'|'LEAD'|'ORGANIZER'|'ADMIN' (백엔드 enum과 동일 문자열)
+ *  - nextOverride?: string  // 지정 시 이 URL을 next로 사용, 없으면 현재 경로 기준 자동 계산
+ *  - children: ReactNode
+ */
 export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
     const router = useRouter();
     const pathname = usePathname();
@@ -14,7 +24,7 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
     const [checking, setChecking] = useState(true);
     const [allowed, setAllowed] = useState(false);
 
-    // 로그인 실패 시 넘길 원래 목적지
+    // next URL 계산 (override > 현재 경로)
     const nextUrl = useMemo(() => {
         if (nextOverride) return encodeURIComponent(nextOverride);
         const q = searchParams?.toString();
@@ -22,10 +32,10 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
     }, [nextOverride, pathname, searchParams]);
 
     const cancelledRef = useRef(false);
-    const alertedRef = useRef(false); // 403 alert 중복 방지
 
     useEffect(() => {
         if (!requiredRole) {
+            // 역할이 없으면 바로 차단
             router.replace(`/auth/signin?next=${nextUrl}`);
             return;
         }
@@ -34,40 +44,21 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
 
         const verify = async () => {
             try {
+                // ✅ 권한 체크: /auth/{role}?next=...
                 const res = await apiClient.get(`/auth/${requiredRole}`, {
-                    headers: {
-                        Accept: 'application/json', 'X-Auth-Probe': '1',
-                    }, validateStatus: (s) => s === 200 || s === 204 || s === 401 || s === 403,
+                    params: {next: decodeURIComponent(nextUrl)}, // 서버가 raw URL 원하면 decode해서 전달
                 });
 
                 if (cancelledRef.current) return;
 
-                // 성공(권한 충족)
-                if (res.status === 200 || res.status === 204 || (res?.data?.code ?? 200) === 200) {
+                const okHttp = res?.status === 200 || res?.status === 204;
+                const okBody = (res?.data?.code ?? 200) === 200;
+
+                if (okHttp && okBody) {
                     setAllowed(true);
-                    return;
-                }
-
-                // 인증 필요
-                if (res.status === 401) {
+                } else {
                     router.replace(`/auth/signin?next=${nextUrl}`);
-                    return;
                 }
-
-                // 권한 부족
-                if (res.status === 403) {
-                    if (!alertedRef.current) {
-                        alertedRef.current = true;
-                        // eslint-disable-next-line no-alert
-                        alert('권한이 부족합니다.');
-                    }
-                    // 안전한 경로로 이동 (필요 시 원하는 경로로 변경)
-                    router.replace('/');
-                    return;
-                }
-
-                // 기타는 로그인으로 유도
-                router.replace(`/auth/signin?next=${nextUrl}`);
             } catch {
                 if (!cancelledRef.current) {
                     router.replace(`/auth/signin?next=${nextUrl}`);
