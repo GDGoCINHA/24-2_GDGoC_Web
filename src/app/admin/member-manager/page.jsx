@@ -34,6 +34,9 @@ const roleColor = (r) => ({
     ADMIN: 'danger', ORGANIZER: 'warning', LEAD: 'secondary', CORE: 'success', MEMBER: 'primary',
 }[r] || 'default');
 
+const ROLE_RANK = {GUEST: 0, MEMBER: 1, CORE: 2, LEAD: 3, ORGANIZER: 4, ADMIN: 5};
+const getRoleRank = (r) => ROLE_RANK[r] ?? -1;
+
 export default function AdminUsersPage() {
     const {apiClient} = useAuthenticatedApi();
     const {accessToken} = useAuth();
@@ -104,10 +107,20 @@ export default function AdminUsersPage() {
             const params = {page: page - 1, size: rowsPerPage, sort, dir, q: query || undefined};
 
             const res = await apiClient.get('/admin/users', {params});
-            const pageData = res?.data?.data; // Page<UserSummaryResponse>
+            const pageData = res?.data?.data;
             const meta = res?.data?.meta;
 
-            const content = Array.isArray(pageData?.content) ? pageData.content : [];
+            let content = Array.isArray(pageData?.content) ? pageData.content : [];
+
+            // ⬇️ ROLE 컬럼 정렬일 때, 알파벳 대신 서열로 보정
+            if (sortDescriptor.column === 'userRole') {
+                const asc = sortDescriptor.direction !== 'descending';
+                content = content.slice().sort((a, b) => {
+                    const diff = getRoleRank(a.userRole) - getRoleRank(b.userRole);
+                    return asc ? diff : -diff;
+                });
+            }
+
             setRows(content);
 
             const total = meta?.totalElements ?? pageData?.totalElements ?? content.length;
@@ -225,6 +238,9 @@ export default function AdminUsersPage() {
                     {/* NAME */}
                     <TableCell>
                         <span className="font-medium">{user.name}</span>
+                        <Chip size="sm" variant="flat" color={roleColor(user.userRole)}>
+                            {user.userRole}
+                        </Chip>
                     </TableCell>
 
                     {/* MAJOR */}
@@ -241,9 +257,6 @@ export default function AdminUsersPage() {
                     {/* ROLE */}
                     <TableCell>
                         <div className="flex items-center gap-3">
-                            <Chip size="sm" variant="flat" color={roleColor(user.userRole)}>
-                                {user.userRole}
-                            </Chip>
                             <Select
                                 aria-label="역할 수정"
                                 selectedKeys={new Set([user.userRole || ''])}
