@@ -6,7 +6,7 @@ export const metadata = {
 };
 
 export default function CoreAdminLayout({children}) {
-    return (<ApiCodeGuard requiredRole="ORGANIZER" nextOverride="/coreadmin">
+    return (<ApiCodeGuard requiredRole="LEAD" nextOverride="/coreadmin">
             <>
                 <MenuHeader/>
                 {children}
