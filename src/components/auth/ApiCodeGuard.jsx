@@ -7,15 +7,15 @@ import Loader from '@/components/ui/common/Loader';
 
 /**
  * ApiCodeGuard
- * - /auth/{role}?next=<...> 를 호출해 200(또는 body.code=200)이면 통과
- * - 아니면 로그인(/auth/signin?next=...)으로 보냄
+ * - /auth/{role}?team=<TEAM>&next=<...> (team은 전달 시에만 포함)
+ * - 200(또는 body.code=200) 이면 통과, 아니면 /auth/signin?next=... 로 이동
  *
  * props:
- *  - requiredRole: 'GUEST'|'MEMBER'|'CORE'|'LEAD'|'ORGANIZER'|'ADMIN' (백엔드 enum과 동일 문자열)
- *  - nextOverride?: string  // 지정 시 이 URL을 next로 사용, 없으면 현재 경로 기준 자동 계산
- *  - children: ReactNode
+ *  - requiredRole: 'GUEST'|'MEMBER'|'CORE'|'LEAD'|'ORGANIZER'|'ADMIN'  (필수)
+ *  - requiredTeam?: 'HR'|'BD'|'TECH'|'PR_DESIGN' ... (선택, 전달 시에만 서버에 team 쿼리 포함)
+ *  - nextOverride?: string (선택)
  */
-export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
+export default function ApiCodeGuard({requiredRole, requiredTeam = '', nextOverride, children}) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -24,7 +24,7 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
     const [checking, setChecking] = useState(true);
     const [allowed, setAllowed] = useState(false);
 
-    // next URL 계산 (override > 현재 경로)
+    // 사용자가 원래 가려던 경로 (로그인 실패 시 next로 넘김)
     const nextUrl = useMemo(() => {
         if (nextOverride) return encodeURIComponent(nextOverride);
         const q = searchParams?.toString();
@@ -35,7 +35,6 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
 
     useEffect(() => {
         if (!requiredRole) {
-            // 역할이 없으면 바로 차단
             router.replace(`/auth/signin?next=${nextUrl}`);
             return;
         }
@@ -44,9 +43,17 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
 
         const verify = async () => {
             try {
-                // ✅ 권한 체크: /auth/{role}?next=...
+                // 쿼리 파라미터를 조건부로 구성
+                const params = {next: decodeURIComponent(nextUrl)};
+                if (requiredTeam) {
+                    params.team = requiredTeam;
+                }
+
                 const res = await apiClient.get(`/auth/${requiredRole}`, {
-                    params: {next: decodeURIComponent(nextUrl)}, // 서버가 raw URL 원하면 decode해서 전달
+                    params, headers: {
+                        Accept: 'application/json',
+                    }, // 401/403도 정상 분기로 처리
+                    validateStatus: (s) => s === 200 || s === 204 || s === 401 || s === 403,
                 });
 
                 if (cancelledRef.current) return;
@@ -57,6 +64,9 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
                 if (okHttp && okBody) {
                     setAllowed(true);
                 } else {
+                    if (res?.status === 403) {
+                        alert('권한이 부족합니다.');
+                    }
                     router.replace(`/auth/signin?next=${nextUrl}`);
                 }
             } catch {
@@ -72,7 +82,7 @@ export default function ApiCodeGuard({requiredRole, nextOverride, children}) {
         return () => {
             cancelledRef.current = true;
         };
-    }, [apiClient, requiredRole, nextUrl, router]);
+    }, [apiClient, requiredRole, requiredTeam, nextUrl, router]);
 
     if (checking) return <Loader isLoading/>;
     if (!allowed) return null;

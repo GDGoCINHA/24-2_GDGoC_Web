@@ -14,17 +14,19 @@ export default function MenuHeader() {
   const { apiClient, handleLogout }= useAuthenticatedApi();
 
   const menuItems = [
-    { name: "멤버관리", href: "/admin" },
+    { name: "멤버관리", href: "/admin/recruit-manager" },
+    { name: "권한관리", href: "/admin/member-manager" },
     { name: "운영자 지원관리", href: "/coreadmin" },
-    { name: "스터디", href: "#", onClick: () => alert('준비중입니다.') },
-    { name: "공지사항", href: "#", onClick: () => alert('준비중입니다.') },
-    { name: "프로젝트", href: "#", onClick: () => alert('준비중입니다.') },
+    { name: "출석 관리", href: "/core-attendance" },
+    // { name: "스터디", href: "#", onClick: () => alert('준비중입니다.') },
+    // { name: "공지사항", href: "#", onClick: () => alert('준비중입니다.') },
+    // { name: "프로젝트", href: "#", onClick: () => alert('준비중입니다.') },
     { name: "로그아웃", href: "#", onClick: handleLogout }
   ];
 
   return (
-    <Navbar 
-      //className=" min-h-[105px]" 
+    <Navbar
+      //className=" min-h-[105px]"
       height="6rem"
       maxWidth="full"
       onMenuOpenChange={setIsMenuOpen}
@@ -41,11 +43,16 @@ export default function MenuHeader() {
           </div>
         </NavbarBrand>
       </NavbarContent>
-      
+
       <NavbarContent className="mobile:hidden flex gap-16 ml-[70px]" justify="start">
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="/admin" >
+          <Link color="foreground" className="text-white" href="/admin/recruit-manager" >
             멤버관리
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link color="foreground" className="text-white" href="/admin/member-manager" >
+            권한관리
           </Link>
         </NavbarItem>
         <NavbarItem>
@@ -54,20 +61,25 @@ export default function MenuHeader() {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
-            스터디
+          <Link color="foreground" className="text-white" href="/core-attendance" >
+            출석 체크
           </Link>
         </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
-            공지사항
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>
-            프로젝트
-          </Link>
-        </NavbarItem>
+        {/*<NavbarItem>*/}
+        {/*  <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>*/}
+        {/*    스터디*/}
+        {/*  </Link>*/}
+        {/*</NavbarItem>*/}
+        {/*<NavbarItem>*/}
+        {/*  <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>*/}
+        {/*    공지사항*/}
+        {/*  </Link>*/}
+        {/*</NavbarItem>*/}
+        {/*<NavbarItem>*/}
+        {/*  <Link color="foreground" className="text-white" href="#" onPress={() => alert('준비중입니다.')}>*/}
+        {/*    프로젝트*/}
+        {/*  </Link>*/}
+        {/*</NavbarItem>*/}
       </NavbarContent>
 
       <NavbarContent justify="end" className='mr-5 gap-x-11'>
