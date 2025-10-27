@@ -85,19 +85,26 @@ export default function AdminUsersPage() {
                     headers: {Accept: 'application/json'},
                 });
 
-                if (!alive) return;
-
-                // 403이면 바로 discard
-                if (res?.status === 403) {
-                    setCanRenderDelete(false);
-                    return;
-                }
-
                 const okHttp = res?.status === 200 || res?.status === 204;
                 const okBody = (res?.data?.code ?? 200) === 200;
 
                 setCanRenderDelete(okHttp && okBody);
-            } catch {
+            } catch (error) {
+                // ---- 디버그용 상세 로그 ----
+                const status = error?.response?.status;
+                const statusText = error?.response?.statusText;
+                const apiMessage = error?.response?.data?.message ?? error?.response?.data?.error ?? error?.message;
+                const method = error?.config?.method?.toUpperCase?.();
+                const url = error?.config?.url;
+
+                console.error('[auth LEAD check failed]', JSON.stringify({
+                    status,
+                    statusText,
+                    method,
+                    url,
+                    message: apiMessage
+                }, null, 2));
+
                 if (alive) setCanRenderDelete(false);
             }
         })();
