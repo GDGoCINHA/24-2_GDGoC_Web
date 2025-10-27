@@ -256,69 +256,6 @@ export default function AdminUsersPage() {
                 <AdminTableTopContent searchValue={searchValue} setSearchValue={setSearchValue} onSearch={onSearch}/>
             </div>
 
-            {/* 서버와 맞춘 필터(옵션): role/team */}
-            <div className="flex flex-wrap gap-2 mb-4">
-                <Select
-                    aria-label="역할 필터"
-                    size="sm"
-                    className="min-w-[160px]"
-                    selectedKeys={new Set([roleFilter])}
-                    onSelectionChange={(keys) => {
-                        const v = String(Array.from(keys)[0] ?? '');
-                        setPage(1);
-                        setRoleFilter(v === '' ? '' : v);
-                    }}
-                    classNames={{
-                        trigger: 'bg-zinc-900 text-white border border-zinc-700 data-[hover=true]:bg-zinc-800',
-                        value: 'text-white',
-                        popoverContent: 'bg-zinc-900 border border-zinc-700',
-                        listbox: 'text-white',
-                        selectorIcon: 'text-zinc-400',
-                    }}
-                    itemClasses={{
-                        base: 'rounded-md data-[hover=true]:bg-zinc-800 data-[focus=true]:bg-zinc-800',
-                        title: 'text-white',
-                    }}
-                >
-                    <SelectItem key="" value="">
-                        (전체 역할)
-                    </SelectItem>
-                    {ROLE_OPTIONS.map((r) => (<SelectItem key={r} value={r}>
-                            {r}
-                        </SelectItem>))}
-                </Select>
-
-                <Select
-                    aria-label="팀 필터"
-                    size="sm"
-                    className="min-w-[160px]"
-                    selectedKeys={new Set([teamFilter])}
-                    onSelectionChange={(keys) => {
-                        const v = String(Array.from(keys)[0] ?? '');
-                        setPage(1);
-                        setTeamFilter(v === '' ? '' : v);
-                    }}
-                    classNames={{
-                        trigger: 'bg-zinc-900 text-white border border-zinc-700 data-[hover=true]:bg-zinc-800',
-                        value: 'text-white',
-                        popoverContent: 'bg-zinc-900 border border-zinc-700',
-                        listbox: 'text-white',
-                        selectorIcon: 'text-zinc-400',
-                    }}
-                    itemClasses={{
-                        base: 'rounded-md data-[hover=true]:bg-zinc-800 data-[focus=true]:bg-zinc-800',
-                        title: 'text-white',
-                    }}
-                >
-                    <SelectItem key="" value="">
-                        (전체 팀)
-                    </SelectItem>
-                    {TEAM_ENUM_VALUES.map((t) => (<SelectItem key={t} value={t}>
-                            {TEAM_LABEL[t]}
-                        </SelectItem>))}
-                </Select>
-            </div>
-
             <Table
                 aria-label="Users table"
                 className="dark"
