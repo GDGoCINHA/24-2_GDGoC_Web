@@ -118,6 +118,20 @@ export default function AdminUsersPage() {
         createdAt: 'createdAt', // 백업
     }), []);
 
+    const handleSortChange = useCallback((d) => {
+        setPendingSort((prev) => {
+            const isNewColumn = prev.column !== d.column;
+            let nextDirection = d.direction;
+
+            if (isNewColumn) {
+                if (d.column === 'userRole') nextDirection = 'descending';
+                // 새 컬럼이면 페이지 리셋
+                setPage(1);
+            }
+            return {column: d.column, direction: nextDirection};
+        });
+    }, [setPage]);
+
     const fetchUsers = useCallback(async (force = false) => {
         setErr('');
         const keyNow = JSON.stringify({
@@ -165,15 +179,12 @@ export default function AdminUsersPage() {
         }
     }, [apiClient, page, rowsPerPage, query, sortDescriptor, sortColMap]);
 
-    // 최초 1회 강제 호출
-    useEffect(() => {
-        fetchUsers(true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const didInitRef = useRef(false);
 
-    // 의존성 변경 시, 캐시키 달라지면 요청
     useEffect(() => {
-        fetchUsers();
+        if (didInitRef.current) return;
+        didInitRef.current = true;
+        fetchUsers(true);
     }, [fetchUsers]);
 
     // 테이블 정렬 디바운스 -> 실제 sortDescriptor 적용
@@ -259,7 +270,7 @@ export default function AdminUsersPage() {
             aria-label="Users table"
             className="dark"
             sortDescriptor={pendingSort}
-            onSortChange={setPendingSort}
+            onSortChange={handleSortChange}
             bottomContent={<AdminTableBottomContent page={page} totalPages={totalPages} totalUsers={totalUsers}
                                                     onChangePage={setPage}/>}
         >
