@@ -288,117 +288,125 @@ export default function AdminUsersPage() {
                 </TableColumn>)}
             </TableHeader>
 
-            <TableBody items={rows} isLoading={loading} loadingContent={<Spinner label="불러오는 중..."/>}
-                       emptyContent={err || '데이터가 없습니다.'}>
-                {(user) => (<TableRow key={user.id} className="hover:bg-[#35353b99]">
-                    {/* NAME */}
-                    <TableCell>
-                        <span className="font-medium mr-2">{user.name}</span>
-                        <Chip size="sm" variant="flat" color={roleColor(user.userRole)}>
-                            {user.userRole}
-                        </Chip>
-                    </TableCell>
+            <TableBody
+                items={rows}
+                isLoading={loading}
+                loadingContent={<Spinner label="불러오는 중..."/>}
+                emptyContent={err || '데이터가 없습니다.'}
+            >
+                {(user) => {
+                    const cells = [// NAME
+                        (<TableCell key="name">
+                                <span className="font-medium mr-2">{user.name}</span>
+                                <Chip size="sm" variant="flat" color={roleColor(user.userRole)}>
+                                    {user.userRole}
+                                </Chip>
+                            </TableCell>),
 
-                    {/* MAJOR */}
-                    <TableCell>{user.major}</TableCell>
+                        // MAJOR
+                        <TableCell key="major">{user.major}</TableCell>,
 
-                    {/* STUDENT ID */}
-                    <TableCell>{user.studentId}</TableCell>
+                        // STUDENT ID
+                        <TableCell key="studentId">{user.studentId}</TableCell>,
 
-                    {/* EMAIL */}
-                    <TableCell>
-                        <span className="text-sm">{user.email}</span>
-                    </TableCell>
+                        // EMAIL
+                        (<TableCell key="email">
+                                <span className="text-sm">{user.email}</span>
+                            </TableCell>),
 
-                    {/* ROLE */}
-                    <TableCell>
-                        <div className="flex items-center gap-3">
-                            <Select
-                                aria-label="역할 수정"
-                                selectedKeys={new Set([user.userRole || ''])}
-                                onSelectionChange={(keys) => {
-                                    const nextRole = String(Array.from(keys)[0] || user.userRole);
-                                    if (nextRole !== user.userRole) {
-                                        const ok = confirm(`역할을 '${user.userRole}' → '${nextRole}' 로 변경할까요?`);
-                                        if (ok) void patchSmart({user, nextRole, nextTeam: user.team ?? null});
-                                    }
-                                }}
-                                size="sm"
-                                className="min-w-[140px]"
-                                classNames={{
-                                    trigger: 'bg-zinc-900 text-white border border-zinc-700 data-[hover=true]:bg-zinc-800',
-                                    value: 'text-white',
-                                    popoverContent: 'bg-zinc-900 border border-zinc-700',
-                                    listbox: 'text-white',
-                                    selectorIcon: 'text-zinc-400',
-                                }}
-                                itemClasses={{
-                                    base: 'rounded-md data-[hover=true]:bg-zinc-800 data-[focus=true]:bg-zinc-800',
-                                    title: 'text-white',
-                                }}
-                            >
-                                {ROLE_OPTIONS.map((r) => (<SelectItem key={r} value={r}>
-                                    {r}
-                                </SelectItem>))}
-                            </Select>
-                        </div>
-                    </TableCell>
+                        // ROLE
+                        (<TableCell key="role">
+                                <div className="flex items-center gap-3">
+                                    <Select
+                                        aria-label="역할 수정"
+                                        selectedKeys={new Set([user.userRole || ''])}
+                                        onSelectionChange={(keys) => {
+                                            const nextRole = String(Array.from(keys)[0] || user.userRole);
+                                            if (nextRole !== user.userRole) {
+                                                const ok = confirm(`역할을 '${user.userRole}' → '${nextRole}' 로 변경할까요?`);
+                                                if (ok) void patchSmart({user, nextRole, nextTeam: user.team ?? null});
+                                            }
+                                        }}
+                                        size="sm"
+                                        className="min-w-[140px]"
+                                        classNames={{
+                                            trigger: 'bg-zinc-900 text-white border border-zinc-700 data-[hover=true]:bg-zinc-800',
+                                            value: 'text-white',
+                                            popoverContent: 'bg-zinc-900 border border-zinc-700',
+                                            listbox: 'text-white',
+                                            selectorIcon: 'text-zinc-400',
+                                        }}
+                                        itemClasses={{
+                                            base: 'rounded-md data-[hover=true]:bg-zinc-800 data-[focus=true]:bg-zinc-800',
+                                            title: 'text-white',
+                                        }}
+                                    >
+                                        {ROLE_OPTIONS.map((r) => (<SelectItem key={r} value={r}>
+                                                {r}
+                                            </SelectItem>))}
+                                    </Select>
+                                </div>
+                            </TableCell>),
 
-                    {/* TEAM */}
-                    <TableCell>
-                        <Select
-                            aria-label="팀 수정"
-                            selectedKeys={new Set([user.team || ''])}
-                            onSelectionChange={(keys) => {
-                                const k = String(Array.from(keys)[0] ?? '');
-                                const nextTeam = k === '' ? null : k; // 서버에는 enum name로 전송
-                                if ((nextTeam ?? null) !== (user.team ?? null)) {
-                                    const old = user.team ? TEAM_LABEL[user.team] || user.team : '(없음)';
-                                    const neu = nextTeam ? TEAM_LABEL[nextTeam] || nextTeam : '(없음)';
-                                    const ok = confirm(`팀을 '${old}' → '${neu}' 로 변경할까요?`);
-                                    if (ok) void patchSmart({user, nextRole: user.userRole, nextTeam});
-                                }
-                            }}
-                            size="sm"
-                            className="min-w-[160px]"
-                            classNames={{
-                                trigger: 'bg-zinc-900 text-white border border-zinc-700 data-[hover=true]:bg-zinc-800',
-                                value: 'text-white',
-                                popoverContent: 'bg-zinc-900 border border-zinc-700',
-                                listbox: 'text-white',
-                                selectorIcon: 'text-zinc-400',
-                            }}
-                            itemClasses={{
-                                base: 'rounded-md data-[hover=true]:bg-zinc-800 data-[focus=true]:bg-zinc-800',
-                                title: 'text-white',
-                            }}
-                        >
-                            <SelectItem key="" value="">
-                                (없음)
-                            </SelectItem>
-                            {TEAM_ENUM_VALUES.map((t) => (<SelectItem key={t} value={t}>
-                                {TEAM_LABEL[t]}
-                            </SelectItem>))}
-                        </Select>
-                    </TableCell>
+                        // TEAM
+                        (<TableCell key="team">
+                                <Select
+                                    aria-label="팀 수정"
+                                    selectedKeys={new Set([user.team || ''])}
+                                    onSelectionChange={(keys) => {
+                                        const k = String(Array.from(keys)[0] ?? '');
+                                        const nextTeam = k === '' ? null : k; // 서버에는 enum name 전송
+                                        if ((nextTeam ?? null) !== (user.team ?? null)) {
+                                            const old = user.team ? TEAM_LABEL[user.team] || user.team : '(없음)';
+                                            const neu = nextTeam ? TEAM_LABEL[nextTeam] || nextTeam : '(없음)';
+                                            const ok = confirm(`팀을 '${old}' → '${neu}' 로 변경할까요?`);
+                                            if (ok) void patchSmart({user, nextRole: user.userRole, nextTeam});
+                                        }
+                                    }}
+                                    size="sm"
+                                    className="min-w-[160px]"
+                                    classNames={{
+                                        trigger: 'bg-zinc-900 text-white border border-zinc-700 data-[hover=true]:bg-zinc-800',
+                                        value: 'text-white',
+                                        popoverContent: 'bg-zinc-900 border border-zinc-700',
+                                        listbox: 'text-white',
+                                        selectorIcon: 'text-zinc-400',
+                                    }}
+                                    itemClasses={{
+                                        base: 'rounded-md data-[hover=true]:bg-zinc-800 data-[focus=true]:bg-zinc-800',
+                                        title: 'text-white',
+                                    }}
+                                >
+                                    <SelectItem key="" value="">
+                                        (없음)
+                                    </SelectItem>
+                                    {TEAM_ENUM_VALUES.map((t) => (<SelectItem key={t} value={t}>
+                                            {TEAM_LABEL[t]}
+                                        </SelectItem>))}
+                                </Select>
+                            </TableCell>),
 
-                    {/* ACTIONS (Delete) */}
-                    {canRenderDelete ? (<TableCell>
-                        <div className="flex justify-end">
-                            {user.id !== me?.id ? (<Button
-                                size="sm"
-                                color="danger"
-                                variant="flat"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    void handleDelete(user);
-                                }}
-                            >
-                                삭제
-                            </Button>) : null}
-                        </div>
-                    </TableCell>) : null}
-                </TableRow>)}
+                        // ACTIONS (조건부)
+                        canRenderDelete && (<TableCell key="actions">
+                                <div className="flex justify-end">
+                                    {user.id !== me?.id ? (<Button
+                                            size="sm"
+                                            color="danger"
+                                            variant="flat"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                void handleDelete(user);
+                                            }}
+                                        >
+                                            삭제
+                                        </Button>) : null}
+                                </div>
+                            </TableCell>),].filter(Boolean);
+
+                    return (<TableRow key={user.id} className="hover:bg-[#35353b99]">
+                            {cells}
+                        </TableRow>);
+                }}
             </TableBody>
         </Table>
     </div>);
