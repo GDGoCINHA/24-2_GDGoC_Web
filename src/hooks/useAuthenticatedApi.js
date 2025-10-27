@@ -61,18 +61,15 @@ export const useAuthenticatedApi = () => {
             const originalRequest = error.config;
             const status = error.response?.status;
 
-            // next 후보 수집: 헤더 > sessionStorage > 현재 URL
-            const pickNext = () => (originalRequest?.headers?.['X-Next-Url']) || (typeof window !== 'undefined' && sessionStorage.getItem('NEXT_URL_OVERRIDE')) || (typeof window !== 'undefined' && window.location.href) || '/';
+            // next 후보 수집: 헤더 > sessionStorage > 현재 URL (유지)
+            const pickNext = () => originalRequest?.headers?.['X-Next-Url'] || (typeof window !== 'undefined' && sessionStorage.getItem('NEXT_URL_OVERRIDE')) || (typeof window !== 'undefined' && window.location.href) || '/';
 
-            // 403은 권한 문제이므로 재발급 시도 없이 바로 처리(필요하면 alert)
             if (status === 403) {
                 try {
                     alert('권한이 부족합니다.');
                 } catch {
                 }
-                const next = pickNext();
-                clearAuth();
-                router.replace(`/auth/signin?next=${encodeURIComponent(next)}`);
+                router.replace('/main');
                 return Promise.reject(error);
             }
 
@@ -101,9 +98,9 @@ export const useAuthenticatedApi = () => {
                 }
             }
 
-            // 그 외는 그대로 반환
             return Promise.reject(error);
         });
+
 
         return client;
     }, [setAccessToken, clearAuth, router, reAccessToken]);
