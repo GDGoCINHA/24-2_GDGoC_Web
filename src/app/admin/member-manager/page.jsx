@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
     Button,
     Chip,
@@ -53,6 +53,9 @@ export default function AdminUsersPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalUsers, setTotalUsers] = useState(0);
     const [sortDescriptor, setSortDescriptor] = useState({column: 'name', direction: 'ascending'});
+    const [pendingSort, setPendingSort] = useState(sortDescriptor);
+    const sortTimerRef = useRef(null);
+    const lastQueryRef = useRef({ page, q: query, sort: sortDescriptor });
 
     /** 내 정보(자기 자신 삭제/변경 방지용) */
     const me = useMemo(() => {
@@ -99,8 +102,11 @@ export default function AdminUsersPage() {
     }), []);
 
     const fetchUsers = useCallback(async () => {
-        setLoading(true);
         setErr('');
+        const keyNow = JSON.stringify({page, q: query, sort: sortDescriptor});
+        const keyPrev = JSON.stringify(lastQueryRef.current);
+        if (keyNow === keyPrev) return;
+        setLoading(true);
         try {
             const sort = sortColMap[sortDescriptor.column] || 'name';
             const dir = sortDescriptor.direction === 'descending' ? 'DESC' : 'ASC';
@@ -126,6 +132,7 @@ export default function AdminUsersPage() {
             const total = meta?.totalElements ?? pageData?.totalElements ?? content.length;
             setTotalUsers(total);
             setTotalPages(Math.max(1, Math.ceil(total / rowsPerPage)));
+            lastQueryRef.current = {page, q: query, sort: sortDescriptor};
         } catch (e) {
             setErr(e?.message || '사용자 목록을 불러오지 못했습니다.');
             setRows([]);
@@ -139,6 +146,14 @@ export default function AdminUsersPage() {
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
+
+    useEffect(() => {
+        if (sortTimerRef.current) clearTimeout(sortTimerRef.current);
+        sortTimerRef.current = setTimeout(() => {
+            setSortDescriptor(pendingSort);
+        }, 250);
+        return () => clearTimeout(sortTimerRef.current);
+    }, [pendingSort]);
 
     const onSearch = useCallback(() => {
         setPage(1);
@@ -208,8 +223,8 @@ export default function AdminUsersPage() {
         <Table
             aria-label="Users table"
             className="dark"
-            sortDescriptor={sortDescriptor}
-            onSortChange={setSortDescriptor}
+            sortDescriptor={pendingSort}
+            onSortChange={setPendingSort}
             bottomContent={<AdminTableBottomContent
                 page={page}
                 totalPages={totalPages}
