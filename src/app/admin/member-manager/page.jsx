@@ -58,10 +58,6 @@ export default function AdminUsersPage() {
     const [pendingSort, setPendingSort] = useState(sortDescriptor);
     const sortTimerRef = useRef(null);
 
-    // 서버 연동용 필터 (선택 시에만 전송)
-    const [roleFilter, setRoleFilter] = useState(''); // '' = 전체
-    const [teamFilter, setTeamFilter] = useState(''); // '' = 전체
-
     // 중복 요청 방지 키
     const lastQueryRef = useRef(null); // string key
 
@@ -125,7 +121,7 @@ export default function AdminUsersPage() {
     const fetchUsers = useCallback(async (force = false) => {
         setErr('');
         const keyNow = JSON.stringify({
-            page, q: query, sort: sortDescriptor, role: roleFilter, team: teamFilter,
+            page, q: query, sort: sortDescriptor,
         });
         if (!force && lastQueryRef.current === keyNow) return;
 
@@ -135,13 +131,7 @@ export default function AdminUsersPage() {
             const dir = sortDescriptor.direction === 'descending' ? 'DESC' : 'ASC';
 
             const params = {
-                page: page - 1,
-                size: rowsPerPage,
-                sort,
-                dir,
-                q: query || undefined,
-                role: roleFilter || undefined,
-                team: teamFilter || undefined,
+                page: page - 1, size: rowsPerPage, sort, dir, q: query || undefined,
             };
 
             const res = await apiClient.get('/admin/users', {params});
@@ -173,7 +163,7 @@ export default function AdminUsersPage() {
         } finally {
             setLoading(false);
         }
-    }, [apiClient, page, rowsPerPage, query, sortDescriptor, sortColMap, roleFilter, teamFilter]);
+    }, [apiClient, page, rowsPerPage, query, sortDescriptor, sortColMap]);
 
     // 최초 1회 강제 호출
     useEffect(() => {
