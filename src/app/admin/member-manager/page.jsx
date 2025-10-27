@@ -186,6 +186,10 @@ export default function AdminUsersPage() {
         fetchUsers(true);
     }, [fetchUsers]);
 
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
+
     // 테이블 정렬 디바운스 -> 실제 sortDescriptor 적용
     useEffect(() => {
         if (sortTimerRef.current) clearTimeout(sortTimerRef.current);
