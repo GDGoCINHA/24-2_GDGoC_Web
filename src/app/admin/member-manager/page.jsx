@@ -134,10 +134,9 @@ export default function AdminUsersPage() {
 
     const fetchUsers = useCallback(async (force = false) => {
         setErr('');
-        const keyNow = JSON.stringify({
-            page, q: query, sort: sortDescriptor,
-        });
-        if (!force && lastQueryRef.current === keyNow) return;
+        const myKey = JSON.stringify({page, q: query, sort: sortDescriptor});
+        if (!force && lastQueryRef.current === myKey) return;
+        lastQueryRef.current = myKey;
 
         setLoading(true);
         try {
@@ -154,7 +153,6 @@ export default function AdminUsersPage() {
 
             let content = Array.isArray(pageData?.content) ? pageData.content : [];
 
-            // ROLE 정렬일 때, 알파벳 대신 권한 서열로 보정 (페이지 내 안정화)
             if (sortDescriptor.column === 'userRole') {
                 const asc = sortDescriptor.direction !== 'descending';
                 content = content.slice().sort((a, b) => {
@@ -163,14 +161,15 @@ export default function AdminUsersPage() {
                 });
             }
 
+            if (lastQueryRef.current !== myKey) return;
+
             setRows(content);
 
             const total = meta?.totalElements ?? pageData?.totalElements ?? content.length;
             setTotalUsers(total);
             setTotalPages(Math.max(1, Math.ceil(total / rowsPerPage)));
-            lastQueryRef.current = keyNow;
         } catch (e) {
-            setErr(e?.message || '사용자 목록을 불러오지 못했습니다.');
+            setErr(e?.response?.data?.message || e?.message || '사용자 목록을 불러오지 못했습니다.');
             setRows([]);
             setTotalUsers(0);
             setTotalPages(1);
