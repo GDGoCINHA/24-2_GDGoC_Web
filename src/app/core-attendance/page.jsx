@@ -14,6 +14,32 @@ const setQS = (entries) => {
     window.history.replaceState({}, '', u.toString());
 };
 
+// ===== CSV 저장 공통 헬퍼 =====
+const saveResponseAsFile = (res, fallbackName) => {
+    // Excel 한글 깨짐 방지용 BOM
+    const BOM = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    const blob = new Blob([BOM, res.data], { type: 'text/csv;charset=utf-8' });
+
+    // 서버가 파일명 내려주면 우선 사용
+    let filename = fallbackName;
+    const cd = res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition']);
+    if (cd) {
+        const m = /filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i.exec(cd);
+        const decoded = m && decodeURIComponent((m[1] || m[2] || '').trim());
+        if (decoded) filename = decoded;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+};
+
+
 export default function AttendancePage() {
     const {apiClient} = useAuthenticatedApi();
 
@@ -49,6 +75,17 @@ export default function AttendancePage() {
         })).data.data,
 
         summary: async (d) => (await apiClient.get(`/core-attendance/meetings/${d}/summary`)).data.data,
+
+        downloadSummaryCsvForDateAndSave: async (d) => {
+            const res = await apiClient.get(`/core-attendance/meetings/${d}/summary.csv`, { responseType: 'blob' });
+            saveResponseAsFile(res, `attendance-${d}.csv`);
+        },
+
+        downloadSummaryCsvAllAndSave: async () => {
+            const res = await apiClient.get('/core-attendance/meetings/summary.csv', { responseType: 'blob' });
+            saveResponseAsFile(res, 'attendance-summary.csv');
+        },
+
     };
 
     /** URL 동기화 */
@@ -366,6 +403,25 @@ export default function AttendancePage() {
             <Card className="bg-default-100 dark:bg-default-50">
                 <CardBody className="gap-3 text-white">
                     <b>요약</b>
+                    <Button
+                        size="sm"
+                        variant="flat"
+                        color="primary"
+                        onPress={() => api.downloadSummaryCsvForDateAndSave(date)}
+                        isDisabled={!date}
+                    >
+                        날짜 CSV
+                    </Button>
+
+                    <Button
+                        size="sm"
+                        variant="flat"
+                        color="secondary"
+                        onPress={() => api.downloadSummaryCsvAllAndSave()}
+                    >
+                        전체 CSV
+                    </Button>
+
                     {summary ? (<div className="text-sm">
                         <div className="mb-2">전체 {summary.present} / {summary.total}</div>
                         <Divider/>
