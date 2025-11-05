@@ -23,11 +23,11 @@ import AdminTableBottomContent from '@/components/admin/AdminTableBottomContent'
 
 /** 백엔드 enum과 일치하는 값(전송용) */
 const ROLE_OPTIONS = ['GUEST', 'MEMBER', 'CORE', 'LEAD', 'ORGANIZER', 'ADMIN'];
-const TEAM_ENUM_VALUES = ['BD', 'HR', 'TECH', 'PR_DESIGN'];
+const TEAM_ENUM_VALUES = ['BD', 'HR', 'TECH', 'PR_DESIGN', 'HQ'];
 
 /** 화면 표시용 라벨 */
 const TEAM_LABEL = {
-    BD: 'BD', HR: 'HR', TECH: 'TECH', PR_DESIGN: 'PR/DESIGN',
+    BD: 'BD', HR: 'HR', TECH: 'TECH', PR_DESIGN: 'PR/DESIGN', HQ: 'HQ',
 };
 
 const roleColor = (r) => ({
