@@ -71,8 +71,7 @@ export default function ManitoAdminPage() {
 
         try {
             setLoadingSessions(true);
-            const res = await apiClient.post('/admin/manito/sessions', {code, title});
-            const created = res.data?.data;
+            await apiClient.post('/admin/manito/sessions', {code, title});
 
             // 세션 목록 갱신
             await fetchSessions();

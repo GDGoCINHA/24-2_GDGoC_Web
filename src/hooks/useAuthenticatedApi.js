@@ -46,15 +46,18 @@ export const useAuthenticatedApi = () => {
 
         // 요청 인터셉터
         client.interceptors.request.use((config) => {
-            if (!config.headers['Content-Type']) {
+            // FormData인지 체크
+            const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
+            if (!isFormData && !config.headers['Content-Type']) {
                 config.headers['Content-Type'] = 'application/json';
             }
 
             if (accessTokenRef.current) {
                 config.headers.Authorization = `Bearer ${accessTokenRef.current}`;
             }
+
             return config;
-        }, (error) => Promise.reject(error));
+        }, (error) => Promise.reject(error),);
 
         // 응답 인터셉터
         client.interceptors.response.use((response) => response, async (error) => {
