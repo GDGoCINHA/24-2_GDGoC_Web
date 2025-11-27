@@ -71,7 +71,7 @@ export default function ManitoAdminPage() {
 
         try {
             setLoadingSessions(true);
-            const res = await apiClient.post('/admin/manito/sessions', {code, name: title});
+            const res = await apiClient.post('/admin/manito/sessions', {code, title});
             const created = res.data?.data;
 
             // 세션 목록 갱신
@@ -274,7 +274,7 @@ export default function ManitoAdminPage() {
                         >
                             <div className="flex flex-col">
                                         <span className="font-medium text-zinc-100">
-                                            {s.name || '(이름 없음)'}
+                                            {s.title || '(이름 없음)'}
                                         </span>
                                 <span className="text-xs text-zinc-400">
                                             code: {s.code}
