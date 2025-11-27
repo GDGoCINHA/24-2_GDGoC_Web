@@ -13,7 +13,7 @@ export default function ManitoAdminPage() {
     // 세션 관리용
     const [sessions, setSessions] = useState([]); // [{id, code, name, createdAt,...}]
     const [newSessionCode, setNewSessionCode] = useState('');
-    const [newSessionName, setNewSessionName] = useState('');
+    const [newSessionTitle, setNewSessionTitle] = useState('');
     const [loadingSessions, setLoadingSessions] = useState(false);
 
     // 파일
@@ -58,20 +58,20 @@ export default function ManitoAdminPage() {
     const handleCreateSession = async () => {
         resetMessages();
         const code = newSessionCode.trim();
-        const name = newSessionName.trim();
+        const title = newSessionTitle.trim();
 
         if (!code) {
             setError('세션 코드를 입력해 주세요.');
             return;
         }
-        if (!name) {
+        if (!title) {
             setError('세션 이름을 입력해 주세요.');
             return;
         }
 
         try {
             setLoadingSessions(true);
-            const res = await apiClient.post('/admin/manito/sessions', {code, name});
+            const res = await apiClient.post('/admin/manito/sessions', {code, name: title});
             const created = res.data?.data;
 
             // 세션 목록 갱신
@@ -79,7 +79,7 @@ export default function ManitoAdminPage() {
             // 공통 sessionCode 에도 세팅
             setSessionCode(code);
             setNewSessionCode('');
-            setNewSessionName('');
+            setNewSessionTitle('');
             setMessage(`세션이 생성되었습니다. (code: ${code})`);
         } catch (e) {
             console.error(e);
@@ -188,184 +188,184 @@ export default function ManitoAdminPage() {
     };
 
     return (<div className="dark flex flex-col max-w-3xl mx-auto min-h-[100svh] py-16 px-6">
-            <h1 className="font-bold mb-6 text-3xl text-white">마니또 관리(Admin)</h1>
+        <h1 className="font-bold mb-6 text-3xl text-white">마니또 관리(Admin)</h1>
 
-            {/* 공통 설정 + 세션 등록/선택 */}
-            <Card className="mb-6 bg-default-100 dark:bg-zinc-900 border border-zinc-800">
-                <CardHeader className="flex flex-col items-start gap-1">
-                    <h2 className="text-xl font-semibold text-white">공통 설정 · 세션 관리</h2>
-                    <p className="text-xs text-zinc-400">
-                        세션 단위로 참가자/매칭/암호문을 관리합니다.
-                        <br/>
-                        먼저 세션을 생성한 뒤, 해당 세션을 선택하고 아래 단계를 진행하세요.
-                    </p>
-                </CardHeader>
+        {/* 공통 설정 + 세션 등록/선택 */}
+        <Card className="mb-6 bg-default-100 dark:bg-zinc-900 border border-zinc-800">
+            <CardHeader className="flex flex-col items-start gap-1">
+                <h2 className="text-xl font-semibold text-white">공통 설정 · 세션 관리</h2>
+                <p className="text-xs text-zinc-400">
+                    세션 단위로 참가자/매칭/암호문을 관리합니다.
+                    <br/>
+                    먼저 세션을 생성한 뒤, 해당 세션을 선택하고 아래 단계를 진행하세요.
+                </p>
+            </CardHeader>
+            <Divider className="border-zinc-800"/>
+            <CardBody className="gap-4 text-white">
+                {/* 현재 사용 세션 코드 (직접 입력/수정 가능) */}
+                <Input
+                    label="현재 사용 중인 세션 코드"
+                    placeholder="예: WINTER_2025"
+                    value={sessionCode}
+                    onChange={(e) => setSessionCode(e.target.value)}
+                    variant="bordered"
+                    classNames={{
+                        label: 'text-zinc-300',
+                        input: 'text-white',
+                        inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
+                    }}
+                />
+
                 <Divider className="border-zinc-800"/>
-                <CardBody className="gap-4 text-white">
-                    {/* 현재 사용 세션 코드 (직접 입력/수정 가능) */}
-                    <Input
-                        label="현재 사용 중인 세션 코드"
-                        placeholder="예: WINTER_2025"
-                        value={sessionCode}
-                        onChange={(e) => setSessionCode(e.target.value)}
-                        variant="bordered"
-                        classNames={{
-                            label: 'text-zinc-300',
-                            input: 'text-white',
-                            inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
-                        }}
-                    />
 
-                    <Divider className="border-zinc-800"/>
-
-                    {/* 새 세션 생성 */}
-                    <div className="space-y-2">
-                        <p className="text-sm text-zinc-300 font-semibold">새 세션 등록</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <Input
-                                label="세션 코드"
-                                placeholder="예: WINTER_2025"
-                                value={newSessionCode}
-                                onChange={(e) => setNewSessionCode(e.target.value)}
-                                variant="bordered"
-                                classNames={{
-                                    label: 'text-zinc-300',
-                                    input: 'text-white',
-                                    inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
-                                }}
-                            />
-                            <Input
-                                label="세션 이름"
-                                placeholder="예: 2025 겨울 마니또"
-                                value={newSessionName}
-                                onChange={(e) => setNewSessionName(e.target.value)}
-                                variant="bordered"
-                                classNames={{
-                                    label: 'text-zinc-300',
-                                    input: 'text-white',
-                                    inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
-                                }}
-                            />
-                        </div>
-                        <Button
-                            color="primary"
-                            variant="flat"
-                            size="sm"
-                            onPress={handleCreateSession}
-                            isLoading={loadingSessions}
-                            className="mt-1"
-                        >
-                            새 세션 생성
-                        </Button>
+                {/* 새 세션 생성 */}
+                <div className="space-y-2">
+                    <p className="text-sm text-zinc-300 font-semibold">새 세션 등록</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <Input
+                            label="세션 코드"
+                            placeholder="예: WINTER_2025"
+                            value={newSessionCode}
+                            onChange={(e) => setNewSessionCode(e.target.value)}
+                            variant="bordered"
+                            classNames={{
+                                label: 'text-zinc-300',
+                                input: 'text-white',
+                                inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
+                            }}
+                        />
+                        <Input
+                            label="세션 이름"
+                            placeholder="예: 2025 겨울 마니또"
+                            value={newSessionTitle}
+                            onChange={(e) => setNewSessionTitle(e.target.value)}
+                            variant="bordered"
+                            classNames={{
+                                label: 'text-zinc-300',
+                                input: 'text-white',
+                                inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
+                            }}
+                        />
                     </div>
-
-                    {/* 세션 목록 */}
-                    <Divider className="border-zinc-800 my-4"/>
-                    <div className="space-y-2">
-                        <p className="text-sm text-zinc-300 font-semibold">세션 목록</p>
-                        <div className="max-h-40 overflow-auto space-y-1 text-sm">
-                            {loadingSessions && (<p className="text-xs text-zinc-400">세션 목록을 불러오는 중...</p>)}
-                            {!loadingSessions && sessions.length === 0 && (<p className="text-xs text-zinc-500">
-                                    등록된 세션이 없습니다. 위에서 새 세션을 생성해 주세요.
-                                </p>)}
-                            {sessions.map((s) => (<div
-                                    key={s.id ?? s.code}
-                                    className="flex items-center justify-between py-1 border-b border-zinc-800/40"
-                                >
-                                    <div className="flex flex-col">
-                                        <span className="font-medium text-zinc-100">
-                                            {s.name || '(이름 없음)'}
-                                        </span>
-                                        <span className="text-xs text-zinc-400">
-                                            code: {s.code}
-                                        </span>
-                                    </div>
-                                    <Button
-                                        size="sm"
-                                        variant={sessionCode === s.code ? 'solid' : 'flat'}
-                                        color="secondary"
-                                        onPress={() => setSessionCode(s.code)}
-                                    >
-                                        사용
-                                    </Button>
-                                </div>))}
-                        </div>
-                    </div>
-                </CardBody>
-            </Card>
-
-            {/* 1단계: 참가자 CSV 업로드 */}
-            <Card className="mb-6 bg-default-100 dark:bg-zinc-900 border border-zinc-800">
-                <CardHeader className="flex flex-col items-start gap-1">
-                    <h2 className="text-lg font-semibold text-white">
-                        1단계 · 참가자 CSV 업로드 & 매칭 생성
-                    </h2>
-                    <p className="text-xs text-zinc-400">
-                        CSV 헤더: <code>studentId,name,pin</code> · 업로드 후, 서버에서 매칭을 생성하고
-                        <br/>
-                        <code>giverStudentId,giverName,receiverStudentId,receiverName</code> CSV를
-                        바로 다운로드합니다.
-                    </p>
-                </CardHeader>
-                <Divider className="border-zinc-800"/>
-                <CardBody className="gap-4 text-white">
-                    <input
-                        type="file"
-                        accept=".csv"
-                        onChange={handleParticipantsFileChange}
-                        className="text-sm text-zinc-300"
-                    />
                     <Button
                         color="primary"
                         variant="flat"
-                        onPress={handleUploadParticipants}
-                        isLoading={loadingParticipants}
-                        isDisabled={!sessionCode.trim() || !participantsFile || loadingParticipants}
-                        className="mt-2"
+                        size="sm"
+                        onPress={handleCreateSession}
+                        isLoading={loadingSessions}
+                        className="mt-1"
                     >
-                        참가자 CSV 업로드 & 매칭 CSV 다운로드
+                        새 세션 생성
                     </Button>
-                </CardBody>
-            </Card>
+                </div>
 
-            {/* 2단계: 암호문 CSV 업로드 */}
-            <Card className="mb-6 bg-default-100 dark:bg-zinc-900 border border-zinc-800">
-                <CardHeader className="flex flex-col items-start gap-1">
-                    <h2 className="text-lg font-semibold text-white">
-                        2단계 · 암호문(encryptedManitto) CSV 업로드
-                    </h2>
-                    <p className="text-xs text-zinc-400">
-                        클라이언트에서 매칭 CSV를 기반으로 암호화한 결과를 업로드합니다.
-                        <br/>
-                        CSV 헤더 예시: <code>studentId,encryptedManitto</code>
-                    </p>
-                </CardHeader>
-                <Divider className="border-zinc-800"/>
-                <CardBody className="gap-4 text-white">
-                    <input
-                        type="file"
-                        accept=".csv"
-                        onChange={handleEncryptedFileChange}
-                        className="text-sm text-zinc-300"
-                    />
-                    <Button
-                        color="secondary"
-                        variant="flat"
-                        onPress={handleUploadEncrypted}
-                        isLoading={loadingEncrypted}
-                        isDisabled={!sessionCode.trim() || !encryptedFile || loadingEncrypted}
-                        className="mt-2"
-                    >
-                        암호문 CSV 업로드
-                    </Button>
-                </CardBody>
-            </Card>
+                {/* 세션 목록 */}
+                <Divider className="border-zinc-800 my-4"/>
+                <div className="space-y-2">
+                    <p className="text-sm text-zinc-300 font-semibold">세션 목록</p>
+                    <div className="max-h-40 overflow-auto space-y-1 text-sm">
+                        {loadingSessions && (<p className="text-xs text-zinc-400">세션 목록을 불러오는 중...</p>)}
+                        {!loadingSessions && sessions.length === 0 && (<p className="text-xs text-zinc-500">
+                            등록된 세션이 없습니다. 위에서 새 세션을 생성해 주세요.
+                        </p>)}
+                        {sessions.map((s) => (<div
+                            key={s.id ?? s.code}
+                            className="flex items-center justify-between py-1 border-b border-zinc-800/40"
+                        >
+                            <div className="flex flex-col">
+                                        <span className="font-medium text-zinc-100">
+                                            {s.name || '(이름 없음)'}
+                                        </span>
+                                <span className="text-xs text-zinc-400">
+                                            code: {s.code}
+                                        </span>
+                            </div>
+                            <Button
+                                size="sm"
+                                variant={sessionCode === s.code ? 'solid' : 'flat'}
+                                color="secondary"
+                                onPress={() => setSessionCode(s.code)}
+                            >
+                                사용
+                            </Button>
+                        </div>))}
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
 
-            {(message || error) && (<Card className="bg-default-100 dark:bg-zinc-900 border border-zinc-800">
-                    <CardBody className="text-sm">
-                        {message && (<p className="text-emerald-400 whitespace-pre-line">{message}</p>)}
-                        {error && <p className="text-red-400 whitespace-pre-line">{error}</p>}
-                    </CardBody>
-                </Card>)}
-        </div>);
+        {/* 1단계: 참가자 CSV 업로드 */}
+        <Card className="mb-6 bg-default-100 dark:bg-zinc-900 border border-zinc-800">
+            <CardHeader className="flex flex-col items-start gap-1">
+                <h2 className="text-lg font-semibold text-white">
+                    1단계 · 참가자 CSV 업로드 & 매칭 생성
+                </h2>
+                <p className="text-xs text-zinc-400">
+                    CSV 헤더: <code>studentId,name,pin</code> · 업로드 후, 서버에서 매칭을 생성하고
+                    <br/>
+                    <code>giverStudentId,giverName,receiverStudentId,receiverName</code> CSV를
+                    바로 다운로드합니다.
+                </p>
+            </CardHeader>
+            <Divider className="border-zinc-800"/>
+            <CardBody className="gap-4 text-white">
+                <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleParticipantsFileChange}
+                    className="text-sm text-zinc-300"
+                />
+                <Button
+                    color="primary"
+                    variant="flat"
+                    onPress={handleUploadParticipants}
+                    isLoading={loadingParticipants}
+                    isDisabled={!sessionCode.trim() || !participantsFile || loadingParticipants}
+                    className="mt-2"
+                >
+                    참가자 CSV 업로드 & 매칭 CSV 다운로드
+                </Button>
+            </CardBody>
+        </Card>
+
+        {/* 2단계: 암호문 CSV 업로드 */}
+        <Card className="mb-6 bg-default-100 dark:bg-zinc-900 border border-zinc-800">
+            <CardHeader className="flex flex-col items-start gap-1">
+                <h2 className="text-lg font-semibold text-white">
+                    2단계 · 암호문(encryptedManitto) CSV 업로드
+                </h2>
+                <p className="text-xs text-zinc-400">
+                    클라이언트에서 매칭 CSV를 기반으로 암호화한 결과를 업로드합니다.
+                    <br/>
+                    CSV 헤더 예시: <code>studentId,encryptedManitto</code>
+                </p>
+            </CardHeader>
+            <Divider className="border-zinc-800"/>
+            <CardBody className="gap-4 text-white">
+                <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleEncryptedFileChange}
+                    className="text-sm text-zinc-300"
+                />
+                <Button
+                    color="secondary"
+                    variant="flat"
+                    onPress={handleUploadEncrypted}
+                    isLoading={loadingEncrypted}
+                    isDisabled={!sessionCode.trim() || !encryptedFile || loadingEncrypted}
+                    className="mt-2"
+                >
+                    암호문 CSV 업로드
+                </Button>
+            </CardBody>
+        </Card>
+
+        {(message || error) && (<Card className="bg-default-100 dark:bg-zinc-900 border border-zinc-800">
+            <CardBody className="text-sm">
+                {message && (<p className="text-emerald-400 whitespace-pre-line">{message}</p>)}
+                {error && <p className="text-red-400 whitespace-pre-line">{error}</p>}
+            </CardBody>
+        </Card>)}
+    </div>);
 }
