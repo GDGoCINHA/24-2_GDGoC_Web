@@ -77,6 +77,32 @@ export default function ManitoVerifyPage() {
         }
     };
 
+    /** 🔥 encrypted(cipher) 값이 세팅되면 hash로 자동 복호화 */
+    useEffect(() => {
+        if (!cipher || !hash) {
+            setPlain(null);
+            return;
+        }
+
+        let cancelled = false;
+
+        (async () => {
+            const decoded = await tryDecrypt(cipher, hash);
+            if (cancelled) return;
+
+            if (decoded) {
+                setPlain(decoded);
+            } else {
+                setError((prev) => (prev ? prev + '\n' : '') + '복호화에 실패했습니다. 해시 값이 올바른지 확인해 주세요.',);
+                setPlain(null);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [cipher, hash]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -101,17 +127,7 @@ export default function ManitoVerifyPage() {
             const body = res.data;
             const encrypted = body?.data?.encryptedManitto || '';
 
-            setCipher(encrypted);
-
-            // hash가 있으면 클라이언트에서 복호화 시도
-            if (hash) {
-                const decoded = await tryDecrypt(encrypted, hash);
-                if (decoded) {
-                    setPlain(decoded);
-                } else {
-                    setError((prev) => (prev ? prev + '\n' : '') + '복호화에 실패했습니다. 해시 값이 올바른지 확인해 주세요.',);
-                }
-            }
+            setCipher(encrypted); // 🔥 여기서 상태만 세팅 → useEffect가 알아서 복호화
         } catch (err) {
             const res = err?.response;
             const msg = res?.data?.message || res?.data?.error || err?.message || '알 수 없는 오류가 발생했습니다.';
@@ -124,90 +140,92 @@ export default function ManitoVerifyPage() {
     const disabled = !sessionCode || !studentId;
 
     return (<div className="dark min-h-[100svh] flex items-center justify-center bg-black px-4">
-        <Card className="max-w-md w-full bg-zinc-900 border border-zinc-800">
-            <CardHeader className="flex flex-col items-start gap-2">
-                <h1 className="text-2xl font-bold text-white">마니또 확인</h1>
-                <p className="text-sm text-zinc-400">
-                    전달받은 링크로 접속한 뒤, 본인이 설정한 PIN 4자리를 입력해 주세요.
-                </p>
-            </CardHeader>
-            <Divider className="border-zinc-800"/>
-            <CardBody className="flex flex-col gap-4 text-white">
-                {/* 세션/학번 정보 표시 (읽기 전용) */}
-                <div className="text-xs text-zinc-400 space-y-1">
-                    <div>
-                        <span className="font-semibold text-zinc-300">세션 코드: </span>
-                        <span>{sessionCode || '(없음)'}</span>
+            <Card className="max-w-md w-full bg-zinc-900 border border-zinc-800">
+                <CardHeader className="flex flex-col items-start gap-2">
+                    <h1 className="text-2xl font-bold text-white">마니또 확인</h1>
+                    <p className="text-sm text-zinc-400">
+                        전달받은 링크로 접속한 뒤, 본인이 설정한 PIN 4자리를 입력해 주세요.
+                    </p>
+                </CardHeader>
+                <Divider className="border-zinc-800"/>
+                <CardBody className="flex flex-col gap-4 text-white">
+                    {/* 세션/학번 정보 표시 (읽기 전용) */}
+                    <div className="text-xs text-zinc-400 space-y-1">
+                        <div>
+                            <span className="font-semibold text-zinc-300">세션 코드: </span>
+                            <span>{sessionCode || '(없음)'}</span>
+                        </div>
+                        <div>
+                            <span className="font-semibold text-zinc-300">학번: </span>
+                            <span>{studentId || '(없음)'}</span>
+                        </div>
+                        {hash && (<div>
+                                <span className="font-semibold text-zinc-300">해시: </span>
+                                <span className="break-all">{hash}</span>
+                            </div>)}
                     </div>
-                    <div>
-                        <span className="font-semibold text-zinc-300">학번: </span>
-                        <span>{studentId || '(없음)'}</span>
-                    </div>
-                    {hash && (<div>
-                        <span className="font-semibold text-zinc-300">해시: </span>
-                        <span className="break-all">{hash}</span>
-                    </div>)}
-                </div>
 
-                {disabled && (<p className="text-xs text-red-400">
-                    세션 코드 또는 학번 정보가 누락되었습니다. 링크를 다시 확인해 주세요.
-                </p>)}
+                    {disabled && (<p className="text-xs text-red-400">
+                            세션 코드 또는 학번 정보가 누락되었습니다. 링크를 다시 확인해 주세요.
+                        </p>)}
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-                    <Input
-                        label="PIN (숫자 4자리)"
-                        type="password"
-                        variant="bordered"
-                        value={pin}
-                        maxLength={4}
-                        onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
-                        classNames={{
-                            label: 'text-zinc-300',
-                            input: 'text-white',
-                            inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
-                        }}
-                        isDisabled={disabled || loading}
-                    />
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
+                        <Input
+                            label="PIN (숫자 4자리)"
+                            type="password"
+                            variant="bordered"
+                            value={pin}
+                            maxLength={4}
+                            onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
+                            classNames={{
+                                label: 'text-zinc-300',
+                                input: 'text-white',
+                                inputWrapper: 'bg-zinc-900 border-zinc-700 group-data-[focus=true]:border-zinc-400',
+                            }}
+                            isDisabled={disabled || loading}
+                        />
 
-                    {error && (<p className="text-xs text-red-400 whitespace-pre-line">{error}</p>)}
+                        {error && (<p className="text-xs text-red-400 whitespace-pre-line">
+                                {error}
+                            </p>)}
 
-                    <Button
-                        type="submit"
-                        color="primary"
-                        isLoading={loading}
-                        isDisabled={disabled || loading || !pin}
-                        className="font-semibold"
-                    >
-                        마니또 확인하기
-                    </Button>
-                </form>
+                        <Button
+                            type="submit"
+                            color="primary"
+                            isLoading={loading}
+                            isDisabled={disabled || loading || !pin}
+                            className="font-semibold"
+                        >
+                            마니또 확인하기
+                        </Button>
+                    </form>
 
-                {/* 결과 영역 */}
-                {(cipher || plain) && (<>
-                    <Divider className="border-zinc-800 my-2"/>
-                    <div className="space-y-2 text-sm">
-                        <p className="font-semibold text-zinc-200">결과</p>
+                    {/* 결과 영역 */}
+                    {(cipher || plain) && (<>
+                            <Divider className="border-zinc-800 my-2"/>
+                            <div className="space-y-2 text-sm">
+                                <p className="font-semibold text-zinc-200">결과</p>
 
-                        {plain ? (<>
+                                {plain ? (<>
                                         <pre
                                             className="text-xs bg-zinc-950 border border-zinc-800 rounded-lg p-3 overflow-x-auto">
                                             {JSON.stringify(plain, null, 2)}
                                         </pre>
-                            <p className="text-xs text-zinc-400">
-                                위 내용은 클라이언트에서 hash를 이용해 복호화한 결과입니다.
-                            </p>
-                        </>) : (<>
-                            <p className="text-xs text-zinc-400 mb-1">
-                                서버에서 받은 암호문(encryptedManitto)입니다.
-                            </p>
-                            <pre
-                                className="text-xs bg-zinc-950 border border-zinc-800 rounded-lg p-3 break-all">
+                                        <p className="text-xs text-zinc-400">
+                                            위 내용은 클라이언트에서 hash를 이용해 복호화한 결과입니다.
+                                        </p>
+                                    </>) : (<>
+                                        <p className="text-xs text-zinc-400 mb-1">
+                                            서버에서 받은 암호문(encryptedManitto)입니다.
+                                        </p>
+                                        <pre
+                                            className="text-xs bg-zinc-950 border border-zinc-800 rounded-lg p-3 break-all">
                                             {cipher}
                                         </pre>
+                                    </>)}
+                            </div>
                         </>)}
-                    </div>
-                </>)}
-            </CardBody>
-        </Card>
-    </div>);
+                </CardBody>
+            </Card>
+        </div>);
 }
