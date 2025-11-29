@@ -125,9 +125,11 @@ export default function ManitoVerifyPage() {
             const res = await apiClient.post('/manito/verify', {sessionCode, studentId, pin}, {},);
 
             const body = res.data;
-            const encrypted = body?.data?.encryptedManitto || '';
 
-            setCipher(encrypted); // 🔥 여기서 상태만 세팅 → useEffect가 알아서 복호화
+            // ✅ 서버 응답 키 이름에 맞게 수정 (encryptedManito)
+            const encrypted = body?.data?.encryptedManito || '';
+
+            setCipher(encrypted); // 🔥 cipher가 바뀌면 위 useEffect가 hash로 복호화
         } catch (err) {
             const res = err?.response;
             const msg = res?.data?.message || res?.data?.error || err?.message || '알 수 없는 오류가 발생했습니다.';
@@ -216,7 +218,7 @@ export default function ManitoVerifyPage() {
                                         </p>
                                     </>) : (<>
                                         <p className="text-xs text-zinc-400 mb-1">
-                                            서버에서 받은 암호문(encryptedManitto)입니다.
+                                            서버에서 받은 암호문(encryptedManito)입니다.
                                         </p>
                                         <pre
                                             className="text-xs bg-zinc-950 border border-zinc-800 rounded-lg p-3 break-all">
