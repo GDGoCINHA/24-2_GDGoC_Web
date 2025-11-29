@@ -218,7 +218,7 @@ export default function ManitoVerifyPage() {
                                     >
                                         <p className="text-base font-semibold">
                                             {ownerLabel}
-                                            <span className="text-zinc-300">의 마니또는 </span>
+                                            <span className="text-zinc-300">님의 마니또는 </span>
                                             <span className="text-sky-400">
                                                 {receiverName || '알 수 없음'}
                                             </span>
