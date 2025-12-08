@@ -207,7 +207,6 @@ function Invitation({onBack}) {
             </section>
 
             {/* 4. 지도 (찾아오는 길) */}
-            {/* 4. 지도 (찾아오는 길) */}
             <section>
                 <h2 className="text-sm md:text-base font-semibold text-neutral-900 mb-3">
                     찾아오는 길
