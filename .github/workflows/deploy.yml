@@ -18,6 +18,7 @@ jobs:
     env:
       NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}
       NEXT_PUBLIC_GOOGLE_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
 
     steps:
       - name: Checkout source code
