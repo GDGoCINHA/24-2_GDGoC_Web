@@ -1,7 +1,7 @@
 'use client';
 
-import {useEffect, useState} from 'react';
-import {GoogleMap, LoadScript, Marker} from '@react-google-maps/api';
+import {useState} from 'react';
+import {GoogleMap, Marker, useJsApiLoader} from '@react-google-maps/api';
 import Image from 'next/image';
 
 export default function HomecomingPage() {
@@ -219,44 +219,35 @@ function Invitation({onBack}) {
 }
 
 function HomecomingMap() {
-    const [isGoogleReady, setIsGoogleReady] = useState(false);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        // 이미 전역에 google.maps가 로드되어 있는 경우
-        if (window.google && window.google.maps) {
-            setIsGoogleReady(true);
-        }
-    }, []);
+    const {isLoaded, loadError} = useJsApiLoader({
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, id: 'homecoming-map-script',
+    });
 
     const center = {lat: 37.388493, lng: 126.639989};
 
-    const handleScriptLoad = () => {
-        setIsGoogleReady(true);
-    };
+    if (loadError) {
+        return (<div
+                className="rounded-2xl border border-red-300 bg-red-50 text-red-700 text-xs md:text-sm flex items-center justify-center h-[220px] md:h-[320px] lg:h-[420px]">
+                지도를 불러오는 중 오류가 발생했습니다.
+            </div>);
+    }
+
+    if (!isLoaded) {
+        return (<div
+                className="rounded-2xl border border-neutral-200 bg-neutral-100 text-neutral-500 text-xs md:text-sm flex items-center justify-center h-[220px] md:h-[320px] lg:h-[420px]">
+                지도를 불러오는 중입니다...
+            </div>);
+    }
 
     return (<div
             className="rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-100 h-[220px] md:h-[320px] lg:h-[420px]">
-            {isGoogleReady ? (<GoogleMap
-                    mapContainerClassName="w-full h-full"
-                    center={center}
-                    zoom={17}
-                    options={{disableDefaultUI: true, clickableIcons: false}}
-                >
-                    <Marker position={center}/>
-                </GoogleMap>) : (<LoadScript
-                    googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-                    onLoad={handleScriptLoad}
-                >
-                    <GoogleMap
-                        mapContainerClassName="w-full h-full"
-                        center={center}
-                        zoom={17}
-                        options={{disableDefaultUI: true, clickableIcons: false}}
-                    >
-                        <Marker position={center}/>
-                    </GoogleMap>
-                </LoadScript>)}
+            <GoogleMap
+                mapContainerClassName="w-full h-full"
+                center={center}
+                zoom={17}
+                options={{disableDefaultUI: true, clickableIcons: false}}
+            >
+                <Marker position={center}/>
+            </GoogleMap>
         </div>);
 }
