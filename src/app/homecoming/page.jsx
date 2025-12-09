@@ -110,37 +110,34 @@ function Invitation({onBack}) {
                     className="
       mt-6 space-y-3
       text-[13px] md:text-sm leading-relaxed text-neutral-900/90
-      max-w-[720px] mx-auto
-      text-left md:text-center
+      max-w-[720px] mx-auto md:max-w-full
+      text-left
     "
                 >
-                    {/* 1줄 소개 */}
+
                     <p>
                         GDGoC INHA가 처음으로 선보이는{" "}
                         <strong>제1회 홈커밍 데이(Homecoming Day)</strong>가 열립니다!
                     </p>
 
-                    {/* 2번째 문장: 굵은 부분은 데스크탑에서 따로 줄바꿈 */}
                     <p>
                         이번 행사는 현역 부원과 OB, 그리고 GDG 커뮤니티에 관심 있는 모든 분들이 한자리에 모여{" "}
-                        <br className="hidden md:block"/>
                         <span className="font-semibold">
         프로젝트 성과 공유 · 기술 교류 · 커뮤니티 네트워킹
       </span>
                         을 함께 나누는 뜻깊은 자리입니다.
                     </p>
 
-                    {/* 3번째 문장 */}
+
                     <p>
                         한 해 동안의 활동을 돌아보고, 앞으로 GDGoC INHA가 만들어갈 방향을 함께 이야기하며{" "}
-                        <br className="hidden md:block"/>
                         커뮤니티의 가치를 더욱 확장하는 의미 있는 시간을 준비했습니다.
                     </p>
                 </div>
             </section>
 
             {/* 2~3. 일시/장소 + 프로그램 (PC에서 2열 배치) */}
-            <section className="mb-8 md:mb-10 md:grid md:grid-cols-2 md:gap-8 text-left md:text-center">
+            <section className="mb-8 md:mb-10 md:grid md:grid-cols-2 md:gap-8 text-left">
                 {/* 왼쪽 컬럼: 일시 + 장소 */}
                 <div
                     className="space-y-5 md:pr-6 border-b md:border-b-0 md:border-r border-neutral-200 pb-6 md:pb-0">
