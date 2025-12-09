@@ -122,7 +122,7 @@ function Invitation({onBack}) {
 
                     {/* 2번째 문장: 굵은 부분은 데스크탑에서 따로 줄바꿈 */}
                     <p>
-                        이번 행사는 현역 부원과 OB, 그리고 GDG 커뮤니티에 관심 있는 모든 분들이 한자리에 모여
+                        이번 행사는 현역 부원과 OB, 그리고 GDG 커뮤니티에 관심 있는 모든 분들이 한자리에 모여{" "}
                         <br className="hidden md:block"/>
                         <span className="font-semibold">
         프로젝트 성과 공유 · 기술 교류 · 커뮤니티 네트워킹
@@ -132,7 +132,7 @@ function Invitation({onBack}) {
 
                     {/* 3번째 문장 */}
                     <p>
-                        한 해 동안의 활동을 돌아보고, 앞으로 GDGoC INHA가 만들어갈 방향을 함께 이야기하며
+                        한 해 동안의 활동을 돌아보고, 앞으로 GDGoC INHA가 만들어갈 방향을 함께 이야기하며{" "}
                         <br className="hidden md:block"/>
                         커뮤니티의 가치를 더욱 확장하는 의미 있는 시간을 준비했습니다.
                     </p>
