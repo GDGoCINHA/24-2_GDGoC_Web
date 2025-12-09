@@ -222,6 +222,11 @@ function HomecomingMap() {
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, id: 'homecoming-map-script',
     });
 
+    console.log(
+        "MAPS KEY PREFIX:",
+        process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.slice(0, 10)
+    );
+
     const center = {lat: 37.388493, lng: 126.639989};
 
     if (loadError) {
