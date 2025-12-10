@@ -3,6 +3,7 @@
 import {useState} from 'react';
 import {GoogleMap, Marker, useJsApiLoader} from '@react-google-maps/api';
 import Image from 'next/image';
+import {useSearchParams} from "next/navigation";
 
 export default function HomecomingPage() {
     const [showInvitation, setShowInvitation] = useState(false);
@@ -45,6 +46,12 @@ export default function HomecomingPage() {
    Hero 컴포넌트
 ================================ */
 function Hero({onOpenInvitation}) {
+    const searchParams = useSearchParams();
+
+    // 예: /homecoming?from=GOAT+멤버
+    const rawText = searchParams.get('from');        // 없으면 null
+    const testText = rawText ? (decodeURIComponent(rawText) + " ") : ''; // 기본값 처리
+
     return (<div className="flex flex-1 flex-col items-center gap-8 text-center">
         <Image
             src="/images/homecoming/main_img.png"
@@ -55,11 +62,13 @@ function Hero({onOpenInvitation}) {
             className="w-full max-w-2xl mt-[calc(50vh-235px)] md:mt-[100px] md:max-w-[790px]"
         />
 
-
-        <h1 className="text-2xl font-extrabold leading-tight text-neutral-900 md:text-4xl lg:text-5xl">
-            GDGoC INHA
+        <h1 className="text-xl font-extrabold leading-tight text-neutral-900 md:text-3xl">
+            GDGoC INHA{" "}
+            <br className="block md:hidden"/>
+            제1회 홈커밍데이에
             <br/>
-            제1회 홈커밍데이에 초대합니다!
+            {testText && (<>{testText}</>)}
+            여러분을 초대합니다!
         </h1>
 
         <button
@@ -223,27 +232,27 @@ function HomecomingMap() {
 
     if (loadError) {
         return (<div
-                className="rounded-2xl border border-red-300 bg-red-50 text-red-700 text-xs md:text-sm flex items-center justify-center h-[220px] md:h-[320px] lg:h-[420px]">
-                지도를 불러오는 중 오류가 발생했습니다.
-            </div>);
+            className="rounded-2xl border border-red-300 bg-red-50 text-red-700 text-xs md:text-sm flex items-center justify-center h-[220px] md:h-[320px] lg:h-[420px]">
+            지도를 불러오는 중 오류가 발생했습니다.
+        </div>);
     }
 
     if (!isLoaded) {
         return (<div
-                className="rounded-2xl border border-neutral-200 bg-neutral-100 text-neutral-500 text-xs md:text-sm flex items-center justify-center h-[220px] md:h-[320px] lg:h-[420px]">
-                지도를 불러오는 중입니다...
-            </div>);
+            className="rounded-2xl border border-neutral-200 bg-neutral-100 text-neutral-500 text-xs md:text-sm flex items-center justify-center h-[220px] md:h-[320px] lg:h-[420px]">
+            지도를 불러오는 중입니다...
+        </div>);
     }
 
     return (<div
-            className="rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-100 h-[220px] md:h-[320px] lg:h-[420px]">
-            <GoogleMap
-                mapContainerClassName="w-full h-full"
-                center={center}
-                zoom={17}
-                options={{disableDefaultUI: true, clickableIcons: false}}
-            >
-                <Marker position={center}/>
-            </GoogleMap>
-        </div>);
+        className="rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-100 h-[220px] md:h-[320px] lg:h-[420px]">
+        <GoogleMap
+            mapContainerClassName="w-full h-full"
+            center={center}
+            zoom={17}
+            options={{disableDefaultUI: true, clickableIcons: false}}
+        >
+            <Marker position={center}/>
+        </GoogleMap>
+    </div>);
 }
