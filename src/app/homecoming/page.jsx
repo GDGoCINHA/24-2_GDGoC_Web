@@ -62,9 +62,9 @@ function Hero({onOpenInvitation}) {
             className="w-full max-w-2xl mt-[calc(50vh-235px)] md:mt-[100px] md:max-w-[790px]"
         />
 
-        <h1 className="text-xl font-extrabold leading-tight text-neutral-900 md:text-4xl lg:text-5xl">
-            GDGoC INHA
-            <br/>
+        <h1 className="text-xl font-extrabold leading-tight text-neutral-900 md:text-3xl">
+            GDGoC INHA{" "}
+            <br className="block md:hidden"/>
             제1회 홈커밍데이에
             <br/>
             {testText && (<>{testText}</>)}
