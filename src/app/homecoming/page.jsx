@@ -171,6 +171,22 @@ function Invitation({onBack}) {
                             (인천 연수구 컨벤시아대로 204 인스타2)
                         </p>
                     </div>
+
+                    <div>
+                        <h2 className="text-sm md:text-base font-semibold text-neutral-900 mb-3">
+                            참가 신청
+                        </h2>
+
+                        <a
+                            href="https://docs.google.com/forms/d/e/1FAIpQLSddHWTKvn3noWvLJX_LuW7dhGsAgXl8miD0cOpdqhviByvVFw/viewform"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 rounded-full bg-neutral-900/5 px-3 py-1.5 text-xs font-medium text-neutral-800 hover:bg-neutral-900/10"
+                        >
+                            신청 링크 바로 가기
+                            <span aria-hidden>→</span>
+                        </a>
+                    </div>
                 </div>
 
                 {/* 오른쪽 컬럼: 프로그램 안내 */}
@@ -178,8 +194,7 @@ function Invitation({onBack}) {
                     <h2 className="text-sm md:text-base font-bold text-neutral-900 mb-3">
                         프로그램 안내
                     </h2>
-
-                    <div className="space-y-5 text-xs md:text-sm text-neutral-900">
+                    <div className="space-y-5 text-xs md:text-sm text-neutral-900 relative">
                         <div>
                             <p className="font-semibold mb-1">
                                 1부(13:00~) GOAT Final Day
