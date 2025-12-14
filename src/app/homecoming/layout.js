@@ -18,7 +18,7 @@ export const metadata = {
         url: "/homecoming",
         siteName: "GDGoC INHA",
         images: [{
-            url: "/images/homecoming/meta_img.png", width: 1200, height: 630, alt: "GDGoC INHA Homecoming Day",
+            url: "/images/homecoming/meta_img.png", width: 1143, height: 750, alt: "GDGoC INHA Homecoming Day",
         },],
         locale: "ko_KR",
         type: "website",
@@ -33,9 +33,5 @@ export const metadata = {
 };
 
 export default function HomecomingLayout({ children }) {
-    return (
-        <Suspense fallback={<Loader />}>
-            {children}
-        </Suspense>
-    );
+    return children;
 }
