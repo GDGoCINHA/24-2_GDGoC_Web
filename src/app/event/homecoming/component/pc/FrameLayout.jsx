@@ -5,10 +5,12 @@ import Frame from './Frame';
 import FrameViewport from './FrameViewport';
 import ScrollDots from './ScrollDots';
 
-export default function FrameLayout({visible}) {
+export default function FrameLayout() {
     const viewportRef = useRef(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const TOTAL = 4;
+    const SCROLL_DAMPING = 0.2;
+    const MAX_DELTA = 60;
 
     const onScroll = () => {
         const el = viewportRef.current;
@@ -24,17 +26,18 @@ export default function FrameLayout({visible}) {
     };
 
     const onWheel = (e) => {
-        if (!visible) return;
         const el = viewportRef.current;
         if (!el) return;
 
-        // 내부가 스크롤 가능할 때만 page 스크롤을 막고 내부로 보냄
-        const delta = e.deltaY;
+        const raw = e.deltaY;
+        const clamped = Math.max(-MAX_DELTA, Math.min(MAX_DELTA, raw));
+        const delta = clamped * SCROLL_DAMPING;
+
         const atTop = el.scrollTop <= 0;
         const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
         const canScrollInside = (delta > 0 && !atBottom) || (delta < 0 && !atTop);
 
-        if (!canScrollInside) return; // 내부 못 움직이면 바깥 스크롤/스냅에 맡김
+        if (!canScrollInside) return;
 
         e.preventDefault();
         el.scrollTop += delta;
@@ -43,7 +46,6 @@ export default function FrameLayout({visible}) {
     return (<div
         className={`
         absolute inset-0 w-[1400px] h-[1000px] m-auto pt-60 pb-10
-        ${visible ? '' : 'hidden'}
       `}
         onWheel={onWheel}
     >

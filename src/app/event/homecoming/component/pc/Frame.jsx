@@ -13,7 +13,7 @@ export default function Frame() {
                         h-10 w-[732px]
                         rounded-full bg-cred
                         -translate-y-1/2
-                        -rotate-15
+                        -rotate-[15deg]
                     "
             />
 
@@ -24,7 +24,7 @@ export default function Frame() {
                         h-10 w-[732px]
                         rounded-full bg-cblue
                         -translate-y-1/2
-                        rotate-15
+                        rotate-[15deg]
                     "
             />
         </div>

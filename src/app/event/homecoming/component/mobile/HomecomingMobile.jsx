@@ -40,12 +40,12 @@ export default function HomecomingMobile() {
         {/* 상단 고정 영역 */}
         <div className="px-4 pt-4 fixed z-10">
             <header className="flex items-center gap-2 mb-6">
-                <img src="/logo.png" alt="GDGoC logo" className="h-6 w-auto"/>
+                <img src="/images/logo.png" alt="GDGoC logo" className="h-6 w-auto"/>
             </header>
 
             <div className="w-full max-w-[390px] left-1/2 -translate-x-1/2 fixed">
                 <img
-                    src="/homecoming_main_img.png"
+                    src="/images/homecoming/main_img.png"
                     alt="Homecoming illustration"
                     className="h-auto block"
                 />
