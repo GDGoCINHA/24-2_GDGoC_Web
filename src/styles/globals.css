@@ -69,3 +69,21 @@ input {
   stroke-dashoffset: 1000;
 }
 
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE, Edge */
+    scrollbar-width: none;    /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;            /* Chrome, Safari */
+}
+
+@keyframes floatY {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.animate-floatY {
+    animation: floatY 1.6s ease-in-out infinite;
+}
+
