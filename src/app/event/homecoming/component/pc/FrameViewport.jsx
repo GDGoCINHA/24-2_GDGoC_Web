@@ -38,8 +38,6 @@ function FirstSection() {
         <div className="mt-8 flex text-8xl self-center font-bold">제 1회 홈커밍 데이</div>
 
         <p className="mt-20 px-24 text-2xl leading-relaxed">
-            <strong>GDGoC HomeComing : Networking with INCHEON</strong>은
-            <br/>
             오후 1시 입장을 시작으로, <strong>1부 프로젝트 성과 발표회</strong>와 <strong>시상</strong>,
             <br/>
             이후 <strong>오프닝 특강</strong>과 <strong>연간 활동 소개</strong>, <strong>OB 및 초청자 인사</strong>를 거쳐
@@ -112,7 +110,7 @@ function ThirdSection() {
 /* 4) 2부 카드형 */
 function FourthSection() {
     return (<div className="flex flex-col text-cwhite">
-        <div className="text-6xl self-center font-bold">2부 · Networking with INCHEON</div>
+        <div className="text-6xl self-center font-bold">2부 · IN·Fest</div>
         <div className="mt-6 text-2xl self-center text-cwhite/80">15:30–19:00</div>
 
         <div className="mt-16 grid grid-cols-2 gap-12 px-24">

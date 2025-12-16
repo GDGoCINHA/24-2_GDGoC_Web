@@ -68,8 +68,15 @@ export default function HomecomingInviteCard() {
                         <div className="flex-1 space-y-4">
                             {/* 요약 */}
                             <div className="text-white/90 text-[12px] leading-snug">
-                                13:00 입장을 시작으로 1부 프로젝트 데모데이 및 성과 발표/시상식이 진행되며,
-                                2부에서는 오프닝 특강과 팀별 게임·퀴즈, 자유 네트워킹으로 소통과 교류를 확장합니다.
+                                오후 1시 입장을 시작으로, 1부 프로젝트 성과 발표회와 시상,
+                                <br/>
+                                이후 오프닝 특강과 연간 활동 소개, OB 및 초청자 인사를 거쳐
+                                <br/>
+                                팀별 경쟁 게임·퀴즈·자유 네트워킹으로 이어지는 구성입니다.
+                                <br/>
+                                행사는 13:00–19:00까지 진행되며,
+                                <br/>
+                                마지막에는 전체 교류 마무리 후 뒤풀이 이동으로 마무리됩니다.
                             </div>
 
                             {/* 1부 */}
@@ -99,7 +106,7 @@ export default function HomecomingInviteCard() {
 
                             {/* 2부 */}
                             <div className="space-y-2">
-                                <div className="text-white font-bold">2부 (15:30–19:00) · Networking with INCHEON</div>
+                                <div className="text-white font-bold">2부 (15:30–19:00) · IN·Fest</div>
 
                                 <div className="space-y-1">
                                     <div className="flex gap-2">
