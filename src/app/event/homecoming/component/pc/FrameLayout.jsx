@@ -8,7 +8,7 @@ import ScrollDots from './ScrollDots';
 export default function FrameLayout() {
     const viewportRef = useRef(null);
     const [activeIndex, setActiveIndex] = useState(0);
-    const TOTAL = 4;
+    const TOTAL = 5;
     const SCROLL_DAMPING = 0.2;
     const MAX_DELTA = 60;
 
