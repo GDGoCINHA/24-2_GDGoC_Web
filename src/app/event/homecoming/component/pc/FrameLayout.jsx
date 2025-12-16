@@ -9,8 +9,6 @@ export default function FrameLayout() {
     const viewportRef = useRef(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const TOTAL = 5;
-    const SCROLL_DAMPING = 0.2;
-    const MAX_DELTA = 60;
 
     const onScroll = () => {
         const el = viewportRef.current;
@@ -29,18 +27,14 @@ export default function FrameLayout() {
         const el = viewportRef.current;
         if (!el) return;
 
-        const raw = e.deltaY;
-        const clamped = Math.max(-MAX_DELTA, Math.min(MAX_DELTA, raw));
-        const delta = clamped * SCROLL_DAMPING;
-
         const atTop = el.scrollTop <= 0;
         const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
-        const canScrollInside = (delta > 0 && !atBottom) || (delta < 0 && !atTop);
+        const canScrollInside = (e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop);
 
         if (!canScrollInside) return;
 
         e.preventDefault();
-        el.scrollTop += delta;
+        el.scrollTop += e.deltaY;
     };
 
     return (<div

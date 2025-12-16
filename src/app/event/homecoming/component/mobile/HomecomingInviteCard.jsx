@@ -142,7 +142,7 @@ export default function HomecomingInviteCard() {
                                 <div className="text-white font-bold">도착 안내</div>
                                 <div className="text-white text-[12px] leading-snug">
                                     • 1부 참석자: <span className="font-semibold">12:50</span>까지 도착<br/>
-                                    • 2부 참석자: <span className="font-semibold">15:20</span>까지 도착
+                                    • 2부 참석자: <span className="font-semibold">15:50</span>까지 도착
                                 </div>
                             </div>
 
