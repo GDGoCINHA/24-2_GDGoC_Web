@@ -211,7 +211,7 @@ function Invitation({onBack}) {
                                 2부(16:00~) Networking Session
                             </p>
                             <ul className="list-disc list-inside space-y-1 text-neutral-800">
-                                <li>오프닝 특강 - GDGoC Korea Organizer 김대현님 </li>
+                                <li>오프닝 특강 - GDG Campus Korea Organizer 김대현님 </li>
                                 <li>GDGoC INHA 연간 활동 소개 및 커뮤니티 정리</li>
                                 <li>OB 및 초청 연사 소개</li>
                                 <li>팀 기반 네트워킹 게임 진행</li>
