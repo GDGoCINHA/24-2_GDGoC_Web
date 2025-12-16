@@ -87,7 +87,7 @@ function SecondSection() {
 
         <div className="mt-14 px-24 text-cwhite/80 text-lg leading-snug">
             • 1부 참석자: <span className="font-semibold text-cwhite">12:50</span>까지 도착<br/>
-            • 2부 참석자: <span className="font-semibold text-cwhite">15:20</span>까지 도착
+            • 2부 참석자: <span className="font-semibold text-cwhite">15:50</span>까지 도착
         </div>
     </div>);
 }
@@ -144,8 +144,8 @@ function FifthSection() {
 
         <HomecomingMap/>
 
-        <div className="mt-14 px-24 text-cwhite/80 text-lg">
-            문의: <span className="font-semibold text-cwhite">010-2087-1816</span>
+        <div className="mt-14 px-24 text-cwhite/80 text-lg text-center">
+            문의사항이 있으실 경우, <span className="font-semibold text-cwhite">010-2087-1816</span>으로 편하게 연락 부탁드립니다.
         </div>
     </div>);
 }
