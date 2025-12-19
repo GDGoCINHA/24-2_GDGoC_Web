@@ -1,6 +1,9 @@
-export default function HomecomingAdminLayout({children}) {
-    return children;
-    // <ApiCodeGuard requiredRole="ORGANIZER" nextOverride="/event/homecoming/admin">
+import ApiCodeGuard from "@/components/auth/ApiCodeGuard";
 
-    // </ApiCodeGuard>
+export default function HomecomingAdminLayout({children}) {
+    return (
+        <ApiCodeGuard requiredRole="ORGANIZER" nextOverride="/event/homecoming/admin">
+            {children}
+        </ApiCodeGuard>
+    );
 }
