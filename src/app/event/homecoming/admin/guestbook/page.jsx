@@ -1,56 +1,17 @@
 'use client';
 
+import { useState, useRef, useCallback } from "react";
 import { useAuthenticatedApi } from "@/hooks/useAuthenticatedApi";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-const REFRESH_INTERVAL = 10000;
-
-const hashString = (value) => {
-    let hash = 0;
-    for (let i = 0; i < value.length; i += 1) {
-        hash = value.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return hash;
-};
-
-const mapToRange = (value, min, max) => {
-    const normalized = Math.abs(value % 1000) / 1000;
-    return min + normalized * (max - min);
-};
+import { useGuestbookEntries } from "@/hooks/homecoming/useGuestbookEntries";
+import GuestbookWordCloud from "@/components/event/homecoming/GuestbookWordCloud";
 
 export default function GuestbookAdminPage() {
+    const { entries, isLoading, error, lastSyncedAt, refresh } = useGuestbookEntries();
     const { apiClient } = useAuthenticatedApi();
-    const [entries, setEntries] = useState([]);
     const [formValues, setFormValues] = useState({ wristbandSerial: "", name: "" });
-    const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState("");
     const [statusMessage, setStatusMessage] = useState("");
-    const [lastSyncedAt, setLastSyncedAt] = useState(null);
     const statusTimerRef = useRef(null);
-
-    const fetchEntries = useCallback(async () => {
-        try {
-            setError("");
-            const res = await apiClient.get("/guestbook/entries");
-            setEntries(res?.data?.data ?? []);
-            setLastSyncedAt(new Date());
-        } catch (err) {
-            console.error("방명록 목록 조회 실패", err);
-            setError("방명록 목록을 불러오지 못했습니다.");
-        } finally {
-            setIsLoading(false);
-        }
-    }, [apiClient]);
-
-    useEffect(() => {
-        fetchEntries();
-        const interval = setInterval(fetchEntries, REFRESH_INTERVAL);
-
-        return () => {
-            clearInterval(interval);
-        };
-    }, [fetchEntries]);
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -79,7 +40,7 @@ export default function GuestbookAdminPage() {
             setFormValues({ wristbandSerial: "", name: "" });
             setStatusMessage("입장 등록이 완료되었습니다.");
             resetStatusTimer();
-            await fetchEntries();
+            await refresh();
         } catch (err) {
             console.error("방명록 등록 실패", err);
             const message = err?.response?.data?.message || "입장 등록에 실패했습니다.";
@@ -89,45 +50,6 @@ export default function GuestbookAdminPage() {
             setIsSubmitting(false);
         }
     };
-
-    useEffect(() => {
-        return () => {
-            if (statusTimerRef.current) {
-                clearTimeout(statusTimerRef.current);
-            }
-        };
-    }, []);
-
-    const words = useMemo(() => {
-        if (!entries.length) {
-            return [];
-        }
-
-        const recentThreshold = Math.max(entries.length - 5, 0);
-
-        return entries.map((entry, idx) => {
-            const key = entry.id ?? `${entry.wristbandSerial ?? "unknown"}-${idx}`;
-            const baseHash = hashString(`${key}-${entry.name}`);
-            const top = mapToRange(baseHash, 8, 92);
-            const left = mapToRange(baseHash * 3, 12, 88);
-            const fontSize = mapToRange(baseHash * 5, 0.9, 2.6);
-            const rotate = mapToRange(baseHash * 7, -12, 12);
-            const opacity = mapToRange(baseHash * 11, 0.35, 0.85);
-
-            return {
-                key,
-                label: entry.name,
-                isRecent: idx >= recentThreshold,
-                style: {
-                    top: `${top}%`,
-                    left: `${left}%`,
-                    fontSize: `${fontSize}rem`,
-                    opacity,
-                    transform: `translate(-50%, -50%) rotate(${rotate}deg)`,
-                },
-            };
-        });
-    }, [entries]);
 
     const isSubmitDisabled = isSubmitting || !formValues.wristbandSerial.trim() || !formValues.name.trim();
 
@@ -143,25 +65,7 @@ export default function GuestbookAdminPage() {
                             "radial-gradient(circle at 50% 70%, rgba(52,168,83,0.18), transparent 45%)",
                     }}
                 />
-                <div className="absolute inset-0 pointer-events-none select-none">
-                    {words.length ? (
-                        words.map((word) => (
-                            <span
-                                key={word.key}
-                                style={word.style}
-                                className={`absolute font-semibold tracking-wide drop-shadow-[0_2px_12px_rgba(15,23,42,0.08)] transition-all duration-700 ease-in-out ${word.isRecent ? "text-cblue" : "text-slate-500"}`}
-                            >
-                                {word.label}
-                            </span>
-                        ))
-                    ) : (
-                        !isLoading && (
-                            <div className="w-full h-full flex items-center justify-center text-slate-400 text-lg">
-                                아직 등록된 입장 정보가 없습니다.
-                            </div>
-                        )
-                    )}
-                </div>
+                <GuestbookWordCloud entries={entries} isLoading={isLoading} recentCount={5} />
             </section>
 
             <section className="relative z-10 w-full px-4 pb-12">
@@ -172,10 +76,11 @@ export default function GuestbookAdminPage() {
                     <div className="flex flex-col gap-3 text-slate-700">
                         <h2 className="text-2xl font-semibold text-slate-900">입장 등록</h2>
                         <p className="text-sm">현재 {entries.length}명의 게스트가 입장했습니다.</p>
+                        {error && <p className="text-sm text-cred">{error}</p>}
                     </div>
                     <div className="flex flex-col gap-4 md:flex-row">
                         <label className="flex-1 text-sm text-slate-600">
-                            <span className="block mb-2 font-medium text-slate-800">손목밴드 번호</span>
+                            <span className="block mb-2 font-medium text-slate-800">손목띠지 번호</span>
                             <input
                                 name="wristbandSerial"
                                 value={formValues.wristbandSerial}
@@ -212,7 +117,6 @@ export default function GuestbookAdminPage() {
                                 마지막 동기화: {lastSyncedAt.toLocaleTimeString("ko-KR", { hour12: false })}
                             </p>
                         )}
-                        {error && <p className="text-cred mt-1">{error}</p>}
                     </div>
                 </form>
             </section>
