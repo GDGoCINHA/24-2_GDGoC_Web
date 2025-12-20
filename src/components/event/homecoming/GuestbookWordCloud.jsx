@@ -18,8 +18,10 @@ export default function GuestbookWordCloud({ entries, isLoading, recentCount = 5
 
         return entries.map((entry, idx) => {
             const key = entry.id ?? `${entry.wristbandSerial ?? "unknown"}-${idx}`;
-            const top = mapToRange(Math.random(), 12, 88);
-            const left = mapToRange(Math.random(), 10, 90);
+            const goldenRatio = 0.61803398875;
+            const base = Math.random() + idx * goldenRatio;
+            const top = mapToRange(base % 1, 12, 88);
+            const left = mapToRange((base * goldenRatio) % 1, 10, 90);
             const fontSize = mapToRange(Math.random(), 1.2, 3.2);
             const rotate = mapToRange(Math.random(), -10, 10);
             const opacity = mapToRange(Math.random(), 0.45, 0.95);
