@@ -372,7 +372,9 @@ export default function CoreRecruit() {
         />
 
         <div>
-          <div className='text-white text-xl'>팀</div>
+          <div className='text-white text-xl'>
+            팀<span className='text-[#EA4336]'>*</span>
+          </div>
           <div className='flex flex-wrap gap-4 mt-[20px] w-full mobile:gap-3'>
             {TEAM_OPTIONS.map((label) => (
               <Checkbox
@@ -392,7 +394,9 @@ export default function CoreRecruit() {
         </div>
 
         <div className='flex flex-col gap-2'>
-          <label className='text-white text-xl'>GDGoC INHA Core Member에 지원한 동기 (500자 이내) *</label>
+          <label className='text-white text-xl'>
+            GDGoC INHA Core Member에 지원한 동기 (500자 이내) <span className='text-[#EA4336]'>*</span>
+          </label>
           <Textarea
             minRows={5}
             maxLength={500}
@@ -412,7 +416,9 @@ export default function CoreRecruit() {
         </div>
 
         <div className='flex flex-col gap-2'>
-          <label className='text-white text-xl'>코어멤버로서 맡고 싶은 업무/프로젝트/행사/비전 (500자 이내)</label>
+          <label className='text-white text-xl'>
+            코어멤버로서 맡고 싶은 업무/프로젝트/행사/비전 (500자 이내) <span className='text-[#EA4336]'>*</span>
+          </label>
           <Textarea
             minRows={5}
             maxLength={500}
@@ -467,7 +473,9 @@ export default function CoreRecruit() {
         </div>
 
         <div className='flex flex-col gap-2'>
-          <label className='text-white text-xl'>Core Member로서의 각오 (100자 이내)</label>
+          <label className='text-white text-xl'>
+            Core Member로서의 각오 (100자 이내) <span className='text-[#EA4336]'>*</span>
+          </label>
           <Textarea
             minRows={3}
             maxLength={100}
@@ -493,24 +501,22 @@ export default function CoreRecruit() {
           <div className='space-y-6 text-white/90'>
             <div>
               <div className='text-xl font-bold mb-4'>모집 일정</div>
-              <div className='mb-2'>✅ 서류 지원 기간 : 2025년 09월 8일 (월) ~ 2025년 09월 21일 (일) 11:59:59</div>
-              <div className='mb-2'>✅ 서류 결과 발표 : ~ 2025년 09월 21일 (일)</div>
-              <div className='mb-2'>✅ 면접 진행 기간 : 2025년 09월 22일 (월) ~ 2025년 09월 26일 (금)</div>
+              <div className='mb-2'>✅ 서류 지원 기간 : 2025. 12. 26.(금) - 2026. 01. 09.(금) 23:59:59</div>
+              <div className='mb-2'>✅ 서류 결과 발표 : ~ 2026. 01. 10.(토)</div>
+              <div className='mb-2'>✅ 면접 진행 기간 : 2026. 01. 12.(월) - 2026. 01. 16.(금)</div>
               <div className='text-white/70 text-sm mb-2'>※ 지원자 및 면접관의 일정에 따라 마감 전 조기 면접 진행이 가능할 수 있습니다.</div>
-              <div className='mb-2'>✅ 최종 결과 발표 : ~ 2025년 09월 28일 (일)</div>
-              <div className='mb-2'>❗️ 첫 온보딩 : 2025년 09월 30일 (화)</div>
+              <div className='mb-2'>✅ 최종 결과 발표 : ~ 2026. 01. 16.(금)</div>
             </div>
             <div className="border-t border-white/20 my-4" />
             <div>
               <div className='text-xl font-bold mb-4'>면접 안내</div>
-              <div className='mb-2'>• 원칙적으로 대면 면접을 진행하며, 부득이한 경우에 한해 비대면으로 조정될 수 있습니다.</div>
+              <div className='mb-2'>• 원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.</div>
               <div className='mb-2'>• 면접은 인하대학교 내부 장소에서 진행됩니다.</div>
             </div>
             <div className="border-t border-white/20 my-4" />
             <div>
               <div className='text-xl font-bold mb-4'>활동 안내</div>
-              <div className='mb-2'>• 운영진으로 활동 시, 매주 화요일 19:00~21:00 정기 운영진 회의에 필수참석해야합니다.</div>
-              <div className='mb-2'>• 단, 2시간 전체 참석이 아닌 최소 1시간 이상 필참을 원칙으로 합니다.</div>
+              <div className='mb-2'>• 운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다. (일정은 1월 내로 공지 드립니다.)</div>
             </div>
           </div>
         </div>
