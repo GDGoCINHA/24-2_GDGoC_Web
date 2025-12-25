@@ -26,11 +26,11 @@ export default function CoreRecruitSubmit() {
       <div className='text-xl mt-[20px] mobile:text-sm items-center justify-center mobile:text-center'>
         <div className="flex flex-col items-start mt-5 justify-center text-white gap-2">
           <div className="text-xl font-bold mb-2">아래 일정을 한번 더 확인해주세요!</div>
-          <div>✅ 서류 지원 기간 : 2025년 09월 8일 (월) ~ 2025년 09월 21일 (일) 11:59:59</div>
-          <div>✅ 서류 결과 발표 : ~ 2025년 09월 21일 (일)</div>
-          <div>✅ 면접 진행 기간 : 2025년 09월 22일 (월) ~ 2025년 09월 26일 (금)</div>
+          <div>✅ 서류 지원 기간 : 2025. 12. 26.(금) - 2026. 01. 09.(금) 23:59:59</div>
+          <div>✅ 서류 결과 발표 : ~ 2026. 01. 10.(토)</div>
+          <div>✅ 면접 진행 기간 : 2026. 01. 12.(월) - 2026. 01. 16.(금)</div>
           <div className="text-white/70 text-sm mb-2">※ 지원자 및 면접관의 일정에 따라 마감 전 조기 면접 진행이 가능할 수 있습니다.</div>
-          <div>✅ 최종 결과 발표 : ~ 2025년 09월 28일 (일)</div>
+          <div>✅ 최종 결과 발표 : ~ 2026. 01. 16.(금)</div>
         </div>
       </div>
       <div className='flex gap-3 mt-[50px] mb-[50px]'>
