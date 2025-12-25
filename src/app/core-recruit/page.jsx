@@ -256,7 +256,7 @@ export default function CoreRecruit() {
           onValueChange={handleValueChange('name')}
           variant='bordered'
           labelPlacement='outside'
-          placeholder=' '
+          placeholder='이름을 입력해주세요'
           disableAutoFocus
           className='!mt-[10px]'
           classNames={{
@@ -296,7 +296,7 @@ export default function CoreRecruit() {
           onValueChange={handleValueChange('phone')}
           variant='bordered'
           labelPlacement='outside'
-          placeholder=' '
+          placeholder='010-1234-5678'
           inputMode='tel'
           disableAutoFocus
           className='!mt-[10px]'
@@ -360,7 +360,7 @@ export default function CoreRecruit() {
           onValueChange={handleValueChange('email')}
           variant='bordered'
           labelPlacement='outside'
-          placeholder=' '
+          placeholder='example@inha.edu'
           disableAutoFocus
           className='!mt-[10px]'
           classNames={{
