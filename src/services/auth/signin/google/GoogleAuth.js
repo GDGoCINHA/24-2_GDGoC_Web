@@ -22,13 +22,29 @@ export const GoogleAuthComponent = () => {
     }
 
     const code = encodeURIComponent(decodedCode);
+    const rawState = searchParams.get('state');
+    let nextPath = null;
+    if (rawState) {
+      try {
+        const decodedState = decodeURIComponent(rawState);
+        if (decodedState.startsWith('/')) {
+          nextPath = decodedState;
+        }
+      } catch {
+        if (rawState.startsWith('/')) {
+          nextPath = rawState;
+        }
+      }
+    }
 
     exchangeGoogleToken(code)
       .then((res) => {
-        const { exists, access_token, email, name } = res.data.data;
+        const data = res?.data?.data || {};
+        const exists = typeof data.exists === 'boolean' ? data.exists : data.isExists;
+        const { access_token, email, name } = data;
         if (exists) {
           setAccessToken(access_token);
-          router.push('/main');
+          router.push(nextPath || '/main');
         } else {
           alert('회원 정보가 없습니다. 회원가입을 완료해주세요.');
           sessionStorage.setItem('signup_email', email);
