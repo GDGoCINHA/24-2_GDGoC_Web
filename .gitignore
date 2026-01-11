@@ -40,4 +40,4 @@ yarn-error.log*
 next-env.d.ts
 
 # ide files
-.idea/*
+.idea
