@@ -5,7 +5,7 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, Navba
 import { Heart, User, LogOut } from "lucide-react";
 import Image from 'next/image';
 
-import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi.js';
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
 import gdgocIcon from '@public/icons/logo.png';
 

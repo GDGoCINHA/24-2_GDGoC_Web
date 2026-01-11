@@ -8,7 +8,7 @@ import Loader from '@/components/ui/common/Loader';
 /**
  * ApiCodeGuard
  * - /auth/{role}?next=<...>&team=<...>(옵션) 호출해 200(또는 body.code=200)이면 통과
- * - 아니면 로그인(/auth/signin?next=...)으로 보냄
+ * - 아니면 로그인(/login?next=...)으로 보냄
  *
  * props:
  *  - requiredRole: 'GUEST'|'MEMBER'|'CORE'|'LEAD'|'ORGANIZER'|'ADMIN'
@@ -37,7 +37,7 @@ export default function ApiCodeGuard({requiredRole, requiredTeam = '', nextOverr
     useEffect(() => {
         if (!requiredRole) {
             // 역할이 없으면 바로 차단
-            router.replace(`/auth/signin?next=${nextUrl}`);
+            router.replace(`/login?next=${nextUrl}`);
             return;
         }
 
@@ -59,11 +59,11 @@ export default function ApiCodeGuard({requiredRole, requiredTeam = '', nextOverr
                 if (okHttp && okBody) {
                     setAllowed(true);
                 } else {
-                    router.replace(`/auth/signin?next=${nextUrl}`);
+                    router.replace(`/login?next=${nextUrl}`);
                 }
             } catch {
                 if (!cancelledRef.current) {
-                    router.replace(`/auth/signin?next=${nextUrl}`);
+                    router.replace(`/login?next=${nextUrl}`);
                 }
             } finally {
                 if (!cancelledRef.current) setChecking(false);
