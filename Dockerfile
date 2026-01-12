@@ -1,5 +1,5 @@
 # 1단계: 빌드 환경
-FROM node:18 AS builder
+FROM node:22 AS builder
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ RUN ls -la /app/.next || echo ".next 디렉토리가 없습니다"
 RUN ls -la /app/out || echo "out 디렉토리가 없습니다"
 
 # 2단계: 실행 환경
-FROM node:18
+FROM node:22
 
 WORKDIR /app
 
