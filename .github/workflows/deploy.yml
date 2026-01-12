@@ -60,19 +60,19 @@ jobs:
 
       # (선택) 캐시 헤더 전략: 해시된 자산은 장기 캐시, HTML은 no-cache
       # 프로젝트에 맞게 include/exclude 패턴 조정
-      - name: Upload static assets (long cache)
+      - name: Sync static assets (long cache, delete removed)
         run: |
-          aws s3 cp ./out s3://$TARGET_BUCKET \
-            --recursive \
+          aws s3 sync ./out s3://$TARGET_BUCKET \
+            --delete \
             --exclude "*" \
             --include "_next/**" --include "static/**" --include "assets/**" \
             --cache-control "public, max-age=31536000, immutable" \
             --metadata-directive REPLACE
-      - name: Upload html (no cache)
+      - name: Sync html (no cache, delete removed)
         run: |
-          aws s3 cp ./out s3://$TARGET_BUCKET \
-            --recursive \
-            --exclude "_next/*" --exclude "static/*" --exclude "assets/*" \
+          aws s3 sync ./out s3://$TARGET_BUCKET \
+            --delete \
+            --exclude "_next/**" --exclude "static/**" --exclude "assets/**" \
             --cache-control "no-cache" \
             --metadata-directive REPLACE
       # (단순화 원하면 기존 sync 한 줄 유지 가능)
