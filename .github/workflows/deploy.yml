@@ -17,16 +17,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}
-      NEXT_PUBLIC_GOOGLE_REDIRECT_URI: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'yarn'
 
       - name: Set env for develop
@@ -35,7 +35,7 @@ jobs:
           echo "TARGET_BUCKET=${{ secrets.AWS_S3_BUCKET_DEV }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_APP_ENV=dev" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_BASE_API_URL=${{ secrets.NEXT_PUBLIC_BASE_API_URL_DEV }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI_DEV }}" >> $GITHUB_ENV
 
       - name: Set env for main
         if: github.ref == 'refs/heads/master'
@@ -43,7 +43,7 @@ jobs:
           echo "TARGET_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_APP_ENV=production" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_BASE_API_URL=${{ secrets.NEXT_PUBLIC_BASE_API_URL }}" >> $GITHUB_ENV
-          echo "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_GOOGLE_REDIRECT_URI=${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_URI }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
