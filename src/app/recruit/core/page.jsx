@@ -318,8 +318,8 @@ export default function RecruitCore() {
                   </label>
                 </div>
 
-                <div className="flex w-full gap-3">
-                  <div className="flex-1">
+                <div className="grid w-full gap-3 grid-cols-2 md:grid-cols-4">
+                  <div className="w-full">
                     <input
                       id="team-hr"
                       name="team"
@@ -337,7 +337,7 @@ export default function RecruitCore() {
                     </label>
                   </div>
 
-                  <div className="flex-1">
+                  <div className="w-full">
                     <input
                       id="team-bd"
                       name="team"
@@ -355,7 +355,7 @@ export default function RecruitCore() {
                     </label>
                   </div>
 
-                  <div className="flex-1">
+                  <div className="w-full">
                     <input
                       id="team-tech"
                       name="team"
@@ -373,7 +373,7 @@ export default function RecruitCore() {
                     </label>
                   </div>
 
-                  <div className="flex-1">
+                  <div className="w-full">
                     <input
                       id="team-design"
                       name="team"
