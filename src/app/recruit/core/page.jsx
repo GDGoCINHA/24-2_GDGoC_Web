@@ -2,20 +2,25 @@
 
 import { majorOptions } from '@/constant/majorOptions'
 import { useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
 import CustomCheckbox from './CustomCheckbox'
 import Image from 'next/image'
+import axios from 'axios'
 
 export default function RecruitCore() {
+  const { accessToken } = useAuth()
   const steps = ['기본정보', '내용작성', '일정안내', '약관동의']
-  const majors = ['선택', '컴퓨터과학', '정보통신공학', '소프트웨어공학', '전자공학', '기타']
-  const [isChecked, setIsChecked] = useState(false)
+  const [scheduleChecked, setScheduleChecked] = useState(false)
+  const [agreementChecked, setAgreementChecked] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const [errors, setErrors] = useState({})
   const [formData, setFormData] = useState({
     name: '',
     studentId: '',
     email: '',
     major: '',
     phone: '',
+    team: '',
     motivation: '',
     role: '',
     strength: '',
@@ -45,6 +50,35 @@ export default function RecruitCore() {
     }
   }
 
+  const validateCurrentStep = () => {
+    const newErrors = {}
+
+    if (currentStep === 0) {
+      // Step 0: 기본정보
+      if (!formData.name.trim()) newErrors.name = true
+      if (!formData.studentId.trim()) newErrors.studentId = true
+      if (!formData.email.trim()) newErrors.email = true
+      if (!formData.major.trim()) newErrors.major = true
+      if (!formData.phone.trim()) newErrors.phone = true
+    } else if (currentStep === 1) {
+      // Step 1: 내용작성
+      if (!formData.team.trim()) newErrors.team = true
+      if (!formData.motivation.trim()) newErrors.motivation = true
+      if (!formData.role.trim()) newErrors.role = true
+      if (!formData.strength.trim()) newErrors.strength = true
+      if (!formData.determination.trim()) newErrors.determination = true
+    } else if (currentStep === 2) {
+      // Step 2: 일정안내
+      if (!scheduleChecked) newErrors.scheduleCheck = true
+    } else if (currentStep === 3) {
+      // Step 3: 약관동의
+      if (!agreementChecked) newErrors.agreementCheck = true
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
   const handleRemoveFile = (index) => {
     setFormData((prev) => ({
       ...prev,
@@ -60,16 +94,54 @@ export default function RecruitCore() {
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // 현재 step 검증
+    if (!validateCurrentStep()) {
+      return
+    }
 
     if (currentStep < steps.length - 1) {
       // 마지막 단계가 아니면 다음 스텝으로
       setCurrentStep(currentStep + 1)
+      setErrors({})
     } else {
       // 마지막 단계면 제출
-      console.log('제출된 데이터:', formData)
-      // 여기에 제출 로직 추가
+      try {
+        const payload = {
+          snapshot: {
+            name: formData.name,
+            phone: formData.phone,
+            major: formData.major
+          },
+          team: formData.team,
+          motivation: formData.motivation,
+          wish: formData.role,
+          strengths: formData.strength,
+          pledge: formData.determination,
+          fileUrls: []
+        }
+
+        console.log('[지원서 제출] 요청 데이터:', payload)
+
+        const response = await axios.post('/api/recruit/core/applications', payload, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`
+          }
+        })
+
+        console.log('[지원서 제출] 성공:', response.status, response.data)
+        alert('지원서가 제출되었습니다!')
+      } catch (error) {
+        console.log('[지원서 제출] 에러:', error.response?.status, error.response?.data)
+        if (error.response?.status === 409) {
+          alert('이미 지원이 완료되었습니다.')
+        } else {
+          alert('지원서 제출 중 오류가 발생했습니다.')
+        }
+      }
     }
   }
 
@@ -80,8 +152,8 @@ export default function RecruitCore() {
   }
 
   return (
-    <main className="w-full">
-      <div className="max-w-137.5 w-full mx-auto my-12 min-h-screen text-white">
+    <main className="relative flex min-h-screen justify-center">
+      <div className="max-w-85.75 md:max-w-137.5 w-full mx-auto my-12 min-h-screen text-white">
         {/* ----- Header ----- */}
         <div className="flex gap-3 mb-8 items-center">
           <Image
@@ -124,7 +196,7 @@ export default function RecruitCore() {
         </div>
 
         {/* ----- Form ----- */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           {/* 기본정보 (Step 0) */}
           {currentStep === 0 && (
             <>
@@ -136,8 +208,8 @@ export default function RecruitCore() {
                 </ul>
               </div>
 
-              <div className="flex gap-4 mb-4">
-                <div className="flex-1">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="col-span-1">
                   <label htmlFor="name" className="block mb-1 text-white font-bold">
                     이름 <span className="text-red-600">*</span>
                   </label>
@@ -147,12 +219,16 @@ export default function RecruitCore() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    required
-                    className="ml-0! w-full p-2.5 text-base bg-gray-300 border border-gray-400 rounded-full"
+                    className={`ml-0! w-full p-2.5 text-base bg-gray-300 border rounded-full ${
+                      errors.name ? 'border-red-600' : 'border-gray-400'
+                    }`}
                   />
+                  {errors.name && (
+                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  )}
                 </div>
 
-                <div className="flex-1">
+                <div className="col-span-1">
                   <label htmlFor="studentId" className="block mb-1 text-white font-bold">
                     학번 <span className="text-red-600">*</span>
                   </label>
@@ -162,12 +238,16 @@ export default function RecruitCore() {
                     name="studentId"
                     value={formData.studentId}
                     onChange={handleChange}
-                    required
-                    className="ml-0! w-full p-2.5 text-base bg-gray-300 border border-gray-400 rounded-full"
+                    className={`ml-0! w-full p-2.5 text-base bg-gray-300 border rounded-full ${
+                      errors.studentId ? 'border-red-600' : 'border-gray-400'
+                    }`}
                   />
+                  {errors.studentId && (
+                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  )}
                 </div>
 
-                <div className="flex-2">
+                <div className="col-span-2">
                   <label htmlFor="email" className="block mb-1 text-white font-bold">
                     이메일 <span className="text-red-600">*</span>
                   </label>
@@ -177,12 +257,15 @@ export default function RecruitCore() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    required
-                    className="ml-0! w-full p-2.5 text-base bg-gray-300 border border-gray-400 rounded-full"
+                    className={`ml-0! w-full p-2.5 text-base bg-gray-300 border rounded-full ${
+                      errors.email ? 'border-red-600' : 'border-gray-400'
+                    }`}
                   />
+                  {errors.email && (
+                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  )}
                 </div>
               </div>
-
               <div className="mb-4">
                 <label htmlFor="major" className="block mb-1 text-white font-bold">
                   주전공 <span className="text-red-600">*</span>
@@ -193,12 +276,16 @@ export default function RecruitCore() {
                   value={formData.major}
                   onChange={handleChange}
                   required
-                  className="w-full p-2.5 text-base  border border-gray-400 rounded-full cursor-pointer"
+                  className="w-full p-2.5 text-base  border border-gray-400 rounded-full cursor-pointer "
                 >
                   {majorOptions.map((section) => (
                     <optgroup className="bg-gray-300" label={section.title} key={section.title}>
                       {section.items.map((item) => (
-                        <option className="bg-gray-300" key={item.key} value={item.value}>
+                        <option
+                          className="bg-gray-300 hover:bg-white"
+                          key={item.key}
+                          value={item.value}
+                        >
                           {item.value}
                         </option>
                       ))}
@@ -217,9 +304,13 @@ export default function RecruitCore() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  required
-                  className="ml-0! w-full p-2.5 text-base border border-gray-400 rounded-full"
+                  className={`ml-0! w-full p-2.5 text-base border rounded-full ${
+                    errors.phone ? 'border-red-600' : 'border-gray-400'
+                  }`}
                 />
+                {errors.phone && (
+                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                )}
               </div>
             </>
           )}
@@ -241,11 +332,13 @@ export default function RecruitCore() {
                       name="team"
                       type="radio"
                       value="HR"
+                      checked={formData.team === 'HR'}
+                      onChange={handleChange}
                       className="peer hidden"
                     />
                     <label
                       htmlFor="team-hr"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-red-600 peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
                     >
                       HR
                     </label>
@@ -257,11 +350,13 @@ export default function RecruitCore() {
                       name="team"
                       type="radio"
                       value="BD"
+                      checked={formData.team === 'BD'}
+                      onChange={handleChange}
                       className="peer hidden"
                     />
                     <label
                       htmlFor="team-bd"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-red-600 peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
                     >
                       BD
                     </label>
@@ -273,11 +368,13 @@ export default function RecruitCore() {
                       name="team"
                       type="radio"
                       value="TECH"
+                      checked={formData.team === 'TECH'}
+                      onChange={handleChange}
                       className="peer hidden"
                     />
                     <label
                       htmlFor="team-tech"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-red-600 peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
                     >
                       TECH
                     </label>
@@ -288,17 +385,22 @@ export default function RecruitCore() {
                       id="team-design"
                       name="team"
                       type="radio"
-                      value="Design"
+                      value="PR/DESIGN"
+                      checked={formData.team === 'PR/DESIGN'}
+                      onChange={handleChange}
                       className="peer hidden"
                     />
                     <label
                       htmlFor="team-design"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-red-600 peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
                     >
-                      PR / DESIGN
+                      PR·DESIGN
                     </label>
                   </div>
                 </div>
+                {errors.team && (
+                  <p className="mt-1 text-xs text-red-600">※ 필수 선택 사항입니다.</p>
+                )}
               </div>
 
               <div className="mb-6">
@@ -314,15 +416,19 @@ export default function RecruitCore() {
                     value={formData.motivation}
                     onChange={handleChange}
                     maxLength={500}
-                    required
                     rows={6}
-                    className="w-full p-3 text-base border border-gray-400 rounded-xl resize-none"
+                    className={`w-full p-3 text-base border rounded-xl resize-none ${
+                      errors.motivation ? 'border-red-600' : 'border-gray-400'
+                    }`}
                     placeholder="내용을 입력하세요."
                   />{' '}
                   <span className="absolute bottom-4 right-4 text-sm text-gray-400">
                     ({formData.motivation.length} / 500)
                   </span>
                 </div>
+                {errors.motivation && (
+                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                )}
               </div>
 
               <div className="mb-6">
@@ -338,15 +444,19 @@ export default function RecruitCore() {
                     value={formData.role}
                     onChange={handleChange}
                     maxLength={500}
-                    required
                     rows={6}
-                    className="w-full p-3 text-base border border-gray-400 rounded-xl resize-none"
+                    className={`w-full p-3 text-base border rounded-xl resize-none ${
+                      errors.role ? 'border-red-600' : 'border-gray-400'
+                    }`}
                     placeholder="내용을 입력하세요."
                   />
                   <span className="absolute bottom-4 right-4 text-sm text-gray-400">
                     ({formData.role.length} / 500)
                   </span>
                 </div>
+                {errors.role && (
+                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                )}
               </div>
 
               <div className="mb-6">
@@ -362,15 +472,19 @@ export default function RecruitCore() {
                     value={formData.strength}
                     onChange={handleChange}
                     maxLength={500}
-                    required
                     rows={6}
-                    className="w-full p-3 text-base border border-gray-400 rounded-xl resize-none"
+                    className={`w-full p-3 text-base border rounded-xl resize-none ${
+                      errors.strength ? 'border-red-600' : 'border-gray-400'
+                    }`}
                     placeholder="내용을 입력하세요."
                   />
                   <span className="absolute bottom-4 right-4 text-sm text-gray-400">
                     ({formData.strength.length} / 500)
                   </span>
                 </div>
+                {errors.strength && (
+                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                )}
               </div>
 
               <div className="mb-6">
@@ -386,15 +500,19 @@ export default function RecruitCore() {
                     value={formData.determination}
                     onChange={handleChange}
                     maxLength={100}
-                    required
                     rows={3}
-                    className="w-full p-3 text-base border border-gray-400 rounded-xl resize-none"
+                    className={`w-full p-3 text-base border rounded-xl resize-none ${
+                      errors.determination ? 'border-red-600' : 'border-gray-400'
+                    }`}
                     placeholder="내용을 입력하세요."
                   />
                   <span className="absolute bottom-4 right-4 text-sm text-gray-400">
                     ({formData.determination.length} / 100)
                   </span>
                 </div>
+                {errors.determination && (
+                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                )}
               </div>
 
               <div className="mb-6">
@@ -505,13 +623,18 @@ export default function RecruitCore() {
                 </ul>
               </div>
 
-              <div className="flex justify-end w-full mb-6">
-                <CustomCheckbox
-                  checked={isChecked}
-                  onChange={() => setIsChecked(!isChecked)}
-                  required={true}
-                  label="전체 일정을 확인하였습니다."
-                />
+              <div className="flex w-full mb-6">
+                <div className="flex flex-col items-end w-full">
+                  <CustomCheckbox
+                    checked={scheduleChecked}
+                    onChange={() => setScheduleChecked(!scheduleChecked)}
+                    required={true}
+                    label="전체 일정을 확인하였습니다."
+                  />
+                  {errors.scheduleCheck && (
+                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  )}
+                </div>
               </div>
             </>
           )}
@@ -541,12 +664,17 @@ export default function RecruitCore() {
                 </ul>
               </div>
 
-              <div className="flex justify-end w-full mb-6">
-                <CustomCheckbox
-                  checked={isChecked}
-                  onChange={() => setIsChecked(!isChecked)}
-                  required={true}
-                />
+              <div className="flex w-full mb-6">
+                <div className="flex flex-col items-end w-full">
+                  <CustomCheckbox
+                    checked={agreementChecked}
+                    onChange={() => setAgreementChecked(!agreementChecked)}
+                    required={true}
+                  />
+                  {errors.agreementCheck && (
+                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  )}
+                </div>
               </div>
             </>
           )}
