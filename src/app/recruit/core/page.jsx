@@ -152,7 +152,7 @@ export default function RecruitCore() {
   }
 
   return (
-    <main className="relative flex min-h-screen justify-center">
+    <main className="bg-black relative flex min-h-screen justify-center">
       <div className="max-w-85.75 md:max-w-137.5 w-full mx-auto my-12 min-h-screen text-white">
         {/* ----- Header ----- */}
         <div className="flex gap-3 mb-8 items-center">
@@ -177,19 +177,17 @@ export default function RecruitCore() {
                 <div
                   className={`rounded-full flex items-center justify-center px-3 py-2 whitespace-nowrap text-sm ${
                     index === currentStep
-                      ? 'bg-red-500'
+                      ? 'bg-red'
                       : index < currentStep
-                        ? 'border border-red-500'
-                        : 'border text-gray-300'
+                        ? 'border border-red'
+                        : 'border text-gray-600'
                   }`}
                 >
                   {step}
                 </div>
               </div>
               {index < steps.length - 1 && (
-                <div
-                  className={`h-px flex-1 ${index < currentStep ? 'bg-red-500' : 'bg-gray-600'}`}
-                />
+                <div className={`h-px flex-1 ${index < currentStep ? 'bg-red' : 'bg-gray-600'}`} />
               )}
             </div>
           ))}
@@ -211,7 +209,7 @@ export default function RecruitCore() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 <div className="col-span-1">
                   <label htmlFor="name" className="block mb-1 text-white font-bold">
-                    이름 <span className="text-red-600">*</span>
+                    이름 <span className="text-red">*</span>
                   </label>
                   <input
                     type="text"
@@ -220,17 +218,15 @@ export default function RecruitCore() {
                     value={formData.name}
                     onChange={handleChange}
                     className={`ml-0! w-full p-2.5 text-base bg-gray-300 border rounded-full ${
-                      errors.name ? 'border-red-600' : 'border-gray-400'
+                      errors.name ? 'border-red' : 'border-none'
                     }`}
                   />
-                  {errors.name && (
-                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
-                  )}
+                  {errors.name && <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>}
                 </div>
 
                 <div className="col-span-1">
                   <label htmlFor="studentId" className="block mb-1 text-white font-bold">
-                    학번 <span className="text-red-600">*</span>
+                    학번 <span className="text-red">*</span>
                   </label>
                   <input
                     type="text"
@@ -239,17 +235,17 @@ export default function RecruitCore() {
                     value={formData.studentId}
                     onChange={handleChange}
                     className={`ml-0! w-full p-2.5 text-base bg-gray-300 border rounded-full ${
-                      errors.studentId ? 'border-red-600' : 'border-gray-400'
+                      errors.studentId ? 'border-red' : 'border-none'
                     }`}
                   />
                   {errors.studentId && (
-                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                    <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>
                   )}
                 </div>
 
                 <div className="col-span-2">
                   <label htmlFor="email" className="block mb-1 text-white font-bold">
-                    이메일 <span className="text-red-600">*</span>
+                    이메일 <span className="text-red">*</span>
                   </label>
                   <input
                     type="email"
@@ -258,17 +254,15 @@ export default function RecruitCore() {
                     value={formData.email}
                     onChange={handleChange}
                     className={`ml-0! w-full p-2.5 text-base bg-gray-300 border rounded-full ${
-                      errors.email ? 'border-red-600' : 'border-gray-400'
+                      errors.email ? 'border-red' : 'border-none'
                     }`}
                   />
-                  {errors.email && (
-                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
-                  )}
+                  {errors.email && <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>}
                 </div>
               </div>
               <div className="mb-4">
                 <label htmlFor="major" className="block mb-1 text-white font-bold">
-                  주전공 <span className="text-red-600">*</span>
+                  주전공 <span className="text-red">*</span>
                 </label>
                 <select
                   id="major"
@@ -276,13 +270,13 @@ export default function RecruitCore() {
                   value={formData.major}
                   onChange={handleChange}
                   required
-                  className="w-full p-2.5 text-base  border border-gray-400 rounded-full cursor-pointer "
+                  className="w-full p-2.5 text-base  border border-gray-800 rounded-full cursor-pointer "
                 >
                   {majorOptions.map((section) => (
-                    <optgroup className="bg-gray-300" label={section.title} key={section.title}>
+                    <optgroup className="bg-gray-100" label={section.title} key={section.title}>
                       {section.items.map((item) => (
                         <option
-                          className="bg-gray-300 hover:bg-white"
+                          className="bg-gray-100 hover:bg-white"
                           key={item.key}
                           value={item.value}
                         >
@@ -292,11 +286,12 @@ export default function RecruitCore() {
                     </optgroup>
                   ))}
                 </select>
+                {errors.major && <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>}
               </div>
 
               <div className="mb-4">
                 <label htmlFor="phone" className="block mb-1 text-white font-bold">
-                  전화번호 <span className="text-red-600">*</span>
+                  전화번호 <span className="text-red">*</span>
                 </label>
                 <input
                   type="tel"
@@ -305,12 +300,10 @@ export default function RecruitCore() {
                   value={formData.phone}
                   onChange={handleChange}
                   className={`ml-0! w-full p-2.5 text-base border rounded-full ${
-                    errors.phone ? 'border-red-600' : 'border-gray-400'
+                    errors.phone ? 'border-red' : 'border-gray-800'
                   }`}
                 />
-                {errors.phone && (
-                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
-                )}
+                {errors.phone && <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>}
               </div>
             </>
           )}
@@ -321,7 +314,7 @@ export default function RecruitCore() {
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-1">
                   <label className="block text-white font-bold">
-                    희망 팀 <span className="text-red-600">*</span>
+                    희망 팀 <span className="text-red">*</span>
                   </label>
                 </div>
 
@@ -338,7 +331,7 @@ export default function RecruitCore() {
                     />
                     <label
                       htmlFor="team-hr"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-800 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red"
                     >
                       HR
                     </label>
@@ -356,7 +349,7 @@ export default function RecruitCore() {
                     />
                     <label
                       htmlFor="team-bd"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-800 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red"
                     >
                       BD
                     </label>
@@ -374,7 +367,7 @@ export default function RecruitCore() {
                     />
                     <label
                       htmlFor="team-tech"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-800 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red"
                     >
                       TECH
                     </label>
@@ -392,21 +385,19 @@ export default function RecruitCore() {
                     />
                     <label
                       htmlFor="team-design"
-                      className="flex items-center justify-center w-full py-3 border border-gray-600 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red-600"
+                      className="flex items-center justify-center w-full py-3 border border-gray-800 rounded-full text-white cursor-pointer transition-all  peer-checked:bg-[#471815] peer-checked:border-red"
                     >
                       PR·DESIGN
                     </label>
                   </div>
                 </div>
-                {errors.team && (
-                  <p className="mt-1 text-xs text-red-600">※ 필수 선택 사항입니다.</p>
-                )}
+                {errors.team && <p className="mt-1 text-xs text-red">※ 필수 선택 사항입니다.</p>}
               </div>
 
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-1">
                   <label htmlFor="motivation" className="block text-white font-bold">
-                    지원 동기 <span className="text-red-600">*</span>
+                    지원 동기 <span className="text-red">*</span>
                   </label>
                 </div>
                 <div className="relative">
@@ -418,23 +409,23 @@ export default function RecruitCore() {
                     maxLength={500}
                     rows={6}
                     className={`w-full p-3 text-base border rounded-xl resize-none ${
-                      errors.motivation ? 'border-red-600' : 'border-gray-400'
+                      errors.motivation ? 'border-red' : 'border-gray-800'
                     }`}
                     placeholder="내용을 입력하세요."
                   />{' '}
-                  <span className="absolute bottom-4 right-4 text-sm text-gray-400">
+                  <span className="absolute bottom-4 right-4 text-sm text-gray-700">
                     ({formData.motivation.length} / 500)
                   </span>
                 </div>
                 {errors.motivation && (
-                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>
                 )}
               </div>
 
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-1">
                   <label htmlFor="role" className="block text-white font-bold">
-                    희망 역할 및 수행하고 싶은 업무 <span className="text-red-600">*</span>
+                    희망 역할 및 수행하고 싶은 업무 <span className="text-red">*</span>
                   </label>
                 </div>
                 <div className="relative">
@@ -446,23 +437,21 @@ export default function RecruitCore() {
                     maxLength={500}
                     rows={6}
                     className={`w-full p-3 text-base border rounded-xl resize-none ${
-                      errors.role ? 'border-red-600' : 'border-gray-400'
+                      errors.role ? 'border-red' : 'border-gray-800'
                     }`}
                     placeholder="내용을 입력하세요."
                   />
-                  <span className="absolute bottom-4 right-4 text-sm text-gray-400">
+                  <span className="absolute bottom-4 right-4 text-sm text-gray-700">
                     ({formData.role.length} / 500)
                   </span>
                 </div>
-                {errors.role && (
-                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
-                )}
+                {errors.role && <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>}
               </div>
 
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-1">
                   <label htmlFor="strength" className="block text-white font-bold">
-                    본인의 강점 <span className="text-red-600">*</span>
+                    본인의 강점 <span className="text-red">*</span>
                   </label>
                 </div>
                 <div className="relative">
@@ -474,23 +463,23 @@ export default function RecruitCore() {
                     maxLength={500}
                     rows={6}
                     className={`w-full p-3 text-base border rounded-xl resize-none ${
-                      errors.strength ? 'border-red-600' : 'border-gray-400'
+                      errors.strength ? 'border-red' : 'border-gray-800'
                     }`}
                     placeholder="내용을 입력하세요."
                   />
-                  <span className="absolute bottom-4 right-4 text-sm text-gray-400">
+                  <span className="absolute bottom-4 right-4 text-sm text-gray-700">
                     ({formData.strength.length} / 500)
                   </span>
                 </div>
                 {errors.strength && (
-                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>
                 )}
               </div>
 
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-1">
                   <label htmlFor="determination" className="block text-white font-bold">
-                    각오 <span className="text-red-600">*</span>
+                    각오 <span className="text-red">*</span>
                   </label>
                 </div>
                 <div className="relative">
@@ -502,23 +491,26 @@ export default function RecruitCore() {
                     maxLength={100}
                     rows={3}
                     className={`w-full p-3 text-base border rounded-xl resize-none ${
-                      errors.determination ? 'border-red-600' : 'border-gray-400'
+                      errors.determination ? 'border-red' : 'border-gray-800'
                     }`}
                     placeholder="내용을 입력하세요."
                   />
-                  <span className="absolute bottom-4 right-4 text-sm text-gray-400">
+                  <span className="absolute bottom-4 right-4 text-sm text-gray-700">
                     ({formData.determination.length} / 100)
                   </span>
                 </div>
                 {errors.determination && (
-                  <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                  <p className="mt-1 text-xs text-red">※ 필수 입력 사항입니다.</p>
                 )}
               </div>
 
               <div className="mb-6">
-                <label htmlFor="portfolio" className="block mb-3 text-white font-bold">
-                  파일 첨부 <span className="text-xs text-gray-300">다중 파일 업로드 가능</span>
-                </label>
+                <div className="flex gap-2.5 items-center mb-3">
+                  <label htmlFor="portfolio" className="block text-white font-bold">
+                    파일 첨부
+                  </label>
+                  <span className="text-xs text-gray-700">다중 파일 업로드 가능</span>
+                </div>
 
                 {/* File List */}
                 {formData.files.length > 0 && (
@@ -535,7 +527,7 @@ export default function RecruitCore() {
                           <button
                             type="button"
                             onClick={() => handleRemoveFile(index)}
-                            className="ml-2 text-red-600 hover:text-red-700 font-bold"
+                            className="ml-2 text-red hover:text-red font-bold"
                           >
                             ×
                           </button>
@@ -559,7 +551,7 @@ export default function RecruitCore() {
                 {/* Custom Button */}
                 <label
                   htmlFor="portfolio"
-                  className="block w-full py-3 px-4 bg-red-600 text-white rounded-xl text-center cursor-pointer hover:bg-red-700 transition"
+                  className="block w-full py-3 px-4 bg-red text-white rounded-xl text-center cursor-pointer  transition"
                 >
                   + 파일선택
                 </label>
@@ -586,7 +578,7 @@ export default function RecruitCore() {
                       <span>✅</span>
                       <span>면접 진행 기간:</span>
                     </div>
-                    <div className="text-sm text-white/50 ml-6 ">
+                    <div className="text-sm text-gray-700 ml-6 ">
                       * 지원자 및 면접관 일정에 따라 마감 전 면접이 가능할 수 있습니다.
                     </div>
                   </li>
@@ -616,7 +608,7 @@ export default function RecruitCore() {
                         운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다.
                       </span>
                     </div>
-                    <div className="text-sm text-white/50 ml-6 ">
+                    <div className="text-sm text-gray-700 ml-6 ">
                       * 일정은 1월 내로 공지 드립니다.
                     </div>
                   </li>
@@ -632,7 +624,7 @@ export default function RecruitCore() {
                     label="전체 일정을 확인하였습니다."
                   />
                   {errors.scheduleCheck && (
-                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                    <p className="mt-1 text-xs text-red">※ 미확인 시 지원서 제출이 불가합니다.</p>
                   )}
                 </div>
               </div>
@@ -672,7 +664,7 @@ export default function RecruitCore() {
                     required={true}
                   />
                   {errors.agreementCheck && (
-                    <p className="mt-1 text-xs text-red-600">※ 필수 입력 사항입니다.</p>
+                    <p className="mt-1 text-xs text-red">※ 미동의 시 지원서 제출이 불가합니다.</p>
                   )}
                 </div>
               </div>
@@ -692,7 +684,7 @@ export default function RecruitCore() {
             )}
             <button
               type="submit"
-              className={`px-12 py-3 text-base font-bold bg-red-600 text-white border-0 rounded-full cursor-pointer hover:bg-red-700 transition`}
+              className={`px-12 py-3 text-base font-bold bg-red text-white border-0 rounded-full cursor-pointer  transition`}
             >
               {currentStep === steps.length - 1 ? '제출하기' : '다음'}
             </button>
