@@ -37,6 +37,12 @@
   --color-cgreen: #34a853;
   --color-cblack: #1a1a1a;
   --color-cwhite: #fafafa;
+
+  --color-red-glass: #471915;
+  --color-blue-glass: #1d2a3f;
+  --color-green-glass: #10411d;
+  --color-yellow-glass: #493812;
+  --color-white-glass: #555555;
 }
 
 @custom-variant mobile (max-width: 48rem);

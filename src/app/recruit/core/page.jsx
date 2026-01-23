@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth'
 import CustomCheckbox from './CustomCheckbox'
 import Image from 'next/image'
 import axios from 'axios'
+import Tag from '@/components/ui/Tag/Tag'
 
 export default function RecruitCore() {
   const { accessToken } = useAuth()
@@ -164,6 +165,7 @@ export default function RecruitCore() {
             className="w-10 h-4.5"
           />
           <h1 className="text-white text-2xl font-bold">Core Member 지원</h1>
+          <Tag label="접수중" color="green" variant="glass" size="default" />
         </div>
 
         {/* ----- Step Bar ----- */}
