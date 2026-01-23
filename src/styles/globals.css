@@ -1,37 +1,42 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @source "../**/*.{js,jsx,ts,tsx,mdx}";
 @source "../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}";
 @source "../../node_modules/@heroui/theme/dist/components/scroll-shadow.js";
 
 @theme {
-    --font-pretendard: var(--font-local-pretendard, 'Pretendard Variable', 'Pretendard', sans-serif);
-    --font-google-sans-flex: var(--font-local-google-sans-flex, 'Google Sans Flex', 'Pretendard', sans-serif);
-    --font-ocra: var(--font-local-ocra, 'OCRAExtended', monospace);
+  --font-pretendard: var(--font-local-pretendard, 'Pretendard Variable', 'Pretendard', sans-serif);
+  --font-google-sans-flex: var(
+    --font-local-google-sans-flex,
+    'Google Sans Flex',
+    'Pretendard',
+    sans-serif
+  );
+  --font-ocra: var(--font-local-ocra, 'OCRAExtended', monospace);
 
-    --color-black: #1A1A1A;
-    --color-white: #FAFAFA;
-    --color-red: #EA4335;
-    --color-blue: #4285F4;
-    --color-green: #34A853;
-    --color-yellow: #FBBC05;
+  --color-black: #1a1a1a;
+  --color-white: #fafafa;
+  --color-red: #ea4335;
+  --color-blue: #4285f4;
+  --color-green: #34a853;
+  --color-yellow: #fbbc05;
 
-    --color-gray-100: #2C2C2C;
-    --color-gray-200: #404040;
-    --color-gray-300: #555555;
-    --color-gray-400: #6A6A6A;
-    --color-gray-500: #808080;
-    --color-gray-600: #989898;
-    --color-gray-700: #AFAFAF;
-    --color-gray-800: #C8C8C8;
-    --color-gray-900: #E1E1E1;
+  --color-gray-100: #2c2c2c;
+  --color-gray-200: #404040;
+  --color-gray-300: #555555;
+  --color-gray-400: #6a6a6a;
+  --color-gray-500: #808080;
+  --color-gray-600: #989898;
+  --color-gray-700: #afafaf;
+  --color-gray-800: #c8c8c8;
+  --color-gray-900: #e1e1e1;
 
-    --color-cred: #EA4335;
-    --color-cblue: #4285F4;
-    --color-cyellow: #FBBC05;
-    --color-cgreen: #34A853;
-    --color-cblack: #1A1A1A;
-    --color-cwhite: #FAFAFA;
+  --color-cred: #ea4335;
+  --color-cblue: #4285f4;
+  --color-cyellow: #f9ab00;
+  --color-cgreen: #34a853;
+  --color-cblack: #1a1a1a;
+  --color-cwhite: #fafafa;
 }
 
 @custom-variant mobile (max-width: 48rem);
@@ -40,40 +45,39 @@
 @custom-variant desktop (min-width: 80rem);
 
 @layer base {
-    :root {
-        background-color: black;
-    }
+  :root {
+    background-color: black;
+  }
 }
 
 @layer utilities {
-    input:-webkit-autofill {
-        -webkit-text-fill-color: white;
-    }
+  input:-webkit-autofill {
+    -webkit-text-fill-color: white;
+  }
 }
 
-body{
-    -ms-overflow-style: none;
+body {
+  -ms-overflow-style: none;
 }
 
 ::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 input {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 
-
-[data-top-scroll="true"] {
-    mask-image: none !important;
+[data-top-scroll='true'] {
+  mask-image: none !important;
 }
 
-[data-top-scroll="false"] {
-    mask-image: none !important;
+[data-top-scroll='false'] {
+  mask-image: none !important;
 }
 
 .neon-text {
-  text-shadow: 
+  text-shadow:
     0 0 4px currentColor,
     0 0 8px currentColor,
     0 0 12px currentColor;
@@ -81,22 +85,21 @@ input {
 }
 
 .neon-text-sm {
-  text-shadow: 
+  text-shadow:
     0 0 1px currentColor,
     0 0 2px currentColor,
     0 0 3px currentColor;
 }
 
-
 @keyframes neon-glow {
   from {
-    text-shadow: 
+    text-shadow:
       0 0 4px currentColor,
       0 0 8px currentColor,
       0 0 12px currentColor;
   }
   to {
-    text-shadow: 
+    text-shadow:
       0 0 6px currentColor,
       0 0 10px currentColor,
       0 0 15px currentColor;
@@ -109,19 +112,24 @@ input {
 }
 
 .no-scrollbar {
-    -ms-overflow-style: none; /* IE, Edge */
-    scrollbar-width: none;    /* Firefox */
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .no-scrollbar::-webkit-scrollbar {
-    display: none;            /* Chrome, Safari */
+  display: none; /* Chrome, Safari */
 }
 
 @keyframes floatY {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .animate-floatY {
-    animation: floatY 1.6s ease-in-out infinite;
+  animation: floatY 1.6s ease-in-out infinite;
 }
