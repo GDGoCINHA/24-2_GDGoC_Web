@@ -100,7 +100,9 @@ const GroupedDropdown = ({
           flex items-center justify-between gap-4
           disabled:opacity-50 disabled:cursor-not-allowed
           hover:border-gray-700 transition-colors
-        `.trim().replace(/\s+/g, ' ')}
+        `
+          .trim()
+          .replace(/\s+/g, ' ')}
       >
         <span className="truncate flex-1 text-left">{selectedLabel}</span>
         <Image
@@ -123,13 +125,17 @@ const GroupedDropdown = ({
             overflow-y-auto
             shadow-lg
             p-4
-          `.trim().replace(/\s+/g, ' ')}
+          `
+            .trim()
+            .replace(/\s+/g, ' ')}
         >
           <div className="space-y-4">
             {groups.map((group, groupIndex) => (
               <div key={groupIndex}>
                 {/* 목차 제목 */}
-                <p className={`font-pretendard font-medium ${config.captionSize} text-gray-600 mb-2`}>
+                <p
+                  className={`font-pretendard font-medium ${config.captionSize} text-gray-600 mb-2`}
+                >
                   {group.title}
                 </p>
 
@@ -151,7 +157,9 @@ const GroupedDropdown = ({
                             ? 'bg-white text-black'
                             : 'bg-gray-100 text-white hover:bg-white hover:text-black'
                         }
-                      `.trim().replace(/\s+/g, ' ')}
+                      `
+                        .trim()
+                        .replace(/\s+/g, ' ')}
                     >
                       <span className="truncate">{item.key}</span>
                       {selectedValue === item.value && (

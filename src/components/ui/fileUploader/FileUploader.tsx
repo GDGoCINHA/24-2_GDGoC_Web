@@ -6,7 +6,10 @@ import Image from 'next/image'
  * @param {File[]} files - 첨부된 파일 배열
  * @param {(files: File[]) => void} onFilesChange - 파일 배열 변경 시 호출되는 콜백
  */
-interface FileUploaderProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange'> {
+interface FileUploaderProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'type' | 'onChange'
+> {
   device?: 'pc' | 'mobile'
   files?: File[]
   onFilesChange?: (files: File[]) => void
@@ -98,7 +101,9 @@ const FileUploader = ({
             flex items-center justify-between
             font-pretendard font-medium ${config.text} text-white
             transition-colors
-          `.trim().replace(/\s+/g, ' ')}
+          `
+            .trim()
+            .replace(/\s+/g, ' ')}
         >
           <span>+ 파일 선택</span>
         </button>
@@ -106,13 +111,20 @@ const FileUploader = ({
 
       <div className="flex flex-col gap-2">
         {currentFiles.map((item, index) => (
-          <div key={`${item.name}-${index}`} className={`${config.container} flex items-center gap-2`}>
-            <div className={`
+          <div
+            key={`${item.name}-${index}`}
+            className={`${config.container} flex items-center gap-2`}
+          >
+            <div
+              className={`
               ${config.fileBox}
               bg-gray-100 rounded-xl
               flex items-center justify-between
               font-pretendard font-medium ${config.text}
-            `.trim().replace(/\s+/g, ' ')}>
+            `
+                .trim()
+                .replace(/\s+/g, ' ')}
+            >
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <Image
                   src="/icons/ui/file-icon.svg"
@@ -125,9 +137,7 @@ const FileUploader = ({
                   {item.name}
                 </p>
               </div>
-              <p className="text-gray-700 shrink-0">
-                {formatFileSize(item.size)}
-              </p>
+              <p className="text-gray-700 shrink-0">{formatFileSize(item.size)}</p>
             </div>
             <button
               type="button"
@@ -138,15 +148,12 @@ const FileUploader = ({
                 shrink-0
                 disabled:opacity-50 disabled:cursor-not-allowed
                 hover:opacity-80 transition-opacity
-              `.trim().replace(/\s+/g, ' ')}
+              `
+                .trim()
+                .replace(/\s+/g, ' ')}
               aria-label="파일 삭제"
             >
-              <Image
-                src="/icons/ui/trash-icon.svg"
-                alt="delete"
-                width={20}
-                height={20}
-              />
+              <Image src="/icons/ui/trash-icon.svg" alt="delete" width={20} height={20} />
             </button>
           </div>
         ))}

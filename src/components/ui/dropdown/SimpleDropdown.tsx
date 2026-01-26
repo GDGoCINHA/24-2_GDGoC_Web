@@ -104,7 +104,9 @@ const SimpleDropdown = ({
           flex items-center justify-between gap-4
           disabled:opacity-50 disabled:cursor-not-allowed
           hover:border-gray-700 transition-colors
-        `.trim().replace(/\s+/g, ' ')}
+        `
+          .trim()
+          .replace(/\s+/g, ' ')}
       >
         <span className="truncate flex-1 text-left">{selectedLabel}</span>
         <Image
@@ -125,7 +127,9 @@ const SimpleDropdown = ({
             border border-gray-200
             max-h-48 overflow-y-auto
             shadow-lg
-          `.trim().replace(/\s+/g, ' ')}
+          `
+            .trim()
+            .replace(/\s+/g, ' ')}
         >
           {options.map((option, index) => (
             <button
@@ -140,7 +144,9 @@ const SimpleDropdown = ({
                 hover:bg-white hover:text-black transition-colors
                 ${index === options.length - 1 ? 'rounded-b-2xl' : ''}
                 flex items-center justify-between
-              `.trim().replace(/\s+/g, ' ')}
+              `
+                .trim()
+                .replace(/\s+/g, ' ')}
             >
               <span className="truncate">{option.key}</span>
               {selectedValue === option.value && (
