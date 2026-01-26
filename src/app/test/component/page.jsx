@@ -5,22 +5,30 @@ import Button from '@/components/ui/button/Button'
 import Tag from '@/components/ui/Tag/Tag'
 import Checkbox from '@/components/ui/Checkbox/Checkbox'
 import AgreementBox from '@/components/ui/AgreementBox/AgreementBox'
+import Input from '@/components/ui/input/Input'
+import Textarea from '@/components/ui/textarea/Textarea'
 
 export default function ComponentTestPage() {
   const [checkboxState, setCheckboxState] = useState(false)
-  const [agreementStates, setAgreementStates] = useState({
-    pc_unchecked: false,
-    pc_checked: true,
-    pc_error: false,
-    mobile_unchecked: false,
-    mobile_checked: true,
-    mobile_error: false
-  })
-  const [pcError, setPcError] = useState(false)
-  const [mobileError, setMobileError] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [textareaValue, setTextareaValue] = useState('')
+  const [agreementStates, setAgreementStates] = useState({ pc: false, mobile: false })
+  const [errorStates, setErrorStates] = useState({ pc: false, mobile: false })
+  const [deviceMode, setDeviceMode] = useState('pc')
+  const [disabledMode, setDisabledMode] = useState(false)
 
   return (
-    <main className="min-h-screen bg-black p-8">
+    <main className="min-h-screen bg-black p-8 relative">
+      {/* Floating control panel */}
+      <div className="fixed bottom-6 right-6 z-10 flex flex-col gap-3">
+        <Button size="small" onClick={() => setDisabledMode((v) => !v)}>
+          {disabledMode ? 'Enable' : 'Disable'}
+        </Button>
+        <Button size="small" onClick={() => setDeviceMode((d) => (d === 'pc' ? 'mobile' : 'pc'))}>
+          {deviceMode === 'pc' ? 'Switch to Mobile' : 'Switch to PC'}
+        </Button>
+      </div>
+
       <div className="max-w-4xl mx-auto text-white">
         <h1 className="text-4xl font-bold mb-12">Component Test</h1>
 
@@ -28,40 +36,25 @@ export default function ComponentTestPage() {
         <section className="mb-16">
           <h2 className="text-2xl font-bold mb-6">Button Component</h2>
 
-          {/* Small Size */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Small Size</h3>
-            <div className="flex gap-4 flex-wrap">
-              <Button size="small">Normal</Button>
-              <Button size="small" disabled>
-                Disabled
-              </Button>
+          {['small', 'large'].map((size) => (
+            <div className="mb-8" key={size}>
+              <h3 className="text-lg font-semibold mb-4">
+                {size === 'small' ? 'Small' : 'Large'} Size
+              </h3>
+              <div className="flex gap-4 flex-wrap">
+                <Button size={size} disabled={disabledMode}>
+                  {disabledMode ? 'Disabled' : 'Normal'}
+                </Button>
+                <Button
+                  size={size}
+                  disabled={disabledMode}
+                  onClick={() => alert(`${size} button clicked!`)}
+                >
+                  {disabledMode ? 'Disabled' : 'Click Me'}
+                </Button>
+              </div>
             </div>
-          </div>
-
-          {/* Large Size */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Large Size</h3>
-            <div className="flex gap-4 flex-wrap">
-              <Button size="large">Normal</Button>
-              <Button size="large" disabled>
-                Disabled
-              </Button>
-            </div>
-          </div>
-
-          {/* With onClick */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Interactive</h3>
-            <div className="flex gap-4 flex-wrap">
-              <Button size="small" onClick={() => alert('Button clicked!')}>
-                Click Me
-              </Button>
-              <Button size="large" onClick={() => alert('Large button clicked!')}>
-                Click Large Button
-              </Button>
-            </div>
-          </div>
+          ))}
         </section>
 
         {/* Tag Section */}
@@ -132,112 +125,121 @@ export default function ComponentTestPage() {
         <section>
           <h2 className="text-2xl font-bold mb-6">Agreement Box Component</h2>
 
-          {/* PC Device */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">PC Device</h3>
-            <div className="flex flex-col gap-6">
-              {/* Unchecked */}
-              <div>
-                <p className="text-sm text-gray-500 mb-2">Unchecked State</p>
-                <AgreementBox
-                  device="pc"
-                  checked={agreementStates.pc_unchecked}
-                  onChange={(checked) =>
-                    setAgreementStates({ ...agreementStates, pc_unchecked: checked })
-                  }
-                  label="동의합니다."
-                />
-              </div>
+          <div className="flex flex-col gap-6 mb-8">
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Unchecked State</p>
+              <AgreementBox
+                device={deviceMode}
+                checked={agreementStates[deviceMode]}
+                onChange={(checked) =>
+                  setAgreementStates({ ...agreementStates, [deviceMode]: checked })
+                }
+                label="동의합니다."
+              />
+            </div>
 
-              {/* Checked */}
-              <div>
-                <p className="text-sm text-gray-500 mb-2">Checked State</p>
-                <AgreementBox
-                  device="pc"
-                  checked={agreementStates.pc_checked}
-                  onChange={(checked) =>
-                    setAgreementStates({ ...agreementStates, pc_checked: checked })
-                  }
-                  label="동의합니다."
-                />
-              </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Checked State</p>
+              <AgreementBox device={deviceMode} checked onChange={() => {}} label="동의합니다." />
+            </div>
 
-              {/* Error State */}
-              <div>
-                <p className="text-sm text-gray-500 mb-2">Error State</p>
-                <AgreementBox
-                  device="pc"
-                  status={pcError ? 'error' : 'unchecked'}
-                  checked={agreementStates.pc_error}
-                  onChange={(checked) =>
-                    setAgreementStates({ ...agreementStates, pc_error: checked })
-                  }
-                  label="동의합니다."
-                  errorMessage="*오류메세지"
-                />
-                <div className="mt-2 flex gap-3">
-                  <Button size="small" onClick={() => setPcError(true)}>
-                    Show Error
-                  </Button>
-                  <Button size="small" onClick={() => setPcError(false)}>
-                    Clear Error
-                  </Button>
-                </div>
+            <div>
+              <p className="text-sm text-gray-500 mb-2">Error State</p>
+              <AgreementBox
+                device={deviceMode}
+                status={errorStates[deviceMode] ? 'error' : 'unchecked'}
+                checked={agreementStates[deviceMode]}
+                onChange={(checked) =>
+                  setAgreementStates({ ...agreementStates, [deviceMode]: checked })
+                }
+                label="동의합니다."
+                errorMessage="*오류메세지"
+              />
+              <div className="mt-2 flex gap-3">
+                <Button
+                  size="small"
+                  onClick={() => setErrorStates({ ...errorStates, [deviceMode]: true })}
+                >
+                  Show Error
+                </Button>
+                <Button
+                  size="small"
+                  onClick={() => setErrorStates({ ...errorStates, [deviceMode]: false })}
+                >
+                  Clear Error
+                </Button>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Mobile Device */}
+        {/* Input Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold mb-6">Input Component</h2>
+
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4">Mobile Device</h3>
-            <div className="flex flex-col gap-6">
-              {/* Unchecked */}
-              <div>
-                <p className="text-sm text-gray-500 mb-2">Unchecked State</p>
-                <AgreementBox
-                  device="mobile"
-                  checked={agreementStates.mobile_unchecked}
-                  onChange={(checked) =>
-                    setAgreementStates({ ...agreementStates, mobile_unchecked: checked })
-                  }
-                  label="동의합니다."
-                />
-              </div>
+            <h3 className="text-lg font-semibold mb-4">{deviceMode.toUpperCase()} Device</h3>
+            <div className="space-y-6">
+              {['mini', 'small', 'medium', '2/3', 'full'].map((size) => (
+                <div key={size}>
+                  <p className="text-sm text-gray-500 mb-2">{size} Size</p>
+                  <Input
+                    device={deviceMode}
+                    size={size}
+                    placeholder={size}
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    status={disabledMode ? 'default' : 'active'}
+                    disabled={disabledMode}
+                  />
+                </div>
+              ))}
 
-              {/* Checked */}
-              <div>
-                <p className="text-sm text-gray-500 mb-2">Checked State</p>
-                <AgreementBox
-                  device="mobile"
-                  checked={agreementStates.mobile_checked}
-                  onChange={(checked) =>
-                    setAgreementStates({ ...agreementStates, mobile_checked: checked })
-                  }
-                  label="동의합니다."
-                />
-              </div>
-
-              {/* Error State */}
               <div>
                 <p className="text-sm text-gray-500 mb-2">Error State</p>
-                <AgreementBox
-                  device="mobile"
-                  status={mobileError ? 'error' : 'unchecked'}
-                  checked={agreementStates.mobile_error}
-                  onChange={(checked) =>
-                    setAgreementStates({ ...agreementStates, mobile_error: checked })
-                  }
-                  label="동의합니다."
-                  errorMessage="*오류메세지"
+                <Input
+                  device={deviceMode}
+                  size="medium"
+                  status="error"
+                  placeholder="Error input"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  disabled={disabledMode}
+                  error="필수 입력 사항입니다."
                 />
-                <div className="mt-2 flex gap-3">
-                  <Button size="small" onClick={() => setMobileError(true)}>
-                    Show Error
-                  </Button>
-                  <Button size="small" onClick={() => setMobileError(false)}>
-                    Clear Error
-                  </Button>
-                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Textarea Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold mb-6">Textarea Component</h2>
+
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">{deviceMode.toUpperCase()} Device</h3>
+            <div className="space-y-6">
+              <div>
+                <p className="text-sm text-gray-500 mb-2">Active State</p>
+                <Textarea
+                  device={deviceMode}
+                  status={disabledMode ? 'default' : 'active'}
+                  value={textareaValue}
+                  onChange={(e) => setTextareaValue(e.target.value)}
+                  disabled={disabledMode}
+                />
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500 mb-2">Error State</p>
+                <Textarea
+                  device={deviceMode}
+                  status="error"
+                  value={textareaValue}
+                  onChange={(e) => setTextareaValue(e.target.value)}
+                  disabled={disabledMode}
+                  errorMessage="※ 필수 입력 사항입니다."
+                />
               </div>
             </div>
           </div>
