@@ -7,11 +7,18 @@ import Checkbox from '@/components/ui/Checkbox/Checkbox'
 import AgreementBox from '@/components/ui/AgreementBox/AgreementBox'
 import Input from '@/components/ui/input/Input'
 import Textarea from '@/components/ui/textarea/Textarea'
+import FileUploader from '@/components/ui/fileUploader/FileUploader'
+import SimpleDropdown from '@/components/ui/dropdown/SimpleDropdown'
+import GroupedDropdown from '@/components/ui/dropdown/GroupedDropdown'
+import { majorOptions } from '@/constant/majorOptions'
 
 export default function ComponentTestPage() {
   const [checkboxState, setCheckboxState] = useState(false)
   const [inputValue, setInputValue] = useState('')
   const [textareaValue, setTextareaValue] = useState('')
+  const [uploadedFiles, setUploadedFiles] = useState([])
+  const [simpleDropdownValue, setSimpleDropdownValue] = useState('')
+  const [groupedDropdownValue, setGroupedDropdownValue] = useState('')
   const [agreementStates, setAgreementStates] = useState({ pc: false, mobile: false })
   const [errorStates, setErrorStates] = useState({ pc: false, mobile: false })
   const [deviceMode, setDeviceMode] = useState('pc')
@@ -239,6 +246,68 @@ export default function ComponentTestPage() {
                   onChange={(e) => setTextareaValue(e.target.value)}
                   disabled={disabledMode}
                   errorMessage="※ 필수 입력 사항입니다."
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FileUploader Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold mb-6">FileUploader Component</h2>
+
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">{deviceMode.toUpperCase()} Device</h3>
+            <div className="space-y-6">
+              <div>
+                <p className="text-sm text-gray-500 mb-2">Upload & List</p>
+                <FileUploader
+                  device={deviceMode}
+                  files={uploadedFiles}
+                  onFilesChange={(fileList) => setUploadedFiles(fileList)}
+                  disabled={disabledMode}
+                  accept=".pdf,.doc,.docx"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Dropdown Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold mb-6">Dropdown Component</h2>
+
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">{deviceMode.toUpperCase()} Device</h3>
+            <div className="space-y-6">
+              {/* Simple Dropdown */}
+              <div>
+                <p className="text-sm text-gray-500 mb-3">Simple Dropdown</p>
+                <SimpleDropdown
+                  device={deviceMode}
+                  size={deviceMode === 'pc' ? 'small' : 'small'}
+                  options={[
+                    { key: 'Select 1', value: 'select1' },
+                    { key: 'Select 2', value: 'select2' },
+                    { key: 'Select 3', value: 'select3' }
+                  ]}
+                  value={simpleDropdownValue}
+                  onChange={(val) => setSimpleDropdownValue(val)}
+                  placeholder="선택하기"
+                  disabled={disabledMode}
+                />
+              </div>
+
+              {/* Grouped Dropdown */}
+              <div>
+                <p className="text-sm text-gray-500 mb-3">Grouped Dropdown (with categories)</p>
+                <GroupedDropdown
+                  device={deviceMode}
+                  groups={majorOptions}
+                  value={groupedDropdownValue}
+                  onChange={(val) => setGroupedDropdownValue(val)}
+                  placeholder="학과 선택"
+                  disabled={disabledMode}
                 />
               </div>
             </div>
