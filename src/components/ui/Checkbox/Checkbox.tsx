@@ -29,7 +29,7 @@ export default function Checkbox({
       aria-checked={checked}
     >
       {checked && (
-        <span className="block w-2.5 h-1.5 border-b-[2px] border-l-[2px] border-white rotate-[-45deg] translate-y-[1px]" />
+        <span className="block w-2.5 h-1.5 border-b-2 border-l-2 border-white -rotate-45 translate-y-px" />
       )}
     </div>
   )
