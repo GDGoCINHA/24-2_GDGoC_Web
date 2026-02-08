@@ -3,6 +3,7 @@
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/react'
 import { type Key, useCallback, useEffect, useMemo, useState } from 'react'
 import { cn } from '@/utils/cn'
+import styles from './GdgDropdown.module.css'
 import {
   CONTROL_META,
   getControlMeta,
@@ -145,7 +146,7 @@ export function GdgDropdown({
   )
 
   return (
-    <div className="flex flex-col items-start gap-2 text-white">
+    <div className={cn('flex flex-col items-start gap-2 text-white', styles.root)}>
       {label && (
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">{label}</p>
       )}
