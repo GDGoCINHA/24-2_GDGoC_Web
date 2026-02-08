@@ -2,7 +2,7 @@
 
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/react'
 import { type Key, useCallback, useEffect, useMemo, useState } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from './cn'
 import styles from './GdgDropdown.module.css'
 import {
   CONTROL_META,

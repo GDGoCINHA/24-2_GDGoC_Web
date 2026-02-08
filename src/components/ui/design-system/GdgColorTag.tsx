@@ -1,7 +1,7 @@
 'use client'
 
 import type { ComponentPropsWithoutRef } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from './cn'
 
 export type GdgTagColor = 'red' | 'blue' | 'green' | 'yellow' | 'white'
 export type GdgTagFill = 'off' | 'on' | 'half'

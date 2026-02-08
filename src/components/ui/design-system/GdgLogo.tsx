@@ -5,7 +5,7 @@ import Image from 'next/image'
 import gdgocPcLogo from '@public/icons/gdgocIcon/pc.svg'
 import gdgocMobileLogo from '@public/icons/gdgocIcon/mobile.svg'
 
-import { cn } from '@/utils/cn'
+import { cn } from './cn'
 
 type LogoMode = 'auto' | 'pc' | 'mobile'
 type LogoVariant = 'icon' | 'short' | 'long'
