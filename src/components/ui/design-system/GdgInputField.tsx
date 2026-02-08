@@ -1,7 +1,7 @@
 'use client'
 
 import { forwardRef, type InputHTMLAttributes, type ReactNode, useId } from 'react'
-import { cn } from './cn'
+import { cn } from '@/utils/cn'
 import type { Device, PcWidthVariant, SizeToken, WidthToken } from './controlMeta'
 import { CONTROL_META, getMobileWidthClass, getPcWidthClass, isWideOnlyWidth } from './controlMeta'
 

@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { type ComponentPropsWithoutRef, type MouseEventHandler } from 'react'
-import { cn } from './cn'
+import { cn } from '@/utils/cn'
 
 export type GdgFileCardAction = 'remove' | 'download' | 'none'
 

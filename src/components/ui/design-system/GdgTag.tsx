@@ -1,7 +1,7 @@
 'use client'
 
 import type { HTMLAttributes, ReactNode } from 'react'
-import { cn } from './cn'
+import { cn } from '@/utils/cn'
 
 export type GdgTagVariant = 'default' | 'active' | 'interactive' | 'disabled'
 export type GdgTagDevice = 'pc' | 'mobile'

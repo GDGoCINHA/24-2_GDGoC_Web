@@ -1,7 +1,7 @@
 'use client'
 
 import { forwardRef, useId, type InputHTMLAttributes } from 'react'
-import { cn } from './cn'
+import { cn } from '@/utils/cn'
 
 export interface GdgSearchFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   device?: 'pc' | 'mobile'
