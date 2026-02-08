@@ -1,8 +1,7 @@
+import type { Metadata } from 'next'
 import type { ReactNode } from 'react';
 
-import Header2 from '@/components/ui/common/Header2';
-
-export const metadata = {
+export const metadata: Metadata = {
   title: 'SignIn',
   description: 'SignIn to your account',
 };
@@ -10,7 +9,6 @@ export const metadata = {
 export default function LoginLayout({ children }: { children: ReactNode }) {
   return (
     <div className='min-h-screen flex flex-col overflow-hidden relative'>
-      <Header2 />
       {children}
     </div>
   );

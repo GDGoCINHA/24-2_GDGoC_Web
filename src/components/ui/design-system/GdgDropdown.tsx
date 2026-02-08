@@ -3,6 +3,7 @@
 import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org/react'
 import { type Key, useCallback, useEffect, useMemo, useState } from 'react'
 import { cn } from '@/utils/cn'
+import styles from './GdgDropdown.module.css'
 import {
   CONTROL_META,
   getControlMeta,
@@ -47,11 +48,6 @@ const POPOVER_MAX_HEIGHT_CLASS: Record<Device, string> = {
   mobile: 'max-h-66.5'
 }
 
-const LISTBOX_MAX_HEIGHT: Record<Device, number> = {
-  pc: 266,
-  mobile: 232
-}
-
 export function GdgDropdown({
   device = 'pc',
   size = 'small',
@@ -79,6 +75,7 @@ export function GdgDropdown({
   const currentValue = value ?? internalValue
   const hasValue = Boolean(currentValue)
   const isGrouped = Boolean(optionGroups?.length)
+  const hasError = Boolean(isInvalid)
 
   const resolvedOptions = useMemo(
     () => (optionGroups ? optionGroups.flatMap((group) => group.items) : options),
@@ -116,20 +113,21 @@ export function GdgDropdown({
   const baseClass = cn(
     'rounded-full bg-black border transition-colors',
     controlMeta.height,
-    hasValue ? 'border-white' : 'border-gray-800',
-    'group-data-[hover=true]:border-gray-900',
-    'group-data-[focus=true]:border-white',
-    'group-data-[disabled=true]:bg-gray-400 group-data-[disabled=true]:border-gray-400 group-data-[disabled=true]:opacity-60'
+    hasError ? 'border-red' : hasValue ? 'border-white' : 'border-gray-800',
+    hasError ? 'group-data-[hover=true]:border-red' : 'group-data-[hover=true]:border-gray-900',
+    hasError ? 'group-data-[focus=true]:border-red' : 'group-data-[focus=true]:border-white',
+    'group-data-[disabled=true]:bg-gray-400 group-data-[disabled=true]:border-gray-400 group-data-[disabled=true]:opacity-60 group-data-[disabled=true]:cursor-not-allowed'
   )
 
   const selectorClass = cn(
     'h-full w-auto !min-w-0 justify-between bg-transparent !bg-transparent font-medium text-gray-900 hover:bg-transparent data-[hover=true]:!bg-transparent focus-visible:outline-none',
     isMini && 'min-h-0 py-0 [&_[data-slot=inner-wrapper]]:h-auto [&_[data-slot=inner-wrapper]]:min-h-0',
-    controlMeta.padding,
-    'pr-0',
+    isMini ? 'pl-3 pr-0' : 'pl-4 pr-0',
     controlMeta.text,
-    'group-data-[disabled=true]:text-gray-900'
+    'group-data-[disabled=true]:text-gray-900 group-data-[disabled=true]:cursor-not-allowed'
   )
+
+  const caption = hasError ? (errorMessage ?? helperText) : helperText
 
   const handleSelectionChange = useCallback(
     (next: Key | null) => {
@@ -145,7 +143,7 @@ export function GdgDropdown({
   )
 
   return (
-    <div className="flex flex-col items-start gap-2 text-white">
+    <div className={cn('flex flex-col items-start gap-2 text-white', styles.root)}>
       {label && (
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">{label}</p>
       )}
@@ -155,12 +153,10 @@ export function GdgDropdown({
         selectedKey={currentValue}
         onSelectionChange={handleSelectionChange}
         isDisabled={disabled}
-        isInvalid={Boolean(isInvalid)}
-        errorMessage={errorMessage}
+        isInvalid={hasError}
         allowsEmptyCollection
         menuTrigger="focus"
-        isVirtualized={!isGrouped}
-        maxListboxHeight={LISTBOX_MAX_HEIGHT[device]}
+        isVirtualized={false}
         defaultFilter={filterFn}
         listboxProps={{
           classNames: {
@@ -195,6 +191,7 @@ export function GdgDropdown({
           autoFocus,
           classNames: {
             inputWrapper: cn(
+              'px-4',
               isMini && 'h-auto min-h-0 py-0'
             ),
             innerWrapper: cn(
@@ -241,7 +238,9 @@ export function GdgDropdown({
               </AutocompleteItem>
             ))}
       </Autocomplete>
-      {helperText && <p className="pl-2 text-xs text-white/60">{helperText}</p>}
+      {caption && (
+        <p className={cn('typo-c1 pl-2', hasError ? 'text-red' : 'text-gray-600')}>{caption}</p>
+      )}
     </div>
   )
 }

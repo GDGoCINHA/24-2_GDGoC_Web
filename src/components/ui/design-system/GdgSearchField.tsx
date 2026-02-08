@@ -36,7 +36,7 @@ export const GdgSearchField = forwardRef<HTMLInputElement, GdgSearchFieldProps>(
             'flex items-center gap-3 rounded-full border px-5 text-white transition-colors duration-150 focus-within:border-white/70',
             WIDTH_CLASS[device][width],
             'bg-black border-gray-400',
-            rest.disabled && 'bg-gray-400 border-gray-400 text-gray-900'
+            rest.disabled && 'bg-gray-400 border-gray-400 text-gray-900 cursor-not-allowed'
           )}
         >
           <svg
