@@ -2,9 +2,6 @@
 
 import Image from 'next/image'
 
-import gdgocPcLogo from '@public/icons/gdgocIcon/pc.svg'
-import gdgocMobileLogo from '@public/icons/gdgocIcon/mobile.svg'
-
 import { cn } from '@/utils/cn'
 
 type LogoMode = 'auto' | 'pc' | 'mobile'
@@ -12,15 +9,15 @@ type LogoVariant = 'icon' | 'short' | 'long'
 
 const LOGO_ASSETS = {
   pc: {
-    src: gdgocPcLogo,
-    width: gdgocPcLogo.width,
-    height: gdgocPcLogo.height,
+    src: '/icons/gdgocIcon/pc.svg',
+    width: 53,
+    height: 30,
     alt: 'GDGoC INHA desktop logo'
   },
   mobile: {
-    src: gdgocMobileLogo,
-    width: gdgocMobileLogo.width,
-    height: gdgocMobileLogo.height,
+    src: '/icons/gdgocIcon/mobile.svg',
+    width: 42,
+    height: 24,
     alt: 'GDGoC INHA mobile logo'
   }
 } as const
