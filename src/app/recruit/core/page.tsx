@@ -1,0 +1,806 @@
+'use client'
+
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
+
+import {
+  GdgButton,
+  GdgCheckbox,
+  GdgFieldContainer,
+  GdgFileCard,
+  GdgLogo,
+  GdgMajorDropdown,
+  GdgTextarea
+} from '@/components/ui/design-system'
+import { GdgInput } from '@/components/ui/input/GdgInput'
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { cn } from '@/utils/cn'
+import { formatPhoneNumberInput } from '@/utils/phoneNumber'
+
+type RecruitStep = 0 | 1 | 2 | 3
+
+type FormFile = {
+  name: string
+  size: number
+  file?: File
+}
+
+type RecruitFormData = {
+  name: string
+  studentId: string
+  email: string
+  major: string
+  phone: string
+  team: string
+  motivation: string
+  role: string
+  strength: string
+  determination: string
+  files: FormFile[]
+}
+
+type PrefillPayload = {
+  name?: string
+  studentId?: string
+  email?: string
+  major?: string
+  phone?: string
+}
+
+const STEPS = ['기본정보', '내용작성', '일정안내', '약관동의'] as const
+const TEAM_OPTIONS = [
+  { id: 'BD', label: 'BD' },
+  { id: 'HR', label: 'HR' },
+  { id: 'TECH', label: 'TECH' },
+  { id: 'PR/DESIGN', label: 'PR·DESIGN' }
+] as const
+
+const unwrapPrefill = (raw: unknown): PrefillPayload | null => {
+  if (!raw || typeof raw !== 'object') return null
+
+  const record = raw as Record<string, unknown>
+  if ('data' in record && record.data && typeof record.data === 'object') {
+    return unwrapPrefill(record.data)
+  }
+
+  const readString = (key: keyof PrefillPayload) => {
+    const value = record[key]
+    return typeof value === 'string' ? value : undefined
+  }
+
+  return {
+    name: readString('name'),
+    studentId: readString('studentId'),
+    email: readString('email'),
+    major: readString('major'),
+    phone: readString('phone')
+  }
+}
+
+const formatFileSize = (bytes: number) => {
+  if (!bytes) return '0.00mb'
+  const mb = bytes / 1024 / 1024
+  return `${mb.toFixed(2)}mb`
+}
+
+function StepBar({
+  currentStep,
+  maxReachedStep,
+  onStepClick
+}: {
+  currentStep: RecruitStep
+  maxReachedStep: RecruitStep
+  onStepClick: (step: RecruitStep) => void
+}) {
+  return (
+    <div className="relative">
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2">
+        {[0, 1, 2].map((lineIndex) => (
+          <div
+            key={`line-${lineIndex}`}
+            className={cn('absolute h-px', lineIndex < maxReachedStep ? 'bg-red' : 'bg-gray-600')}
+            style={{ left: `${12.5 + lineIndex * 25}%`, width: '25%' }}
+          />
+        ))}
+      </div>
+
+      <div className="relative z-10 grid grid-cols-4 items-center">
+        {STEPS.map((step, index) => {
+          const stepIndex = index as RecruitStep
+          const isCurrent = stepIndex === currentStep
+          const isActivated = stepIndex <= maxReachedStep
+          const isClickable = stepIndex <= maxReachedStep
+
+          return (
+            <button
+              key={step}
+              type="button"
+              onClick={() => onStepClick(stepIndex)}
+              disabled={!isClickable}
+              className={cn(
+                'rounded-full border bg-black px-3 py-1.5 whitespace-nowrap typo-b3 mobile:typo-c1 transition-colors',
+                index === 0 && 'justify-self-start',
+                (index === 1 || index === 2) && 'justify-self-center',
+                index === 3 && 'justify-self-end',
+                isCurrent && 'bg-red border-red text-white',
+                !isCurrent && isActivated && 'border-red text-white',
+                !isCurrent && !isActivated && 'border-gray-600 text-gray-600',
+                isClickable ? 'cursor-pointer' : 'cursor-not-allowed'
+              )}
+            >
+              {step}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function TextareaField({
+  name,
+  label,
+  value,
+  maxLength,
+  rows,
+  required,
+  error,
+  helper,
+  onChange
+}: {
+  name: keyof RecruitFormData
+  label: string
+  value: string
+  maxLength: number
+  rows: number
+  required?: boolean
+  error?: boolean
+  helper?: string
+  onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void
+}) {
+  return (
+    <GdgFieldContainer
+      label={label}
+      required={required}
+      caption={helper}
+      status={error ? 'error' : undefined}
+      statusMessage={error ? '※ 필수 입력 사항입니다.' : undefined}
+    >
+      <div className="space-y-2">
+        <GdgTextarea
+          name={name}
+          value={value}
+          onChange={onChange}
+          maxLength={maxLength}
+          rows={rows}
+          state={error ? 'error' : 'default'}
+          placeholder="내용을 입력하세요."
+          fullWidth
+          className="[&_textarea]:mobile:text-sm [&_textarea]:mobile:leading-5"
+        />
+        <p className="typo-b2 text-right text-gray-700 mobile:typo-c1">
+          ({value.length}/{maxLength})
+        </p>
+      </div>
+    </GdgFieldContainer>
+  )
+}
+
+export default function RecruitCore() {
+  const { apiClient } = useAuthenticatedApi()
+
+  const [currentStep, setCurrentStep] = useState<RecruitStep>(0)
+  const [maxReachedStep, setMaxReachedStep] = useState<RecruitStep>(0)
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const [prefillError, setPrefillError] = useState<string | null>(null)
+  const [scheduleChecked, setScheduleChecked] = useState(false)
+  const [agreementChecked, setAgreementChecked] = useState(false)
+
+  const [formData, setFormData] = useState<RecruitFormData>({
+    name: '',
+    studentId: '',
+    email: '',
+    major: '',
+    phone: '',
+    team: '',
+    motivation: '',
+    role: '',
+    strength: '',
+    determination: '',
+    files: []
+  })
+
+  useEffect(() => {
+    let active = true
+
+    const fetchPrefill = async () => {
+      try {
+        const response = await apiClient.get('/recruit/core/prefill')
+        if (!active) return
+
+        const payload = unwrapPrefill(response.data)
+        if (!payload) return
+
+        setFormData((prev) => ({
+          ...prev,
+          name: prev.name || payload.name || '',
+          studentId: prev.studentId || payload.studentId || '',
+          email: prev.email || payload.email || '',
+          major: prev.major || payload.major || '',
+          phone: prev.phone || payload.phone || ''
+        }))
+      } catch (error) {
+        if (!active) return
+        console.error('[코어 리크루팅] 기본 정보 불러오기에 실패했습니다.', error)
+        setPrefillError('기본 정보를 불러오지 못했습니다. 직접 입력해주세요.')
+      }
+    }
+
+    void fetchPrefill()
+
+    return () => {
+      active = false
+    }
+  }, [apiClient])
+
+  const validateStep = (step: RecruitStep) => {
+    const nextErrors: Record<string, boolean> = {}
+
+    if (step === 0) {
+      if (!formData.name.trim()) nextErrors.name = true
+      if (!formData.studentId.trim()) nextErrors.studentId = true
+      if (!formData.email.trim()) nextErrors.email = true
+      if (!formData.major.trim()) nextErrors.major = true
+      if (!formData.phone.trim()) nextErrors.phone = true
+    }
+
+    if (step === 1) {
+      if (!formData.team.trim()) nextErrors.team = true
+      if (!formData.motivation.trim()) nextErrors.motivation = true
+      if (!formData.role.trim()) nextErrors.role = true
+      if (!formData.strength.trim()) nextErrors.strength = true
+      if (!formData.determination.trim()) nextErrors.determination = true
+    }
+
+    if (step === 2 && !scheduleChecked) nextErrors.scheduleCheck = true
+    if (step === 3 && !agreementChecked) nextErrors.agreementCheck = true
+
+    setErrors(nextErrors)
+    return Object.keys(nextErrors).length === 0
+  }
+
+  const handleInputValueChange = (name: keyof RecruitFormData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'phone' ? formatPhoneNumberInput(value) : value
+    }))
+  }
+
+  const handleTextareaChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = event.target
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleTeamChange = (team: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      team
+    }))
+
+    setErrors((prev) => {
+      if (!prev.team) return prev
+      const next = { ...prev }
+      delete next.team
+      return next
+    })
+  }
+
+  const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (!files) return
+
+    const nextFiles = Array.from(files).map<FormFile>((file) => ({
+      name: file.name,
+      size: file.size,
+      file
+    }))
+
+    setFormData((prev) => ({
+      ...prev,
+      files: [...prev.files, ...nextFiles]
+    }))
+
+    event.target.value = ''
+  }
+
+  const handleRemoveFile = (targetIndex: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      files: prev.files.filter((_, index) => index !== targetIndex)
+    }))
+  }
+
+  const handlePrevious = () => {
+    if (currentStep === 0) return
+    setErrors({})
+    setCurrentStep((currentStep - 1) as RecruitStep)
+  }
+
+  const handleStepClick = (step: RecruitStep) => {
+    if (step > maxReachedStep) return
+    setErrors({})
+    setCurrentStep(step)
+  }
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!validateStep(currentStep)) return
+
+    if (currentStep < 3) {
+      const nextStep = (currentStep + 1) as RecruitStep
+      setCurrentStep(nextStep)
+      setMaxReachedStep((prev) => (nextStep > prev ? nextStep : prev))
+      setErrors({})
+      return
+    }
+
+    try {
+      const payload = {
+        snapshot: {
+          name: formData.name,
+          phone: formData.phone,
+          major: formData.major
+        },
+        team: formData.team,
+        motivation: formData.motivation,
+        wish: formData.role,
+        strengths: formData.strength,
+        pledge: formData.determination,
+        fileUrls: []
+      }
+
+      await apiClient.post('/recruit/core/applications', payload)
+      alert('지원서가 제출되었습니다!')
+    } catch (error: any) {
+      if (error?.response?.status === 409) {
+        alert('이미 지원이 완료되었습니다.')
+      } else {
+        alert('지원서 제출 중 오류가 발생했습니다.')
+      }
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-black text-white">
+      <form onSubmit={handleSubmit} noValidate className="pb-20 pt-18 mobile:pb-12 mobile:pt-12">
+        <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
+          <div className="col-span-4 flex items-center gap-3 mobile:gap-2">
+            <GdgLogo mode="auto" />
+            <h1 className="typo-h3 text-white mobile:typo-m-h3">Core Member 지원</h1>
+          </div>
+
+          <div className="col-span-4">
+            <StepBar
+              currentStep={currentStep}
+              maxReachedStep={maxReachedStep}
+              onStepClick={handleStepClick}
+            />
+          </div>
+
+          {currentStep === 0 ? (
+            <>
+              <div className="col-span-4 rounded-xl bg-gray-100 px-4 py-3 mobile:px-3.5 mobile:py-3">
+                <ul className="list-disc space-y-1 pl-5 typo-b3 text-white mobile:typo-c1">
+                  <li>
+                    아래 정보는 회원가입 시 입력한 정보를 기반으로 <b>자동 입력</b>됩니다.
+                  </li>
+                  <li>
+                    <b>지원서 제출 시점의 정보를 기준으로 저장</b>됩니다.
+                  </li>
+                  <li>
+                    예상 소요 시간: <b>약 10~15분</b>
+                  </li>
+                </ul>
+              </div>
+
+              {prefillError ? <p className="col-span-4 typo-c1 text-red">{prefillError}</p> : null}
+
+              <div className="col-span-4 grid grid-cols-4 gap-5 mobile:grid-cols-2 mobile:gap-2">
+                <div className="col-span-1 mobile:col-span-1">
+                  <GdgFieldContainer
+                    label="이름"
+                    required
+                    status={errors.name ? 'error' : undefined}
+                    statusMessage={errors.name ? '※ 필수 입력 사항입니다.' : undefined}
+                  >
+                    <GdgInput
+                      aria-label="이름"
+                      value={formData.name}
+                      onValueChange={(nextValue) => handleInputValueChange('name', nextValue)}
+                      placeholder="홍길동"
+                      classNames={{
+                        inputWrapper:
+                          'bg-gray-300 border-transparent group-data-[focus=true]:border-transparent group-data-[has-value=true]:border-transparent',
+                        input: 'text-gray-900 placeholder:text-gray-700'
+                      }}
+                    />
+                  </GdgFieldContainer>
+                </div>
+
+                <div className="col-span-1 mobile:col-span-1">
+                  <GdgFieldContainer
+                    label="학번"
+                    required
+                    status={errors.studentId ? 'error' : undefined}
+                    statusMessage={errors.studentId ? '※ 필수 입력 사항입니다.' : undefined}
+                  >
+                    <GdgInput
+                      aria-label="학번"
+                      value={formData.studentId}
+                      onValueChange={(nextValue) => handleInputValueChange('studentId', nextValue)}
+                      placeholder="12243421"
+                      classNames={{
+                        inputWrapper:
+                          'bg-gray-300 border-transparent group-data-[focus=true]:border-transparent group-data-[has-value=true]:border-transparent',
+                        input: 'text-gray-900 placeholder:text-gray-700'
+                      }}
+                    />
+                  </GdgFieldContainer>
+                </div>
+
+                <div className="col-span-2 mobile:col-span-2">
+                  <GdgFieldContainer
+                    label="이메일"
+                    required
+                    status={errors.email ? 'error' : undefined}
+                    statusMessage={errors.email ? '※ 필수 입력 사항입니다.' : undefined}
+                  >
+                    <GdgInput
+                      aria-label="이메일"
+                      type="email"
+                      value={formData.email}
+                      onValueChange={(nextValue) => handleInputValueChange('email', nextValue)}
+                      placeholder="abcd1234@inha.edu"
+                      classNames={{
+                        inputWrapper:
+                          'bg-gray-300 border-transparent group-data-[focus=true]:border-transparent group-data-[has-value=true]:border-transparent',
+                        input: 'text-gray-900 placeholder:text-gray-700'
+                      }}
+                    />
+                  </GdgFieldContainer>
+                </div>
+              </div>
+
+              <div className="col-span-4">
+                <GdgFieldContainer
+                  label="주전공"
+                  required
+                  caption="검색 혹은 스크롤하여 지정하세요."
+                  status={errors.major ? 'error' : undefined}
+                  statusMessage={errors.major ? '※ 필수 선택 사항입니다.' : undefined}
+                >
+                  <div className="hidden pc:block">
+                    <GdgMajorDropdown
+                      device="pc"
+                      value={formData.major}
+                      onChangeAction={(nextValue) => {
+                        setFormData((prev) => ({ ...prev, major: nextValue }))
+                      }}
+                      isInvalid={Boolean(errors.major)}
+                    />
+                  </div>
+                  <div className="block pc:hidden">
+                    <GdgMajorDropdown
+                      device="mobile"
+                      value={formData.major}
+                      onChangeAction={(nextValue) => {
+                        setFormData((prev) => ({ ...prev, major: nextValue }))
+                      }}
+                      isInvalid={Boolean(errors.major)}
+                    />
+                  </div>
+                </GdgFieldContainer>
+              </div>
+
+              <div className="col-span-4">
+                <GdgFieldContainer
+                  label="전화번호"
+                  required
+                  status={errors.phone ? 'error' : undefined}
+                  statusMessage={errors.phone ? '※ 필수 입력 사항입니다.' : undefined}
+                >
+                  <GdgInput
+                    aria-label="전화번호"
+                    value={formData.phone}
+                    onValueChange={(nextValue) => handleInputValueChange('phone', nextValue)}
+                    placeholder="010-1234-1234"
+                    isInvalid={Boolean(errors.phone)}
+                  />
+                </GdgFieldContainer>
+              </div>
+            </>
+          ) : null}
+
+          {currentStep === 1 ? (
+            <>
+              <div className="col-span-4">
+                <GdgFieldContainer
+                  label="희망 팀"
+                  required
+                  status={errors.team ? 'error' : undefined}
+                  statusMessage={errors.team ? '※ 필수 선택 사항입니다.' : undefined}
+                >
+                  <div className="grid grid-cols-4 gap-5 mobile:grid-cols-2 mobile:gap-2">
+                    {TEAM_OPTIONS.map((team) => {
+                      const selected = formData.team === team.id
+
+                      return (
+                        <button
+                          key={team.id}
+                          type="button"
+                          onClick={() => handleTeamChange(team.id)}
+                          className={cn(
+                            'h-13 w-full rounded-full border transition-colors typo-b2 mobile:h-12 mobile:typo-b3',
+                            selected
+                              ? 'border-red bg-red-400 text-white'
+                              : 'border-gray-800 bg-black text-white'
+                          )}
+                        >
+                          {team.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </GdgFieldContainer>
+              </div>
+
+              <div className="col-span-4">
+                <TextareaField
+                  name="motivation"
+                  label="지원 동기"
+                  value={formData.motivation}
+                  required
+                  maxLength={500}
+                  rows={6}
+                  error={errors.motivation}
+                  onChange={handleTextareaChange}
+                />
+              </div>
+
+              <div className="col-span-4">
+                <TextareaField
+                  name="role"
+                  label="희망 역할 및 수행하고 싶은 업무"
+                  value={formData.role}
+                  required
+                  maxLength={500}
+                  rows={6}
+                  error={errors.role}
+                  onChange={handleTextareaChange}
+                />
+              </div>
+
+              <div className="col-span-4">
+                <TextareaField
+                  name="strength"
+                  label="본인의 강점"
+                  value={formData.strength}
+                  required
+                  maxLength={500}
+                  rows={6}
+                  helper="예시: 리더십/꼼꼼함/성실함, 자격증, 스킬, 툴, 수상/대외활동/인턴 등"
+                  error={errors.strength}
+                  onChange={handleTextareaChange}
+                />
+              </div>
+
+              <div className="col-span-4">
+                <TextareaField
+                  name="determination"
+                  label="각오"
+                  value={formData.determination}
+                  required
+                  maxLength={100}
+                  rows={2}
+                  error={errors.determination}
+                  onChange={handleTextareaChange}
+                />
+              </div>
+
+              <div className="col-span-4 space-y-2">
+                <div className="flex items-center gap-3 pl-2 mobile:gap-2">
+                  <p className="typo-s3 text-white mobile:typo-s3">파일 첨부</p>
+                  <p className="typo-c2 text-gray-700">다중 파일 업로드 가능</p>
+                </div>
+
+                {formData.files.map((file, index) => (
+                  <>
+                    <div key={`pc-${file.name}-${index}`} className="hidden pc:block">
+                      <GdgFileCard
+                        device="pc"
+                        fileName={file.name}
+                        fileSize={formatFileSize(file.size)}
+                        onAction={() => handleRemoveFile(index)}
+                      />
+                    </div>
+                    <div key={`mobile-${file.name}-${index}`} className="block pc:hidden">
+                      <GdgFileCard
+                        device="mobile"
+                        fileName={file.name}
+                        fileSize={formatFileSize(file.size)}
+                        onAction={() => handleRemoveFile(index)}
+                      />
+                    </div>
+                  </>
+                ))}
+
+                <input
+                  id="portfolio"
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileInput}
+                  accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.zip"
+                />
+
+                <label
+                  htmlFor="portfolio"
+                  className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg bg-red typo-b2 text-white mobile:typo-b3"
+                >
+                  + 파일 선택
+                </label>
+              </div>
+            </>
+          ) : null}
+
+          {currentStep === 2 ? (
+            <>
+              <div className="col-span-4 space-y-2">
+                <p className="pl-2 typo-s3 text-white">모집 일정</p>
+                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white">
+                  <div className="space-y-4 typo-b2 mobile:space-y-3 mobile:typo-b3">
+                    <div className="space-y-1">
+                      <p>✅ 서류 지원 기간</p>
+                      <p>2025. 12. 26.(금) - 2026. 01. 09.(금) 23:59:59</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p>✅ 서류 결과 발표</p>
+                      <p>~ 2026. 01. 10.(토)</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p>✅ 면접 진행 기간</p>
+                      <p>2026. 01. 12.(월) - 2026. 01. 16.(금)</p>
+                      <p className="typo-c2 text-gray-700">
+                        ※ 지원자 및 면접관 일정에 따라 마감 전 면접이 가능할 수 있습니다.
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p>✅ 최종 결과 발표</p>
+                      <p>~ 2026. 01. 16.(금)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-span-4 space-y-2">
+                <p className="pl-2 typo-s3 text-white">면접 안내</p>
+                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-b2 mobile:typo-b3">
+                  <p>• 원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.</p>
+                  <p className="mt-2">• 면접은 인하대학교 내부 장소에서 진행됩니다.</p>
+                </div>
+              </div>
+
+              <div className="col-span-4 space-y-2">
+                <p className="pl-2 typo-s3 text-white">활동 안내</p>
+                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-b2 mobile:typo-b3">
+                  <p>• 운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다.</p>
+                  <p className="mt-1 typo-c2 text-gray-700">※ 일정은 1월 내로 공지 드립니다.</p>
+                </div>
+              </div>
+
+              <div className="col-span-4 flex items-center justify-end gap-2">
+                <span className="typo-s3 text-red">*</span>
+                <p className="typo-b3 text-white">전체 일정을 확인하였습니다.</p>
+                <span className="hidden pc:inline-flex">
+                  <GdgCheckbox checked={scheduleChecked} onCheckedChange={setScheduleChecked} size="pc" />
+                </span>
+                <span className="inline-flex pc:hidden">
+                  <GdgCheckbox checked={scheduleChecked} onCheckedChange={setScheduleChecked} size="mobile" />
+                </span>
+              </div>
+
+              {errors.scheduleCheck ? (
+                <p className="col-span-4 text-right typo-c2 text-red">※ 미확인 시 지원서 제출이 불가합니다.</p>
+              ) : null}
+            </>
+          ) : null}
+
+          {currentStep === 3 ? (
+            <>
+              <div className="col-span-4 space-y-2">
+                <p className="pl-2 typo-s3 text-white">개인정보 수집 및 이용 동의</p>
+                <div className="rounded-xl bg-gray-100 px-4 py-3">
+                  <p className="typo-b2 text-white mobile:typo-b3">
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                  </p>
+                </div>
+              </div>
+
+              <div className="col-span-4 flex items-center justify-end gap-2">
+                <span className="typo-s3 text-red">*</span>
+                <p className="typo-b3 text-white">동의합니다.</p>
+                <span className="hidden pc:inline-flex">
+                  <GdgCheckbox checked={agreementChecked} onCheckedChange={setAgreementChecked} size="pc" />
+                </span>
+                <span className="inline-flex pc:hidden">
+                  <GdgCheckbox checked={agreementChecked} onCheckedChange={setAgreementChecked} size="mobile" />
+                </span>
+              </div>
+
+              {errors.agreementCheck ? (
+                <p className="col-span-4 text-right typo-c2 text-red">※ 미동의 시 지원서 제출이 불가합니다.</p>
+              ) : null}
+            </>
+          ) : null}
+
+          <div className="col-span-4 hidden justify-end gap-5 pt-2 pc:flex">
+            {currentStep > 0 ? (
+              <GdgButton
+                type="button"
+                device="pc"
+                size="small"
+                variant="default"
+                className="w-30.5"
+                onClick={handlePrevious}
+              >
+                이전
+              </GdgButton>
+            ) : null}
+
+            <GdgButton type="submit" device="pc" size="small" variant="active" className="w-30.5">
+              {currentStep === 3 ? '제출하기' : '다음'}
+            </GdgButton>
+          </div>
+
+          <div className="col-span-4 grid grid-cols-3 gap-2 pt-0 pc:hidden">
+            <span aria-hidden />
+            {currentStep > 0 ? (
+              <GdgButton
+                type="button"
+                device="mobile"
+                size="small"
+                variant="default"
+                className="w-27.25"
+                onClick={handlePrevious}
+              >
+                이전
+              </GdgButton>
+            ) : (
+              <span aria-hidden />
+            )}
+
+            <GdgButton
+              type="submit"
+              device="mobile"
+              size="small"
+              variant="active"
+              className="w-27.25"
+            >
+              {currentStep === 3 ? '제출하기' : '다음'}
+            </GdgButton>
+          </div>
+        </div>
+      </form>
+    </main>
+  )
+}

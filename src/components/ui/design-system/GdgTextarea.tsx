@@ -113,7 +113,7 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
           disabled={disabled}
           rows={rows}
           className={cn(
-            'rounded-3xl border px-5 py-4 font-medium leading-[24px] placeholder:font-medium focus:border-white/70 focus:outline-none focus-visible:outline-none resize-none overflow-hidden',
+            'rounded-3xl border px-4 py-3 font-medium leading-[24px] placeholder:font-medium focus:border-white/70 focus:outline-none focus-visible:outline-none resize-none overflow-hidden',
             fullWidth ? 'w-full' : WIDTH_CLASS[device],
             TA_STATE[computedState].wrapper
           )}

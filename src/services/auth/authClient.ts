@@ -1,0 +1,125 @@
+'use client'
+
+import axios, { type AxiosResponse } from 'axios'
+
+const AUTH_BASE_URL = `${process.env.NEXT_PUBLIC_BASE_API_URL ?? ''}/auth`
+
+export interface AuthUserPayload {
+  id?: number
+  name?: string
+  email?: string
+  userRole?: string
+  team?: string | null
+  membershipStatus?: string
+  image?: string | null
+}
+
+export interface LoginExistingUserResponse {
+  isNewUser: false
+  accessToken?: string
+  access_token?: string
+  user?: AuthUserPayload | null
+}
+
+export interface LoginNewUserResponse {
+  isNewUser: true
+  oauthSubject: string
+  email: string
+  name: string
+  picture?: string
+}
+
+export type LoginApiResponseBody = LoginExistingUserResponse | LoginNewUserResponse
+
+export interface SignupRequestPayload {
+  oauthSubject: string
+  email: string
+  name: string
+  studentId: string
+  phoneNumber: string
+  major: string
+}
+
+export interface SignupResponseBody {
+  accessToken?: string
+  access_token?: string
+  role?: string
+  membershipStatus?: string
+  user?: AuthUserPayload | null
+}
+
+export interface RefreshResponseBody {
+  data?: Record<string, unknown>
+  accessToken?: string
+  access_token?: string
+  user?: AuthUserPayload | null
+}
+
+export interface DuplicateCheckResponseBody {
+  isExists: boolean
+}
+
+interface ApiEnvelope<T> {
+  code: number
+  message: string
+  data: T
+}
+
+const defaultHeaders = { 'Content-Type': 'application/json' } as const
+const defaultConfig = {
+  headers: defaultHeaders,
+  withCredentials: true
+} as const
+
+export const loginWithGoogleIdToken = (
+  idToken: string
+): Promise<AxiosResponse<LoginApiResponseBody>> =>
+  axios.post(
+    `${AUTH_BASE_URL}/login`,
+    { idToken },
+    {
+      ...defaultConfig
+    }
+  )
+
+export const signupWithProfile = (
+  payload: SignupRequestPayload
+): Promise<AxiosResponse<SignupResponseBody>> =>
+  axios.post(`${AUTH_BASE_URL}/signup`, payload, {
+    ...defaultConfig
+  })
+
+export const requestAccessTokenRefresh = (): Promise<AxiosResponse<RefreshResponseBody>> =>
+  axios.post(
+    `${AUTH_BASE_URL}/refresh`,
+    {},
+    {
+      ...defaultConfig
+    }
+  )
+
+export const requestLogout = (): Promise<AxiosResponse<void>> =>
+  axios.post(
+    `${AUTH_BASE_URL}/logout`,
+    {},
+    {
+      withCredentials: true,
+      headers: defaultHeaders
+    }
+  )
+
+export const checkStudentIdDuplicated = (
+  studentId: string
+): Promise<AxiosResponse<ApiEnvelope<DuplicateCheckResponseBody>>> =>
+  axios.get(`${AUTH_BASE_URL}/check/student-id`, {
+    ...defaultConfig,
+    params: { studentId }
+  })
+
+export const checkPhoneNumberDuplicated = (
+  phoneNumber: string
+): Promise<AxiosResponse<ApiEnvelope<DuplicateCheckResponseBody>>> =>
+  axios.get(`${AUTH_BASE_URL}/check/phone-number`, {
+    ...defaultConfig,
+    params: { phoneNumber }
+  })

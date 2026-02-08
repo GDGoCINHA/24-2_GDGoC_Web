@@ -1,12 +1,37 @@
 'use client'
 
-import { createContext, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react'
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction
+} from 'react'
+import { usePathname } from 'next/navigation'
 
-export type AuthUser = Record<string, unknown> | null
+import {
+  USER_STORAGE_KEY,
+  readStoredUser,
+  subscribeAuthStorage,
+  writeStoredUser
+} from '@/lib/auth/storage'
+import { requestAccessTokenRefresh, type RefreshResponseBody } from '@/services/auth/authClient'
+import { unwrapApiResponse } from '@/utils/api/unwrap'
+
+export interface AuthUser {
+  id?: number
+  name?: string
+  email?: string
+  userRole?: string
+  team?: string | null
+  membershipStatus?: string
+  image?: string | null
+}
 
 export interface AuthContextValue {
-  accessToken: string | null
-  setAccessToken: Dispatch<SetStateAction<string | null>>
   user: AuthUser
   setUser: Dispatch<SetStateAction<AuthUser>>
   clearAuth: () => void
@@ -19,19 +44,76 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [accessToken, setAccessToken] = useState<string | null>(null)
-  const [user, setUser] = useState<AuthUser>(null)
+  const pathname = usePathname()
+  const [userState, setUserState] = useState<AuthUser>(() => readStoredUser<AuthUser>())
 
-  const clearAuth = () => {
-    setAccessToken(null)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    return subscribeAuthStorage(({ key }) => {
+      if (key === USER_STORAGE_KEY || key === null) {
+        setUserState(readStoredUser<AuthUser>())
+      }
+    })
+  }, [])
+
+  const setUser = useCallback<Dispatch<SetStateAction<AuthUser>>>((value) => {
+    setUserState((prev) => {
+      const next = typeof value === 'function' ? value(prev) : value
+      writeStoredUser(next)
+      return next
+    })
+  }, [])
+
+  useEffect(() => {
+    let alive = true
+
+    const bootstrap = async () => {
+      // Google OIDC implicit callback 처리 중(/login#id_token=...)에는
+      // refresh 선호출을 건너뛰어 신규 유저 분기 응답 지연을 방지한다.
+      if (
+        pathname === '/login' &&
+        typeof window !== 'undefined' &&
+        window.location.hash.includes('id_token=')
+      ) {
+        return
+      }
+
+      try {
+        const response = await requestAccessTokenRefresh()
+        const data = unwrapApiResponse<RefreshResponseBody>(response.data)
+        if (!alive) return
+        if (data?.user) {
+          setUser(data.user)
+        } else {
+          setUser(null)
+        }
+      } catch {
+        if (alive) {
+          setUser(null)
+        }
+      }
+    }
+
+    void bootstrap()
+    return () => {
+      alive = false
+    }
+  }, [setUser, pathname])
+
+  const clearAuth = useCallback(() => {
     setUser(null)
-  }
+  }, [setUser])
 
-  return (
-    <AuthContext.Provider value={{ accessToken, setAccessToken, user, setUser, clearAuth }}>
-      {children}
-    </AuthContext.Provider>
+  const contextValue = useMemo<AuthContextValue>(
+    () => ({
+      user: userState,
+      setUser,
+      clearAuth
+    }),
+    [userState, setUser, clearAuth]
   )
+
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
 }
 
 export default AuthContext
