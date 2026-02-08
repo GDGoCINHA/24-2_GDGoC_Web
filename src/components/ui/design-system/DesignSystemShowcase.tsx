@@ -69,6 +69,22 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export function DesignSystemShowcase() {
   const [majorPc, setMajorPc] = useState('')
   const [majorMobile, setMajorMobile] = useState('')
+  const [buttonState, setButtonState] = useState<Record<'pc' | 'mobile', { active: boolean; clicks: number }>>({
+    pc: { active: false, clicks: 0 },
+    mobile: { active: false, clicks: 0 }
+  })
+  const [segmentedPressed, setSegmentedPressed] = useState<Record<'pc' | 'mobile', 'left' | 'right'>>({
+    pc: 'left',
+    mobile: 'left'
+  })
+  const [checkboxChecked, setCheckboxChecked] = useState<Record<'pc' | 'mobile', boolean>>({
+    pc: false,
+    mobile: false
+  })
+  const [radioChecked, setRadioChecked] = useState<Record<'pc' | 'mobile', 'left' | 'right'>>({
+    pc: 'left',
+    mobile: 'left'
+  })
 
   return (
     <div className="space-y-8 text-white">
@@ -87,7 +103,34 @@ export function DesignSystemShowcase() {
       </Section>
 
       <Section title="Button">
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-2">
+            {BUTTON_DEVICES.map((device) => (
+              <div key={`interactive-${device}`} className="space-y-2">
+                <p className="mb-2 text-xs text-white/60">{`${device} / interactive`}</p>
+                <div className="flex items-center gap-2">
+                  <GdgButton
+                    device={device}
+                    size="small"
+                    variant={buttonState[device].active ? 'active' : 'default'}
+                    onClick={() =>
+                      setButtonState((prev) => ({
+                        ...prev,
+                        [device]: {
+                          active: !prev[device].active,
+                          clicks: prev[device].clicks + 1
+                        }
+                      }))
+                    }
+                  >
+                    {buttonState[device].active ? 'ACTIVE' : 'DEFAULT'}
+                  </GdgButton>
+                  <p className="typo-c1 text-gray-600">{`click: ${buttonState[device].clicks}`}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
           {BUTTON_DEVICES.map((device) =>
             BUTTON_SIZES.map((size) =>
               BUTTON_VARIANTS.map((variant) => (
@@ -100,6 +143,7 @@ export function DesignSystemShowcase() {
               ))
             )
           )}
+          </div>
         </div>
       </Section>
 
@@ -109,13 +153,24 @@ export function DesignSystemShowcase() {
             <div key={device} className="space-y-2">
               <p className="text-xs text-white/60">{device}</p>
               <div className="flex gap-1">
-                <GdgSegmentedButton device={device} edge="left">
-                  Default
+                <GdgSegmentedButton
+                  device={device}
+                  edge="left"
+                  pressed={segmentedPressed[device] === 'left'}
+                  onClick={() => setSegmentedPressed((prev) => ({ ...prev, [device]: 'left' }))}
+                >
+                  Left
                 </GdgSegmentedButton>
-                <GdgSegmentedButton device={device} edge="right" pressed>
-                  Pressed
+                <GdgSegmentedButton
+                  device={device}
+                  edge="right"
+                  pressed={segmentedPressed[device] === 'right'}
+                  onClick={() => setSegmentedPressed((prev) => ({ ...prev, [device]: 'right' }))}
+                >
+                  Right
                 </GdgSegmentedButton>
               </div>
+              <p className="typo-c1 text-gray-600">{`selected: ${segmentedPressed[device]}`}</p>
               <div className="flex gap-1">
                 <GdgSegmentedButton device={device} edge="left" disabled>
                   Disabled
@@ -346,14 +401,26 @@ export function DesignSystemShowcase() {
             <div key={size} className="space-y-2">
               <p className="text-xs text-white/60">{size}</p>
               <div className="flex flex-wrap gap-3">
-                <GdgCheckbox size={size} checked={false} />
-                <GdgCheckbox size={size} checked />
+                <GdgCheckbox
+                  size={size}
+                  checked={checkboxChecked[size]}
+                  onCheckedChange={(checked) => setCheckboxChecked((prev) => ({ ...prev, [size]: checked }))}
+                />
+                <p className="typo-c1 text-gray-600">{checkboxChecked[size] ? 'checked' : 'unchecked'}</p>
                 <GdgCheckbox size={size} checked={false} disabled />
                 <GdgCheckbox size={size} checked disabled />
               </div>
               <div className="flex flex-wrap gap-3">
-                <GdgRadio size={size} checked={false} />
-                <GdgRadio size={size} checked />
+                <GdgRadio
+                  size={size}
+                  checked={radioChecked[size] === 'left'}
+                  onCheckedChange={() => setRadioChecked((prev) => ({ ...prev, [size]: 'left' }))}
+                />
+                <GdgRadio
+                  size={size}
+                  checked={radioChecked[size] === 'right'}
+                  onCheckedChange={() => setRadioChecked((prev) => ({ ...prev, [size]: 'right' }))}
+                />
                 <GdgRadio size={size} checked={false} disabled />
                 <GdgRadio size={size} checked disabled />
               </div>

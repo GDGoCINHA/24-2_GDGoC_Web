@@ -95,6 +95,7 @@ export function GdgUploadButton({ device = 'pc', label = '+ 파일 선택', clas
       className={cn(
         'inline-flex items-center justify-between rounded-lg bg-red px-4 font-medium text-white shadow-[0px_2px_50px_rgba(0,0,0,0.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40',
         BUTTON_SIZE[device],
+        rest.disabled && 'cursor-not-allowed opacity-60',
         className
       )}
     >
