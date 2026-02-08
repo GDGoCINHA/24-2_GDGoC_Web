@@ -6,11 +6,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Loader from '@/components/ui/common/Loader'
 
 import { useAuth } from '@/hooks/useAuth';
+import { unwrapApiResponse } from '@/utils/api/unwrap';
 
 import { exchangeGoogleToken } from '@/services/auth/signin/google/GoogleAuthApi';
 
 export const GoogleAuthComponent = () => {
-  const { setAccessToken } = useAuth();
+  const { setUser } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -39,11 +40,15 @@ export const GoogleAuthComponent = () => {
 
     exchangeGoogleToken(code)
       .then((res) => {
-        const data = res?.data?.data || {};
+        const data = unwrapApiResponse<Record<string, unknown>>(res?.data) || {};
         const exists = typeof data.exists === 'boolean' ? data.exists : data.isExists;
-        const { access_token, email, name } = data;
+        const email = typeof data.email === 'string' ? data.email : '';
+        const name = typeof data.name === 'string' ? data.name : '';
+        const user = (data.user ?? null) as Record<string, unknown> | null;
         if (exists) {
-          setAccessToken(access_token);
+          if (user) {
+            setUser(user);
+          }
           router.push(nextPath || '/main');
         } else {
           alert('회원 정보가 없습니다. 회원가입을 완료해주세요.');
@@ -61,7 +66,7 @@ export const GoogleAuthComponent = () => {
         }
       })
       .finally(() => setIsLoading(false));
-  }, [searchParams, router, setAccessToken]);
+  }, [searchParams, router, setUser]);
   
     if (isLoading) {
       return <Loader isLoading={true} />;

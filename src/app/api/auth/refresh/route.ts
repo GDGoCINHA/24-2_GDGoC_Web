@@ -6,7 +6,7 @@ const TIMEOUT = 5000;
 
 interface RefreshResponse {
   accessToken?: string;
-  refreshToken?: string;
+  user?: Record<string, unknown>;
   message?: string;
 }
 
@@ -20,11 +20,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<RefreshRespon
 
   try {
     const cookies = req.headers.get('cookie') || '';
-    const body = await req.json();
 
     const response: AxiosResponse<RefreshResponse> = await axios.post(
       refreshUrl,
-      body,
+      {},
       {
         headers: {
           'Content-Type': 'application/json',

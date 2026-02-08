@@ -9,7 +9,6 @@ export const exchangeGoogleToken = async (code) => {
     const response = await axios.get(`${GOOGLE_AUTH_URL}/callback?code=${code}`, {
       headers: { 'Content-Type': 'application/json' },
       withCredentials: true,
-      credentials: 'include',
     });
 
     const cookies = response.headers['set-cookie'];
