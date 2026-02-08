@@ -1,7 +1,7 @@
 'use client'
 
 import type { ButtonHTMLAttributes } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from './cn'
 
 export type GdgSegmentedButtonProps = {
   device?: 'pc' | 'mobile'

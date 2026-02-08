@@ -9,7 +9,7 @@ import {
   type ChangeEvent,
   type TextareaHTMLAttributes,
 } from 'react'
-import { cn } from '@/utils/cn'
+import { cn } from './cn'
 
 export interface GdgTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   device?: 'pc' | 'mobile'

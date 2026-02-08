@@ -25,6 +25,13 @@
     --color-gray-700: #AFAFAF;
     --color-gray-800: #C8C8C8;
     --color-gray-900: #E1E1E1;
+
+    --color-cred: #EA4335;
+    --color-cblue: #4285F4;
+    --color-cyellow: #FBBC05;
+    --color-cgreen: #34A853;
+    --color-cblack: #1A1A1A;
+    --color-cwhite: #FAFAFA;
 }
 
 @custom-variant mobile (max-width: 48rem);
