@@ -1,5 +1,5 @@
 import MenuHeader from '@/components/ui/common/MenuHeader';
-import ApiCodeGuard from '@/components/auth/ApiCodeGuard.jsx';
+import ApiCodeGuard from '@/components/auth/ApiCodeGuard';
 
 export const metadata = {
     title: "Member Manager", description: "Admin management platform",

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Loader from '@/components/ui/common/Loader.jsx';
+import Loader from '@/components/ui/common/Loader';
 
 export const metadata = {
     title: "Core Recruit",
@@ -13,5 +13,4 @@ export default function CoreRecruitLayout({ children }) {
         </Suspense>
     );
 }
-
 
