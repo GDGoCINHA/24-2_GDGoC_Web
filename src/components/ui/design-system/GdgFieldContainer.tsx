@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { cn } from './cn'
+import { cn } from '@/utils/cn'
 
 export type GdgFieldStatus = 'success' | 'error'
 

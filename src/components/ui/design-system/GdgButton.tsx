@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
-import { cn } from './cn'
+import { cn } from '@/utils/cn'
 
 type Device = 'pc' | 'mobile'
 type ButtonSize = 'large' | 'small'
