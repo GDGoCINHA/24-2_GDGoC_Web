@@ -318,7 +318,7 @@ export function DesignSystemShowcase() {
       <Section title="Search Field">
         <div className="space-y-2">
           {(['pc', 'mobile'] as const).map((device) =>
-            (['full', 'quarter'] as const).map((width) => (
+            (['full', 'half'] as const).map((width) => (
               <div key={`${device}-${width}`} className="space-y-2">
                 <p className="text-xs text-white/60">{`${device}-${width}`}</p>
                 <GdgSearchField device={device} width={width} placeholder="search" />

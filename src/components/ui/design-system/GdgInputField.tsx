@@ -29,7 +29,7 @@ const STATE_CLASS: Record<
     helper: 'typo-c1 pl-2 text-red'
   },
   disabled: {
-    wrapper: 'border-gray-400 bg-gray-400 text-gray-700 opacity-70 cursor-not-allowed',
+    wrapper: 'border-gray-400 bg-gray-400 text-gray-900 cursor-not-allowed',
     input: 'text-gray-900 placeholder:text-gray-900 cursor-not-allowed',
     adornment: 'text-gray-900',
     helper: 'typo-c1 pl-2 text-gray-900'
@@ -120,7 +120,7 @@ export const GdgInputField = forwardRef<HTMLInputElement, GdgInputFieldProps>(
             onFocus={rest.onFocus}
             onBlur={rest.onBlur}
             className={cn(
-              '!ml-0 flex-1 bg-transparent placeholder:font-medium focus:outline-none',
+              '!ml-0 h-full flex-1 bg-transparent placeholder:font-medium focus:outline-none py-0 leading-normal',
               controlMeta.text,
               STATE_CLASS[computedState].input
             )}
