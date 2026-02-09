@@ -116,13 +116,13 @@ export function GdgDropdown({
     hasError ? 'border-red' : hasValue ? 'border-white' : 'border-gray-800',
     hasError ? 'group-data-[hover=true]:border-red' : 'group-data-[hover=true]:border-gray-900',
     hasError ? 'group-data-[focus=true]:border-red' : 'group-data-[focus=true]:border-white',
-    'group-data-[disabled=true]:bg-gray-400 group-data-[disabled=true]:border-gray-400 group-data-[disabled=true]:opacity-60 group-data-[disabled=true]:cursor-not-allowed'
+    'group-data-[disabled=true]:bg-gray-400 group-data-[disabled=true]:border-gray-400 group-data-[disabled=true]:cursor-not-allowed'
   )
 
   const selectorClass = cn(
     'h-full w-auto !min-w-0 justify-between bg-transparent !bg-transparent font-medium text-gray-900 hover:bg-transparent data-[hover=true]:!bg-transparent focus-visible:outline-none',
-    isMini && 'min-h-0 py-0 [&_[data-slot=inner-wrapper]]:h-auto [&_[data-slot=inner-wrapper]]:min-h-0',
-    isMini ? 'pl-3 pr-0' : 'pl-4 pr-0',
+    isMini &&
+      'min-h-0 px-0 py-0 [&_[data-slot=inner-wrapper]]:h-auto [&_[data-slot=inner-wrapper]]:min-h-0',
     controlMeta.text,
     'group-data-[disabled=true]:text-gray-900 group-data-[disabled=true]:cursor-not-allowed'
   )
@@ -190,15 +190,13 @@ export function GdgDropdown({
         inputProps={{
           autoFocus,
           classNames: {
-            inputWrapper: cn(
-              'px-4',
-              isMini && 'h-auto min-h-0 py-0'
-            ),
-            innerWrapper: cn(
-              isMini && 'h-auto min-h-0 items-center'
-            ),
+            inputWrapper: cn('px-4 items-center', isMini && 'h-auto min-h-0 py-0'),
+            innerWrapper: cn('items-center', isMini && 'h-auto min-h-0'),
             input: [
               '!ml-0',
+              'h-full',
+              'py-0',
+              'leading-normal',
               controlMeta.text,
               'text-gray-900',
               'placeholder:text-gray-700',

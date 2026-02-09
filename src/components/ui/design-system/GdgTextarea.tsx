@@ -35,7 +35,7 @@ const TA_STATE: Record<'default' | 'error' | 'disabled', { wrapper: string; help
     helper: 'text-red'
   },
   disabled: {
-    wrapper: 'border-gray-400 bg-gray-400 text-gray-900 placeholder:text-gray-900 opacity-60 cursor-not-allowed',
+    wrapper: 'border-gray-400 bg-gray-400 text-gray-900 placeholder:text-gray-900 cursor-not-allowed',
     helper: 'text-gray-900'
   }
 }
@@ -54,7 +54,9 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
       disabled,
       id,
       rows = 4,
+      maxLength,
       onChange,
+      value,
       ...rest
     },
     forwardedRef
@@ -85,7 +87,7 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
 
     useEffect(() => {
       adjustHeight()
-    }, [adjustHeight, rest.value, rows])
+    }, [adjustHeight, value, rows])
 
     const handleChange = useCallback(
       (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -98,6 +100,8 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
     const lineHeight = 24
     const verticalPadding = 32 // py-4
     const minHeight = rows ? rows * lineHeight + verticalPadding : undefined
+    
+    const currentLength = typeof value === 'string' ? value.length : 0
 
     return (
       <label className={cn('flex w-full flex-col gap-2', className)} htmlFor={fieldId} style={style}>
@@ -106,20 +110,34 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
             {label}
           </span>
         )}
-        <textarea
-          {...rest}
-          id={fieldId}
-          ref={mergeRefs}
-          disabled={disabled}
-          rows={rows}
-          className={cn(
-            'rounded-3xl border px-4 py-3 font-medium leading-[24px] placeholder:font-medium focus:border-white/70 focus:outline-none focus-visible:outline-none resize-none overflow-hidden',
+        <div className={cn(
+            'relative rounded-3xl border px-4 py-3',
             fullWidth ? 'w-full' : WIDTH_CLASS[device],
             TA_STATE[computedState].wrapper
           )}
-          style={{ ...style, minHeight: minHeight ? `${minHeight}px` : undefined }}
-          onChange={handleChange}
-        />
+          style={{ minHeight: minHeight ? `${minHeight}px` : undefined }}
+        >
+          <textarea
+            {...rest}
+            id={fieldId}
+            ref={mergeRefs}
+            disabled={disabled}
+            rows={rows}
+            maxLength={maxLength}
+            value={value}
+            className={cn(
+              'w-full bg-transparent font-medium leading-[24px] placeholder:font-medium focus:outline-none resize-none overflow-hidden block',
+              maxLength ? 'pb-6' : ''
+            )}
+            style={{ ...style, height: 'auto', minHeight: 'unset' }}
+            onChange={handleChange}
+          />
+          {maxLength && (
+            <div className="absolute bottom-3 right-4 text-[12px] leading-[18px] text-gray-600 font-medium">
+              {currentLength}/{maxLength}
+            </div>
+          )}
+        </div>
         {(helperText || errorText) && (
           <span className={cn('pl-2 text-[12px] leading-[18px]', TA_STATE[computedState].helper)}>
             {computedState === 'error' ? errorText ?? helperText : helperText}
