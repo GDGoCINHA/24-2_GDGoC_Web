@@ -1,6 +1,15 @@
 'use client'
 
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent
+} from 'react'
 
 import {
   GdgButton,
@@ -14,7 +23,7 @@ import {
 import { GdgInput } from '@/components/ui/input/GdgInput'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { cn } from '@/utils/cn'
-import { formatPhoneNumberInput } from '@/utils/phoneNumber'
+import { formatPhoneNumberInput, toPhoneDigits } from '@/utils/phoneNumber'
 
 type RecruitStep = 0 | 1 | 2 | 3
 
@@ -92,35 +101,22 @@ function StepBar({
   onStepClick: (step: RecruitStep) => void
 }) {
   return (
-    <div className="relative">
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2">
-        {[0, 1, 2].map((lineIndex) => (
-          <div
-            key={`line-${lineIndex}`}
-            className={cn('absolute h-px', lineIndex < maxReachedStep ? 'bg-red' : 'bg-gray-600')}
-            style={{ left: `${12.5 + lineIndex * 25}%`, width: '25%' }}
-          />
-        ))}
-      </div>
+    <div className="flex w-full items-center">
+      {STEPS.map((step, index) => {
+        const stepIndex = index as RecruitStep
+        const isCurrent = stepIndex === currentStep
+        const isActivated = stepIndex <= maxReachedStep
+        const isClickable = stepIndex <= maxReachedStep
+        const isLast = index === STEPS.length - 1
 
-      <div className="relative z-10 grid grid-cols-4 items-center">
-        {STEPS.map((step, index) => {
-          const stepIndex = index as RecruitStep
-          const isCurrent = stepIndex === currentStep
-          const isActivated = stepIndex <= maxReachedStep
-          const isClickable = stepIndex <= maxReachedStep
-
-          return (
+        return (
+          <div key={step} className={cn('flex items-center', isLast ? '' : 'flex-1')}>
             <button
-              key={step}
               type="button"
               onClick={() => onStepClick(stepIndex)}
               disabled={!isClickable}
               className={cn(
                 'rounded-full border bg-black px-3 py-1.5 whitespace-nowrap typo-b3 mobile:typo-c1 transition-colors',
-                index === 0 && 'justify-self-start',
-                (index === 1 || index === 2) && 'justify-self-center',
-                index === 3 && 'justify-self-end',
                 isCurrent && 'bg-red border-red text-white',
                 !isCurrent && isActivated && 'border-red text-white',
                 !isCurrent && !isActivated && 'border-gray-600 text-gray-600',
@@ -129,9 +125,17 @@ function StepBar({
             >
               {step}
             </button>
-          )
-        })}
-      </div>
+            {!isLast && (
+              <div
+                className={cn(
+                  'h-px flex-1',
+                  index < maxReachedStep ? 'bg-red' : 'bg-gray-600'
+                )}
+              />
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -165,22 +169,17 @@ function TextareaField({
       status={error ? 'error' : undefined}
       statusMessage={error ? '※ 필수 입력 사항입니다.' : undefined}
     >
-      <div className="space-y-2">
-        <GdgTextarea
-          name={name}
-          value={value}
-          onChange={onChange}
-          maxLength={maxLength}
-          rows={rows}
-          state={error ? 'error' : 'default'}
-          placeholder="내용을 입력하세요."
-          fullWidth
-          className="[&_textarea]:mobile:text-sm [&_textarea]:mobile:leading-5"
-        />
-        <p className="typo-b2 text-right text-gray-700 mobile:typo-c1">
-          ({value.length}/{maxLength})
-        </p>
-      </div>
+      <GdgTextarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        maxLength={maxLength}
+        rows={rows}
+        state={error ? 'error' : 'default'}
+        placeholder="내용을 입력하세요."
+        fullWidth
+        className="[&_textarea]:mobile:text-sm [&_textarea]:mobile:leading-5"
+      />
     </GdgFieldContainer>
   )
 }
@@ -209,6 +208,30 @@ export default function RecruitCore() {
     files: []
   })
 
+  const isCurrentStepValid = useMemo(() => {
+    if (currentStep === 0) {
+      return Boolean(
+        formData.name.trim() &&
+          formData.studentId.trim() &&
+          formData.email.trim() &&
+          formData.major.trim() &&
+          formData.phone.trim()
+      )
+    }
+    if (currentStep === 1) {
+      return Boolean(
+        formData.team.trim() &&
+          formData.motivation.trim() &&
+          formData.role.trim() &&
+          formData.strength.trim() &&
+          formData.determination.trim()
+      )
+    }
+    if (currentStep === 2) return scheduleChecked
+    if (currentStep === 3) return agreementChecked
+    return false
+  }, [currentStep, formData, scheduleChecked, agreementChecked])
+
   useEffect(() => {
     let active = true
 
@@ -220,15 +243,14 @@ export default function RecruitCore() {
         const payload = unwrapPrefill(response.data)
         if (!payload) return
 
-        setFormData((prev) => ({
-          ...prev,
-          name: prev.name || payload.name || '',
-          studentId: prev.studentId || payload.studentId || '',
-          email: prev.email || payload.email || '',
-          major: prev.major || payload.major || '',
-          phone: prev.phone || payload.phone || ''
-        }))
-      } catch (error) {
+              setFormData((prev) => ({
+                ...prev,
+                name: prev.name || payload.name || '',
+                studentId: prev.studentId || payload.studentId || '',
+                email: prev.email || payload.email || '',
+                major: prev.major || payload.major || '',
+                phone: formatPhoneNumberInput(prev.phone || payload.phone || '')
+              }))      } catch (error) {
         if (!active) return
         console.error('[코어 리크루팅] 기본 정보 불러오기에 실패했습니다.', error)
         setPrefillError('기본 정보를 불러오지 못했습니다. 직접 입력해주세요.')
@@ -352,8 +374,10 @@ export default function RecruitCore() {
       const payload = {
         snapshot: {
           name: formData.name,
-          phone: formData.phone,
-          major: formData.major
+          studentId: formData.studentId,
+          phone: toPhoneDigits(formData.phone),
+          major: formData.major,
+          email: formData.email
         },
         team: formData.team,
         motivation: formData.motivation,
@@ -767,7 +791,14 @@ export default function RecruitCore() {
               </GdgButton>
             ) : null}
 
-            <GdgButton type="submit" device="pc" size="small" variant="active" className="w-30.5">
+            <GdgButton
+              type="submit"
+              device="pc"
+              size="small"
+              variant={isCurrentStepValid ? 'active' : 'disabled'}
+              className="w-30.5"
+              disabled={!isCurrentStepValid}
+            >
               {currentStep === 3 ? '제출하기' : '다음'}
             </GdgButton>
           </div>
@@ -793,8 +824,9 @@ export default function RecruitCore() {
               type="submit"
               device="mobile"
               size="small"
-              variant="active"
+              variant={isCurrentStepValid ? 'active' : 'disabled'}
               className="w-27.25"
+              disabled={!isCurrentStepValid}
             >
               {currentStep === 3 ? '제출하기' : '다음'}
             </GdgButton>
