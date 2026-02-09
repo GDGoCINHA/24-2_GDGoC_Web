@@ -42,7 +42,7 @@ export default function Recruit2({ step, setChecked, updateRecruitData }) {
   const handleCheckDuplicate = async () => {
 
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/check/student-id`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/student-id`, {
         params: { studentId },
       });
       setIsValidButtonClicked(true);

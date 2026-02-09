@@ -72,7 +72,7 @@ export default function Page() {
         dir: apiSortDirection,
         question: query || undefined,
       };
-      const res = await apiClient.get('/recruit/members', { params });
+      const res = await apiClient.get('/recruit/member', { params });
       const list = Array.isArray(res?.data?.data) ? res.data.data : [];
       const total = res?.data?.meta?.totalElements ?? list.length;
       const computedTotalPages = Math.max(1, Math.ceil(total / rowsPerPage));
@@ -97,7 +97,7 @@ export default function Page() {
       const pageSize = 200;
       const baseParams = { size: pageSize, sort: 'createdAt', dir: 'DESC' };
 
-      const firstRes = await apiClient.get('/recruit/members', { params: { ...baseParams, page: 0 } });
+      const firstRes = await apiClient.get('/recruit/member', { params: { ...baseParams, page: 0 } });
       const firstList = Array.isArray(firstRes?.data?.data) ? firstRes.data.data : [];
       const total = firstRes?.data?.meta?.totalElements ?? firstList.length;
       const totalPagesForStats = Math.max(1, Math.ceil(total / pageSize));
@@ -106,7 +106,7 @@ export default function Page() {
       if (totalPagesForStats > 1) {
         const promises = [];
         for (let p = 1; p < totalPagesForStats; p++) {
-          promises.push(apiClient.get('/recruit/members', { params: { ...baseParams, page: p } }));
+          promises.push(apiClient.get('/recruit/member', { params: { ...baseParams, page: p } }));
         }
         const results = await Promise.allSettled(promises);
         results.forEach((res) => {
@@ -148,7 +148,7 @@ export default function Page() {
       );
 
       try {
-        await apiClient.patch(`/recruit/members/${userId}/payment`, { isPayed: nextValue });
+        await apiClient.patch(`/recruit/member/${userId}/payment`, { isPayed: nextValue });
       } catch (err) {
         // rollback
         setCurrentUsers(prevUsers);
@@ -184,7 +184,7 @@ export default function Page() {
       if (!memberId) {
         throw new Error('멤버 ID를 확인할 수 없습니다.');
       }
-      const res = await apiClient.get(`/recruit/members/${memberId}`);
+      const res = await apiClient.get(`/recruit/member/${memberId}`);
       const detail = res?.data?.data ?? null;
       if (!detail) {
         throw new Error('상세 정보를 불러오지 못했습니다.');
