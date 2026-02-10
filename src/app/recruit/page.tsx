@@ -1,29 +1,33 @@
 'use client'
 
-import { useMemo, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button, Select, SelectItem } from '@nextui-org/react'
+import { type FormEvent, useMemo, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Select, SelectItem } from '@nextui-org/react'
 import axios from 'axios'
 
 import Loader from '@/components/ui/common/Loader'
 import {
+  GdgButton,
   GdgCheckbox,
   GdgDropdown,
   GdgFieldContainer,
+  type GdgFieldStatus,
+  GdgFileCard,
+  GdgInputField,
   GdgLogo,
   GdgMajorDropdown,
-  GdgFileCard,
+  GdgTextarea,
   GdgUploadButton
 } from '@/components/ui/design-system'
 import { interestOptions } from '@/constant/interestOptions'
 import { wishOptions } from '@/constant/wishOptions'
-import { expectOptions } from '@/constant/expectOptions'
-import { reachFromOptions } from '@/constant/reachFromOptions'
-import { semesterOptions } from '@/constant/semesterOptions'
 import { formatRecruitData } from '@/utils/formatRecruitData'
-import { GdgInput } from '@/components/ui/input/GdgInput'
-import { formatPhoneNumberInput, isPhoneNumberFormatValid, toPhoneDigits } from '@/utils/phoneNumber'
-import { cn } from '@/utils/cn'
+import {
+  formatPhoneNumberInput,
+  isPhoneNumberFormatValid,
+  toPhoneDigits
+} from '@/utils/phoneNumber'
+import { useAuth } from '@/hooks/useAuth'
 
 type RecruitFormState = {
   privacyAgreement: boolean
@@ -65,16 +69,16 @@ const initialFormState: RecruitFormState = {
   birth: '',
   major: '',
   enrolledClassification: '',
-  grade: '',
+  grade: '1학년',
   studentId: '',
   phoneNumber: '',
-  nationality: '',
+  nationality: '대한민국',
   emailLocal: '',
   emailDomain: 'inha.edu',
   gdgInterest: [],
   gdgWish: [],
   gdgPeriod: [],
-  gdgRoute: '',
+  gdgRoute: '기타',
   gdgRouteEtc: '',
   gdgExpect: [],
   gdgFeedback: '',
@@ -84,50 +88,10 @@ const initialFormState: RecruitFormState = {
 
 const enrollmentOptions = ['재학', '부분등록', '휴학', '군휴학', '수료', '졸업']
 const genderOptions = [
-  { id: 'male', label: '남성' },
-  { id: 'female', label: '여성' },
-  { id: 'hidden', label: '비공개' }
+  { id: '남성', label: '남성' },
+  { id: '여성', label: '여성' },
+  { id: '비공개', label: '비공개' }
 ]
-const gradeOptions = [
-  { id: '1학년', label: '1학년' },
-  { id: '2학년', label: '2학년' },
-  { id: '3학년', label: '3학년' },
-  { id: '4학년', label: '4학년' },
-  { id: '초과학기', label: '초과학기' }
-]
-const nationalityOptions = [
-  { id: '대한민국', label: '대한민국' },
-  { id: '외국인', label: '외국인' }
-]
-
-const inputClassNames = {
-  inputWrapper: [
-    'h-11',
-    'rounded-full',
-    'px-4',
-    'bg-black',
-    'border',
-    'border-gray-800',
-    'transition-colors',
-    'group-data-[hover=true]:border-gray-900',
-    'group-data-[focus=true]:border-white',
-    'group-data-[has-value=true]:border-white',
-    'group-data-[invalid=true]:border-red',
-    'group-data-[disabled=true]:bg-gray-400',
-    'group-data-[disabled=true]:border-gray-400'
-  ].join(' '),
-  input: [
-    'text-white',
-    'placeholder:text-gray-700',
-    'placeholder:font-medium',
-    'placeholder:opacity-100',
-    'group-data-[focus=true]:placeholder:text-transparent',
-    'typo-b2',
-    'mobile:typo-m-b3'
-  ].join(' '),
-  helperWrapper: 'pl-2 pt-2',
-  errorMessage: 'typo-c2 text-red'
-}
 
 const recruitMultiSelectClassNames = {
   trigger:
@@ -153,18 +117,19 @@ const recruitMultiSelectItemClasses = {
 
 export default function Recruit() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const { user } = useAuth()
+  const isPreview = searchParams?.get('preview') === '1'
   const [formData, setFormData] = useState<RecruitFormState>(initialFormState)
   const [loading, setLoading] = useState(false)
   const [studentCheckState, setStudentCheckState] = useState<DuplicateCheckState>({
     status: 'idle'
   })
-  const [phoneCheckState, setPhoneCheckState] = useState<DuplicateCheckState>({
-    status: 'idle'
-  })
-  const [emailCheckState, setEmailCheckState] = useState<DuplicateCheckState>({
-    status: 'idle'
-  })
+  const [phoneCheckState, setPhoneCheckState] = useState<DuplicateCheckState>({ status: 'idle' })
+  const [emailCheckState, setEmailCheckState] = useState<DuplicateCheckState>({ status: 'idle' })
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [globalError, setGlobalError] = useState<string | null>(null)
 
   const interestDropdownOptions = useMemo(
     () => interestOptions.map((option) => ({ id: option, label: option })),
@@ -174,24 +139,15 @@ export default function Recruit() {
     () => wishOptions.map((option) => ({ id: option, label: option })),
     []
   )
-  const semesterDropdownOptions = useMemo(
-    () => semesterOptions.map((option) => ({ id: option, label: option })),
-    []
-  )
-  const expectDropdownOptions = useMemo(
-    () => expectOptions.map((option) => ({ id: option, label: option })),
-    []
-  )
-  const reachFromDropdownOptions = useMemo(
-    () => reachFromOptions.map((option) => ({ id: option, label: option })),
-    []
-  )
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      setFormData((prev) => ({ ...prev, proofFile: file }))
-    }
+    if (file) setFormData((prev) => ({ ...prev, proofFile: file }))
+  }
+
+  const handleFileRemove = () => {
+    setFormData((prev) => ({ ...prev, proofFile: null }))
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const handleValueChange = (field: keyof RecruitFormState) => (value: string) => {
@@ -200,52 +156,43 @@ export default function Recruit() {
 
     if (field === 'studentId') {
       const trimmed = nextValue.trim()
-      if (studentCheckState.verifiedValue === trimmed) {
+      if (studentCheckState.verifiedValue === trimmed && trimmed !== '') {
         setStudentCheckState((prev) => ({
           ...prev,
           status: 'available',
           message: '※ 가입 가능한 학번입니다.',
           checkedValue: trimmed
         }))
-      } else if (studentCheckState.checkedValue !== trimmed) {
-        setStudentCheckState((prev) => ({
-          status: 'idle',
-          verifiedValue: prev.verifiedValue
-        }))
+      } else {
+        setStudentCheckState((prev) => ({ status: 'idle', verifiedValue: prev.verifiedValue }))
       }
     }
 
     if (field === 'phoneNumber') {
       const trimmed = nextValue.trim()
-      if (phoneCheckState.verifiedValue === trimmed) {
+      if (phoneCheckState.verifiedValue === trimmed && trimmed !== '') {
         setPhoneCheckState((prev) => ({
           ...prev,
           status: 'available',
           message: '※ 가입 가능한 전화번호입니다.',
           checkedValue: trimmed
         }))
-      } else if (phoneCheckState.checkedValue !== trimmed) {
-        setPhoneCheckState((prev) => ({
-          status: 'idle',
-          verifiedValue: prev.verifiedValue
-        }))
+      } else {
+        setPhoneCheckState((prev) => ({ status: 'idle', verifiedValue: prev.verifiedValue }))
       }
     }
 
     if (field === 'emailLocal') {
       const currentEmail = `${nextValue.trim()}@${formData.emailDomain}`
-      if (emailCheckState.verifiedValue === currentEmail) {
+      if (emailCheckState.verifiedValue === currentEmail && nextValue.trim() !== '') {
         setEmailCheckState((prev) => ({
           ...prev,
           status: 'available',
           message: '※ 가입 가능한 이메일입니다.',
           checkedValue: currentEmail
         }))
-      } else if (emailCheckState.checkedValue !== currentEmail) {
-        setEmailCheckState((prev) => ({
-          status: 'idle',
-          verifiedValue: prev.verifiedValue
-        }))
+      } else {
+        setEmailCheckState((prev) => ({ status: 'idle', verifiedValue: prev.verifiedValue }))
       }
     }
   }
@@ -256,41 +203,22 @@ export default function Recruit() {
         .split(',')
         .map((item) => item.trim())
         .filter(Boolean)
-
       if (selected.length > 3) {
         alert(`${label}는 최대 3개까지 선택할 수 있습니다.`)
         return
       }
-
       setFormData((prev) => ({ ...prev, [field]: selected }))
     }
 
-  const handleMultiSelection = (field: 'gdgPeriod' | 'gdgExpect') => (rawValue: string) => {
-    const selected = rawValue
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean)
-    setFormData((prev) => ({ ...prev, [field]: selected }))
-  }
-
-  const handleStudentIdCheck = async () => {
+  const handleStudentCheck = async () => {
     const candidate = formData.studentId.trim()
-
-    if (!candidate || candidate.length !== 8) {
-      alert('8자리 학번을 입력해 주세요.')
-      return
-    }
-
+    if (!candidate || candidate.length !== 8) return
     setStudentCheckState({ status: 'checking', checkedValue: candidate })
-
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/student-id`,
-        {
-          params: { studentId: candidate }
-        }
+        { params: { studentId: candidate } }
       )
-
       const isExists = response.data?.data?.isExists
       if (isExists) {
         setStudentCheckState({
@@ -300,22 +228,16 @@ export default function Recruit() {
         })
         return
       }
-
       setStudentCheckState({
         status: 'available',
         message: '※ 가입 가능한 학번입니다.',
         checkedValue: candidate,
         verifiedValue: candidate
       })
-    } catch (error) {
-      console.error('학번 중복 확인 중 오류가 발생했습니다.', error)
-      const message =
-        axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
-          ? error.response.data.message
-          : '중복 확인 중 오류가 발생했습니다.'
+    } catch {
       setStudentCheckState({
         status: 'error',
-        message: `※ ${message}`,
+        message: '※ 중복 확인 중 오류가 발생했습니다.',
         checkedValue: candidate
       })
     }
@@ -323,27 +245,13 @@ export default function Recruit() {
 
   const handlePhoneCheck = async () => {
     const candidate = formData.phoneNumber.trim()
-
-    if (!candidate) {
-      alert('전화번호를 입력해 주세요.')
-      return
-    }
-
-    if (!isPhoneNumberFormatValid(candidate)) {
-      alert('010-1234-5678 형식으로 입력해 주세요.')
-      return
-    }
-
+    if (!candidate || !isPhoneNumberFormatValid(candidate)) return
     setPhoneCheckState({ status: 'checking', checkedValue: candidate })
-
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/phone-number`,
-        {
-          params: { phoneNumber: candidate }
-        }
+        { params: { phoneNumber: candidate } }
       )
-
       const isExists = response.data?.data?.isExists
       if (isExists) {
         setPhoneCheckState({
@@ -353,22 +261,16 @@ export default function Recruit() {
         })
         return
       }
-
       setPhoneCheckState({
         status: 'available',
         message: '※ 가입 가능한 전화번호입니다.',
         checkedValue: candidate,
         verifiedValue: candidate
       })
-    } catch (error) {
-      console.error('전화번호 중복 확인 중 오류가 발생했습니다.', error)
-      const message =
-        axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
-          ? error.response.data.message
-          : '중복 확인 중 오류가 발생했습니다.'
+    } catch {
       setPhoneCheckState({
         status: 'error',
-        message: `※ ${message}`,
+        message: '※ 중복 확인 중 오류가 발생했습니다.',
         checkedValue: candidate
       })
     }
@@ -376,28 +278,14 @@ export default function Recruit() {
 
   const handleEmailCheck = async () => {
     const emailLocal = formData.emailLocal.trim()
-    if (!emailLocal) {
-      alert('이메일을 입력해 주세요.')
-      return
-    }
-
+    if (!emailLocal) return
     const fullEmail = `${emailLocal}@${formData.emailDomain}`
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(fullEmail)) {
-      alert('올바른 이메일 형식을 입력해 주세요.')
-      return
-    }
-
     setEmailCheckState({ status: 'checking', checkedValue: fullEmail })
-
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/email`,
-        {
-          params: { email: fullEmail }
-        }
+        { params: { email: fullEmail } }
       )
-
       const isExists = response.data?.data?.isExists
       if (isExists) {
         setEmailCheckState({
@@ -407,241 +295,193 @@ export default function Recruit() {
         })
         return
       }
-
       setEmailCheckState({
         status: 'available',
         message: '※ 가입 가능한 이메일입니다.',
         checkedValue: fullEmail,
         verifiedValue: fullEmail
       })
-    } catch (error) {
-      console.error('이메일 중복 확인 중 오류가 발생했습니다.', error)
-      const message =
-        axios.isAxiosError(error) && typeof error.response?.data?.message === 'string'
-          ? error.response.data.message
-          : '중복 확인 중 오류가 발생했습니다.'
+    } catch {
       setEmailCheckState({
         status: 'error',
-        message: `※ ${message}`,
+        message: '※ 중복 확인 중 오류가 발생했습니다.',
         checkedValue: fullEmail
       })
     }
   }
 
   const isFormValid = useMemo(() => {
-    const requiredStringFields: (keyof RecruitFormState)[] = [
-      'name',
-      'gender',
-      'birth',
-      'major',
-      'enrolledClassification',
-      'grade',
-      'studentId',
-      'phoneNumber',
-      'nationality',
-      'emailLocal',
-      'gdgRoute',
-      'gdgFeedback'
-    ]
-
-    const hasRequiredStrings = requiredStringFields.every((field) => {
-      const value = formData[field]
-      return typeof value === 'string' && value.trim() !== ''
-    })
-
-    if (formData.gdgRoute === '기타' && !formData.gdgRouteEtc.trim()) {
-      return false
-    }
-
-    if (formData.enrolledClassification === '군휴학' && !formData.proofFile) {
-      return false
-    }
-
+    const required = ['name', 'gender', 'birth', 'major', 'enrolledClassification', 'gdgFeedback']
+    const hasStrings = required.every(
+      (f) => String(formData[f as keyof RecruitFormState]).trim() !== ''
+    )
+    const isChecksPassed =
+      formData.studentId.trim() === studentCheckState.verifiedValue &&
+      formData.phoneNumber.trim() === phoneCheckState.verifiedValue &&
+      `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
+    const isProofPassed =
+      formData.enrolledClassification !== '군휴학' || formData.proofFile !== null
     return (
-      hasRequiredStrings &&
+      hasStrings &&
       formData.gdgInterest.length > 0 &&
       formData.gdgWish.length > 0 &&
-      formData.gdgPeriod.length > 0 &&
-      formData.gdgExpect.length > 0 &&
-      studentCheckState.status === 'available' &&
-      phoneCheckState.status === 'available' &&
-      emailCheckState.status === 'available' &&
+      isChecksPassed &&
+      isProofPassed &&
       formData.isPayed
     )
   }, [formData, phoneCheckState, studentCheckState, emailCheckState])
 
-  const buildRecruitMap = () => {
-    const normalizedEmail =
-      formData.emailLocal && formData.emailDomain
-        ? `${formData.emailLocal}@${formData.emailDomain}`
-        : formData.emailLocal
-
-    const map = new Map<number, Record<string, unknown>>()
-
-    map.set(1, { isAgree: formData.isPayed })
-    map.set(2, {
-      name: formData.name,
-      studentId: formData.studentId,
-      enrolledClassification: formData.enrolledClassification
-    })
-    map.set(3, {
-      grade: formData.grade,
-      phoneNumber: toPhoneDigits(formData.phoneNumber),
-      nationality: formData.nationality
-    })
-    map.set(4, { gender: formData.gender, birth: formData.birth, email: normalizedEmail })
-    map.set(5, { major: formData.major })
-    map.set(6, { gdgUserMotive: '' })
-    map.set(7, { gdgUserStory: '' })
-    map.set(8, {
-      gdgInterest: formData.gdgInterest,
-      gdgPeriod: formData.gdgPeriod,
-      gdgRoute: formData.gdgRoute === '기타' ? formData.gdgRouteEtc : formData.gdgRoute
-    })
-    map.set(9, { gdgExpect: formData.gdgExpect, gdgWish: formData.gdgWish })
-    map.set(10, { gdgFeedback: formData.gdgFeedback })
-    map.set(11, { isPayed: formData.isPayed })
-
-    return map
-  }
-
-  const handleSubmit = async () => {
-    if (!isFormValid) {
-      alert('필수 항목을 모두 입력해 주세요.')
-      return
-    }
-
-    if (!window.confirm('입력하신 정보로 지원서를 제출하시겠습니까?')) return
-
-    const formattedData = formatRecruitData(buildRecruitMap())
-
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsSubmitted(true)
+    if (isPreview || !isFormValid) return
     try {
       setLoading(true)
-
+      const buildRecruitMap = () => {
+        const map = new Map<number, Record<string, unknown>>()
+        map.set(1, { isAgree: formData.isPayed })
+        map.set(2, {
+          name: formData.name,
+          studentId: formData.studentId,
+          enrolledClassification: formData.enrolledClassification
+        })
+        map.set(3, {
+          grade: formData.grade,
+          phoneNumber: toPhoneDigits(formData.phoneNumber),
+          nationality: formData.nationality
+        })
+        map.set(4, {
+          gender: formData.gender,
+          birth: formData.birth,
+          email: `${formData.emailLocal.trim()}@${formData.emailDomain}`
+        })
+        map.set(5, { major: formData.major })
+        map.set(10, { gdgFeedback: formData.gdgFeedback })
+        map.set(11, { isPayed: formData.isPayed })
+        return map
+      }
+      const formattedData = formatRecruitData(buildRecruitMap())
       if (formData.enrolledClassification === '군휴학' && formData.proofFile) {
-        const formDataToSend = new FormData()
-        formDataToSend.append(
+        const fd = new FormData()
+        fd.append(
           'request',
           new Blob([JSON.stringify(formattedData)], { type: 'application/json' })
         )
-        formDataToSend.append('file', formData.proofFile)
-
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`,
-          formDataToSend,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          }
-        )
+        fd.append('file', formData.proofFile)
+        await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`, fd, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
       } else {
         await axios.post(
           `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`,
           formattedData
         )
       }
-
       router.push('/recruit/submit')
     } catch (error: any) {
-      console.error('지원서 제출 중 오류가 발생했습니다.', error)
-
-      if (error?.response?.status === 500) {
-        alert('이미 지원이 완료된 회원입니다.')
-      } else {
-        alert('지원서 제출 중 문제가 발생했습니다. 다시 시도해 주세요.')
-      }
+      setGlobalError(error.response?.data?.message || '지원서 제출 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
     }
   }
 
-  const studentStatusMessage = studentCheckState.message
-  const studentStatus: 'success' | 'error' | undefined =
-    studentCheckState.status === 'error' ||
-    studentCheckState.status === 'duplicate' ||
-    studentCheckState.status === 'unverified'
-      ? 'error'
-      : studentCheckState.status === 'available'
-        ? 'success'
+  const studentStatus: GdgFieldStatus | undefined =
+    formData.studentId.trim() === studentCheckState.verifiedValue
+      ? 'success'
+      : studentCheckState.status === 'error' || studentCheckState.status === 'duplicate'
+        ? 'error'
         : undefined
+  const studentStatusMessage =
+    formData.studentId.trim() === studentCheckState.verifiedValue
+      ? '※ 가입 가능한 학번입니다.'
+      : studentCheckState.message
 
-  const phoneStatusMessage = phoneCheckState.message
-  const phoneStatus: 'success' | 'error' | undefined =
-    phoneCheckState.status === 'error' ||
-    phoneCheckState.status === 'duplicate' ||
-    phoneCheckState.status === 'unverified'
-      ? 'error'
-      : phoneCheckState.status === 'available'
-        ? 'success'
+  const phoneStatus: GdgFieldStatus | undefined =
+    formData.phoneNumber.trim() === phoneCheckState.verifiedValue
+      ? 'success'
+      : phoneCheckState.status === 'error' || phoneCheckState.status === 'duplicate'
+        ? 'error'
         : undefined
+  const phoneStatusMessage =
+    formData.phoneNumber.trim() === phoneCheckState.verifiedValue
+      ? '※ 가입 가능한 전화번호입니다.'
+      : phoneCheckState.message
+
+  const emailStatus: GdgFieldStatus | undefined =
+    `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
+      ? 'success'
+      : emailCheckState.status === 'error' || emailCheckState.status === 'duplicate'
+        ? 'error'
+        : undefined
+  const emailStatusMessage =
+    `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
+      ? '※ 가입 가능한 이메일입니다.'
+      : emailCheckState.message
+
+  const enrollmentStatus: GdgFieldStatus | undefined =
+    isSubmitted && !formData.enrolledClassification ? 'error' : undefined
+  const enrollmentStatusMessage =
+    isSubmitted && !formData.enrolledClassification ? '※ 필수 선택 사항입니다.' : undefined
 
   const isStudentCheckDisabled =
     !formData.studentId.trim() ||
     formData.studentId.trim().length !== 8 ||
     studentCheckState.status === 'checking' ||
-    (studentCheckState.status === 'available' &&
-      studentCheckState.checkedValue === formData.studentId.trim())
-
+    formData.studentId.trim() === studentCheckState.verifiedValue
   const isPhoneCheckDisabled =
     !formData.phoneNumber.trim() ||
     !isPhoneNumberFormatValid(formData.phoneNumber) ||
     phoneCheckState.status === 'checking' ||
-    (phoneCheckState.status === 'available' &&
-      phoneCheckState.checkedValue === formData.phoneNumber.trim())
-
+    formData.phoneNumber.trim() === phoneCheckState.verifiedValue
   const isEmailCheckDisabled =
     !formData.emailLocal.trim() ||
     emailCheckState.status === 'checking' ||
-    (emailCheckState.status === 'available' &&
-      emailCheckState.checkedValue === `${formData.emailLocal.trim()}@${formData.emailDomain}`)
-
-  const emailStatusMessage = emailCheckState.message
-  const emailStatus: 'success' | 'error' | undefined =
-    emailCheckState.status === 'error' ||
-    emailCheckState.status === 'duplicate' ||
-    emailCheckState.status === 'unverified'
-      ? 'error'
-      : emailCheckState.status === 'available'
-        ? 'success'
-        : undefined
+    `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
 
   return (
     <>
       <Loader isLoading={loading} />
-      <div className="relative min-h-screen bg-black text-white">
+      <div className="relative min-h-screen bg-black text-white overflow-x-hidden">
         <form
-          onSubmit={(event) => {
-            event.preventDefault()
-            void handleSubmit()
-          }}
+          onSubmit={handleSubmit}
           className="relative z-10 pt-18 pb-30 mobile:pt-12 mobile:pb-12"
         >
-          <div className="px-6 mobile:px-4">
-            <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
-              <div className="col-span-4 flex items-center gap-3 pb-8 mobile:gap-2 mobile:pb-2">
-                <GdgLogo mode="auto" />
-                <p className="typo-h3 text-white mobile:typo-m-h3">
-                  <span className="pc:inline">GDGoC Inha Univ. 지원</span>
-                </p>
-              </div>
+          <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
+            <div className="col-span-4 flex items-center gap-3 pb-8 mobile:gap-2 mobile:pb-2">
+              <GdgLogo mode="auto" />
+              <p className="typo-h3 text-white mobile:typo-m-h3">GDGoC Inha Univ. 지원</p>
+            </div>
+
+            <div className="col-span-4 space-y-8 mobile:space-y-6">
+              <p className="typo-h5 text-white mobile:typo-m-h4">기본 정보</p>
 
               <div className="col-span-4 space-y-8 mobile:space-y-6">
-                <p className="typo-h5 text-white mobile:typo-m-h4">기본 정보</p>
-
+                {/* 이름 & 성별 */}
                 <div className="flex items-start gap-5 mobile:gap-2">
-                  <div className="pc:w-102 mobile:w-56.5">
+                  <div className="pc:contents hidden">
                     <GdgFieldContainer label="이름" required>
-                      <GdgInput
-                        aria-label="이름"
+                      <GdgInputField
+                        device="pc"
                         value={formData.name}
-                        onValueChange={handleValueChange('name')}
+                        onChange={(e) => handleValueChange('name')(e.target.value)}
                         placeholder="이름을 입력하세요."
-                        classNames={inputClassNames}
+                        width="twoThirds"
                       />
                     </GdgFieldContainer>
                   </div>
-
-                  <div className="pc:w-30.5 mobile:w-27.25">
-                    <GdgFieldContainer label="성별" required>
+                  <div className="pc:hidden contents">
+                    <GdgFieldContainer label="이름" required>
+                      <GdgInputField
+                        device="mobile"
+                        value={formData.name}
+                        onChange={(e) => handleValueChange('name')(e.target.value)}
+                        placeholder="이름을 입력하세요."
+                        width="twoThirds"
+                      />
+                    </GdgFieldContainer>
+                  </div>
+                  <GdgFieldContainer label="성별" required>
+                    <div className="pc:contents hidden">
                       <GdgDropdown
                         device="pc"
                         size="small"
@@ -650,158 +490,118 @@ export default function Recruit() {
                         onChange={handleValueChange('gender')}
                         placeholder="성별"
                       />
-                    </GdgFieldContainer>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-5 mobile:gap-2">
-                  <div className="pc:w-102 mobile:w-56.5">
-                    <GdgFieldContainer label="생년월일" required>
-                      <GdgInput
-                        aria-label="생년월일"
-                        type="date"
-                        value={formData.birth}
-                        onValueChange={handleValueChange('birth')}
-                        placeholder="YYYY.MM.DD"
-                        classNames={{
-                          ...inputClassNames,
-                          input: [
-                            inputClassNames.input,
-                            '[color-scheme:dark]',
-                            '[&::-webkit-calendar-picker-indicator]:opacity-0',
-                            '[&::-webkit-calendar-picker-indicator]:pointer-events-none'
-                          ].join(' ')
-                        }}
-                        endContent={
-                          <button
-                            type="button"
-                            aria-label="생년월일 선택"
-                            onClick={(event) => {
-                              const input = event.currentTarget
-                                .closest('label')
-                                ?.querySelector('input') as HTMLInputElement | null
-                              if (!input) return
-                              input.focus()
-                              input.showPicker?.()
-                            }}
-                            className="inline-flex items-center justify-center"
-                          >
-                            <svg
-                              aria-hidden
-                              viewBox="0 0 20 20"
-                              className="size-5 text-gray-700"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <rect
-                                x="3.25"
-                                y="4.25"
-                                width="13.5"
-                                height="12.5"
-                                rx="1.75"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                              />
-                              <path
-                                d="M6.5 2.75V5.25"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                              />
-                              <path
-                                d="M13.5 2.75V5.25"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                              />
-                              <path d="M3.5 7.25H16.5" stroke="currentColor" strokeWidth="1.5" />
-                            </svg>
-                          </button>
-                        }
-                      />
-                    </GdgFieldContainer>
-                  </div>
-
-                  <div className="pc:w-30.5 mobile:w-27.25">
-                    <GdgFieldContainer label="국적" required>
+                    </div>
+                    <div className="pc:hidden contents">
                       <GdgDropdown
-                        device="pc"
+                        device="mobile"
                         size="small"
-                        options={nationalityOptions}
-                        value={formData.nationality}
-                        onChange={handleValueChange('nationality')}
-                        placeholder="국적"
+                        options={genderOptions}
+                        value={formData.gender}
+                        onChange={handleValueChange('gender')}
+                        placeholder="성별"
                       />
-                    </GdgFieldContainer>
-                  </div>
+                    </div>
+                  </GdgFieldContainer>
                 </div>
 
-                <div className="flex items-start gap-5 mobile:gap-2">
-                  <div className="pc:w-102 mobile:w-56.5">
-                    <GdgFieldContainer label="주전공" required>
-                      <div className="hidden pc:block">
-                        <GdgMajorDropdown
-                          device="pc"
-                          value={formData.major}
-                          onChangeAction={handleValueChange('major')}
-                        />
-                      </div>
-                      <div className="block pc:hidden">
-                        <GdgMajorDropdown
-                          device="mobile"
-                          value={formData.major}
-                          onChangeAction={handleValueChange('major')}
-                        />
-                      </div>
-                    </GdgFieldContainer>
+                {/* 생년월일 */}
+                <GdgFieldContainer label="생년월일" required>
+                  <div className="pc:contents hidden">
+                    <GdgInputField
+                      device="pc"
+                      type="date"
+                      value={formData.birth}
+                      onChange={(e) => handleValueChange('birth')(e.target.value)}
+                      placeholder="YYYY.MM.DD"
+                      width="full"
+                      className="[&_input]:[color-scheme:dark]"
+                    />
                   </div>
-
-                  <div className="pc:w-30.5 mobile:w-27.25">
-                    <GdgFieldContainer label="학년" required>
-                      <GdgDropdown
-                        device="pc"
-                        size="small"
-                        options={gradeOptions}
-                        value={formData.grade}
-                        onChange={handleValueChange('grade')}
-                        placeholder="학년"
-                      />
-                    </GdgFieldContainer>
-                  </div>
-                </div>
-
-                <GdgFieldContainer label="재학 상태" required>
-                  <div className="grid grid-cols-3 gap-5 mobile:gap-2">
-                    {enrollmentOptions.map((option) => {
-                      const selected = formData.enrolledClassification === option
-
-                      return (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              enrolledClassification:
-                                prev.enrolledClassification === option ? '' : option
-                            }))
-                          }
-                          className={[
-                            'h-11 rounded-full border typo-b2 mobile:typo-m-b3 transition-colors',
-                            selected
-                              ? 'border-red bg-red-400 text-white'
-                              : 'border-gray-800 bg-black text-white'
-                          ].join(' ')}
-                        >
-                          {option}
-                        </button>
-                      )
-                    })}
+                  <div className="pc:hidden contents">
+                    <GdgInputField
+                      device="mobile"
+                      type="date"
+                      value={formData.birth}
+                      onChange={(e) => handleValueChange('birth')(e.target.value)}
+                      placeholder="YYYY.MM.DD"
+                      width="full"
+                      className="[&_input]:[color-scheme:dark]"
+                    />
                   </div>
                 </GdgFieldContainer>
 
+                {/* 주전공 */}
+                <GdgFieldContainer
+                  label="주전공"
+                  required
+                  caption="검색 또는 스크롤하여 지정하세요."
+                >
+                  <div className="pc:contents hidden">
+                    <GdgMajorDropdown
+                      device="pc"
+                      value={formData.major}
+                      onChangeAction={handleValueChange('major')}
+                    />
+                  </div>
+                  <div className="pc:hidden contents">
+                    <GdgMajorDropdown
+                      device="mobile"
+                      value={formData.major}
+                      onChangeAction={handleValueChange('major')}
+                    />
+                  </div>
+                </GdgFieldContainer>
+
+                {/* 재학 상태 */}
+                <GdgFieldContainer
+                  label="재학 상태"
+                  required
+                  status={enrollmentStatus}
+                  statusMessage={enrollmentStatusMessage}
+                >
+                  <div className="grid grid-cols-3 gap-4 mobile:gap-2">
+                    {enrollmentOptions.map((option) => (
+                      <div key={option}>
+                        <div className="pc:contents hidden">
+                          <GdgButton
+                            device="pc"
+                            type="button"
+                            size="small"
+                            variant={
+                              formData.enrolledClassification === option ? 'active' : 'default'
+                            }
+                            widthToken="oneThird"
+                            onClick={() => handleValueChange('enrolledClassification')(option)}
+                          >
+                            {option}
+                          </GdgButton>
+                        </div>
+                        <div className="pc:hidden contents">
+                          <GdgButton
+                            device="mobile"
+                            type="button"
+                            size="small"
+                            variant={
+                              formData.enrolledClassification === option ? 'active' : 'default'
+                            }
+                            widthToken="oneThird"
+                            onClick={() => handleValueChange('enrolledClassification')(option)}
+                          >
+                            {option}
+                          </GdgButton>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </GdgFieldContainer>
+
+                {/* 증빙 서류 */}
                 {formData.enrolledClassification === '군휴학' && (
-                  <GdgFieldContainer label="증빙 서류" required>
+                  <GdgFieldContainer
+                    label="증빙 서류 (군휴학)"
+                    required
+                    caption="PDF, JPG, PNG 파일만 가능합니다."
+                  >
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -810,37 +610,22 @@ export default function Recruit() {
                       onChange={handleFileChange}
                     />
                     {!formData.proofFile ? (
-                      <>
+                      <div className="contents">
                         <GdgUploadButton
-                          device="pc"
-                          className="inline-flex mobile:hidden"
+                          device="auto"
                           onClick={() => fileInputRef.current?.click()}
                         />
-                        <GdgUploadButton
-                          device="mobile"
-                          className="inline-flex pc:hidden"
-                          onClick={() => fileInputRef.current?.click()}
-                        />
-                      </>
+                      </div>
                     ) : (
-                      <>
+                      <div className="contents">
                         <GdgFileCard
-                          device="pc"
+                          device="auto"
                           fileName={formData.proofFile.name}
                           fileSize={(formData.proofFile.size / 1024 / 1024).toFixed(2) + ' MB'}
-                          action="remove"
-                          onAction={() => setFormData((prev) => ({ ...prev, proofFile: null }))}
-                          className="mobile:hidden pc:flex"
+                          onAction={handleFileRemove}
+                          fullWidth
                         />
-                        <GdgFileCard
-                          device="mobile"
-                          fileName={formData.proofFile.name}
-                          fileSize={(formData.proofFile.size / 1024 / 1024).toFixed(2) + ' MB'}
-                          action="remove"
-                          onAction={() => setFormData((prev) => ({ ...prev, proofFile: null }))}
-                          className="flex pc:hidden"
-                        />
-                      </>
+                      </div>
                     )}
                   </GdgFieldContainer>
                 )}
@@ -850,27 +635,62 @@ export default function Recruit() {
                   required
                   status={studentStatus}
                   statusMessage={studentStatusMessage}
+                  action={
+                    <>
+                      <div className="pc:contents hidden">
+                        <GdgButton
+                          device="pc"
+                          type="button"
+                          onClick={handleStudentCheck}
+                          disabled={isStudentCheckDisabled}
+                          widthToken="small"
+                          size="small"
+                          variant={!isStudentCheckDisabled ? 'active' : 'default'}
+                        >
+                          중복 확인
+                        </GdgButton>
+                      </div>
+
+                      <div className="pc:hidden contents">
+                        <GdgButton
+                          device="mobile"
+                          type="button"
+                          onClick={handleStudentCheck}
+                          disabled={isStudentCheckDisabled}
+                          size="small"
+                          variant={!isStudentCheckDisabled ? 'active' : 'default'}
+                        >
+                          중복 확인
+                        </GdgButton>
+                      </div>
+                    </>
+                  }
                 >
-                  <div className="flex items-center gap-5 mobile:gap-2">
-                    <div className="pc:w-102 mobile:w-56.5">
-                      <GdgInput
+                  <>
+                    <div className="pc:contents hidden">
+                      <GdgInputField
+                        device="pc"
                         aria-label="학번"
                         value={formData.studentId}
-                        onValueChange={handleValueChange('studentId')}
+                        onChange={(e) => handleValueChange('studentId')(e.target.value)}
                         placeholder="학번을 입력하세요."
-                        classNames={inputClassNames}
-                        isInvalid={studentStatus === 'error'}
+                        width="twoThirds"
+                        state={studentStatus === 'error' ? 'error' : 'available'}
                       />
                     </div>
-                    <Button
-                      type="button"
-                      onPress={handleStudentIdCheck}
-                      isDisabled={isStudentCheckDisabled}
-                      className="h-11 min-w-0 pc:w-30.5 mobile:w-27.25 rounded-full bg-red typo-b2 text-white mobile:typo-m-b3 disabled:bg-gray-400 disabled:text-white/70"
-                    >
-                      {studentCheckState.status === 'checking' ? '확인 중' : '중복 확인'}
-                    </Button>
-                  </div>
+
+                    <div className="pc:hidden contents">
+                      <GdgInputField
+                        device="mobile"
+                        aria-label="학번"
+                        value={formData.studentId}
+                        onChange={(e) => handleValueChange('studentId')(e.target.value)}
+                        placeholder="학번을 입력하세요."
+                        width="twoThirds"
+                        state={studentStatus === 'error' ? 'error' : 'available'}
+                      />
+                    </div>
+                  </>
                 </GdgFieldContainer>
 
                 <GdgFieldContainer
@@ -878,27 +698,62 @@ export default function Recruit() {
                   required
                   status={phoneStatus}
                   statusMessage={phoneStatusMessage}
+                  action={
+                    <>
+                      <div className="pc:contents hidden">
+                        <GdgButton
+                          device="pc"
+                          type="button"
+                          onClick={handlePhoneCheck}
+                          disabled={isPhoneCheckDisabled}
+                          widthToken="small"
+                          size="small"
+                          variant={!isPhoneCheckDisabled ? 'active' : 'default'}
+                        >
+                          중복 확인
+                        </GdgButton>
+                      </div>
+
+                      <div className="pc:hidden contents">
+                        <GdgButton
+                          device="mobile"
+                          type="button"
+                          onClick={handlePhoneCheck}
+                          disabled={isPhoneCheckDisabled}
+                          size="small"
+                          variant={!isPhoneCheckDisabled ? 'active' : 'default'}
+                        >
+                          중복 확인
+                        </GdgButton>
+                      </div>
+                    </>
+                  }
                 >
-                  <div className="flex items-center gap-5 mobile:gap-2">
-                    <div className="pc:w-102 mobile:w-56.5">
-                      <GdgInput
+                  <>
+                    <div className="pc:contents hidden">
+                      <GdgInputField
+                        device="pc"
                         aria-label="전화번호"
                         value={formData.phoneNumber}
-                        onValueChange={handleValueChange('phoneNumber')}
+                        onChange={(e) => handleValueChange('phoneNumber')(e.target.value)}
                         placeholder="전화번호를 입력하세요."
-                        classNames={inputClassNames}
-                        isInvalid={phoneStatus === 'error'}
+                        width="twoThirds"
+                        state={phoneStatus === 'error' ? 'error' : 'available'}
                       />
                     </div>
-                    <Button
-                      type="button"
-                      onPress={handlePhoneCheck}
-                      isDisabled={isPhoneCheckDisabled}
-                      className="h-11 min-w-0 pc:w-30.5 mobile:w-27.25 rounded-full bg-red typo-b2 text-white mobile:typo-m-b3 disabled:bg-gray-400 disabled:text-white/70"
-                    >
-                      {phoneCheckState.status === 'checking' ? '확인 중' : '중복 확인'}
-                    </Button>
-                  </div>
+
+                    <div className="pc:hidden contents">
+                      <GdgInputField
+                        device="mobile"
+                        aria-label="전화번호"
+                        value={formData.phoneNumber}
+                        onChange={(e) => handleValueChange('phoneNumber')(e.target.value)}
+                        placeholder="전화번호를 입력하세요."
+                        width="twoThirds"
+                        state={phoneStatus === 'error' ? 'error' : 'available'}
+                      />
+                    </div>
+                  </>
                 </GdgFieldContainer>
 
                 <GdgFieldContainer
@@ -906,252 +761,166 @@ export default function Recruit() {
                   required
                   status={emailStatus}
                   statusMessage={emailStatusMessage}
+                  action={
+                    <>
+                      <div className="pc:contents hidden">
+                        <GdgButton
+                          device="pc"
+                          type="button"
+                          onClick={handleEmailCheck}
+                          disabled={isEmailCheckDisabled}
+                          widthToken="small"
+                          size="small"
+                          variant={!isEmailCheckDisabled ? 'active' : 'default'}
+                        >
+                          중복 확인
+                        </GdgButton>
+                      </div>
+
+                      <div className="pc:hidden contents">
+                        <GdgButton
+                          device="mobile"
+                          type="button"
+                          onClick={handleEmailCheck}
+                          disabled={isEmailCheckDisabled}
+                          size="small"
+                          variant={!isEmailCheckDisabled ? 'active' : 'default'}
+                        >
+                          중복 확인
+                        </GdgButton>
+                      </div>
+                    </>
+                  }
                 >
-                  <div className="flex items-center gap-5 mobile:gap-2">
-                    <div className="flex min-w-0 flex-1 items-center gap-2 mobile:gap-1">
-                      <div className="min-w-0 flex-1">
-                        <GdgInput
-                          aria-label="이메일"
-                          value={formData.emailLocal}
-                          onValueChange={handleValueChange('emailLocal')}
-                          placeholder="이메일"
-                          classNames={inputClassNames}
-                          isInvalid={emailStatus === 'error'}
-                        />
-                      </div>
-                      <span className="typo-b2 text-white mobile:typo-m-b3">@</span>
-                      <div className="h-11 rounded-full bg-gray-400 px-4 inline-flex items-center typo-b2 text-gray-900 mobile:typo-m-b3">
-                        {formData.emailDomain}
-                      </div>
-                    </div>
-                    <Button
-                      type="button"
-                      onPress={handleEmailCheck}
-                      isDisabled={isEmailCheckDisabled}
-                      className="h-11 min-w-0 pc:w-30.5 mobile:w-27.25 rounded-full bg-red typo-b2 text-white mobile:typo-m-b3 disabled:bg-gray-400 disabled:text-white/70"
-                    >
-                      {emailCheckState.status === 'checking' ? '확인 중' : '중복 확인'}
-                    </Button>
-                  </div>
-                </GdgFieldContainer>
-              </div>
-
-              <div className="col-span-4 space-y-8 mobile:space-y-6 pt-8 mobile:pt-2">
-                <div className="space-y-4 mobile:space-y-3">
-                  <p className="typo-h5 text-white mobile:typo-m-h4">흥미 및 활동 성향</p>
-                  <div className="rounded-xl bg-gray-100 px-4 py-3 mobile:px-3">
-                    <p className="typo-c1 text-white">
-                      • 본 섹션은 선발 목적이 아니라 활동 구성 및 커뮤니티 운영 참고용 데이터로
-                      활용됩니다.
-                    </p>
-                  </div>
-                </div>
-
-                <GdgFieldContainer label="관심 분야" required>
-                  <Select
-                    aria-label="관심 분야"
-                    selectionMode="multiple"
-                    selectedKeys={new Set(formData.gdgInterest)}
-                    onChange={(event) =>
-                      handleLimitedMultiSelection('gdgInterest', '관심 분야')(event.target.value)
-                    }
-                    placeholder="최대 3개까지 선택 가능합니다."
-                    className="w-full"
-                    classNames={recruitMultiSelectClassNames}
-                    listboxProps={{
-                      itemClasses: recruitMultiSelectItemClasses
-                    }}
-                    renderValue={(items) => {
-                      const labels = items
-                        .map((item) => String(item.textValue ?? ''))
-                        .filter(Boolean)
-                        .join(', ')
-
-                      return (
-                        <span className="truncate text-white typo-b2 mobile:typo-m-b3">
-                          {labels || '최대 3개까지 선택 가능합니다.'}
-                        </span>
-                      )
-                    }}
-                  >
-                    {interestDropdownOptions.map((option) => (
-                      <SelectItem key={option.id}>{option.label}</SelectItem>
-                    ))}
-                  </Select>
-                </GdgFieldContainer>
-
-                <GdgFieldContainer label="하고 싶은 활동" required>
-                  <Select
-                    aria-label="하고 싶은 활동"
-                    selectionMode="multiple"
-                    selectedKeys={new Set(formData.gdgWish)}
-                    onChange={(event) =>
-                      handleLimitedMultiSelection('gdgWish', '하고 싶은 활동')(event.target.value)
-                    }
-                    placeholder="최대 3개까지 선택 가능합니다."
-                    className="w-full"
-                    classNames={recruitMultiSelectClassNames}
-                    listboxProps={{
-                      itemClasses: recruitMultiSelectItemClasses
-                    }}
-                    renderValue={(items) => {
-                      const labels = items
-                        .map((item) => String(item.textValue ?? ''))
-                        .filter(Boolean)
-                        .join(', ')
-
-                      return (
-                        <span className="truncate text-white typo-b2 mobile:typo-m-b3">
-                          {labels || '최대 3개까지 선택 가능합니다.'}
-                        </span>
-                      )
-                    }}
-                  >
-                    {wishDropdownOptions.map((option) => (
-                      <SelectItem key={option.id}>{option.label}</SelectItem>
-                    ))}
-                  </Select>
-                </GdgFieldContainer>
-
-                <GdgFieldContainer label="활동 가능한 기간" required>
-                  <Select
-                    aria-label="활동 가능한 기간"
-                    selectionMode="multiple"
-                    selectedKeys={new Set(formData.gdgPeriod)}
-                    onChange={(event) => handleMultiSelection('gdgPeriod')(event.target.value)}
-                    placeholder="활동 가능한 학기를 선택하세요."
-                    className="w-full"
-                    classNames={recruitMultiSelectClassNames}
-                    listboxProps={{
-                      itemClasses: recruitMultiSelectItemClasses
-                    }}
-                    renderValue={(items) => {
-                      const labels = items
-                        .map((item) => String(item.textValue ?? ''))
-                        .filter(Boolean)
-                        .join(', ')
-
-                      return (
-                        <span className="truncate text-white typo-b2 mobile:typo-m-b3">
-                          {labels || '활동 가능한 학기를 선택하세요.'}
-                        </span>
-                      )
-                    }}
-                  >
-                    {semesterDropdownOptions.map((option) => (
-                      <SelectItem key={option.id}>{option.label}</SelectItem>
-                    ))}
-                  </Select>
-                </GdgFieldContainer>
-
-                <GdgFieldContainer label="기대하는 점" required>
-                  <Select
-                    aria-label="기대하는 점"
-                    selectionMode="multiple"
-                    selectedKeys={new Set(formData.gdgExpect)}
-                    onChange={(event) => handleMultiSelection('gdgExpect')(event.target.value)}
-                    placeholder="활동을 통해 기대하는 점을 선택하세요."
-                    className="w-full"
-                    classNames={recruitMultiSelectClassNames}
-                    listboxProps={{
-                      itemClasses: recruitMultiSelectItemClasses
-                    }}
-                    renderValue={(items) => {
-                      const labels = items
-                        .map((item) => String(item.textValue ?? ''))
-                        .filter(Boolean)
-                        .join(', ')
-
-                      return (
-                        <span className="truncate text-white typo-b2 mobile:typo-m-b3">
-                          {labels || '활동을 통해 기대하는 점을 선택하세요.'}
-                        </span>
-                      )
-                    }}
-                  >
-                    {expectDropdownOptions.map((option) => (
-                      <SelectItem key={option.id}>{option.label}</SelectItem>
-                    ))}
-                  </Select>
-                </GdgFieldContainer>
-
-                <div className="space-y-4">
-                  <GdgFieldContainer label="유입 경로" required>
-                    <Select
-                      aria-label="유입 경로"
-                      selectedKeys={formData.gdgRoute ? new Set([formData.gdgRoute]) : new Set()}
-                      onChange={(event) => handleValueChange('gdgRoute')(event.target.value)}
-                      placeholder="유입 경로를 선택하세요."
-                      className="w-full"
-                      classNames={recruitMultiSelectClassNames}
-                      listboxProps={{
-                        itemClasses: recruitMultiSelectItemClasses
-                      }}
-                    >
-                      {reachFromDropdownOptions.map((option) => (
-                        <SelectItem key={option.id}>{option.label}</SelectItem>
-                      ))}
-                    </Select>
-                  </GdgFieldContainer>
-
-                  {formData.gdgRoute === '기타' && (
-                    <GdgInput
-                      value={formData.gdgRouteEtc}
-                      onValueChange={handleValueChange('gdgRouteEtc')}
-                      placeholder="유입 경로를 직접 입력하세요."
-                      classNames={inputClassNames}
-                    />
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <GdgFieldContainer label="동아리 운영에 바라는 점" required>
-                    <label className="relative block">
-                      <textarea
-                        value={formData.gdgFeedback}
-                        onChange={(event) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            gdgFeedback: event.target.value.slice(0, 500)
-                          }))
+                  <>
+                    <div className="pc:contents hidden">
+                      <GdgInputField
+                        device="pc"
+                        value={formData.emailLocal}
+                        onChange={(e) => handleValueChange('emailLocal')(e.target.value)}
+                        placeholder="이메일"
+                        width="twoThirds"
+                        state={emailStatus === 'error' ? 'error' : 'available'}
+                        endAdornment={
+                          <span className="typo-pc-b2 text-gray-400 mr-1">@inha.edu</span>
                         }
-                        maxLength={500}
-                        placeholder="내용을 입력하세요."
-                        className="h-45 w-full resize-none rounded-xl border border-gray-800 bg-black px-4 py-3 typo-b2 text-white placeholder:text-gray-700 outline-none transition-colors focus:border-white mobile:h-40 mobile:typo-m-b3"
                       />
-                      <p className="absolute bottom-3 right-4 typo-c1 text-gray-700">
-                        ({formData.gdgFeedback.length}/500)
-                      </p>
-                    </label>
-                  </GdgFieldContainer>
-                </div>
+                    </div>
 
-                <div className="flex items-center justify-end gap-2 pr-2 mobile:pr-0">
-                  <p className="typo-c1 text-white text-right">
-                    <span className="text-red">* </span>
-                    입력한 모든 정보는 동아리 운영을 위한 목적으로만 사용됩니다.
-                  </p>
-                  <GdgCheckbox
-                    size="mobile"
-                    checked={formData.isPayed}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, isPayed: checked }))
-                    }
-                  />
-                </div>
+                    <div className="pc:hidden contents">
+                      <GdgInputField
+                        device="mobile"
+                        value={formData.emailLocal}
+                        onChange={(e) => handleValueChange('emailLocal')(e.target.value)}
+                        placeholder="이메일"
+                        width="twoThirds"
+                        state={emailStatus === 'error' ? 'error' : 'available'}
+                        endAdornment={
+                          <span className="typo-m-b3 text-gray-400 mr-1">@inha.edu</span>
+                        }
+                      />
+                    </div>
+                  </>
+                </GdgFieldContainer>
               </div>
+            </div>
 
-              <div className="col-span-4 flex justify-end pt-8 mobile:pt-4">
-                <Button
-                  type="submit"
-                  isDisabled={!isFormValid || loading}
-                  className={cn(
-                    'h-11 min-w-0 pc:w-30.5 mobile:w-27.25 rounded-full typo-b2 text-white mobile:typo-m-b3 transition-colors',
-                    !isFormValid || loading ? 'bg-gray-400 text-white/70' : 'bg-red'
+            <div className="col-span-4 space-y-8 mobile:space-y-6 pt-8 mobile:pt-2">
+              <p className="typo-h5 mobile:typo-m-h4 text-white">흥미 및 활동 성향</p>
+              <GdgFieldContainer label="관심 분야" required>
+                <Select
+                  selectionMode="multiple"
+                  selectedKeys={new Set(formData.gdgInterest)}
+                  onChange={(e) =>
+                    handleLimitedMultiSelection('gdgInterest', '관심 분야')(e.target.value)
+                  }
+                  placeholder="최대 3개까지 선택 가능합니다."
+                  classNames={recruitMultiSelectClassNames}
+                  listboxProps={{ itemClasses: recruitMultiSelectItemClasses }}
+                  renderValue={(items) => (
+                    <span className="truncate text-white typo-b2 mobile:typo-m-b3">
+                      {items.map((i) => String(i.textValue ?? '')).join(', ') ||
+                        '최대 3개까지 선택 가능합니다.'}
+                    </span>
                   )}
+                >
+                  {interestDropdownOptions.map((o) => (
+                    <SelectItem key={o.id}>{o.label}</SelectItem>
+                  ))}
+                </Select>
+              </GdgFieldContainer>
+              <GdgFieldContainer label="하고 싶은 활동" required>
+                <Select
+                  selectionMode="multiple"
+                  selectedKeys={new Set(formData.gdgWish)}
+                  onChange={(e) =>
+                    handleLimitedMultiSelection('gdgWish', '하고 싶은 활동')(e.target.value)
+                  }
+                  placeholder="최대 3개까지 선택 가능합니다."
+                  classNames={recruitMultiSelectClassNames}
+                  listboxProps={{ itemClasses: recruitMultiSelectItemClasses }}
+                  renderValue={(items) => (
+                    <span className="truncate text-white typo-b2 mobile:typo-m-b3">
+                      {items.map((i) => String(i.textValue ?? '')).join(', ') ||
+                        '최대 3개까지 선택 가능합니다.'}
+                    </span>
+                  )}
+                >
+                  {wishDropdownOptions.map((o) => (
+                    <SelectItem key={o.id}>{o.label}</SelectItem>
+                  ))}
+                </Select>
+              </GdgFieldContainer>
+              <GdgFieldContainer label="동아리 운영에 바라는 점" required>
+                <GdgTextarea
+                  value={formData.gdgFeedback}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, gdgFeedback: e.target.value.slice(0, 500) }))
+                  }
+                  maxLength={500}
+                  placeholder="내용을 입력하세요."
+                  fullWidth
+                />
+              </GdgFieldContainer>
+              <div className="flex items-center justify-end gap-2">
+                <p className="typo-c1 text-white text-right">
+                  <span className="text-red">* </span>입력한 정보는 운영 목적으로만 사용됩니다.
+                </p>
+                <GdgCheckbox
+                  size="mobile"
+                  checked={formData.isPayed}
+                  onCheckedChange={(c) => setFormData((p) => ({ ...p, isPayed: c }))}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-4 flex justify-end pt-8 mobile:grid mobile:grid-cols-3 mobile:gap-2">
+              <div className="hidden mobile:block" aria-hidden />
+              <div className="hidden mobile:block" aria-hidden />
+              <div className="pc:contents hidden">
+                <GdgButton
+                  device="pc"
+                  type="submit"
+                  disabled={!isFormValid || loading}
+                  widthToken="small"
+                  size="small"
+                  variant={isFormValid ? 'active' : 'disabled'}
                 >
                   제출하기
-                </Button>
+                </GdgButton>
+              </div>
+              <div className="pc:hidden contents">
+                <GdgButton
+                  device="mobile"
+                  type="submit"
+                  disabled={!isFormValid || loading}
+                  widthToken="small"
+                  size="small"
+                  variant={isFormValid ? 'active' : 'disabled'}
+                  fullWidth
+                >
+                  제출하기
+                </GdgButton>
               </div>
             </div>
           </div>
