@@ -22,6 +22,7 @@
     "@splidejs/splide-extension-auto-scroll": "^0.5.3",
     "@studio-freight/lenis": "^1.0.42",
     "axios": "1.13.2",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.24.7",
     "gsap": "^3.14.2",
     "hangul-js": "^0.2.6",
@@ -35,6 +36,7 @@
     "recharts": "^3.6.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
+    "tailwind-merge": "^3.4.0",
     "type-hangul": "^0.2.4"
   },
   "devDependencies": {
