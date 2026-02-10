@@ -19,9 +19,9 @@ export default function ApplicantDetailModal({ apiClient, studyId, selectedAppli
     // Status badge styles
     const getStatusBadge = (status) => {
         if (status === 'APPROVED')
-            return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium";
         if (status === 'REJECTED')
-            return "bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-red-400 text-white px-3 py-1 rounded-full text-sm font-medium";
         return "bg-gray-300 text-gray-700 px-3 py-1 rounded-full text-sm font-medium";
     };
 

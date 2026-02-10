@@ -36,7 +36,7 @@ export default function StudyDetail({ studyId }) {
                             <p>현재 기능 준비 중인 페이지입니다.</p>
                         </>
                 ) : (
-                    <div className="text-xl md:text-2xl font-bold mb-6 text-red-500 font-semibold">
+                    <div className="text-xl md:text-2xl font-bold mb-6 text-red-400 font-semibold">
                         접근 권한이 없는 스터디입니다.
                     </div>
                 )}

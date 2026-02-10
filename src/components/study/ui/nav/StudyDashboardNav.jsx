@@ -44,7 +44,7 @@ export default function StudyDashboardNav({ isAdminPage = false, studyId = null,
                     {/* Mobile */}
                     {menuOption.length > 0 && (
                         <div
-                            className="md:hidden bg-blue-600 mb-0 text-white text-sm py-1 px-3 rounded-full cursor-pointer"
+                            className="md:hidden bg-blue-400 mb-0 text-white text-sm py-1 px-3 rounded-full cursor-pointer"
                             onClick={() => handleMenuClick(currentMenu)}
                         >
                             {menuOption.find(option => option.id === currentMenu).label}
@@ -77,7 +77,7 @@ export default function StudyDashboardNav({ isAdminPage = false, studyId = null,
                         onClick={() => handleMenuClick(item.id)}
                         className={`py-1 px-3 text-sm cursor-pointer transition-colors duration-200 rounded-full
                             ${currentMenu === item.id
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-blue-400 text-white'
                             : 'text-white hover:bg-gray-800'
                         }`}
                     >
@@ -95,7 +95,7 @@ export default function StudyDashboardNav({ isAdminPage = false, studyId = null,
                             onClick={() => handleMenuClick(item.id)}
                             className={`py-2 text-sm cursor-pointer transition-colors duration-200 
                                 ${currentMenu === item.id
-                                ? 'text-blue-500 font-medium'
+                                ? 'text-blue-400 font-medium'
                                 : 'text-white hover:text-blue-300'
                             }`}
                         >

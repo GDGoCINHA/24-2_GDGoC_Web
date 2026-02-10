@@ -61,7 +61,7 @@ export default function GuestbookWordCloud({
             </span>
           ))
         : !isLoading && (
-            <div className="w-full h-full flex items-center justify-center text-slate-500 text-xl">
+            <div className="w-full h-full flex items-center justify-center text-slate-400 text-xl">
               아직 등록된 입장 정보가 없습니다.
             </div>
           )}
