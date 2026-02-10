@@ -23,10 +23,10 @@ export default function CreatedStudies() {
     // Status color
     const getStatusBadge = (status) => {
         if (status === 'APPROVED')
-            return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium";
         if (status === 'REJECTED')
-            return "bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium";
-        return "bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-red-400 text-white px-3 py-1 rounded-full text-sm font-medium";
+        return "bg-yellow-400 text-white px-3 py-1 rounded-full text-sm font-medium";
     };
 
     // Status text
@@ -77,7 +77,7 @@ export default function CreatedStudies() {
                                             e.stopPropagation();
                                             handleDetailClick(data.id);
                                         }}
-                                        className="text-blue-500 hover:text-blue-700 text-sm"
+                                        className="text-blue-400 hover:text-blue-700 text-sm"
                                     >
                                         상세 보기
                                     </button>
@@ -86,7 +86,7 @@ export default function CreatedStudies() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="4" className="py-4 text-center text-gray-500">
+                            <td colSpan="4" className="py-4 text-center text-gray-400">
                                 데이터가 없습니다.
                             </td>
                         </tr>

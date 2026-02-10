@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 
 export type GdgFieldStatus = 'success' | 'error'
@@ -12,6 +12,7 @@ export interface GdgFieldContainerProps {
   status?: GdgFieldStatus
   statusMessage?: string
   children: ReactNode
+  action?: ReactNode
 }
 
 export function GdgFieldContainer({
@@ -20,23 +21,32 @@ export function GdgFieldContainer({
   caption,
   status,
   statusMessage,
-  children
+  children,
+  action
 }: GdgFieldContainerProps) {
   const hasStatus = Boolean(status && statusMessage)
 
   return (
-    <div className="space-y-2">
+    <div className="flex w-full flex-col gap-2">
       <div className="flex items-center gap-1 pl-2">
         <p className="typo-s3 text-white">{label}</p>
-        {required ? <p className="typo-s3 text-red">*</p> : null}
+        {required && <p className="typo-s3 text-red">*</p>}
       </div>
-      {children}
-      {caption ? <p className="typo-c2 pl-2 text-gray-600">{caption}</p> : null}
-      {hasStatus ? (
+      
+      <div className={cn("flex w-full items-center", action ? "gap-5 mobile:gap-2" : "")}>
+        {children}
+        {action}
+      </div>
+
+      {caption && !hasStatus && (
+        <p className="typo-c2 pl-2 text-gray-400">{caption}</p>
+      )}
+      
+      {hasStatus && (
         <p className={cn('typo-c2 pl-2', status === 'success' ? 'text-green' : 'text-red')}>
           {statusMessage}
         </p>
-      ) : null}
+      )}
     </div>
   )
 }

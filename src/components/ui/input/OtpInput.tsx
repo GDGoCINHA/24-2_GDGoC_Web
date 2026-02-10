@@ -37,8 +37,8 @@ export default function OtpInput({ setOtp, label, isDisabled, onSubmitOtp, isOtp
         />
         <Button
           isDisabled={isDisabled}
-          className={`w-[75px] h-[40px] min-w-[50px] mt-[8px] p-0 text-sm rounded-xl !bg-transparent border-2 ${
-            isOtpVerified ? 'border-green-500/50 text-green-500' : 'border-white/50 text-white'
+          className={`w-[75px] h-[40px] mt-[8px] p-0 text-sm rounded-xl !bg-transparent border-2 ${
+            isOtpVerified ? 'border-green-400/50 text-green-400' : 'border-white/50 text-white'
           }`}
           size='sm'
           type='submit'

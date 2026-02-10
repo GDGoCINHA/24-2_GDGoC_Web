@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import Loader from '@/components/ui/common/Loader'
-import { GdgLogo } from '@/components/ui/design-system'
+import { GdgGoogleLoginButton, GdgLogo } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import {
   type LoginApiResponseBody,
@@ -219,47 +219,26 @@ export default function LoginPage() {
     window.location.href = url
   }, [googleClientId, googleRedirectUri, nextUrl])
 
-  const getGoogleButtonSizeClassName = (mode: 'auto' | 'pc' | 'mobile' = 'auto') => {
-    if (mode === 'pc') return 'w-[300px] h-[52px]'
-    if (mode === 'mobile') return 'w-[260px] h-[46px]'
-    return 'w-[260px] h-[46px] pc:w-[300px] pc:h-[52px]'
-  }
-
-  const GoogleLoginButton = ({ mode = 'auto' }: { mode?: 'auto' | 'pc' | 'mobile' }) => (
-    <Button
-      onPress={() => {
-        if (!loading) {
-          handleGoogleLogin()
-        }
-      }}
-      isDisabled={!canUseGoogleLogin || loading}
-      className={`mx-auto flex items-center justify-center gap-4 rounded-full border border-[#747775] bg-white text-[14px] font-semibold leading-[20px] text-[#1f1f1f] shadow-[0_5px_35px_rgba(18,18,18,0.05)] ${getGoogleButtonSizeClassName(mode)}`}
-    >
-      <Image src="/icons/logo/google-g.svg" alt="Google logo" height={20} width={20} />
-      <span>Google 계정으로 로그인</span>
-    </Button>
-  )
-
   const RenderPcView = () => (
     <div className="mx-auto flex min-h-screen w-full max-w-[1128px] flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-[550px] space-y-6">
         <div className="flex items-center gap-3">
           <GdgLogo mode="pc" variant="long" priority />
         </div>
-        <div className="rounded-[20px] border border-[#f0f0f0] bg-[#1e1e1e] px-10 py-14 text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]">
+        <div className="rounded-[20px] border border-white/10 bg-black px-10 py-14 text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]">
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="space-y-2 text-center">
-              <p className="text-[24px] font-extrabold leading-[34px] text-[#f0f0f0]">
+              <p className="typo-h4 text-white">
                 방문을 환영합니다!
               </p>
-              <p className="text-[14px] font-medium leading-[20px] text-[#f0f0f0]">
+              <p className="typo-b3 text-white">
                 GDGoC INHA 홈페이지를 이용하려면 로그인하세요.
               </p>
             </div>
-            <GoogleLoginButton />
-            <div className="space-y-1 text-[12px] font-medium leading-[16px] text-[#b2b2b2]">
+            <GdgGoogleLoginButton device="pc" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
+            <div className="space-y-1 typo-c1 text-gray-400">
               <p>@inha.edu 계정만 사용 가능합니다</p>
-              {errorMessage ? <p className="text-[#ff6d6d]">{errorMessage}</p> : null}
+              {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
             </div>
           </div>
         </div>
@@ -273,20 +252,20 @@ export default function LoginPage() {
         <div className="flex items-center gap-2">
           <GdgLogo mode="mobile" variant="long" />
         </div>
-        <div className="rounded-[20px] border border-[#f0f0f0] bg-[#1e1e1e] px-[41px] py-10 text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]">
+        <div className="rounded-[20px] border border-white/10 bg-black px-[41px] py-10 text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]">
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="space-y-2 text-center">
-              <p className="text-[18px] font-extrabold leading-[26px] text-[#f0f0f0]">
+              <p className="typo-m-h3 text-white">
                 방문을 환영합니다!
               </p>
-              <p className="text-[11px] font-medium leading-[14px] text-[#f0f0f0]">
+              <p className="typo-m-c1 text-white">
                 GDGoC INHA 홈페이지를 이용하려면 로그인하세요.
               </p>
             </div>
-            <GoogleLoginButton mode="mobile" />
-            <div className="space-y-1 text-[11px] font-medium leading-[14px] text-[#b2b2b2]">
+            <GdgGoogleLoginButton device="mobile" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
+            <div className="space-y-1 typo-m-c2 text-gray-400">
               <p>@inha.edu 계정만 사용 가능합니다</p>
-              {errorMessage ? <p className="text-[#ff6d6d]">{errorMessage}</p> : null}
+              {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ export default function CustomCheckbox({
 }) {
   return (
     <label className="flex items-center cursor-pointer">
-      {required && <span className="text-red-600 ml-1 text-xl align-middle">*</span>}
+      {required && <span className="text-red-400 ml-1 text-xl align-middle">*</span>}
       <span className="text-white text-lg font-medium">{label}</span>
       {/* 체크박스 컨테이너 */}
       <div className="relative">
@@ -23,7 +23,7 @@ export default function CustomCheckbox({
         <div
           className={`
             w-6 h-6 border-2 rounded-md transition-all duration-200 flex items-center justify-center
-            ${checked ? 'bg-red-600 border-red-600' : 'bg-transparent border-gray-500'}
+            ${checked ? 'bg-red-400 border-red-400' : 'bg-transparent border-gray-400'}
           `}
         >
           {/* 흰색 체크 표시 (SVG) */}

@@ -56,14 +56,14 @@ export default function WeeklyInfo() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {data.weeklyRecords.map((week) => (
-                    <div key={week.id} className="border border-gray-800 rounded-lg bg-gray-900 overflow-hidden hover:border-blue-600 transition-colors duration-200">
+                    <div key={week.id} className="border border-gray-800 rounded-lg bg-gray-900 overflow-hidden hover:border-blue-400 transition-colors duration-200">
                         <div className="bg-gray-800 p-4">
                             <h3 className="font-bold">{week.title}</h3>
                             <p className="text-sm text-gray-400">{week.date}</p>
                         </div>
                         <div className="p-4">
                             <div className="flex items-center mb-3">
-                                <div className={`w-2 h-2 rounded-full ${week.status === 'COMPLETE' ? 'bg-green-500' : 'bg-yellow-500'} mr-2`}></div>
+                                <div className={`w-2 h-2 rounded-full ${week.status === 'COMPLETE' ? 'bg-green-400' : 'bg-yellow-400'} mr-2`}></div>
                                 <span className="text-sm">{week.status}</span>
                             </div>
                             <p className="text-sm text-gray-300 mb-4 line-clamp-2">{week.description}</p>

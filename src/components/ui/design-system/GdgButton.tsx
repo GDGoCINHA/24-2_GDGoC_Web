@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/utils/cn'
+import { getMobileWidthClass, getPcWidthClass, isWideOnlyWidth } from './controlMeta'
+import type { Device, PcWidthVariant, WidthToken } from './controlMeta'
 
-type Device = 'pc' | 'mobile'
 type ButtonSize = 'large' | 'small'
-type Variant = 'default' | 'active' | 'pressed' | 'disabled'
+type Variant = 'default' | 'active' | 'pressed' | 'disabled' | 'white'
 
 type ButtonLike = ButtonHTMLAttributes<HTMLButtonElement> & AnchorHTMLAttributes<HTMLAnchorElement>
 
@@ -15,6 +16,8 @@ export type GdgButtonProps = {
   device?: Device
   size?: ButtonSize
   variant?: Variant
+  widthToken?: WidthToken
+  pcVariant?: PcWidthVariant
   fullWidth?: boolean
   icon?: ReactNode
   loading?: boolean
@@ -22,12 +25,12 @@ export type GdgButtonProps = {
 
 const SIZE_CLASS: Record<Device, Record<ButtonSize, string>> = {
   pc: {
-    large: 'h-[52px] px-12 text-[16px] leading-[24px]',
-    small: 'h-[52px] px-6 text-[16px] leading-[24px] min-w-[122px]'
+    large: 'h-13 px-12 text-base leading-6',
+    small: 'h-11 px-6 text-base leading-6 w-30.5'
   },
   mobile: {
-    large: 'h-[48px] px-8 text-[16px] leading-[24px]',
-    small: 'h-[44px] px-5 text-[14px] leading-[20px] min-w-[109px]'
+    large: 'h-12 px-8 text-base leading-6',
+    small: 'h-11 px-5 text-sm leading-5 w-27.25'
   }
 }
 
@@ -35,7 +38,8 @@ const VARIANT_CLASS: Record<Variant, string> = {
   default: 'bg-gray-100 text-white border-gray-100',
   active: 'bg-red text-white border-red shadow-[0px_2px_50px_rgba(0,0,0,0.5)]',
   pressed: 'bg-red-400 text-white border-red',
-  disabled: 'bg-gray-400 text-white/70 border-gray-400'
+  disabled: 'bg-gray-400 text-white/70 border-gray-400',
+  white: 'bg-white text-black border-white shadow-[0px_5px_35px_rgba(18,18,18,0.05)]'
 }
 
 export function GdgButton({
@@ -43,6 +47,8 @@ export function GdgButton({
   device = 'pc',
   size = 'large',
   variant = 'default',
+  widthToken,
+  pcVariant,
   fullWidth,
   icon,
   loading,
@@ -53,33 +59,59 @@ export function GdgButton({
   ...rest
 }: GdgButtonProps) {
   const isDisabled = disabled || variant === 'disabled' || loading
+  const effectiveVariant = isDisabled ? 'disabled' : variant
+
+  const defaultPcVariant: PcWidthVariant =
+    widthToken && isWideOnlyWidth(widthToken) ? 'wide' : 'narrow'
+  const resolvedPcVariant = pcVariant ?? defaultPcVariant
+
+  const widthClass = fullWidth
+    ? 'w-full'
+    : widthToken
+      ? device === 'pc'
+        ? getPcWidthClass(widthToken, resolvedPcVariant)
+        : getMobileWidthClass(widthToken)
+      : SIZE_CLASS[device][size].split(' ').find((c) => c.startsWith('w-')) || ''
+
   const classes = cn(
-    'inline-flex items-center justify-center gap-2 rounded-full border font-medium transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40',
-    SIZE_CLASS[device][size],
-    fullWidth ? 'w-full' : 'w-auto',
-    VARIANT_CLASS[variant],
-    isDisabled && 'pointer-events-none opacity-70 cursor-not-allowed',
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40 font-pretendard shrink-0',
+    SIZE_CLASS[device][size].replace(/w-\S+/g, ''),
+    widthClass,
+    VARIANT_CLASS[effectiveVariant],
+    effectiveVariant === 'white' && (device === 'pc' ? 'typo-pc-s3' : 'typo-m-s2'),
+    isDisabled && 'pointer-events-none cursor-not-allowed opacity-70',
     className
   )
 
   const inner = (
     <>
       {loading && (
-        <span className="size-4 animate-spin rounded-full border-2 border-white/60 border-t-transparent" aria-hidden />
+        <span
+          className="size-4 animate-spin rounded-full border-2 border-white/60 border-t-transparent"
+          aria-hidden
+        />
       )}
-      {icon && <span className="shrink-0" aria-hidden>{icon}</span>}
-      <span>{children}</span>
+      {icon && (
+        <span className="shrink-0" aria-hidden>
+          {icon}
+        </span>
+      )}
+      {children}
     </>
   )
+
+  const commonProps = {
+    className: classes,
+    style: rest.style,
+    'aria-disabled': isDisabled
+  }
 
   if (as === 'a') {
     return (
       <Link
         {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
         href={href ?? '#'}
-        aria-disabled={isDisabled}
-        className={classes}
-        style={rest.style}
+        {...commonProps}
       >
         {inner}
       </Link>
@@ -91,8 +123,7 @@ export function GdgButton({
       {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
       type={(rest as ButtonHTMLAttributes<HTMLButtonElement>).type ?? 'button'}
       disabled={isDisabled}
-      className={classes}
-      style={rest.style}
+      {...commonProps}
     >
       {inner}
     </button>

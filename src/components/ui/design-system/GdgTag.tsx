@@ -22,7 +22,7 @@ const VARIANT_CLASS: Record<GdgTagVariant, string> = {
   default: 'border-gray-400 text-white/80',
   active: 'bg-red border-red text-white shadow-[0px_2px_50px_rgba(0,0,0,0.35)]',
   interactive: 'border-white/40 text-white hover:border-red hover:text-red',
-  disabled: 'border-gray-500 text-white/40 cursor-not-allowed'
+  disabled: 'border-gray-400 text-white/40 cursor-not-allowed'
 }
 
 export function GdgTag({

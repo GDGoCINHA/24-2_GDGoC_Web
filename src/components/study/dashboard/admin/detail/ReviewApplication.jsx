@@ -13,7 +13,6 @@ import { useApplicantList } from "@/services/study/useApplicantList";
 import { useStudyAccessCheck } from "@/services/study/useStudyAccessCheck";
 
 // components
-import NoticeBanner from "@/components/study/ui/card/NoticeBanner";
 import ApplicantInfoList from "@/components/study/ui/card/ApplicantInfoList";
 import ApplicantDetailModal from "@/components/study/ui/modal/ApplicantDetailModal";
 
@@ -300,7 +299,6 @@ export default function ReviewApplication({ studyId }) {
                 )}
                 {isStudyLead ? (
                     <div className="max-w-6xl mx-auto p-4">
-                        <NoticeBanner />
                         <ApplicantInfoList
                             applications={applications}
                             studyDetail={studyDetail}

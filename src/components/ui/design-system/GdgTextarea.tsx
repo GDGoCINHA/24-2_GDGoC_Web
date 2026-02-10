@@ -27,16 +27,16 @@ const WIDTH_CLASS: Record<'pc' | 'mobile', string> = {
 
 const TA_STATE: Record<'default' | 'error' | 'disabled', { wrapper: string; helper: string }> = {
   default: {
-    wrapper: 'border-gray-400 bg-black text-white placeholder:text-gray-800 focus:border-white/70',
-    helper: 'text-gray-800'
+    wrapper: 'border-gray-800 bg-black text-white placeholder:text-gray-700',
+    helper: 'text-gray-400'
   },
   error: {
-    wrapper: 'border-red bg-black text-white placeholder:text-red/70',
+    wrapper: 'border-red bg-black text-white placeholder:text-red/50',
     helper: 'text-red'
   },
   disabled: {
-    wrapper: 'border-gray-400 bg-gray-400 text-gray-900 placeholder:text-gray-900 cursor-not-allowed',
-    helper: 'text-gray-900'
+    wrapper: 'border-gray-100 bg-gray-100 text-white/40 placeholder:text-white/20 cursor-not-allowed',
+    helper: 'text-white/40'
   }
 }
 
@@ -97,10 +97,6 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
       [adjustHeight, onChange],
     )
 
-    const lineHeight = 24
-    const verticalPadding = 32 // py-4
-    const minHeight = rows ? rows * lineHeight + verticalPadding : undefined
-    
     const currentLength = typeof value === 'string' ? value.length : 0
 
     return (
@@ -111,11 +107,10 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
           </span>
         )}
         <div className={cn(
-            'relative rounded-3xl border px-4 py-3',
+            'relative rounded-3xl border px-4 py-3 transition-colors duration-150',
             fullWidth ? 'w-full' : WIDTH_CLASS[device],
             TA_STATE[computedState].wrapper
           )}
-          style={{ minHeight: minHeight ? `${minHeight}px` : undefined }}
         >
           <textarea
             {...rest}
@@ -126,14 +121,14 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
             maxLength={maxLength}
             value={value}
             className={cn(
-              'w-full bg-transparent font-medium leading-[24px] placeholder:font-medium focus:outline-none resize-none overflow-hidden block',
+              'w-full bg-transparent font-medium pc:text-base pc:leading-6 mobile:text-sm mobile:leading-5 placeholder:font-medium focus:outline-none resize-none overflow-hidden block',
               maxLength ? 'pb-6' : ''
             )}
-            style={{ ...style, height: 'auto', minHeight: 'unset' }}
+            style={{ ...style, height: 'auto' }}
             onChange={handleChange}
           />
           {maxLength && (
-            <div className="absolute bottom-3 right-4 text-[12px] leading-[18px] text-gray-600 font-medium">
+            <div className="absolute bottom-3 right-4 text-[12px] leading-[18px] text-gray-400 font-medium">
               {currentLength}/{maxLength}
             </div>
           )}

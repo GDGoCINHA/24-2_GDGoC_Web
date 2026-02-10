@@ -1,9 +1,9 @@
 export type Device = 'pc' | 'mobile'
 
 export type PcWidthVariant = 'narrow' | 'wide'
-export type PcNarrowWidthToken = 'full' | 'twoThirds' | 'medium' | 'small'
+export type PcNarrowWidthToken = 'full' | 'twoThirds' | 'oneThird' | 'medium' | 'small'
 export type PcWideWidthToken = 'mini' | 'small' | 'quarter' | 'medium' | 'full'
-export type MobileWidthToken = 'full' | 'twoThirds' | 'medium' | 'small'
+export type MobileWidthToken = 'full' | 'twoThirds' | 'oneThird' | 'medium' | 'small'
 export type WidthToken = PcNarrowWidthToken | PcWideWidthToken | MobileWidthToken
 export type SizeToken = 'default' | 'mini'
 
@@ -11,6 +11,7 @@ export const PC_WIDTH_META = {
   narrow: {
     small: 'w-30.5',
     medium: 'w-66.25',
+    oneThird: 'w-43.25',
     twoThirds: 'w-102',
     full: 'w-137.5'
   },
@@ -26,13 +27,14 @@ export const PC_WIDTH_META = {
 export const MOBILE_WIDTH_META = {
   small: 'w-27.25',
   medium: 'w-42',
+  oneThird: 'w-27.25',
   twoThirds: 'w-56.5',
   full: 'w-85.75'
 } as const
 
 export const isWideOnlyWidth = (size: WidthToken): boolean => size === 'mini' || size === 'quarter'
 
-export const getPcWidthClass = (size: WidthToken, variant: PcWidthVariant) => {
+export const getPcWidthClass = (size: WidthToken, variant: PcWidthVariant = 'narrow') => {
   const map = PC_WIDTH_META[variant] as Record<string, string>
   return map[size as keyof typeof map] ?? map.full
 }

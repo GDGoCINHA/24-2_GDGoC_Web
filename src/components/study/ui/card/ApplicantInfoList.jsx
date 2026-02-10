@@ -16,9 +16,9 @@ export default function ApplicantInfoList({
     // Status badge styles
     const getStatusBadge = (status) => {
         if (status === 'APPROVED')
-            return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium";
         if (status === 'REJECTED')
-            return "bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-red-400 text-white px-3 py-1 rounded-full text-sm font-medium";
         return "bg-gray-300 text-gray-700 px-3 py-1 rounded-full text-sm font-medium";
     };
 
@@ -45,7 +45,7 @@ export default function ApplicantInfoList({
                     <tbody>
                     {applications?.length === 0 ? (
                         <tr>
-                            <td colSpan="4" className="py-4 text-center text-gray-500">
+                            <td colSpan="4" className="py-4 text-center text-gray-400">
                                 아직 지원자가 없습니다. ㅠㅠ
                             </td>
                         </tr>
@@ -92,12 +92,12 @@ export default function ApplicantInfoList({
                     handleClick={handleApproval}
                 />
                 {isApprovalButtonDisabled && hasProcessedApplicants && (
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-gray-400 mt-2">
                         이미 처리된 지원자가 있어 수정할 수 없습니다.
                     </p>
                 )}
                 {isApprovalButtonDisabled && !hasProcessedApplicants && (
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-gray-400 mt-2">
                         지원 마감일이 지나 자동으로 처리되었습니다.
                     </p>
                 )}

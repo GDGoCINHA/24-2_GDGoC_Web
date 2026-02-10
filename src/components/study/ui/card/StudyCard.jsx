@@ -12,13 +12,13 @@ export default function StudyCard({ id, title, description, status, reqEnd, icon
     const getStatusStyle = (status) => {
         switch (status.toUpperCase()) {
             case 'RECRUITED':
-                return 'bg-red-500 text-white';
+                return 'bg-red-400 text-white';
             case 'RECRUITING':
-                return 'bg-green-500 text-white';
+                return 'bg-green-400 text-white';
             case 'CANCELLED':
-                return 'bg-yellow-500 text-white';
+                return 'bg-yellow-400 text-white';
             default:
-                return 'bg-blue-500 text-white';
+                return 'bg-blue-400 text-white';
         }
     };
 
@@ -49,7 +49,7 @@ export default function StudyCard({ id, title, description, status, reqEnd, icon
             <div className="w-72 mobile:w-[60vw]">
                 <h3 className="text-white text-xl font-bold mobile:text-lg">{ title }</h3>
                 <p className="text-white text-sm text-wrap">{ description }</p>
-                <p className="text-yellow-500 text-[12px] mt-4 text-wrap">모집마감: {reqEnd ? formatDate(reqEnd) : '정보없음'}</p>
+                <p className="text-yellow-400 text-[12px] mt-4 text-wrap">모집마감: {reqEnd ? formatDate(reqEnd) : '정보없음'}</p>
             </div>
             <div className="flex items-center space-x-2">
                 <Chip className={`capitalize ${ getStatusStyle(status)}`} size="sm" variant="flat">

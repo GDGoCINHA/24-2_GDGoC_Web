@@ -157,7 +157,8 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${ocra.variable} ${googleSansFlex.variable}`}
+      className={`${pretendard.variable} ${ocra.variable} ${googleSansFlex.variable} dark`}
+      style={{ colorScheme: 'dark' }}
       suppressHydrationWarning
     >
       <body className={`${pretendard.className} antialiased`}>

@@ -15,10 +15,10 @@ const VerticalProgressBar = ({ step }) => {
   return (
     <div className="flex flex-col relative pr-[46px] mobile:hidden select-none">
       <div id="line" className="absolute flex items-center justify-center h-full w-full">
-        <div id="long-line-gray" className="absolute h-full bg-gray-500 w-1"></div>
+        <div id="long-line-gray" className="absolute h-full bg-gray-400 w-1"></div>
         <div
           id="long-line-red"
-          className="absolute top-0 bg-red-500 w-1 transition-all duration-500 ease-in-out"
+          className="absolute top-0 bg-red-400 w-1 transition-all duration-500 ease-in-out"
           style={{
             height: `${getHeightPercentage()}%`,
           }}
@@ -32,7 +32,7 @@ const VerticalProgressBar = ({ step }) => {
           <div
             key={i}
             className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-2xl transition-all duration-500 ease-in-out ${
-              step >= i ? "bg-red-500" : "bg-gray-500"
+              step >= i ? "bg-red-400" : "bg-gray-400"
             }`}
           >
             ✓

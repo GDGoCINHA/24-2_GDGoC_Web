@@ -18,9 +18,10 @@ import {
   GdgFileCard,
   GdgLogo,
   GdgMajorDropdown,
-  GdgTextarea
+  GdgTextarea,
+  GdgUploadButton,
+  GdgInputField
 } from '@/components/ui/design-system'
-import { GdgInput } from '@/components/ui/input/GdgInput'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { cn } from '@/utils/cn'
 import { formatPhoneNumberInput, toPhoneDigits } from '@/utils/phoneNumber'
@@ -119,7 +120,7 @@ function StepBar({
                 'rounded-full border bg-black px-3 py-1.5 whitespace-nowrap typo-b3 mobile:typo-c1 transition-colors',
                 isCurrent && 'bg-red border-red text-white',
                 !isCurrent && isActivated && 'border-red text-white',
-                !isCurrent && !isActivated && 'border-gray-600 text-gray-600',
+                !isCurrent && !isActivated && 'border-gray-400 text-gray-400',
                 isClickable ? 'cursor-pointer' : 'cursor-not-allowed'
               )}
             >
@@ -127,10 +128,7 @@ function StepBar({
             </button>
             {!isLast && (
               <div
-                className={cn(
-                  'h-px flex-1',
-                  index < maxReachedStep ? 'bg-red' : 'bg-gray-600'
-                )}
+                className={cn('h-px flex-1', index < maxReachedStep ? 'bg-red' : 'bg-gray-400')}
               />
             )}
           </div>
@@ -212,19 +210,19 @@ export default function RecruitCore() {
     if (currentStep === 0) {
       return Boolean(
         formData.name.trim() &&
-          formData.studentId.trim() &&
-          formData.email.trim() &&
-          formData.major.trim() &&
-          formData.phone.trim()
+        formData.studentId.trim() &&
+        formData.email.trim() &&
+        formData.major.trim() &&
+        formData.phone.trim()
       )
     }
     if (currentStep === 1) {
       return Boolean(
         formData.team.trim() &&
-          formData.motivation.trim() &&
-          formData.role.trim() &&
-          formData.strength.trim() &&
-          formData.determination.trim()
+        formData.motivation.trim() &&
+        formData.role.trim() &&
+        formData.strength.trim() &&
+        formData.determination.trim()
       )
     }
     if (currentStep === 2) return scheduleChecked
@@ -243,14 +241,15 @@ export default function RecruitCore() {
         const payload = unwrapPrefill(response.data)
         if (!payload) return
 
-              setFormData((prev) => ({
-                ...prev,
-                name: prev.name || payload.name || '',
-                studentId: prev.studentId || payload.studentId || '',
-                email: prev.email || payload.email || '',
-                major: prev.major || payload.major || '',
-                phone: formatPhoneNumberInput(prev.phone || payload.phone || '')
-              }))      } catch (error) {
+        setFormData((prev) => ({
+          ...prev,
+          name: prev.name || payload.name || '',
+          studentId: prev.studentId || payload.studentId || '',
+          email: prev.email || payload.email || '',
+          major: prev.major || payload.major || '',
+          phone: formatPhoneNumberInput(prev.phone || payload.phone || '')
+        }))
+      } catch (error) {
         if (!active) return
         console.error('[코어 리크루팅] 기본 정보 불러오기에 실패했습니다.', error)
         setPrefillError('기본 정보를 불러오지 못했습니다. 직접 입력해주세요.')
@@ -441,17 +440,28 @@ export default function RecruitCore() {
                     status={errors.name ? 'error' : undefined}
                     statusMessage={errors.name ? '※ 필수 입력 사항입니다.' : undefined}
                   >
-                    <GdgInput
-                      aria-label="이름"
-                      value={formData.name}
-                      onValueChange={(nextValue) => handleInputValueChange('name', nextValue)}
-                      placeholder="홍길동"
-                      classNames={{
-                        inputWrapper:
-                          'bg-gray-300 border-transparent group-data-[focus=true]:border-transparent group-data-[has-value=true]:border-transparent',
-                        input: 'text-gray-900 placeholder:text-gray-700'
-                      }}
-                    />
+                    <div className="pc:contents hidden">
+                      <GdgInputField
+                        device="pc"
+                        width="small"
+                        aria-label="이름"
+                        value={formData.name}
+                        onChange={(e) => handleInputValueChange('name', e.target.value)}
+                        placeholder="홍길동"
+                        disabled
+                      />
+                    </div>
+                    <div className="pc:hidden contents">
+                      <GdgInputField
+                        device="mobile"
+                        width="medium"
+                        aria-label="이름"
+                        value={formData.name}
+                        onChange={(e) => handleInputValueChange('name', e.target.value)}
+                        placeholder="홍길동"
+                        disabled
+                      />
+                    </div>
                   </GdgFieldContainer>
                 </div>
 
@@ -462,17 +472,28 @@ export default function RecruitCore() {
                     status={errors.studentId ? 'error' : undefined}
                     statusMessage={errors.studentId ? '※ 필수 입력 사항입니다.' : undefined}
                   >
-                    <GdgInput
-                      aria-label="학번"
-                      value={formData.studentId}
-                      onValueChange={(nextValue) => handleInputValueChange('studentId', nextValue)}
-                      placeholder="12243421"
-                      classNames={{
-                        inputWrapper:
-                          'bg-gray-300 border-transparent group-data-[focus=true]:border-transparent group-data-[has-value=true]:border-transparent',
-                        input: 'text-gray-900 placeholder:text-gray-700'
-                      }}
-                    />
+                    <div className="pc:contents hidden">
+                      <GdgInputField
+                        device="pc"
+                        width="small"
+                        aria-label="학번"
+                        value={formData.studentId}
+                        onChange={(e) => handleInputValueChange('studentId', e.target.value)}
+                        placeholder="12243421"
+                        disabled
+                      />
+                    </div>
+                    <div className="pc:hidden contents">
+                      <GdgInputField
+                        device="mobile"
+                        width="medium"
+                        aria-label="학번"
+                        value={formData.studentId}
+                        onChange={(e) => handleInputValueChange('studentId', e.target.value)}
+                        placeholder="12243421"
+                        disabled
+                      />
+                    </div>
                   </GdgFieldContainer>
                 </div>
 
@@ -483,18 +504,30 @@ export default function RecruitCore() {
                     status={errors.email ? 'error' : undefined}
                     statusMessage={errors.email ? '※ 필수 입력 사항입니다.' : undefined}
                   >
-                    <GdgInput
-                      aria-label="이메일"
-                      type="email"
-                      value={formData.email}
-                      onValueChange={(nextValue) => handleInputValueChange('email', nextValue)}
-                      placeholder="abcd1234@inha.edu"
-                      classNames={{
-                        inputWrapper:
-                          'bg-gray-300 border-transparent group-data-[focus=true]:border-transparent group-data-[has-value=true]:border-transparent',
-                        input: 'text-gray-900 placeholder:text-gray-700'
-                      }}
-                    />
+                    <div className="pc:contents hidden">
+                      <GdgInputField
+                        device="pc"
+                        width="medium"
+                        aria-label="이메일"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputValueChange('email', e.target.value)}
+                        placeholder="abcd1234@inha.edu"
+                        disabled
+                      />
+                    </div>
+                    <div className="pc:hidden contents">
+                      <GdgInputField
+                        device="mobile"
+                        fullWidth
+                        aria-label="이메일"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputValueChange('email', e.target.value)}
+                        placeholder="abcd1234@inha.edu"
+                        disabled
+                      />
+                    </div>
                   </GdgFieldContainer>
                 </div>
               </div>
@@ -537,13 +570,28 @@ export default function RecruitCore() {
                   status={errors.phone ? 'error' : undefined}
                   statusMessage={errors.phone ? '※ 필수 입력 사항입니다.' : undefined}
                 >
-                  <GdgInput
-                    aria-label="전화번호"
-                    value={formData.phone}
-                    onValueChange={(nextValue) => handleInputValueChange('phone', nextValue)}
-                    placeholder="010-1234-1234"
-                    isInvalid={Boolean(errors.phone)}
-                  />
+                  <div className="pc:contents hidden">
+                    <GdgInputField
+                      device="pc"
+                      fullWidth
+                      aria-label="전화번호"
+                      value={formData.phone}
+                      onChange={(e) => handleInputValueChange('phone', e.target.value)}
+                      placeholder="010-1234-1234"
+                      state={errors.phone ? 'error' : 'available'}
+                    />
+                  </div>
+                  <div className="pc:hidden contents">
+                    <GdgInputField
+                      device="mobile"
+                      fullWidth
+                      aria-label="전화번호"
+                      value={formData.phone}
+                      onChange={(e) => handleInputValueChange('phone', e.target.value)}
+                      placeholder="010-1234-1234"
+                      state={errors.phone ? 'error' : 'available'}
+                    />
+                  </div>
                 </GdgFieldContainer>
               </div>
             </>
@@ -563,19 +611,32 @@ export default function RecruitCore() {
                       const selected = formData.team === team.id
 
                       return (
-                        <button
-                          key={team.id}
-                          type="button"
-                          onClick={() => handleTeamChange(team.id)}
-                          className={cn(
-                            'h-13 w-full rounded-full border transition-colors typo-b2 mobile:h-12 mobile:typo-b3',
-                            selected
-                              ? 'border-red bg-red-400 text-white'
-                              : 'border-gray-800 bg-black text-white'
-                          )}
-                        >
-                          {team.label}
-                        </button>
+                        <div key={team.id}>
+                          <div className="pc:contents hidden">
+                            <GdgButton
+                              type="button"
+                              device="pc"
+                              size="large"
+                              variant={selected ? 'active' : 'default'}
+                              fullWidth
+                              onClick={() => handleTeamChange(team.id)}
+                            >
+                              {team.label}
+                            </GdgButton>
+                          </div>
+                          <div className="pc:hidden contents">
+                            <GdgButton
+                              type="button"
+                              device="mobile"
+                              size="large"
+                              variant={selected ? 'active' : 'default'}
+                              fullWidth
+                              onClick={() => handleTeamChange(team.id)}
+                            >
+                              {team.label}
+                            </GdgButton>
+                          </div>
+                        </div>
                       )
                     })}
                   </div>
@@ -671,12 +732,11 @@ export default function RecruitCore() {
                   accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.zip"
                 />
 
-                <label
-                  htmlFor="portfolio"
-                  className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg bg-red typo-b2 text-white mobile:typo-b3"
-                >
-                  + 파일 선택
-                </label>
+                <GdgUploadButton
+                  device="pc"
+                  onClick={() => document.getElementById('portfolio')?.click()}
+                  className="w-full"
+                />
               </div>
             </>
           ) : null}
@@ -713,7 +773,9 @@ export default function RecruitCore() {
               <div className="col-span-4 space-y-2">
                 <p className="pl-2 typo-s3 text-white">면접 안내</p>
                 <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-b2 mobile:typo-b3">
-                  <p>• 원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.</p>
+                  <p>
+                    • 원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.
+                  </p>
                   <p className="mt-2">• 면접은 인하대학교 내부 장소에서 진행됩니다.</p>
                 </div>
               </div>
@@ -730,15 +792,25 @@ export default function RecruitCore() {
                 <span className="typo-s3 text-red">*</span>
                 <p className="typo-b3 text-white">전체 일정을 확인하였습니다.</p>
                 <span className="hidden pc:inline-flex">
-                  <GdgCheckbox checked={scheduleChecked} onCheckedChange={setScheduleChecked} size="pc" />
+                  <GdgCheckbox
+                    checked={scheduleChecked}
+                    onCheckedChange={setScheduleChecked}
+                    size="pc"
+                  />
                 </span>
                 <span className="inline-flex pc:hidden">
-                  <GdgCheckbox checked={scheduleChecked} onCheckedChange={setScheduleChecked} size="mobile" />
+                  <GdgCheckbox
+                    checked={scheduleChecked}
+                    onCheckedChange={setScheduleChecked}
+                    size="mobile"
+                  />
                 </span>
               </div>
 
               {errors.scheduleCheck ? (
-                <p className="col-span-4 text-right typo-c2 text-red">※ 미확인 시 지원서 제출이 불가합니다.</p>
+                <p className="col-span-4 text-right typo-c2 text-red">
+                  ※ 미확인 시 지원서 제출이 불가합니다.
+                </p>
               ) : null}
             </>
           ) : null}
@@ -749,13 +821,15 @@ export default function RecruitCore() {
                 <p className="pl-2 typo-s3 text-white">개인정보 수집 및 이용 동의</p>
                 <div className="rounded-xl bg-gray-100 px-4 py-3">
                   <p className="typo-b2 text-white mobile:typo-b3">
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
+                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집
+                    및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서
+                    내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보
+                    수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및
+                    이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서
+                    내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보
+                    수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및
+                    이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서
+                    내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
                   </p>
                 </div>
               </div>
@@ -764,15 +838,25 @@ export default function RecruitCore() {
                 <span className="typo-s3 text-red">*</span>
                 <p className="typo-b3 text-white">동의합니다.</p>
                 <span className="hidden pc:inline-flex">
-                  <GdgCheckbox checked={agreementChecked} onCheckedChange={setAgreementChecked} size="pc" />
+                  <GdgCheckbox
+                    checked={agreementChecked}
+                    onCheckedChange={setAgreementChecked}
+                    size="pc"
+                  />
                 </span>
                 <span className="inline-flex pc:hidden">
-                  <GdgCheckbox checked={agreementChecked} onCheckedChange={setAgreementChecked} size="mobile" />
+                  <GdgCheckbox
+                    checked={agreementChecked}
+                    onCheckedChange={setAgreementChecked}
+                    size="mobile"
+                  />
                 </span>
               </div>
 
               {errors.agreementCheck ? (
-                <p className="col-span-4 text-right typo-c2 text-red">※ 미동의 시 지원서 제출이 불가합니다.</p>
+                <p className="col-span-4 text-right typo-c2 text-red">
+                  ※ 미동의 시 지원서 제출이 불가합니다.
+                </p>
               ) : null}
             </>
           ) : null}
@@ -784,7 +868,7 @@ export default function RecruitCore() {
                 device="pc"
                 size="small"
                 variant="default"
-                className="w-30.5"
+                widthToken="small"
                 onClick={handlePrevious}
               >
                 이전
@@ -796,7 +880,7 @@ export default function RecruitCore() {
               device="pc"
               size="small"
               variant={isCurrentStepValid ? 'active' : 'disabled'}
-              className="w-30.5"
+              widthToken="small"
               disabled={!isCurrentStepValid}
             >
               {currentStep === 3 ? '제출하기' : '다음'}
@@ -811,7 +895,7 @@ export default function RecruitCore() {
                 device="mobile"
                 size="small"
                 variant="default"
-                className="w-27.25"
+                fullWidth
                 onClick={handlePrevious}
               >
                 이전
@@ -825,7 +909,7 @@ export default function RecruitCore() {
               device="mobile"
               size="small"
               variant={isCurrentStepValid ? 'active' : 'disabled'}
-              className="w-27.25"
+              fullWidth
               disabled={!isCurrentStepValid}
             >
               {currentStep === 3 ? '제출하기' : '다음'}

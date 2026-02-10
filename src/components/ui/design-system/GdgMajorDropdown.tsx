@@ -9,7 +9,7 @@ export type GdgMajorDropdownProps = {
   autoFocus?: boolean
   isInvalid?: boolean
   errorMessage?: string
-  device?: 'pc' | 'mobile'
+  device?: 'pc' | 'mobile' | 'auto'
 }
 
 export function GdgMajorDropdown({
@@ -18,7 +18,7 @@ export function GdgMajorDropdown({
   autoFocus,
   isInvalid,
   errorMessage,
-  device = 'pc'
+  device = 'auto'
 }: GdgMajorDropdownProps) {
   const groupedOptions: GdgDropdownOptionGroup[] = majorOptions.map((group) => ({
     title: group.title,
@@ -30,7 +30,7 @@ export function GdgMajorDropdown({
 
   return (
     <GdgDropdown
-      device={device}
+      device={device as any}
       size="full"
       placeholder="학과를 입력해 주세요."
       optionGroups={groupedOptions}

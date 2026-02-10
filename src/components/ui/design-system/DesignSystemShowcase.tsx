@@ -7,13 +7,16 @@ import { GdgColorTag } from './GdgColorTag'
 import { GdgDropdown, type GdgDropdownSize } from './GdgDropdown'
 import { GdgFileCard, GdgUploadButton } from './GdgFileCard'
 import { GdgInputField } from './GdgInputField'
+import { GdgFieldContainer } from './GdgFieldContainer'
 import { GdgLogo } from './GdgLogo'
+import { GdgGoogleLoginButton } from './GdgGoogleLoginButton'
 import { GdgMajorDropdown } from './GdgMajorDropdown'
 import { GdgRadio } from './GdgRadio'
 import { GdgSearchField } from './GdgSearchField'
 import { GdgSegmentedButton } from './GdgSegmentedButton'
 import { GdgTag } from './GdgTag'
 import { GdgTextarea } from './GdgTextarea'
+import Image from 'next/image'
 
 const BUTTON_DEVICES = ['pc', 'mobile'] as const
 const BUTTON_SIZES = ['large', 'small'] as const
@@ -87,7 +90,7 @@ export function DesignSystemShowcase() {
   })
 
   return (
-    <div className="space-y-8 text-white">
+    <div className="space-y-8 text-white pb-32">
       <h1 className="text-2xl font-semibold tracking-tight">Design System Showcase</h1>
       <Section title="Logo">
         <div className="grid gap-3 md:grid-cols-3">
@@ -125,24 +128,46 @@ export function DesignSystemShowcase() {
                   >
                     {buttonState[device].active ? 'ACTIVE' : 'DEFAULT'}
                   </GdgButton>
-                  <p className="typo-c1 text-gray-600">{`click: ${buttonState[device].clicks}`}</p>
+                  <p className="typo-c1 text-gray-400">{`click: ${buttonState[device].clicks}`}</p>
                 </div>
               </div>
             ))}
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
           {BUTTON_DEVICES.map((device) =>
-            BUTTON_SIZES.map((size) =>
-              BUTTON_VARIANTS.map((variant) => (
-                <div key={`${device}-${size}-${variant}`} className="space-y-2">
-                  <p className="mb-2 text-xs text-white/60">{`${device} / ${size} / ${variant}`}</p>
-                  <GdgButton device={device} size={size} variant={variant}>
-                    BUTTON
-                  </GdgButton>
+            BUTTON_SIZES.map((size) => (
+              <div key={`${device}-${size}`} className="space-y-2">
+                <p className="mb-2 text-xs text-white/60 uppercase">{`${device} / ${size}`}</p>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {BUTTON_VARIANTS.map((variant) => (
+                    <div key={`${device}-${size}-${variant}`} className="flex flex-col gap-1 items-center">
+                      <GdgButton 
+                        device={device} 
+                        size={size} 
+                        variant={variant}
+                      >
+                        {variant.toUpperCase()}
+                      </GdgButton>
+                      <span className="text-[10px] text-white/40">{variant}</span>
+                    </div>
+                  ))}
                 </div>
-              ))
-            )
+              </div>
+            ))
           )}
+          </div>
+          <div className="space-y-2 pt-4 border-t border-white/5">
+            <p className="text-xs text-white/60 font-semibold uppercase tracking-wider">Specialized: Google Login Button</p>
+            <div className="flex flex-wrap gap-6 items-start">
+              <div className="space-y-2">
+                <p className="text-[10px] text-white/40">PC Style (300x52)</p>
+                <GdgGoogleLoginButton device="pc" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] text-white/40">Mobile Style (260x46)</p>
+                <GdgGoogleLoginButton device="mobile" />
+              </div>
+            </div>
           </div>
         </div>
       </Section>
@@ -152,7 +177,7 @@ export function DesignSystemShowcase() {
           {BUTTON_DEVICES.map((device) => (
             <div key={device} className="space-y-2">
               <p className="text-xs text-white/60">{device}</p>
-              <div className="flex gap-1">
+              <div className="grid grid-flow-col auto-cols-fr gap-1 w-fit">
                 <GdgSegmentedButton
                   device={device}
                   edge="left"
@@ -170,8 +195,8 @@ export function DesignSystemShowcase() {
                   Right
                 </GdgSegmentedButton>
               </div>
-              <p className="typo-c1 text-gray-600">{`selected: ${segmentedPressed[device]}`}</p>
-              <div className="flex gap-1">
+              <p className="typo-c1 text-gray-400">{`selected: ${segmentedPressed[device]}`}</p>
+              <div className="grid grid-flow-col auto-cols-fr gap-1 w-fit">
                 <GdgSegmentedButton device={device} edge="left" disabled>
                   Disabled
                 </GdgSegmentedButton>
@@ -222,10 +247,36 @@ export function DesignSystemShowcase() {
         </div>
       </Section>
 
-      <Section title="Input Field">
-        <div className="space-y-4">
+      <Section title="Input Field & Container">
+        <div className="space-y-8">
+          <div className="space-y-4 border-b border-white/5 pb-6">
+            <p className="text-xs text-white/60">Field Container States</p>
+            <div className="grid gap-6 md:grid-cols-2">
+              <GdgFieldContainer label="Default Field" caption="This is a caption">
+                <GdgInputField placeholder="Available state" />
+              </GdgFieldContainer>
+              <GdgFieldContainer label="Required Field" required caption="Required asterisk shown">
+                <GdgInputField placeholder="Available state" />
+              </GdgFieldContainer>
+              <GdgFieldContainer 
+                label="Success State" 
+                status="success" 
+                statusMessage="Success message appears here"
+              >
+                <GdgInputField placeholder="Available state" value="Correct Value" readOnly />
+              </GdgFieldContainer>
+              <GdgFieldContainer 
+                label="Error State" 
+                status="error" 
+                statusMessage="Error message appears here"
+              >
+                <GdgInputField state="error" placeholder="Error state" />
+              </GdgFieldContainer>
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <p className="text-xs text-white/60">pc / narrow</p>
+            <p className="text-xs text-white/60">pc / narrow widths</p>
             <div className="space-y-2">
               {(['small', 'medium', 'twoThirds', 'full'] as const).map((width) =>
                 INPUT_STATES.map((state) => (
@@ -238,8 +289,6 @@ export function DesignSystemShowcase() {
                     disabled={state === 'disabled'}
                     label={`${width}-${state}`}
                     placeholder="input"
-                    helperText="helper"
-                    errorText="error"
                     defaultValue={state === 'available' ? 'value' : undefined}
                     readOnly={state !== 'available'}
                   />
@@ -248,7 +297,7 @@ export function DesignSystemShowcase() {
             </div>
           </div>
           <div className="space-y-2">
-            <p className="text-xs text-white/60">pc / wide (mini 포함)</p>
+            <p className="text-xs text-white/60">pc / wide widths (mini 포함)</p>
             <div className="space-y-2">
               {(['mini', 'small', 'quarter', 'medium', 'full'] as const).map((width) =>
                 INPUT_STATES.map((state) => (
@@ -262,8 +311,6 @@ export function DesignSystemShowcase() {
                     disabled={state === 'disabled'}
                     label={`${width}-${state}`}
                     placeholder="input"
-                    helperText="helper"
-                    errorText="error"
                     defaultValue={state === 'available' ? 'value' : undefined}
                     readOnly={state !== 'available'}
                   />
@@ -272,7 +319,7 @@ export function DesignSystemShowcase() {
             </div>
           </div>
           <div className="space-y-2">
-            <p className="text-xs text-white/60">mobile</p>
+            <p className="text-xs text-white/60">mobile widths</p>
             <div className="space-y-2">
               {(['small', 'medium', 'twoThirds', 'full'] as const).map((width) =>
                 INPUT_STATES.map((state) => (
@@ -284,8 +331,6 @@ export function DesignSystemShowcase() {
                     disabled={state === 'disabled'}
                     label={`${width}-${state}`}
                     placeholder="input"
-                    helperText="helper"
-                    errorText="error"
                     defaultValue={state === 'available' ? 'value' : undefined}
                     readOnly={state !== 'available'}
                   />
@@ -316,16 +361,29 @@ export function DesignSystemShowcase() {
       </Section>
 
       <Section title="Search Field">
-        <div className="space-y-2">
-          {(['pc', 'mobile'] as const).map((device) =>
-            (['full', 'half'] as const).map((width) => (
-              <div key={`${device}-${width}`} className="space-y-2">
-                <p className="text-xs text-white/60">{`${device}-${width}`}</p>
-                <GdgSearchField device={device} width={width} placeholder="search" />
-                <GdgSearchField device={device} width={width} placeholder="disabled" disabled />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-xs text-white/60">pc</p>
+            {(['full', 'half'] as const).map((width) => (
+              <div key={`pc-${width}`} className="space-y-2">
+                <p className="text-xs text-white/40">{`pc-${width}`}</p>
+                <GdgSearchField device="pc" width={width} placeholder="search" />
               </div>
-            ))
-          )}
+            ))}
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs text-white/60">mobile</p>
+            {(['full', 'twoThirds'] as const).map((width) => (
+              <div key={`mobile-${width}`} className="space-y-2">
+                <p className="text-xs text-white/40">{`mobile-${width}`}</p>
+                <GdgSearchField device="mobile" width={width} placeholder="search" />
+              </div>
+            ))}
+          </div>
+          <div className="space-y-2">
+            <p className="text-xs text-white/60">states</p>
+            <GdgSearchField device="pc" width="half" placeholder="disabled" disabled />
+          </div>
         </div>
       </Section>
 
@@ -406,7 +464,7 @@ export function DesignSystemShowcase() {
                   checked={checkboxChecked[size]}
                   onCheckedChange={(checked) => setCheckboxChecked((prev) => ({ ...prev, [size]: checked }))}
                 />
-                <p className="typo-c1 text-gray-600">{checkboxChecked[size] ? 'checked' : 'unchecked'}</p>
+                <p className="typo-c1 text-gray-400">{checkboxChecked[size] ? 'checked' : 'unchecked'}</p>
                 <GdgCheckbox size={size} checked={false} disabled />
                 <GdgCheckbox size={size} checked disabled />
               </div>

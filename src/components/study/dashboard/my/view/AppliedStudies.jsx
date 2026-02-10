@@ -23,10 +23,10 @@ export default function AppliedStudies() {
 
     const getStatusBadge = (status) => {
         if (status === 'APPROVED')
-            return "bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-blue-400 text-white px-3 py-1 rounded-full text-sm font-medium";
         if (status === 'REJECTED')
-            return "bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium";
-        return "bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium";
+            return "bg-red-400 text-white px-3 py-1 rounded-full text-sm font-medium";
+        return "bg-yellow-400 text-white px-3 py-1 rounded-full text-sm font-medium";
     };
 
     const getStatusName = (status) => {
@@ -78,7 +78,7 @@ export default function AppliedStudies() {
                                             e.stopPropagation();
                                             handleDetailClick(data.studyId);
                                         }}
-                                        className="text-blue-500 hover:text-blue-700 text-sm"
+                                        className="text-blue-400 hover:text-blue-700 text-sm"
                                     >
                                         정보 보기
                                     </button>
@@ -87,7 +87,7 @@ export default function AppliedStudies() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="4" className="py-4 text-center text-gray-500">
+                            <td colSpan="4" className="py-4 text-center text-gray-400">
                                 데이터가 없습니다.
                             </td>
                         </tr>
