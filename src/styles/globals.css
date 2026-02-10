@@ -35,24 +35,49 @@
     --color-gray-800: #CCCCCC;
     --color-gray-900: #E1E1E1;
 
-    --color-cred: #EA4335;
-    --color-cblue: #4285F4;
-    --color-cyellow: #FBBC05;
-    --color-cgreen: #34A853;
-    --color-cblack: #1A1A1A;
-    --color-cwhite: #FAFAFA;
+    --animate-spin: spin 1s linear infinite;
+    --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+    --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animate-bounce: bounce 1s infinite;
 }
 
 /* Breakpoints */
-@custom-variant mobile (@media (max-width: 48rem));
+@custom-variant mobile (@media (max-width: 47.9375rem));
 @custom-variant pc (@media (min-width: 48rem));
+
+/* NextUI / HeroUI Variants for Tailwind v4 */
+@custom-variant hover (&:hover, &[data-hover=true]);
+@custom-variant focus (&:focus, &[data-focus=true]);
+@custom-variant focus-visible (&:focus-visible, &[data-focus-visible=true]);
+@custom-variant selected (&[data-selected=true], &[aria-selected=true], &[aria-checked=true]);
+@custom-variant disabled (&:disabled, &[data-disabled=true], &[aria-disabled=true]);
+@custom-variant invalid (&[data-invalid=true], &[aria-invalid=true]);
+@custom-variant pressed (&:active, &[data-pressed=true], &[aria-pressed=true]);
+@custom-variant active (&[data-active=true], &[data-state=active]);
+@custom-variant open (&[data-open=true], &[data-state=open]);
+@custom-variant closed (&[data-closed=true], &[data-state=closed]);
 
 /* ========================================================================
    Base Layer
    ======================================================================== */
 @layer base {
     :root {
-        background-color: black;
+        background-color: var(--color-black);
+        color: var(--color-white);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    .dark {
+        background-color: var(--color-black);
+        color: var(--color-white);
+    }
+
+    *, ::before, ::after {
+        border-width: 0;
+        border-style: solid;
+        box-sizing: border-box;
     }
 }
 
@@ -846,20 +871,35 @@
     [data-slot="input-wrapper"][data-focus-visible="true"] {
         outline: 0;
         box-shadow: none;
+        background: transparent;
+        border: none;
     }
 
 }
 
 body {
-    -ms-overflow-style: none;
+    -ms-overflow-style: auto;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px var(--color-black) inset !important;
+    -webkit-text-fill-color: var(--color-white) !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 ::-webkit-scrollbar {
     display: none;
 }
 
-input {
-    margin-left: 10px;
+/* Hide native search clear button in Chrome */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    display: none;
 }
 
 .neon-text {

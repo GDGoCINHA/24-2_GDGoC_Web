@@ -9,29 +9,29 @@ export type GdgTagSize = 'pc' | 'mobile' | 'mini'
 
 const COLOR_META: Record<GdgTagColor, { fill: string; outline: string; half: string }> = {
   red: {
-    fill: 'bg-red border border-red text-white shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
-    outline: 'border border-red text-red',
-    half: 'bg-red-400 border border-red-400 text-red'
+    fill: 'bg-red border-red text-white shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
+    outline: 'border-red text-red',
+    half: 'bg-red-400 border-red-400 text-red'
   },
   blue: {
-    fill: 'bg-blue border border-blue text-white shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
-    outline: 'border border-blue text-blue',
-    half: 'bg-blue-400 border border-blue-400 text-blue'
+    fill: 'bg-blue border-blue text-white shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
+    outline: 'border-blue text-blue',
+    half: 'bg-blue-400 border-blue-400 text-blue'
   },
   green: {
-    fill: 'bg-green border border-green text-white shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
-    outline: 'border border-green text-green',
-    half: 'bg-green-400 border border-green-400 text-green'
+    fill: 'bg-green border-green text-white shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
+    outline: 'border-green text-green',
+    half: 'bg-green-400 border-green-400 text-green'
   },
   yellow: {
-    fill: 'bg-yellow border border-yellow text-black shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
-    outline: 'border border-yellow text-yellow',
-    half: 'bg-yellow-400 border border-yellow-400 text-yellow'
+    fill: 'bg-yellow border-yellow text-black shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
+    outline: 'border-yellow text-yellow',
+    half: 'bg-yellow-400 border-yellow-400 text-yellow'
   },
   white: {
-    fill: 'bg-white border border-white text-black shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
-    outline: 'border border-white text-white',
-    half: 'bg-gray-200 border border-gray-200 text-gray-700'
+    fill: 'bg-white border-white text-black shadow-[0px_2px_40px_rgba(0,0,0,0.35)]',
+    outline: 'border-white text-white',
+    half: 'bg-gray-200 border-gray-200 text-gray-700'
   }
 }
 
@@ -65,7 +65,7 @@ export function GdgColorTag({
     <span
       {...rest}
       className={cn(
-        'inline-flex items-center justify-center rounded-full font-medium uppercase tracking-tight border-[1.5px] transition-colors duration-150',
+        'inline-flex items-center justify-center rounded-full font-medium uppercase tracking-tight border transition-colors duration-150',
         baseClass,
         fillClass,
         fill === 'half' && meta.half,

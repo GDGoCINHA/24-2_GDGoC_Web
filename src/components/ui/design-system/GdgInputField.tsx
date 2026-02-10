@@ -74,17 +74,17 @@ export const GdgInputField = forwardRef<HTMLInputElement, GdgInputFieldProps>(
   ) => {
     const generatedId = useId()
     const fieldId = id ?? generatedId
-    const hasValue =
-      (typeof rest.value === 'string' && rest.value.length > 0) || typeof rest.value === 'number'
     const computedState: InputState = disabled ? 'disabled' : (state ?? 'available')
     const effectiveDensity: SizeToken = density ?? (width === 'mini' ? 'mini' : 'default')
     const defaultPcVariant: PcWidthVariant = isWideOnlyWidth(width) ? 'wide' : 'narrow'
     const resolvedPcVariant = pcVariant ?? defaultPcVariant
+
     const widthClass = fullWidth
       ? 'w-full'
       : device === 'pc'
         ? getPcWidthClass(width, resolvedPcVariant)
         : getMobileWidthClass(width)
+
     const controlMeta =
       effectiveDensity === 'mini'
         ? (CONTROL_META[device].mini ?? CONTROL_META[device].default)
@@ -99,12 +99,12 @@ export const GdgInputField = forwardRef<HTMLInputElement, GdgInputFieldProps>(
         {label && <span className="typo-s3 uppercase tracking-[0.2em] text-white/80">{label}</span>}
         <div
           className={cn(
-            'flex items-center gap-2 rounded-[24px] border transition-colors duration-150 focus-within:border-white',
-            computedState === 'available' && hasValue && 'border-white',
+            'flex items-center gap-2 rounded-full border transition-colors duration-150',
             controlMeta.height,
             controlMeta.padding,
             widthClass,
-            STATE_CLASS[computedState].wrapper
+            STATE_CLASS[computedState].wrapper,
+            computedState === 'error' && 'border-red focus-within:border-red'
           )}
         >
           {startAdornment && (
@@ -117,10 +117,8 @@ export const GdgInputField = forwardRef<HTMLInputElement, GdgInputFieldProps>(
             id={fieldId}
             ref={ref}
             disabled={disabled}
-            onFocus={rest.onFocus}
-            onBlur={rest.onBlur}
             className={cn(
-              '!ml-0 h-full flex-1 bg-transparent placeholder:font-medium focus:outline-none py-0 leading-normal',
+              'h-full w-full min-w-0 flex-1 bg-transparent placeholder:font-medium focus:outline-none py-0 leading-normal',
               controlMeta.text,
               STATE_CLASS[computedState].input
             )}

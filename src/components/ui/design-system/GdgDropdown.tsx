@@ -65,30 +65,23 @@ export function GdgDropdown({
   isInvalid,
   errorMessage
 }: GdgDropdownProps) {
-  const ITEM_CLASS =
-    'text-white text-base font-medium leading-6 h-9 px-2 rounded-lg flex items-center justify-between ' +
-    'data-[hover=true]:bg-white data-[hover=true]:text-black ' +
-    'data-[selected=true]:bg-white data-[selected=true]:text-black data-[selected=true]:font-medium ' +
-    '[&[data-selected=true][data-hover=true]]:bg-white [&[data-selected=true][data-hover=true]]:text-black ' +
+  const controlMeta = getControlMeta(device, size)
+  const ITEM_CLASS = cn(
+    'flex h-9 items-center justify-between rounded-lg px-2 text-white outline-none transition-colors',
+    controlMeta.text,
+    'hover:bg-white hover:text-black',
+    'selected:bg-white selected:text-black selected:font-medium',
+    'focus:bg-white focus:text-black',
     '[&_[data-slot=selected-icon]]:text-black'
+  )
   const [internalValue, setInternalValue] = useState(defaultValue ?? '')
   const currentValue = value ?? internalValue
-  const hasValue = Boolean(currentValue)
   const isGrouped = Boolean(optionGroups?.length)
   const hasError = Boolean(isInvalid)
 
   const resolvedOptions = useMemo(
     () => (optionGroups ? optionGroups.flatMap((group) => group.items) : options),
     [optionGroups, options]
-  )
-
-  const optionMap = useMemo(
-    () =>
-      resolvedOptions.reduce<Record<string, GdgDropdownOption>>((acc, option) => {
-        acc[option.id] = option
-        return acc
-      }, {}),
-    [resolvedOptions]
   )
 
   useEffect(() => {
@@ -107,24 +100,23 @@ export function GdgDropdown({
   const resolvedPcVariant = pcVariant ?? defaultPcVariant
   const widthClass =
     device === 'pc' ? getPcWidthClass(size, resolvedPcVariant) : getMobileWidthClass(size)
-  const controlMeta = getControlMeta(device, size)
   const isMini = device === 'pc' && size === 'mini'
 
+  // Fixed border color to gray-800 unless it's an error.
   const baseClass = cn(
     'rounded-full bg-black border transition-colors',
     controlMeta.height,
-    hasError ? 'border-red' : hasValue ? 'border-white' : 'border-gray-800',
-    hasError ? 'group-data-[hover=true]:border-red' : 'group-data-[hover=true]:border-gray-900',
-    hasError ? 'group-data-[focus=true]:border-red' : 'group-data-[focus=true]:border-white',
-    'group-data-[disabled=true]:bg-gray-400 group-data-[disabled=true]:border-gray-400 group-data-[disabled=true]:cursor-not-allowed'
+    hasError ? 'border-red' : 'border-gray-800',
+    hasError ? 'hover:border-red' : '',
+    hasError ? 'focus:border-red' : '',
+    'disabled:bg-gray-100 disabled:border-gray-100 disabled:cursor-not-allowed disabled:text-white/40'
   )
 
   const selectorClass = cn(
-    'h-full w-auto !min-w-0 justify-between bg-transparent !bg-transparent font-medium text-gray-900 hover:bg-transparent data-[hover=true]:!bg-transparent focus-visible:outline-none',
-    isMini &&
-      'min-h-0 px-0 py-0 [&_[data-slot=inner-wrapper]]:h-auto [&_[data-slot=inner-wrapper]]:min-h-0',
+    'h-full w-auto min-w-0 mx-0 justify-between bg-transparent font-medium text-white hover:bg-transparent focus-visible:outline-none',
+    isMini && 'px-0 py-0 [&_[data-slot=inner-wrapper]]:h-auto',
     controlMeta.text,
-    'group-data-[disabled=true]:text-gray-900 group-data-[disabled=true]:cursor-not-allowed'
+    'disabled:text-white/40 disabled:cursor-not-allowed'
   )
 
   const caption = hasError ? (errorMessage ?? helperText) : helperText
@@ -158,6 +150,7 @@ export function GdgDropdown({
         menuTrigger="focus"
         isVirtualized={false}
         defaultFilter={filterFn}
+        variant="bordered"
         listboxProps={{
           classNames: {
             base: 'w-full relative flex flex-col gap-0 p-0 overflow-visible',
@@ -169,7 +162,7 @@ export function GdgDropdown({
         }}
         className={cn('w-full', widthClass)}
         classNames={{
-          base: cn('gdg-dropdown-trigger', baseClass),
+          base: cn('gdg-dropdown-trigger w-full', baseClass),
           selectorButton: selectorClass,
           listbox: cn(
             'w-full p-0 m-0 list-none flex flex-col items-stretch content-start justify-start',
@@ -178,34 +171,38 @@ export function GdgDropdown({
           listboxWrapper:
             'bg-transparent block p-0 m-0 w-full items-stretch content-start justify-start',
           popoverContent: cn(
-            'gdg-dropdown-popover bg-gray-100 border border-white/10 rounded-xl shadow-[0_20px_120px_rgba(0,0,0,0.75)] p-4 h-auto overflow-auto justify-start',
+            'gdg-dropdown-popover bg-gray-100 border border-white/10 rounded-xl shadow-[0_20px_120px_rgba(0,0,0,0.75)] p-3 h-auto overflow-auto justify-start',
             POPOVER_MAX_HEIGHT_CLASS[device]
           ),
           endContentWrapper: cn(
-            'ml-auto flex items-center justify-end text-gray-900 bg-transparent border-0 shadow-none rounded-none !p-0 !px-0 !py-0 !m-0',
-            isMini && 'h-auto min-h-0 self-center'
+            'ml-auto flex items-center justify-end text-gray-900 bg-transparent border-0 shadow-none rounded-none !p-0 !px-0 !py-0 !m-0 mx-0',
+            isMini && 'h-auto self-center'
           ),
           clearButton: 'hidden'
         }}
         inputProps={{
           autoFocus,
           classNames: {
-            inputWrapper: cn('px-4 items-center', isMini && 'h-auto min-h-0 py-0'),
-            innerWrapper: cn('items-center', isMini && 'h-auto min-h-0'),
+            inputWrapper: cn(
+              'w-full items-center bg-transparent border-none shadow-none h-full min-h-0',
+              controlMeta.padding
+            ),
+            innerWrapper: 'w-full items-center bg-transparent border-none shadow-none h-full',
             input: [
+              'w-full',
               '!ml-0',
               'h-full',
               'py-0',
               'leading-normal',
               controlMeta.text,
-              'text-gray-900',
+              'text-white',
               'placeholder:text-gray-700',
               'placeholder:font-medium',
               'placeholder:opacity-100',
               'font-medium',
-              'group-data-[disabled=true]:text-gray-900',
-              'group-data-[disabled=true]:placeholder:text-gray-900',
-              'group-data-[focus=true]:placeholder:text-transparent'
+              'disabled:text-white/40',
+              'disabled:placeholder:text-white/20',
+              'focus:placeholder:text-transparent'
             ].join(' ')
           }
         }}
@@ -237,7 +234,7 @@ export function GdgDropdown({
             ))}
       </Autocomplete>
       {caption && (
-        <p className={cn('typo-c1 pl-2', hasError ? 'text-red' : 'text-gray-600')}>{caption}</p>
+        <p className={cn('typo-c1 pl-2', hasError ? 'text-red' : 'text-gray-400')}>{caption}</p>
       )}
     </div>
   )

@@ -3,10 +3,11 @@
 import { forwardRef, useId, type InputHTMLAttributes } from 'react'
 import { cn } from '@/utils/cn'
 import { Search } from 'lucide-react'
+import { CONTROL_META, getMobileWidthClass, getPcWidthClass } from './controlMeta'
 
 export interface GdgSearchFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   device?: 'pc' | 'mobile'
-  width?: 'full' | 'half'
+  width?: 'full' | 'half' | 'twoThirds'
   label?: string
 }
 
@@ -15,31 +16,37 @@ export const GdgSearchField = forwardRef<HTMLInputElement, GdgSearchFieldProps>(
     const generatedId = useId()
     const fieldId = id ?? generatedId
 
-    const isPcFull = device === 'pc' && width === 'full'
+    const isPc = device === 'pc'
+
+    // Determine specific width class based on device and design spec
+    const widthClass = isPc
+      ? width === 'full' ? 'w-280' : width === 'half' ? 'w-103' : 'w-fit'
+      : width === 'full' ? 'w-85.75' : width === 'twoThirds' ? 'w-56.5' : 'w-fit'
+    
+    const controlMeta = CONTROL_META[device].default
 
     return (
       <div
-        className={cn('flex flex-col gap-2', isPcFull ? 'w-full' : 'w-fit', className)}
+        className={cn('flex flex-col gap-2', width === 'full' ? 'w-full' : 'w-fit', className)}
         style={style}
       >
         {label && (
-          <span className="text-[14px] font-semibold uppercase tracking-[0.2em] text-white/80">
+          <span className="typo-s3 uppercase tracking-[0.2em] text-white/80">
             {label}
           </span>
         )}
         <label
           htmlFor={fieldId}
           className={cn(
-            'flex items-center rounded-full border transition-colors duration-150 focus-within:border-white overflow-hidden',
-            !rest.disabled ? 'border-gray-800 bg-black' : 'border-gray-400 bg-gray-400',
-            isPcFull ? 'h-[42px] w-[1120px] gap-4 px-4' : 'h-[44px] gap-3 px-4',
-            device === 'pc' && width === 'half' && 'w-full max-w-[412px]',
-            device === 'mobile' && width === 'full' && 'w-full max-w-[343px]',
-            device === 'mobile' && width === 'half' && 'w-full max-w-[226px]',
-            rest.disabled && 'text-gray-900 cursor-not-allowed'
+            'flex items-center rounded-full border transition-colors duration-150 overflow-hidden gap-3 px-4',
+            controlMeta.height,
+            widthClass,
+            !rest.disabled ? 'border-gray-800 bg-black' : 'border-gray-100 bg-gray-100',
+            rest.disabled && 'text-white/40 cursor-not-allowed'
           )}
         >
-          {isPcFull && <Search className="size-5 shrink-0 text-white" />}
+          {(isPc && width === 'full') && <Search className="size-5 shrink-0 text-white" />}
+          
           <input
             {...rest}
             type={rest.type ?? 'search'}
@@ -47,11 +54,12 @@ export const GdgSearchField = forwardRef<HTMLInputElement, GdgSearchFieldProps>(
             ref={ref}
             className={cn(
               'h-full min-w-0 flex-1 bg-transparent focus:outline-none text-white !m-0 py-0 leading-normal',
-              isPcFull ? 'typo-b2 placeholder:text-gray-700' : 'typo-b3 placeholder:text-gray-600',
-              rest.disabled && 'text-gray-900 placeholder:text-gray-900 cursor-not-allowed'
+              isPc && width === 'full' ? 'typo-pc-b2 placeholder:text-gray-700' : 'typo-m-b3 placeholder:text-gray-400',
+              rest.disabled && 'text-white/40 placeholder:text-white/20 cursor-not-allowed'
             )}
           />
-          {!isPcFull && <Search className="size-5 shrink-0 text-white" />}
+
+          {!(isPc && width === 'full') && <Search className="size-5 shrink-0 text-white" />}
         </label>
       </div>
     )

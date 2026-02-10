@@ -20,11 +20,6 @@ const EDGE_RADIUS: Record<'pc' | 'mobile', Record<'left' | 'right', string>> = {
   }
 }
 
-const WIDTH: Record<'pc' | 'mobile', string> = {
-  pc: 'min-w-[61px] px-[20px]',
-  mobile: 'min-w-[55px] px-[18px]'
-}
-
 const STATE_CLASS = {
   pressed: 'bg-red border-red text-white',
   default: 'bg-gray-100 border-gray-100 text-white',
@@ -48,8 +43,7 @@ export function GdgSegmentedButton({
       aria-pressed={pressed}
       {...rest}
       className={cn(
-        'inline-flex h-[44px] items-center justify-center border text-[16px] font-medium leading-[24px] transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40',
-        WIDTH[device],
+        'inline-flex h-11 items-center justify-center border text-base font-medium leading-6 transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40 font-pretendard whitespace-nowrap px-4',
         EDGE_RADIUS[device][edge],
         isDisabled ? STATE_CLASS.disabled : pressed ? STATE_CLASS.pressed : STATE_CLASS.default,
         isDisabled && 'pointer-events-none cursor-not-allowed',
