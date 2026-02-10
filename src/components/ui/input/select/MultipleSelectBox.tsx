@@ -31,7 +31,7 @@ const MultipleSelectBox = ({ label, labelVisible, options, maxSelection, selecte
       onOpenChange={handleOpenChange}
       classNames={{
         label: '!text-white text-xl pb-3 mobile:text-lg',
-        trigger: `rounded-3xl min-h-[57px] bg-[#1c1c1c] group-data-[focus=true]:bg-[#1c1c1c] data-[hover=true]:bg-[#1c1c1c]`,
+        trigger: `rounded-3xl bg-[#1c1c1c] group-data-[focus=true]:bg-[#1c1c1c] data-[hover=true]:bg-[#1c1c1c]`,
         value: 'text-lg mobile:text-base',
         popoverContent: 'bg-[#1c1c1c]',
         innerWrapper: 'pl-2',

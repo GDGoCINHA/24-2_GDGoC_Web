@@ -92,7 +92,7 @@ export default function MenuHeader() {
         {menuItems.map((item, index) => (
           <NavbarMenuItem key={`${item.name}-${index}`}>
             <Link
-              className={`w-full text-white ${index === 4 ? "text-red-500 font-bold" : ""}`}
+              className={`w-full text-white ${index === 4 ? "text-red-400 font-bold" : ""}`}
               href={item.href}
               size="lg"
               onPress={item.onClick}

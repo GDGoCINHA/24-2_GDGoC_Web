@@ -15,10 +15,10 @@ const HorizontalProgressBar = ({ step }) => {
   return (
     <div className="flex items-center relative mx-5 pc:hidden py-[40px] select-none">
       <div id="line" className="absolute flex items-center justify-center w-full h-full">
-        <div id="long-line-gray" className="absolute w-full bg-gray-500 h-1"></div>
+        <div id="long-line-gray" className="absolute w-full bg-gray-400 h-1"></div>
         <div
           id="long-line-red"
-          className="absolute left-0 bg-red-500 h-1 transition-all duration-500 ease-in-out"
+          className="absolute left-0 bg-red-400 h-1 transition-all duration-500 ease-in-out"
           style={{
             width: `${getWidthPercentage()}%`,
           }}
@@ -32,7 +32,7 @@ const HorizontalProgressBar = ({ step }) => {
           <div
             key={i}
             className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-sm transition-all duration-500 ease-in-out ${
-              step >= i ? "bg-red-500" : "bg-gray-500"
+              step >= i ? "bg-red-400" : "bg-gray-400"
             }`}
           >
             ✓
