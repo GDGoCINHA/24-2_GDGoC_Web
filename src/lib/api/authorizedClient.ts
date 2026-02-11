@@ -6,6 +6,8 @@ import axios, {
   type InternalAxiosRequestConfig
 } from 'axios'
 
+import { ACCESS_TOKEN_KEY, readStoredString } from '@/lib/auth/storage'
+
 type RetryableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean }
 
 export type AuthorizedRequestConfig = RetryableRequestConfig
@@ -46,6 +48,11 @@ export const createAuthorizedClient = ({
 
       if (!isFormData && !headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json')
+      }
+
+      const token = readStoredString(ACCESS_TOKEN_KEY)
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`)
       }
 
       config.headers = headers

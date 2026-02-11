@@ -16,9 +16,9 @@ export interface AuthUserPayload {
 
 export interface LoginExistingUserResponse {
   isNewUser: false
-  accessToken?: string
-  access_token?: string
-  user?: AuthUserPayload | null
+  accessToken: string
+  refreshToken: string
+  user: AuthUserPayload | null
 }
 
 export interface LoginNewUserResponse {
@@ -42,8 +42,8 @@ export interface SignupRequestPayload {
 }
 
 export interface SignupResponseBody {
-  accessToken?: string
-  access_token?: string
+  accessToken: string
+  refreshToken: string
   role?: string
   membershipStatus?: string
   user?: AuthUserPayload | null
@@ -51,8 +51,7 @@ export interface SignupResponseBody {
 
 export interface RefreshResponseBody {
   data?: Record<string, unknown>
-  accessToken?: string
-  access_token?: string
+  accessToken: string
   user?: AuthUserPayload | null
 }
 
@@ -90,19 +89,21 @@ export const signupWithProfile = (
     ...defaultConfig
   })
 
-export const requestAccessTokenRefresh = (): Promise<AxiosResponse<RefreshResponseBody>> =>
+export const requestAccessTokenRefresh = (
+  refreshToken: string
+): Promise<AxiosResponse<RefreshResponseBody>> =>
   axios.post(
     `${AUTH_BASE_URL}/refresh`,
-    {},
+    { refreshToken },
     {
       ...defaultConfig
     }
   )
 
-export const requestLogout = (): Promise<AxiosResponse<void>> =>
+export const requestLogout = (refreshToken?: string): Promise<AxiosResponse<void>> =>
   axios.post(
     `${AUTH_BASE_URL}/logout`,
-    {},
+    { refreshToken },
     {
       withCredentials: true,
       headers: defaultHeaders

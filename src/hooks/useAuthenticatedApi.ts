@@ -84,8 +84,8 @@ export const useAuthenticatedApi = () => {
       refreshPromiseRef.current = refreshAccessToken()
         .then((response) => {
           const data = unwrapApiResponse<RefreshResponseBody>(response.data)
-          if (data?.user) {
-            setUser(data.user)
+          if (data?.user && data.accessToken) {
+            setUser(data.user, data.accessToken)
           }
         })
         .finally(() => {
