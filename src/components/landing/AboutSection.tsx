@@ -79,32 +79,32 @@ export default function AboutSection() {
       <div className="flex flex-col items-center w-full h-full">
         <div className="text-white/90 text-[3.5vw] font-semibold mobile:text-[5vw] mt-40 mobile:mt-24 mobile:mx-[30px]">
           <span className="font-google-sans-flex font-normal mobile:text-3xl">
-            <span className="text-red-400 neon1 neon-text-sm">G</span>
-            <span className="text-green-400 neon1 neon-text-sm">D</span>
-            <span className="text-yellow-400 neon1 neon-text-sm">G</span>
-            <span className="text-blue-400 neon1 neon-text-sm">o</span>
-            <span className="text-red-400 neon1 neon-text-sm">C</span>
+            <span className="text-red neon1 neon-text-sm">G</span>
+            <span className="text-green neon1 neon-text-sm">D</span>
+            <span className="text-yellow neon1 neon-text-sm">G</span>
+            <span className="text-blue neon1 neon-text-sm">o</span>
+            <span className="text-red neon1 neon-text-sm">C</span>
             <span className="text-white ml-2 neon-text-sm">INHA</span>
           </span>
           , 어떤 곳인가요?
         </div>
         <div className="text-white space-y-4 font-semibold text-[2.5vw] mobile:text-xl flex flex-col items-center mt-20 gap-y-4 text-center">
           <p id="section2-text1" className="opacity-0">
-            <span className="text-red-400">개발</span>에 관심 있는 사람들이 모여{' '}
+            <span className="text-red">개발</span>에 관심 있는 사람들이 모여{' '}
             <br className="hidden mobile:inline" />
-            <span className="text-green-400">네트워킹</span> 하고,
+            <span className="text-green">네트워킹</span> 하고,
           </p>
           <p id="section2-text2" className="opacity-0">
             다양한 프로젝트에 참여하며 <br className="hidden mobile:inline" />
-            <span className="text-yellow-400">함께 성장</span>하는 공간입니다.
+            <span className="text-yellow">함께 성장</span>하는 공간입니다.
           </p>
           <p id="section2-text3" className="opacity-0">
             비개발자부터 숙련된 개발자까지 <br className="hidden mobile:inline" />
-            누구나 <span className="text-blue-400">함께</span>할 수 있습니다.
+            누구나 <span className="text-blue">함께</span>할 수 있습니다.
           </p>
           <p id="section2-text4" className="opacity-0">
             GDGoC라는 글로벌 IT 무대에서 <br className="hidden mobile:inline" />
-            끊임없이 기회를 찾고 <span className="text-red-400">성장</span>해보세요!
+            끊임없이 기회를 찾고 <span className="text-red">성장</span>해보세요!
           </p>
         </div>
       </div>
