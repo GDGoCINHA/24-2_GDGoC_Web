@@ -70,9 +70,10 @@ export function GdgDropdown({
     'flex h-9 items-center justify-between rounded-lg px-2 text-white outline-none transition-colors',
     controlMeta.text,
     'hover:bg-white hover:text-black',
-    'selected:bg-white selected:text-black selected:font-medium',
+    'selected:font-medium',
     'focus:bg-white focus:text-black',
-    '[&_[data-slot=selected-icon]]:text-black'
+    'hover:[&_[data-slot=selected-icon]]:text-black',
+    'focus:[&_[data-slot=selected-icon]]:text-black'
   )
   const [internalValue, setInternalValue] = useState(defaultValue ?? '')
   const currentValue = value ?? internalValue
@@ -201,7 +202,7 @@ export function GdgDropdown({
               'placeholder:opacity-100',
               'font-medium',
               'disabled:text-white/40',
-              'disabled:placeholder:text-white/20',
+              'disabled:placeholder:text-gray-700',
               'focus:placeholder:text-transparent'
             ].join(' ')
           }

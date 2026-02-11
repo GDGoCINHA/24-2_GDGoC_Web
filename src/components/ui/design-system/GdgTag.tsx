@@ -3,8 +3,11 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/utils/cn'
 
-export type GdgTagVariant = 'default' | 'active' | 'interactive' | 'disabled'
-export type GdgTagDevice = 'pc' | 'mobile'
+export const GDG_TAG_VARIANTS = ['default', 'active', 'interactive', 'disabled'] as const
+export type GdgTagVariant = (typeof GDG_TAG_VARIANTS)[number]
+
+export const GDG_TAG_DEVICES = ['pc', 'mobile'] as const
+export type GdgTagDevice = (typeof GDG_TAG_DEVICES)[number]
 
 export type GdgTagProps = {
   device?: GdgTagDevice

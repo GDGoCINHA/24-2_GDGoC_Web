@@ -3,10 +3,12 @@
 import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/utils/cn'
 
+export const GDG_CHECKBOX_SIZES = ['pc', 'mobile'] as const
+
 export type GdgCheckboxProps = {
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
-  size?: 'pc' | 'mobile'
+  size?: (typeof GDG_CHECKBOX_SIZES)[number]
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'>
 
 const SIZE_CLASS: Record<'pc' | 'mobile', string> = {

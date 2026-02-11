@@ -6,8 +6,18 @@ import { cn } from '@/utils/cn'
 import { getMobileWidthClass, getPcWidthClass, isWideOnlyWidth } from './controlMeta'
 import type { Device, PcWidthVariant, WidthToken } from './controlMeta'
 
-type ButtonSize = 'large' | 'small'
-type Variant = 'default' | 'active' | 'pressed' | 'disabled' | 'white'
+export const GDG_BUTTON_SIZES = ['large', 'small'] as const
+export type ButtonSize = (typeof GDG_BUTTON_SIZES)[number]
+
+export const GDG_BUTTON_VARIANTS = [
+  'default',
+  'active',
+  'pressed',
+  'disabled',
+  'white',
+  'bordered'
+] as const
+export type Variant = (typeof GDG_BUTTON_VARIANTS)[number]
 
 type ButtonLike = ButtonHTMLAttributes<HTMLButtonElement> & AnchorHTMLAttributes<HTMLAnchorElement>
 
@@ -39,7 +49,8 @@ const VARIANT_CLASS: Record<Variant, string> = {
   active: 'bg-red text-white border-red shadow-[0px_2px_50px_rgba(0,0,0,0.5)]',
   pressed: 'bg-red-400 text-white border-red',
   disabled: 'bg-gray-400 text-white/70 border-gray-400',
-  white: 'bg-white text-black border-white shadow-[0px_5px_35px_rgba(18,18,18,0.05)]'
+  white: 'bg-white text-black border-white shadow-[0px_5px_35px_rgba(18,18,18,0.05)]',
+  bordered: 'bg-black text-white border-gray-800 hover:border-gray-900 transition-colors'
 }
 
 export function GdgButton({

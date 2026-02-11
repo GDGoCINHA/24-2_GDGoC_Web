@@ -1,41 +1,41 @@
 'use client'
 
-import { useState } from 'react'
-import { GdgButton } from './GdgButton'
-import { GdgCheckbox } from './GdgCheckbox'
-import { GdgColorTag } from './GdgColorTag'
+import React, { useState } from 'react'
+import { GdgButton, GDG_BUTTON_SIZES, GDG_BUTTON_VARIANTS } from './GdgButton'
+import { GdgCheckbox, GDG_CHECKBOX_SIZES } from './GdgCheckbox'
+import {
+  GdgColorTag,
+  GDG_COLOR_TAG_COLORS,
+  GDG_COLOR_TAG_FILLS,
+  GDG_COLOR_TAG_SIZES
+} from './GdgColorTag'
 import { GdgDropdown, type GdgDropdownSize } from './GdgDropdown'
-import { GdgFileCard, GdgUploadButton } from './GdgFileCard'
-import { GdgInputField } from './GdgInputField'
+import {
+  GdgFileCard,
+  GdgUploadButton,
+  GDG_FILE_CARD_ACTIONS,
+  GDG_FILE_CARD_DEVICES
+} from './GdgFileCard'
+import { GdgInputField, GDG_INPUT_STATES } from './GdgInputField'
 import { GdgFieldContainer } from './GdgFieldContainer'
-import { GdgLogo } from './GdgLogo'
+import { GdgLogo, GDG_LOGO_MODES, GDG_LOGO_VARIANTS } from './GdgLogo'
 import { GdgGoogleLoginButton } from './GdgGoogleLoginButton'
 import { GdgMajorDropdown } from './GdgMajorDropdown'
 import { GdgRadio } from './GdgRadio'
-import { GdgSearchField } from './GdgSearchField'
-import { GdgSegmentedButton } from './GdgSegmentedButton'
-import { GdgTag } from './GdgTag'
-import { GdgTextarea } from './GdgTextarea'
-import Image from 'next/image'
+import { GdgSearchField, GDG_SEARCH_FIELD_WIDTHS } from './GdgSearchField'
+import {
+  GdgSegmentedButton,
+  GDG_SEGMENTED_BUTTON_DEVICES,
+  GDG_SEGMENTED_BUTTON_EDGES
+} from './GdgSegmentedButton'
+import { GdgTag, GDG_TAG_DEVICES, GDG_TAG_VARIANTS } from './GdgTag'
+import { GdgTextarea, GDG_TEXTAREA_DEVICES, GDG_TEXTAREA_STATES } from './GdgTextarea'
+import { GDG_MOBILE_WIDTHS, GDG_PC_NARROW_WIDTHS, GDG_PC_WIDE_WIDTHS } from './controlMeta'
 
-const BUTTON_DEVICES = ['pc', 'mobile'] as const
-const BUTTON_SIZES = ['large', 'small'] as const
-const BUTTON_VARIANTS = ['default', 'active', 'pressed', 'disabled'] as const
-
-const INPUT_STATES = ['available', 'error', 'disabled'] as const
 const INPUT_DENSITIES = ['default', 'mini'] as const
 
 const DROPDOWN_PC_WIDE_SIZES: GdgDropdownSize[] = ['mini', 'small', 'medium', 'full']
 const DROPDOWN_MOBILE_SIZES: GdgDropdownSize[] = ['small', 'medium', 'twoThirds', 'full']
-
-const TAG_VARIANTS = ['default', 'active', 'interactive', 'disabled'] as const
-const TAG_DEVICES = ['pc', 'mobile'] as const
-const COLOR_TAG_COLORS = ['red', 'blue', 'green', 'yellow', 'white'] as const
-const COLOR_TAG_FILLS = ['on', 'off', 'half'] as const
-const COLOR_TAG_SIZES = ['pc', 'mobile', 'mini'] as const
-
-const FILE_CARD_ACTIONS = ['remove', 'download', 'none'] as const
-const FILE_CARD_DEVICES = ['pc', 'mobile'] as const
 
 const dropdownOptions = [
   { id: 'opt-1', label: '옵션 1' },
@@ -72,11 +72,15 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export function DesignSystemShowcase() {
   const [majorPc, setMajorPc] = useState('')
   const [majorMobile, setMajorMobile] = useState('')
-  const [buttonState, setButtonState] = useState<Record<'pc' | 'mobile', { active: boolean; clicks: number }>>({
+  const [buttonState, setButtonState] = useState<
+    Record<'pc' | 'mobile', { active: boolean; clicks: number }>
+  >({
     pc: { active: false, clicks: 0 },
     mobile: { active: false, clicks: 0 }
   })
-  const [segmentedPressed, setSegmentedPressed] = useState<Record<'pc' | 'mobile', 'left' | 'right'>>({
+  const [segmentedPressed, setSegmentedPressed] = useState<
+    Record<'pc' | 'mobile', 'left' | 'right'>
+  >({
     pc: 'left',
     mobile: 'left'
   })
@@ -94,8 +98,8 @@ export function DesignSystemShowcase() {
       <h1 className="text-2xl font-semibold tracking-tight">Design System Showcase</h1>
       <Section title="Logo">
         <div className="grid gap-3 md:grid-cols-3">
-          {(['auto', 'pc', 'mobile'] as const).map((mode) =>
-            (['icon', 'short', 'long'] as const).map((variant) => (
+          {GDG_LOGO_MODES.map((mode) =>
+            GDG_LOGO_VARIANTS.map((variant) => (
               <div key={`${mode}-${variant}`} className="space-y-2">
                 <p className="mb-2 text-xs text-white/60">{`${mode} / ${variant}`}</p>
                 <GdgLogo mode={mode} variant={variant} />
@@ -108,7 +112,7 @@ export function DesignSystemShowcase() {
       <Section title="Button">
         <div className="space-y-4">
           <div className="grid gap-3 md:grid-cols-2">
-            {BUTTON_DEVICES.map((device) => (
+            {GDG_SEGMENTED_BUTTON_DEVICES.map((device) => (
               <div key={`interactive-${device}`} className="space-y-2">
                 <p className="mb-2 text-xs text-white/60">{`${device} / interactive`}</p>
                 <div className="flex items-center gap-2">
@@ -134,30 +138,85 @@ export function DesignSystemShowcase() {
             ))}
           </div>
           <div className="grid gap-6 md:grid-cols-2">
-          {BUTTON_DEVICES.map((device) =>
-            BUTTON_SIZES.map((size) => (
-              <div key={`${device}-${size}`} className="space-y-2">
-                <p className="mb-2 text-xs text-white/60 uppercase">{`${device} / ${size}`}</p>
-                <div className="flex flex-wrap gap-2 items-center">
-                  {BUTTON_VARIANTS.map((variant) => (
-                    <div key={`${device}-${size}-${variant}`} className="flex flex-col gap-1 items-center">
-                      <GdgButton 
-                        device={device} 
-                        size={size} 
-                        variant={variant}
+            {GDG_SEGMENTED_BUTTON_DEVICES.map((device) =>
+              GDG_BUTTON_SIZES.map((size) => (
+                <div key={`${device}-${size}`} className="space-y-2">
+                  <p className="mb-2 text-xs text-white/60 uppercase">{`${device} / ${size}`}</p>
+                  <div className="flex flex-wrap gap-2 items-center">
+                    {GDG_BUTTON_VARIANTS.filter((v) => v !== 'white').map((variant) => (
+                      <div
+                        key={`${device}-${size}-${variant}`}
+                        className="flex flex-col gap-1 items-center"
                       >
-                        {variant.toUpperCase()}
-                      </GdgButton>
-                      <span className="text-[10px] text-white/40">{variant}</span>
-                    </div>
-                  ))}
+                        <GdgButton
+                          device={device}
+                          size={size}
+                          variant={variant}
+                          widthToken="medium"
+                        >
+                          {variant.toUpperCase()}
+                        </GdgButton>
+                        <span className="text-[10px] text-white/40">{variant}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
           </div>
+
+          <div className="space-y-4 pt-4 border-t border-white/5">
+            <p className="text-xs text-white/60 font-semibold uppercase tracking-wider">
+              Width Tokens (PC Narrow)
+            </p>
+            <div className="flex flex-wrap gap-4 items-start">
+              {GDG_PC_NARROW_WIDTHS.map((width) => (
+                <div key={`pc-narrow-${width}`} className="space-y-1">
+                  <p className="text-[10px] text-white/40">{width}</p>
+                  <GdgButton device="pc" pcVariant="narrow" widthToken={width} size="small">
+                    {width}
+                  </GdgButton>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-white/5">
+            <p className="text-xs text-white/60 font-semibold uppercase tracking-wider">
+              Width Tokens (PC Wide)
+            </p>
+            <div className="flex flex-wrap gap-4 items-start">
+              {GDG_PC_WIDE_WIDTHS.map((width) => (
+                <div key={`pc-wide-${width}`} className="space-y-1">
+                  <p className="text-[10px] text-white/40">{width}</p>
+                  <GdgButton device="pc" pcVariant="wide" widthToken={width} size="small">
+                    {width}
+                  </GdgButton>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-white/5">
+            <p className="text-xs text-white/60 font-semibold uppercase tracking-wider">
+              Width Tokens (Mobile)
+            </p>
+            <div className="flex flex-wrap gap-4 items-start">
+              {GDG_MOBILE_WIDTHS.map((width) => (
+                <div key={`mobile-width-${width}`} className="space-y-1">
+                  <p className="text-[10px] text-white/40">{width}</p>
+                  <GdgButton device="mobile" widthToken={width} size="small">
+                    {width}
+                  </GdgButton>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="space-y-2 pt-4 border-t border-white/5">
-            <p className="text-xs text-white/60 font-semibold uppercase tracking-wider">Specialized: Google Login Button</p>
+            <p className="text-xs text-white/60 font-semibold uppercase tracking-wider">
+              Specialized: Google Login Button
+            </p>
             <div className="flex flex-wrap gap-6 items-start">
               <div className="space-y-2">
                 <p className="text-[10px] text-white/40">PC Style (300x52)</p>
@@ -174,35 +233,34 @@ export function DesignSystemShowcase() {
 
       <Section title="Segmented">
         <div className="grid gap-3 md:grid-cols-2">
-          {BUTTON_DEVICES.map((device) => (
+          {GDG_SEGMENTED_BUTTON_DEVICES.map((device) => (
             <div key={device} className="space-y-2">
               <p className="text-xs text-white/60">{device}</p>
               <div className="grid grid-flow-col auto-cols-fr gap-1 w-fit">
-                <GdgSegmentedButton
-                  device={device}
-                  edge="left"
-                  pressed={segmentedPressed[device] === 'left'}
-                  onClick={() => setSegmentedPressed((prev) => ({ ...prev, [device]: 'left' }))}
-                >
-                  Left
-                </GdgSegmentedButton>
-                <GdgSegmentedButton
-                  device={device}
-                  edge="right"
-                  pressed={segmentedPressed[device] === 'right'}
-                  onClick={() => setSegmentedPressed((prev) => ({ ...prev, [device]: 'right' }))}
-                >
-                  Right
-                </GdgSegmentedButton>
+                {GDG_SEGMENTED_BUTTON_EDGES.map((edge) => (
+                  <GdgSegmentedButton
+                    key={`${device}-${edge}`}
+                    device={device}
+                    edge={edge}
+                    pressed={segmentedPressed[device] === edge}
+                    onClick={() => setSegmentedPressed((prev) => ({ ...prev, [device]: edge }))}
+                  >
+                    {edge.charAt(0).toUpperCase() + edge.slice(1)}
+                  </GdgSegmentedButton>
+                ))}
               </div>
               <p className="typo-c1 text-gray-400">{`selected: ${segmentedPressed[device]}`}</p>
               <div className="grid grid-flow-col auto-cols-fr gap-1 w-fit">
-                <GdgSegmentedButton device={device} edge="left" disabled>
-                  Disabled
-                </GdgSegmentedButton>
-                <GdgSegmentedButton device={device} edge="right" disabled>
-                  Disabled
-                </GdgSegmentedButton>
+                {GDG_SEGMENTED_BUTTON_EDGES.map((edge) => (
+                  <GdgSegmentedButton
+                    key={`${device}-${edge}-disabled`}
+                    device={device}
+                    edge={edge}
+                    disabled
+                  >
+                    Disabled
+                  </GdgSegmentedButton>
+                ))}
               </div>
             </div>
           ))}
@@ -211,11 +269,11 @@ export function DesignSystemShowcase() {
 
       <Section title="Tag">
         <div className="space-y-4">
-          {TAG_DEVICES.map((device) => (
+          {GDG_TAG_DEVICES.map((device) => (
             <div key={device} className="space-y-2">
               <p className="text-xs text-white/60">{device}</p>
               <div className="flex flex-wrap gap-2">
-                {TAG_VARIANTS.map((variant) => (
+                {GDG_TAG_VARIANTS.map((variant) => (
                   <GdgTag key={`${device}-${variant}`} device={device} variant={variant}>
                     {variant}
                   </GdgTag>
@@ -226,14 +284,19 @@ export function DesignSystemShowcase() {
           <div className="space-y-3">
             <p className="text-xs text-white/60">color tag</p>
             <div className="space-y-4">
-              {COLOR_TAG_COLORS.map((color) => (
+              {GDG_COLOR_TAG_COLORS.map((color) => (
                 <div key={color} className="space-y-2">
                   <p className="text-xs uppercase tracking-[0.12em] text-white/50">{color}</p>
                   <div className="space-y-2">
-                    {COLOR_TAG_SIZES.map((size) => (
+                    {GDG_COLOR_TAG_SIZES.map((size) => (
                       <div key={`${color}-${size}`} className="flex flex-wrap gap-2">
-                        {COLOR_TAG_FILLS.map((fill) => (
-                          <GdgColorTag key={`${size}-${color}-${fill}`} size={size} color={color} fill={fill}>
+                        {GDG_COLOR_TAG_FILLS.map((fill) => (
+                          <GdgColorTag
+                            key={`${size}-${color}-${fill}`}
+                            size={size}
+                            color={color}
+                            fill={fill}
+                          >
                             {`${size}-${fill}`}
                           </GdgColorTag>
                         ))}
@@ -258,16 +321,16 @@ export function DesignSystemShowcase() {
               <GdgFieldContainer label="Required Field" required caption="Required asterisk shown">
                 <GdgInputField placeholder="Available state" />
               </GdgFieldContainer>
-              <GdgFieldContainer 
-                label="Success State" 
-                status="success" 
+              <GdgFieldContainer
+                label="Success State"
+                status="success"
                 statusMessage="Success message appears here"
               >
                 <GdgInputField placeholder="Available state" value="Correct Value" readOnly />
               </GdgFieldContainer>
-              <GdgFieldContainer 
-                label="Error State" 
-                status="error" 
+              <GdgFieldContainer
+                label="Error State"
+                status="error"
                 statusMessage="Error message appears here"
               >
                 <GdgInputField state="error" placeholder="Error state" />
@@ -278,8 +341,8 @@ export function DesignSystemShowcase() {
           <div className="space-y-2">
             <p className="text-xs text-white/60">pc / narrow widths</p>
             <div className="space-y-2">
-              {(['small', 'medium', 'twoThirds', 'full'] as const).map((width) =>
-                INPUT_STATES.map((state) => (
+              {GDG_PC_NARROW_WIDTHS.map((width) =>
+                GDG_INPUT_STATES.map((state) => (
                   <GdgInputField
                     key={`pc-narrow-${width}-${state}`}
                     device="pc"
@@ -299,8 +362,8 @@ export function DesignSystemShowcase() {
           <div className="space-y-2">
             <p className="text-xs text-white/60">pc / wide widths (mini 포함)</p>
             <div className="space-y-2">
-              {(['mini', 'small', 'quarter', 'medium', 'full'] as const).map((width) =>
-                INPUT_STATES.map((state) => (
+              {GDG_PC_WIDE_WIDTHS.map((width) =>
+                GDG_INPUT_STATES.map((state) => (
                   <GdgInputField
                     key={`pc-wide-${width}-${state}`}
                     device="pc"
@@ -321,8 +384,8 @@ export function DesignSystemShowcase() {
           <div className="space-y-2">
             <p className="text-xs text-white/60">mobile widths</p>
             <div className="space-y-2">
-              {(['small', 'medium', 'twoThirds', 'full'] as const).map((width) =>
-                INPUT_STATES.map((state) => (
+              {GDG_MOBILE_WIDTHS.map((width) =>
+                GDG_INPUT_STATES.map((state) => (
                   <GdgInputField
                     key={`mobile-${width}-${state}`}
                     device="mobile"
@@ -343,12 +406,12 @@ export function DesignSystemShowcase() {
 
       <Section title="Textarea">
         <div className="space-y-2">
-          {(['pc', 'mobile'] as const).map((device) =>
-            (['default', 'error', 'disabled'] as const).map((state) => (
+          {GDG_TEXTAREA_DEVICES.map((device) =>
+            GDG_TEXTAREA_STATES.map((state) => (
               <GdgTextarea
                 key={`${device}-${state}`}
                 device={device}
-                state={state === 'disabled' ? 'default' : state}
+                state={state}
                 disabled={state === 'disabled'}
                 label={`${device}-${state}`}
                 helperText="helper"
@@ -364,7 +427,7 @@ export function DesignSystemShowcase() {
         <div className="space-y-4">
           <div className="space-y-2">
             <p className="text-xs text-white/60">pc</p>
-            {(['full', 'half'] as const).map((width) => (
+            {GDG_SEARCH_FIELD_WIDTHS.filter((w) => w !== 'twoThirds').map((width) => (
               <div key={`pc-${width}`} className="space-y-2">
                 <p className="text-xs text-white/40">{`pc-${width}`}</p>
                 <GdgSearchField device="pc" width={width} placeholder="search" />
@@ -373,7 +436,7 @@ export function DesignSystemShowcase() {
           </div>
           <div className="space-y-2">
             <p className="text-xs text-white/60">mobile</p>
-            {(['full', 'twoThirds'] as const).map((width) => (
+            {GDG_SEARCH_FIELD_WIDTHS.filter((w) => w !== 'half').map((width) => (
               <div key={`mobile-${width}`} className="space-y-2">
                 <p className="text-xs text-white/40">{`mobile-${width}`}</p>
                 <GdgSearchField device="mobile" width={width} placeholder="search" />
@@ -444,6 +507,14 @@ export function DesignSystemShowcase() {
                 isInvalid
                 errorMessage="error"
               />
+              <GdgDropdown
+                device="mobile"
+                size="full"
+                label="auto-focus"
+                placeholder="Auto Focus"
+                options={dropdownOptions}
+                autoFocus
+              />
             </div>
           </div>
           <div className="grid gap-2 md:grid-cols-2">
@@ -455,16 +526,20 @@ export function DesignSystemShowcase() {
 
       <Section title="Checkbox & Radio">
         <div className="grid gap-3 md:grid-cols-2">
-          {(['pc', 'mobile'] as const).map((size) => (
+          {GDG_CHECKBOX_SIZES.map((size) => (
             <div key={size} className="space-y-2">
               <p className="text-xs text-white/60">{size}</p>
               <div className="flex flex-wrap gap-3">
                 <GdgCheckbox
                   size={size}
                   checked={checkboxChecked[size]}
-                  onCheckedChange={(checked) => setCheckboxChecked((prev) => ({ ...prev, [size]: checked }))}
+                  onCheckedChange={(checked) =>
+                    setCheckboxChecked((prev) => ({ ...prev, [size]: checked }))
+                  }
                 />
-                <p className="typo-c1 text-gray-400">{checkboxChecked[size] ? 'checked' : 'unchecked'}</p>
+                <p className="typo-c1 text-gray-400">
+                  {checkboxChecked[size] ? 'checked' : 'unchecked'}
+                </p>
                 <GdgCheckbox size={size} checked={false} disabled />
                 <GdgCheckbox size={size} checked disabled />
               </div>
@@ -489,32 +564,32 @@ export function DesignSystemShowcase() {
 
       <Section title="File">
         <div className="space-y-3">
-          {FILE_CARD_DEVICES.map((device) => (
+          {GDG_FILE_CARD_DEVICES.map((device) => (
             <div key={device} className="space-y-2">
               <p className="text-xs text-white/60">{device}</p>
               <div className="grid gap-2">
-                {FILE_CARD_ACTIONS.map((action) => (
+                {GDG_FILE_CARD_ACTIONS.map((action) => (
                   <GdgFileCard
                     key={`${device}-${action}-icon`}
-                    device={device}
+                    device={device as any}
                     fileName={`${device}-${action}.pdf`}
                     fileSize="1.2MB"
                     action={action}
                     showFileIcon
                   />
                 ))}
-                {FILE_CARD_ACTIONS.map((action) => (
+                {GDG_FILE_CARD_ACTIONS.map((action) => (
                   <GdgFileCard
                     key={`${device}-${action}-no-icon`}
-                    device={device}
+                    device={device as any}
                     fileName={`${device}-${action}-no-icon.pdf`}
                     fileSize="2.8MB"
                     action={action}
                     showFileIcon={false}
                   />
                 ))}
-                <GdgUploadButton device={device} />
-                <GdgUploadButton device={device} disabled />
+                <GdgUploadButton device={device as any} />
+                <GdgUploadButton device={device as any} disabled />
               </div>
             </div>
           ))}
