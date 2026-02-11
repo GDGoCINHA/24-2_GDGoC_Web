@@ -10,6 +10,7 @@ import {
   type ChangeEvent,
   type FormEvent
 } from 'react'
+import { useRouter } from 'next/navigation'
 
 import {
   GdgButton,
@@ -183,6 +184,7 @@ function TextareaField({
 }
 
 export default function RecruitCore() {
+  const router = useRouter()
   const { apiClient } = useAuthenticatedApi()
 
   const [currentStep, setCurrentStep] = useState<RecruitStep>(0)
@@ -249,10 +251,16 @@ export default function RecruitCore() {
           major: prev.major || payload.major || '',
           phone: formatPhoneNumberInput(prev.phone || payload.phone || '')
         }))
-      } catch (error) {
+      } catch (error: any) {
         if (!active) return
-        console.error('[코어 리크루팅] 기본 정보 불러오기에 실패했습니다.', error)
-        setPrefillError('기본 정보를 불러오지 못했습니다. 직접 입력해주세요.')
+        const errorCode = error.response?.data?.code
+        if (errorCode === 'ALREADY_APPLIED') {
+          alert('이미 지원이 완료되었습니다. 제출된 지원서는 마이페이지에서 확인하실 수 있습니다.')
+          router.replace('/recruit/core/completed')
+        } else {
+          console.error('[코어 리크루팅] 기본 정보 불러오기에 실패했습니다.', error)
+          setPrefillError('기본 정보를 불러오지 못했습니다. 직접 입력해주세요.')
+        }
       }
     }
 
@@ -388,9 +396,11 @@ export default function RecruitCore() {
 
       await apiClient.post('/recruit/core/applications', payload)
       alert('지원서가 제출되었습니다!')
+      router.replace('/recruit/core/completed')
     } catch (error: any) {
       if (error?.response?.status === 409) {
         alert('이미 지원이 완료되었습니다.')
+        router.replace('/recruit/core/completed')
       } else {
         alert('지원서 제출 중 오류가 발생했습니다.')
       }
@@ -616,9 +626,9 @@ export default function RecruitCore() {
                             <GdgButton
                               type="button"
                               device="pc"
-                              size="large"
-                              variant={selected ? 'active' : 'default'}
-                              fullWidth
+                              size="small"
+                              variant={selected ? 'pressed' : 'bordered'}
+                              widthToken="small"
                               onClick={() => handleTeamChange(team.id)}
                             >
                               {team.label}
@@ -628,9 +638,9 @@ export default function RecruitCore() {
                             <GdgButton
                               type="button"
                               device="mobile"
-                              size="large"
-                              variant={selected ? 'active' : 'default'}
-                              fullWidth
+                              size="small"
+                              variant={selected ? 'pressed' : 'bordered'}
+                              widthToken="medium"
                               onClick={() => handleTeamChange(team.id)}
                             >
                               {team.label}

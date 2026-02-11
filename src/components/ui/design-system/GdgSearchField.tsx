@@ -5,9 +5,12 @@ import { cn } from '@/utils/cn'
 import { Search } from 'lucide-react'
 import { CONTROL_META, getMobileWidthClass, getPcWidthClass } from './controlMeta'
 
+export const GDG_SEARCH_FIELD_DEVICES = ['pc', 'mobile'] as const
+export const GDG_SEARCH_FIELD_WIDTHS = ['full', 'half', 'twoThirds'] as const
+
 export interface GdgSearchFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  device?: 'pc' | 'mobile'
-  width?: 'full' | 'half' | 'twoThirds'
+  device?: (typeof GDG_SEARCH_FIELD_DEVICES)[number]
+  width?: (typeof GDG_SEARCH_FIELD_WIDTHS)[number]
   label?: string
 }
 
@@ -54,8 +57,8 @@ export const GdgSearchField = forwardRef<HTMLInputElement, GdgSearchFieldProps>(
             ref={ref}
             className={cn(
               'h-full min-w-0 flex-1 bg-transparent focus:outline-none text-white !m-0 py-0 leading-normal',
-              isPc && width === 'full' ? 'typo-pc-b2 placeholder:text-gray-700' : 'typo-m-b3 placeholder:text-gray-400',
-              rest.disabled && 'text-white/40 placeholder:text-white/20 cursor-not-allowed'
+              isPc && width === 'full' ? 'typo-pc-b2 placeholder:text-gray-700' : 'typo-m-b3 placeholder:text-gray-700',
+              rest.disabled && 'text-white/40 placeholder:text-gray-700 cursor-not-allowed'
             )}
           />
 

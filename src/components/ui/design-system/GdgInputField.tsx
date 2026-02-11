@@ -5,7 +5,8 @@ import { cn } from '@/utils/cn'
 import type { Device, PcWidthVariant, SizeToken, WidthToken } from './controlMeta'
 import { CONTROL_META, getMobileWidthClass, getPcWidthClass, isWideOnlyWidth } from './controlMeta'
 
-type InputState = 'available' | 'disabled' | 'error'
+export const GDG_INPUT_STATES = ['available', 'disabled', 'error'] as const
+export type InputState = (typeof GDG_INPUT_STATES)[number]
 
 const STATE_CLASS: Record<
   InputState,
@@ -24,13 +25,13 @@ const STATE_CLASS: Record<
   },
   error: {
     wrapper: 'border-red bg-black text-white',
-    input: 'text-white placeholder:text-red/50',
+    input: 'text-white placeholder:text-gray-700',
     adornment: 'text-red',
     helper: 'typo-c1 pl-2 text-red'
   },
   disabled: {
     wrapper: 'border-gray-400 bg-gray-400 text-gray-900 cursor-not-allowed',
-    input: 'text-gray-900 placeholder:text-gray-900 cursor-not-allowed',
+    input: 'text-gray-900 placeholder:text-gray-700 cursor-not-allowed',
     adornment: 'text-gray-900',
     helper: 'typo-c1 pl-2 text-gray-900'
   }

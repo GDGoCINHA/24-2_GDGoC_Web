@@ -3,9 +3,14 @@
 import type { ComponentPropsWithoutRef } from 'react'
 import { cn } from '@/utils/cn'
 
-export type GdgTagColor = 'red' | 'blue' | 'green' | 'yellow' | 'white'
-export type GdgTagFill = 'off' | 'on' | 'half'
-export type GdgTagSize = 'pc' | 'mobile' | 'mini'
+export const GDG_COLOR_TAG_COLORS = ['red', 'blue', 'green', 'yellow', 'white'] as const
+export type GdgTagColor = (typeof GDG_COLOR_TAG_COLORS)[number]
+
+export const GDG_COLOR_TAG_FILLS = ['off', 'on', 'half'] as const
+export type GdgTagFill = (typeof GDG_COLOR_TAG_FILLS)[number]
+
+export const GDG_COLOR_TAG_SIZES = ['pc', 'mobile', 'mini'] as const
+export type GdgTagSize = (typeof GDG_COLOR_TAG_SIZES)[number]
 
 const COLOR_META: Record<GdgTagColor, { fill: string; outline: string; half: string }> = {
   red: {

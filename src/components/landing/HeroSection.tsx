@@ -100,7 +100,7 @@ export default function HeroSection({ router }) {
           </p>
         </div>
         <Button
-          onPress={() => router.push('/recruit')}
+          onPress={() => router.push('/recruit/member')}
           radius="full"
           ref={buttonRef}
           className="opacity-0 mt-[41px] w-60 h-16 mobile:w-40 mobile:h-14 mobile:text-2xl bg-gradient-to-r from-red to-yellow text-white text-3xl relative group"

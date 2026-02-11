@@ -3,9 +3,12 @@
 import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/utils/cn'
 
+export const GDG_SEGMENTED_BUTTON_DEVICES = ['pc', 'mobile'] as const
+export const GDG_SEGMENTED_BUTTON_EDGES = ['left', 'right'] as const
+
 export type GdgSegmentedButtonProps = {
-  device?: 'pc' | 'mobile'
-  edge?: 'left' | 'right'
+  device?: (typeof GDG_SEGMENTED_BUTTON_DEVICES)[number]
+  edge?: (typeof GDG_SEGMENTED_BUTTON_EDGES)[number]
   pressed?: boolean
 } & ButtonHTMLAttributes<HTMLButtonElement>
 

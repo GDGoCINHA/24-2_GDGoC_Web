@@ -12,7 +12,7 @@ export default function sitemap() {
             priority: 1,
         },
         {
-            url: `${baseUrl}/recruit`,
+            url: `${baseUrl}/recruit/member`,
             lastModified: currentDate,
             changeFrequency: 'weekly',
             priority: 0.8,

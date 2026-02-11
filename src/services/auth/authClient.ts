@@ -38,6 +38,7 @@ export interface SignupRequestPayload {
   studentId: string
   phoneNumber: string
   major: string
+  image?: string
 }
 
 export interface SignupResponseBody {

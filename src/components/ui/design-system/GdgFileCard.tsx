@@ -4,10 +4,14 @@ import Image from 'next/image'
 import { type ComponentPropsWithoutRef, type MouseEventHandler } from 'react'
 import { cn } from '@/utils/cn'
 
-export type GdgFileCardAction = 'remove' | 'download' | 'none'
+export const GDG_FILE_CARD_ACTIONS = ['remove', 'download', 'none'] as const
+export type GdgFileCardAction = (typeof GDG_FILE_CARD_ACTIONS)[number]
+
+export const GDG_FILE_CARD_DEVICES = ['pc', 'mobile', 'auto'] as const
+export type GdgFileCardDevice = (typeof GDG_FILE_CARD_DEVICES)[number]
 
 export interface GdgFileCardProps extends ComponentPropsWithoutRef<'div'> {
-  device?: 'pc' | 'mobile' | 'auto'
+  device?: GdgFileCardDevice
   fileName: string
   fileSize?: string
   action?: GdgFileCardAction

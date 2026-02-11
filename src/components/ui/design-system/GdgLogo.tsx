@@ -7,8 +7,11 @@ import gdgocMobileLogo from '@public/icons/gdgocIcon/mobile.svg'
 
 import { cn } from '@/utils/cn'
 
-type LogoMode = 'auto' | 'pc' | 'mobile'
-type LogoVariant = 'icon' | 'short' | 'long'
+export const GDG_LOGO_MODES = ['auto', 'pc', 'mobile'] as const
+export type LogoMode = (typeof GDG_LOGO_MODES)[number]
+
+export const GDG_LOGO_VARIANTS = ['icon', 'short', 'long'] as const
+export type LogoVariant = (typeof GDG_LOGO_VARIANTS)[number]
 
 const LOGO_ASSETS = {
   pc: {

@@ -29,7 +29,7 @@ import {
   toPhoneDigits
 } from '@/utils/phoneNumber'
 
-const DEFAULT_FALLBACK_ROUTE = '/main'
+const DEFAULT_FALLBACK_ROUTE = '/'
 const STUDENT_ID_PATTERN = /^12\d{6}$/
 
 const getSafeNextUrl = (raw: string | null): string => {
@@ -253,7 +253,8 @@ export default function SignupPage() {
         name: name.trim(),
         studentId: studentId.trim(),
         phoneNumber: phoneDigits,
-        major
+        major,
+        image: pendingInfo.picture
       })
 
       const data = unwrapApiResponse<SignupResponseBody>(response.data)

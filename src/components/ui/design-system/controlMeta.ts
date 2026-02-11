@@ -1,9 +1,13 @@
 export type Device = 'pc' | 'mobile'
 
+export const GDG_PC_NARROW_WIDTHS = ['small', 'medium', 'oneThird', 'twoThirds', 'full'] as const
+export const GDG_PC_WIDE_WIDTHS = ['mini', 'small', 'quarter', 'medium', 'full'] as const
+export const GDG_MOBILE_WIDTHS = ['small', 'medium', 'twoThirds', 'full'] as const
+
 export type PcWidthVariant = 'narrow' | 'wide'
-export type PcNarrowWidthToken = 'full' | 'twoThirds' | 'oneThird' | 'medium' | 'small'
-export type PcWideWidthToken = 'mini' | 'small' | 'quarter' | 'medium' | 'full'
-export type MobileWidthToken = 'full' | 'twoThirds' | 'oneThird' | 'medium' | 'small'
+export type PcNarrowWidthToken = (typeof GDG_PC_NARROW_WIDTHS)[number]
+export type PcWideWidthToken = (typeof GDG_PC_WIDE_WIDTHS)[number]
+export type MobileWidthToken = (typeof GDG_MOBILE_WIDTHS)[number]
 export type WidthToken = PcNarrowWidthToken | PcWideWidthToken | MobileWidthToken
 export type SizeToken = 'default' | 'mini'
 
@@ -27,7 +31,6 @@ export const PC_WIDTH_META = {
 export const MOBILE_WIDTH_META = {
   small: 'w-27.25',
   medium: 'w-42',
-  oneThird: 'w-27.25',
   twoThirds: 'w-56.5',
   full: 'w-85.75'
 } as const

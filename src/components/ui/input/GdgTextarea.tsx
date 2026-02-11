@@ -54,7 +54,7 @@ export function GdgTextarea({ classNames, radius, ...props }: GdgTextareaProps) 
             'mobile:text-[14px]',
             'mobile:leading-[20px]',
             'group-data-[disabled=true]:text-gray-900',
-            'group-data-[disabled=true]:placeholder:text-gray-900',
+            'group-data-[disabled=true]:placeholder:text-gray-700',
             'group-data-[focus=true]:placeholder:text-transparent'
           ].join(' '),
           classNames?.input

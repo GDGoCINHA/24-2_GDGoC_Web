@@ -17,7 +17,7 @@ function CTASection({ router }) {
             </div>
             <div className='flex flex-row mt-32 mb-96 mobile:mb-60 w-full justify-center items-center space-x-3'>
             <Button
-                onPress={() => router.push('/recruit')}
+                onPress={() => router.push('/recruit/member')}
                 radius='full'
                 className='w-64 max-w-full h-14 mobile:w-40 mobile:h-12 mobile:text-2xl bg-gradient-to-r from-red to-yellow text-white text-3xl relative group'
             >
