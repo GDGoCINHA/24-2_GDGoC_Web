@@ -211,10 +211,11 @@ export default function SignupPage() {
     const candidate = phoneNumber.trim()
     if (!candidate || !isPhoneNumberFormatValid(candidate)) return
 
-    setPhoneCheckState({ status: 'checking', checkedValue: candidate })
+    const digits = toPhoneDigits(candidate)
+    setPhoneCheckState({ status: 'checking', checkedValue: digits })
 
     try {
-      const response = await checkPhoneNumberDuplicated(candidate)
+      const response = await checkPhoneNumberDuplicated(digits)
       const data = unwrapApiResponse<DuplicateCheckResponseBody>(response.data)
       if (data?.isExists) {
         setPhoneCheckState({
