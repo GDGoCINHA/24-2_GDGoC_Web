@@ -8,7 +8,7 @@ import { cn } from '@/utils/cn'
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-2 w-full max-w-[550px]">
-      <h3 className="typo-s3 text-white pl-2">{title}</h3>
+      <h2 className="typo-s2 typo-m-s1 text-white pl-2">{title}</h2>
       <div className="flex flex-col gap-4 bg-gray-100 rounded-xl p-4 w-full">{children}</div>
     </div>
   )
@@ -53,15 +53,15 @@ function BulletPoint({ children }: { children: React.ReactNode }) {
 export default function RecruitSubmit() {
   return (
     <main className="min-h-screen bg-black overflow-x-hidden">
-      <div className="relative z-10 flex flex-col items-center pt-18 pb-32 mobile:pt-12 mobile:pb-24 px-4 gap-10">
+      <div className="relative z-10 pt-18 pb-32 mobile:pt-12 mobile:pb-24 px-4 layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-10">
         {/* Header */}
-        <div className="flex items-center gap-3 mobile:gap-2">
+        <div className="col-span-4 flex items-center gap-3 mobile:gap-2">
           <GdgLogo mode="auto" />
           <h1 className="typo-h3 text-white mobile:typo-m-h3">GDGoC Inha Univ. 모집 안내</h1>
         </div>
 
         {/* Content Sections */}
-        <div className="flex flex-col gap-10 w-full items-center">
+        <div className="col-span-4 flex flex-col gap-10 w-full">
           {/* 모집 일정 */}
           <Section title="모집 일정">
             <InfoRow
@@ -198,7 +198,7 @@ export default function RecruitSubmit() {
           </div>
 
           <Link
-            href="/core-recruit"
+            href="/recruit/core"
             className="inline-flex items-center justify-center rounded-full bg-red px-12 py-3.5 text-white font-bold text-[14px] leading-[20px] hover:bg-red-400 transition-colors shadow-[0px_2px_50px_rgba(0,0,0,0.35)]"
           >
             운영진(CORE) 지원하러 가기

@@ -25,7 +25,7 @@ export default function robots() {
                     '/hooks/',
                     '/mock/',
                     '/utils/',
-                    '/recruit/'
+                    '/recruit/member/'
                 ],
                 crawlDelay: 5,
             },

@@ -18,7 +18,7 @@ import {
 import { PENDING_SIGNUP_STORAGE_KEY, type PendingSignupPayload } from '@/constant/auth'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
 
-const DEFAULT_FALLBACK_ROUTE = '/main'
+const DEFAULT_FALLBACK_ROUTE = '/'
 
 const getSafeNextUrl = (raw: string | null): string => {
   if (!raw) return DEFAULT_FALLBACK_ROUTE
@@ -235,10 +235,12 @@ export default function LoginPage() {
                 GDGoC INHA 홈페이지를 이용하려면 로그인하세요.
               </p>
             </div>
-            <GdgGoogleLoginButton device="pc" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
-            <div className="space-y-1 typo-c1 text-gray-400">
-              <p>@inha.edu 계정만 사용 가능합니다</p>
-              {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
+            <div className="flex flex-col items-center gap-2">
+              <GdgGoogleLoginButton device="pc" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
+              <div className="space-y-1 typo-c1 text-gray-400">
+                <p>@inha.edu 계정만 사용 가능합니다</p>
+                {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
+              </div>
             </div>
           </div>
         </div>
@@ -262,10 +264,12 @@ export default function LoginPage() {
                 GDGoC INHA 홈페이지를 이용하려면 로그인하세요.
               </p>
             </div>
-            <GdgGoogleLoginButton device="mobile" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
-            <div className="space-y-1 typo-m-c2 text-gray-400">
-              <p>@inha.edu 계정만 사용 가능합니다</p>
-              {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
+            <div className="flex flex-col items-center gap-2">
+              <GdgGoogleLoginButton device="mobile" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
+              <div className="space-y-1 typo-m-c2 text-gray-400">
+                <p>@inha.edu 계정만 사용 가능합니다</p>
+                {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
+              </div>
             </div>
           </div>
         </div>
