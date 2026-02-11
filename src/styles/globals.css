@@ -82,799 +82,829 @@
 }
 
 /* ========================================================================
-   Typography Utilities
+   Typography Utilities (Tailwind v4 @utility standard)
    ======================================================================== */
-@layer utilities {
-    input:-webkit-autofill {
-        -webkit-text-fill-color: white;
-    }
 
-    /* Unified Pretendard typography tokens */
-    .typo-d1,
-    .typo-pc-d1 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 120px;
-        font-weight: 800;
-        line-height: 140px;
-        letter-spacing: 0;
-    }
+@utility typo-d1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 120px;
+    font-weight: 800;
+    line-height: 140px;
+    letter-spacing: 0;
+}
+@utility typo-pc-d1 { @apply typo-d1; }
 
-    .typo-d2,
-    .typo-pc-d2 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 80px;
-        font-weight: 800;
-        line-height: 96px;
-        letter-spacing: 0;
-    }
+@utility typo-d2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 80px;
+    font-weight: 800;
+    line-height: 96px;
+    letter-spacing: 0;
+}
+@utility typo-pc-d2 { @apply typo-d2; }
 
-    .typo-h1,
-    .typo-pc-h1 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 48px;
-        font-weight: 800;
-        line-height: 64px;
-        letter-spacing: 0;
-    }
-
-    .typo-h2,
-    .typo-pc-h2 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 36px;
-        font-weight: 800;
-        line-height: 48px;
-        letter-spacing: 0;
-    }
-
-    .typo-h3,
-    .typo-pc-h3 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 28px;
-        font-weight: 800;
-        line-height: 38px;
-        letter-spacing: 0;
-    }
-
-    .typo-h4,
-    .typo-pc-h4 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 24px;
-        font-weight: 800;
-        line-height: 34px;
-        letter-spacing: 0;
-    }
-
-    .typo-h5,
-    .typo-pc-h5 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 20px;
-        font-weight: 800;
-        line-height: 28px;
-        letter-spacing: 0;
-    }
-
-    .typo-s1,
-    .typo-pc-s1 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 30px;
-        letter-spacing: 0;
-    }
-
-    .typo-s2,
-    .typo-pc-s2 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 18px;
-        font-weight: 700;
-        line-height: 26px;
-        letter-spacing: 0;
-    }
-
-    .typo-s3,
-    .typo-pc-s3 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 24px;
-        letter-spacing: 0;
-    }
-
-    .typo-b1,
-    .typo-pc-b1 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 18px;
-        font-weight: 500;
-        line-height: 28px;
-        letter-spacing: 0;
-    }
-
-    .typo-b2,
-    .typo-pc-b2 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 24px;
-        letter-spacing: 0;
-    }
-
-    .typo-b3,
-    .typo-pc-b3 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
-        letter-spacing: 0;
-    }
-
-    .typo-c1,
-    .typo-pc-c1 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 18px;
-        letter-spacing: 0;
-    }
-
-    .typo-c2,
-    .typo-pc-c2 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 11px;
-        font-weight: 500;
-        line-height: 14px;
-        letter-spacing: 0;
-    }
-
-    .typo-m-h1 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-h1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 64px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 24px;
         font-weight: 700;
         line-height: 34px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-h1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 64px;
+    letter-spacing: 0;
+}
 
-    .typo-m-h2 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-h2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 48px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 20px;
         font-weight: 700;
         line-height: 30px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-h2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 48px;
+    letter-spacing: 0;
+}
 
-    .typo-m-h3 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-h3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 38px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 18px;
         font-weight: 700;
         line-height: 26px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-h3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 38px;
+    letter-spacing: 0;
+}
 
-    .typo-m-h4 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-h4 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 34px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 16px;
         font-weight: 700;
         line-height: 24px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-h4 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 34px;
+    letter-spacing: 0;
+}
 
-    .typo-m-h5 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-h5 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 28px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 14px;
         font-weight: 700;
         line-height: 20px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-h5 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 28px;
+    letter-spacing: 0;
+}
 
-    .typo-m-s1 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-s1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 16px;
         font-weight: 700;
         line-height: 24px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-s1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
+    letter-spacing: 0;
+}
 
-    .typo-m-s2 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-s2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 14px;
         font-weight: 700;
         line-height: 20px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-s2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 0;
+}
 
-    .typo-m-s3 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-s3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 12px;
         font-weight: 700;
         line-height: 18px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-s3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+}
 
-    .typo-m-b1 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-b1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 18px;
         font-weight: 500;
         line-height: 26px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-b1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0;
+}
 
-    .typo-m-b2 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-b2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 16px;
         font-weight: 500;
         line-height: 24px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-b2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0;
+}
 
-    .typo-m-b3 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-b3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 14px;
         font-weight: 500;
         line-height: 20px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-b3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+}
 
-    .typo-m-c1 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-c1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 12px;
         font-weight: 500;
         line-height: 18px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-c1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0;
+}
 
-    .typo-m-c2 {
-        font-family: var(--font-pretendard), sans-serif;
+@utility typo-c2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 11px;
         font-weight: 500;
         line-height: 14px;
-        letter-spacing: 0;
     }
+}
+@utility typo-pc-c2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-d1,
-    .typo-gsf-pc-d1 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 128px;
-        font-weight: 800;
-        line-height: 140px;
-        letter-spacing: 0;
-    }
+/* Mobile specific Pretendard tokens */
+@utility typo-m-h1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 34px;
+    letter-spacing: 0;
+}
+@utility typo-m-h2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
+    letter-spacing: 0;
+}
+@utility typo-m-h3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 0;
+}
+@utility typo-m-h4 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+@utility typo-m-h5 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+@utility typo-m-s1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+@utility typo-m-s2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+@utility typo-m-s3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+    letter-spacing: 0;
+}
+@utility typo-m-b1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 26px;
+    letter-spacing: 0;
+}
+@utility typo-m-b2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+@utility typo-m-b3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+@utility typo-m-c1 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 0;
+}
+@utility typo-m-c2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-d2,
-    .typo-gsf-pc-d2 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 88px;
-        font-weight: 800;
-        line-height: 100px;
-        letter-spacing: 0;
-    }
+/* Google Sans Flex typography tokens */
+@utility typo-gsf-d1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 128px;
+    font-weight: 800;
+    line-height: 140px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-pc-d1 { @apply typo-gsf-d1; }
 
-    .typo-gsf-h1,
-    .typo-gsf-pc-h1 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 52px;
-        font-weight: 800;
-        line-height: 64px;
-        letter-spacing: 0;
-    }
+@utility typo-gsf-d2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 88px;
+    font-weight: 800;
+    line-height: 100px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-pc-d2 { @apply typo-gsf-d2; }
 
-    .typo-gsf-h2,
-    .typo-gsf-pc-h2 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 38px;
-        font-weight: 800;
-        line-height: 48px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-h3,
-    .typo-gsf-pc-h3 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 30px;
-        font-weight: 800;
-        line-height: 40px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-h4,
-    .typo-gsf-pc-h4 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 24px;
-        font-weight: 800;
-        line-height: 32px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-h5,
-    .typo-gsf-pc-h5 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 20px;
-        font-weight: 800;
-        line-height: 28px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-s1,
-    .typo-gsf-pc-s1 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 20px;
-        font-weight: 700;
-        line-height: 30px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-s2,
-    .typo-gsf-pc-s2 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 18px;
-        font-weight: 700;
-        line-height: 26px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-s3,
-    .typo-gsf-pc-s3 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 22px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-m-h1 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-h1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 64px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 26px;
         font-weight: 700;
         line-height: 34px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-h1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 64px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-h2 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-h2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 48px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 22px;
         font-weight: 700;
         line-height: 28px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-h2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 48px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-h3 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-h3 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 40px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 18px;
         font-weight: 700;
         line-height: 24px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-h3 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 40px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-h4 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-h4 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 32px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 16px;
         font-weight: 700;
         line-height: 22px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-h4 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 32px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-h5 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-h5 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 28px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 14px;
         font-weight: 700;
         line-height: 20px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-h5 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 28px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-s1 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-s1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 16px;
         font-weight: 700;
         line-height: 24px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-s1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 30px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-s2 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-s2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 14px;
         font-weight: 700;
         line-height: 20px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-s2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-s3 {
-        font-family: var(--font-google-sans-flex), sans-serif;
+@utility typo-gsf-s3 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0;
+    @media (max-width: 48rem) {
         font-size: 13px;
         font-weight: 700;
         line-height: 18px;
-        letter-spacing: 0;
     }
+}
+@utility typo-gsf-pc-s3 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-b1 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 18px;
-        font-weight: 500;
-        line-height: 26px;
-        letter-spacing: 0;
-    }
+/* Mobile specific Google Sans Flex tokens */
+@utility typo-gsf-m-h1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 34px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-h2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 28px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-h3 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-h4 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-h5 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-s1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-s2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-s3 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 18px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-b1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 26px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-b2 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-b3 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-c1 {
+    font-family: var(--font-google-sans-flex), sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    letter-spacing: 0;
+}
+@utility typo-gsf-m-c2 {
+    font-family: var(--font-pretendard), sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0;
+}
 
-    .typo-gsf-m-b2 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 24px;
-        letter-spacing: 0;
-    }
+@utility input-autofill {
+    -webkit-text-fill-color: white;
+}
 
-    .typo-gsf-m-b3 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
-        letter-spacing: 0;
-    }
+/* ====================================================================
+   Layout Grid Utilities
+   ==================================================================== */
+@utility layout-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns, 12), minmax(0, 1fr));
+    column-gap: var(--grid-gutter, 20px);
+    width: var(--grid-width, auto);
+    margin-inline: var(--grid-margin-inline, 0);
+}
 
-    .typo-gsf-m-c1 {
-        font-family: var(--font-google-sans-flex), sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        line-height: 16px;
-        letter-spacing: 0;
-    }
-
-    .typo-gsf-m-c2 {
-        font-family: var(--font-pretendard), sans-serif;
-        font-size: 11px;
-        font-weight: 500;
-        line-height: 14px;
-        letter-spacing: 0;
-    }
-
-    @media (max-width: 48rem) {
-        .typo-h1 {
-            font-size: 24px;
-            font-weight: 700;
-            line-height: 34px;
-        }
-
-        .typo-h2 {
-            font-size: 20px;
-            font-weight: 700;
-            line-height: 30px;
-        }
-
-        .typo-h3 {
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 26px;
-        }
-
-        .typo-h4 {
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 24px;
-        }
-
-        .typo-h5 {
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 20px;
-        }
-
-        .typo-s1 {
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 24px;
-        }
-
-        .typo-s2 {
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 20px;
-        }
-
-        .typo-s3 {
-            font-size: 12px;
-            font-weight: 700;
-            line-height: 18px;
-        }
-
-        .typo-b1 {
-            font-size: 18px;
-            font-weight: 500;
-            line-height: 26px;
-        }
-
-        .typo-b2 {
-            font-size: 16px;
-            font-weight: 500;
-            line-height: 24px;
-        }
-
-        .typo-b3 {
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 20px;
-        }
-
-        .typo-c1 {
-            font-size: 12px;
-            font-weight: 500;
-            line-height: 18px;
-        }
-
-        .typo-c2 {
-            font-size: 11px;
-            font-weight: 500;
-            line-height: 14px;
-        }
-
-        .typo-gsf-h1 {
-            font-size: 26px;
-            font-weight: 700;
-            line-height: 34px;
-        }
-
-        .typo-gsf-h2 {
-            font-size: 22px;
-            font-weight: 700;
-            line-height: 28px;
-        }
-
-        .typo-gsf-h3 {
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 24px;
-        }
-
-        .typo-gsf-h4 {
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 22px;
-        }
-
-        .typo-gsf-h5 {
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 20px;
-        }
-
-        .typo-gsf-s1 {
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 24px;
-        }
-
-        .typo-gsf-s2 {
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 20px;
-        }
-
-        .typo-gsf-s3 {
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 18px;
-        }
-
-        .typo-gsf-b1 {
-            font-size: 18px;
-            font-weight: 500;
-            line-height: 26px;
-        }
-
-        .typo-gsf-b2 {
-            font-size: 16px;
-            font-weight: 500;
-            line-height: 24px;
-        }
-
-        .typo-gsf-b3 {
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 20px;
-        }
-
-        .typo-gsf-c1 {
-            font-size: 12px;
-            font-weight: 500;
-            line-height: 16px;
-        }
-
-        .typo-gsf-c2 {
-            font-size: 11px;
-            font-weight: 500;
-            line-height: 14px;
-        }
-    }
-
-    /* ====================================================================
-       Layout Grid Utilities
-       ==================================================================== */
-    .layout-grid {
-        display: grid;
-        grid-template-columns: repeat(var(--grid-columns, 12), minmax(0, 1fr));
-        column-gap: var(--grid-gutter, 20px);
-        width: var(--grid-width, auto);
-        margin-inline: var(--grid-margin-inline, 0);
-    }
-
-    .layout-grid--wide {
-        --grid-width: min(100%, 343px);
-        --grid-margin-inline: auto;
-        --grid-gutter: 8px;
-    }
-
-    .layout-grid--narrow {
-        --grid-width: min(100%, 343px);
-        --grid-margin-inline: auto;
-        --grid-gutter: 8px;
-    }
-
-    .layout-grid--mobile {
-        --grid-width: min(100%, 343px);
-        --grid-margin-inline: auto;
-        --grid-gutter: 8px;
-    }
-
-    .layout-grid--wide-screen {
-        --grid-width: min(100%, 343px);
-        --grid-margin-inline: auto;
-        --grid-gutter: 8px;
-    }
-
-    .layout-grid--narrow-screen {
-        --grid-width: min(100%, 343px);
-        --grid-margin-inline: auto;
-        --grid-gutter: 8px;
-    }
-
-    .layout-grid--12 {
-        --grid-columns: 12;
-    }
-
-    .layout-grid--8 {
-        --grid-columns: 8;
-    }
-
-    .layout-grid--4 {
-        --grid-columns: 4;
-    }
-
-    .layout-grid--3 {
-        --grid-columns: 3;
-    }
-
-    .layout-grid--2 {
-        --grid-columns: 2;
-    }
-
-    /* ====================================================================
-       Grid Showcase Helpers
-       ==================================================================== */
-    .ds-grid-panel {
-        display: grid;
-        gap: 24px;
-    }
-
+@utility layout-grid--wide {
+    --grid-width: min(100%, 343px);
+    --grid-margin-inline: auto;
+    --grid-gutter: 8px;
     @media (min-width: 48rem) {
-        .layout-grid--wide {
-            --grid-width: min(100% - 160px, 1120px);
-            --grid-gutter: 20px;
-        }
-
-        .layout-grid--narrow {
-            --grid-width: min(100% - 32px, 550px);
-            --grid-gutter: 20px;
-        }
-
-        .layout-grid--wide-screen {
-            --grid-width: min(100% - 160px, 1120px);
-            --grid-gutter: 20px;
-        }
-
-        .layout-grid--narrow-screen {
-            --grid-width: min(100% - 32px, 550px);
-            --grid-gutter: 20px;
-        }
-    }
-
-    @media (min-width: 75rem) {
-        .ds-grid-panel {
-            grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
-            align-items: flex-start;
-        }
-    }
-
-    .ds-grid-heading {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        align-items: center;
-    }
-
-    .ds-grid-badge {
-        border-radius: 999px;
-        border: 1px solid color-mix(in srgb, var(--color-white) 20%, transparent);
-        padding: 2px 12px;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--color-white);
-    }
-
-    .ds-grid-card {
-        border-radius: 20px;
-        border: 1px solid color-mix(in srgb, var(--color-white) 12%, transparent);
-        background: color-mix(in srgb, var(--color-white) 4%, transparent);
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .ds-grid-viewport {
-        --grid-count: 12;
-        --grid-frame-width: 80rem;
-        --grid-content-width: 70rem;
+        --grid-width: min(100% - 160px, 1120px);
         --grid-gutter: 20px;
-        --grid-height: 24rem;
-        --grid-column-color: color-mix(in srgb, var(--color-red) 60%, transparent);
-        border-radius: 24px;
-        border: 1px solid color-mix(in srgb, var(--color-white) 10%, transparent);
-        background: color-mix(in srgb, var(--color-white) 3%, transparent);
-        padding: clamp(16px, 3vw, 24px);
-        width: min(100%, var(--grid-frame-width));
-        margin-inline: auto;
     }
+}
 
-    .ds-grid-viewport[data-device="mobile"] {
+@utility layout-grid--narrow {
+    --grid-width: min(100%, 343px);
+    --grid-margin-inline: auto;
+    --grid-gutter: 8px;
+    @media (min-width: 48rem) {
+        --grid-width: min(100% - 32px, 550px);
+        --grid-gutter: 20px;
+    }
+}
+
+@utility layout-grid--mobile {
+    --grid-width: min(100%, 343px);
+    --grid-margin-inline: auto;
+    --grid-gutter: 8px;
+}
+
+@utility layout-grid--wide-screen {
+    --grid-width: min(100%, 343px);
+    --grid-margin-inline: auto;
+    --grid-gutter: 8px;
+    @media (min-width: 48rem) {
+        --grid-width: min(100% - 160px, 1120px);
+        --grid-gutter: 20px;
+    }
+}
+
+@utility layout-grid--narrow-screen {
+    --grid-width: min(100%, 343px);
+    --grid-margin-inline: auto;
+    --grid-gutter: 8px;
+    @media (min-width: 48rem) {
+        --grid-width: min(100% - 32px, 550px);
+        --grid-gutter: 20px;
+    }
+}
+
+@utility layout-grid--12 { --grid-columns: 12; }
+@utility layout-grid--8 { --grid-columns: 8; }
+@utility layout-grid--4 { --grid-columns: 4; }
+@utility layout-grid--3 { --grid-columns: 3; }
+@utility layout-grid--2 { --grid-columns: 2; }
+
+/* ====================================================================
+   Grid Showcase Helpers
+   ==================================================================== */
+@utility ds-grid-panel {
+    display: grid;
+    gap: 24px;
+    @media (min-width: 75rem) {
+        grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+        align-items: flex-start;
+    }
+}
+
+@utility ds-grid-heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+@utility ds-grid-badge {
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-white) 20%, transparent);
+    padding: 2px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-white);
+}
+
+@utility ds-grid-card {
+    border-radius: 20px;
+    border: 1px solid color-mix(in srgb, var(--color-white) 12%, transparent);
+    background: color-mix(in srgb, var(--color-white) 4%, transparent);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@utility ds-grid-viewport {
+    --grid-count: 12;
+    --grid-frame-width: 80rem;
+    --grid-content-width: 70rem;
+    --grid-gutter: 20px;
+    --grid-height: 24rem;
+    --grid-column-color: color-mix(in srgb, var(--color-red) 60%, transparent);
+    border-radius: 24px;
+    border: 1px solid color-mix(in srgb, var(--color-white) 10%, transparent);
+    background: color-mix(in srgb, var(--color-white) 3%, transparent);
+    padding: clamp(16px, 3vw, 24px);
+    width: min(100%, var(--grid-frame-width));
+    margin-inline: auto;
+
+    &[data-device="mobile"] {
         --grid-frame-width: 23.4375rem;
         --grid-content-width: 21.4375rem;
         --grid-gutter: 8px;
         --grid-height: 16rem;
         --grid-column-color: color-mix(in srgb, var(--color-blue) 60%, transparent);
     }
+}
 
-    .ds-grid-columns {
-        width: min(100%, var(--grid-content-width));
-        margin-inline: auto;
-        display: grid;
-        grid-template-columns: repeat(var(--grid-count), minmax(0, 1fr));
-        gap: var(--grid-gutter);
-        min-height: var(--grid-height);
-    }
+@utility ds-grid-columns {
+    width: min(100%, var(--grid-content-width));
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-count), minmax(0, 1fr));
+    gap: var(--grid-gutter);
+    min-height: var(--grid-height);
+}
 
-    .ds-grid-column {
-        border-radius: 12px;
-        background-color: var(--grid-column-color);
-    }
+@utility ds-grid-column {
+    border-radius: 12px;
+    background-color: var(--grid-column-color);
+}
 
-    /* Keep Autocomplete inner focus ring from overriding custom border styles. */
-    .gdg-dropdown-trigger [data-slot="input-wrapper"] {
-        border: 0;
-        outline: 0;
-        box-shadow: none;
-        background: transparent;
-    }
+/* ====================================================================
+   Component Specific Overrides
+   ==================================================================== */
 
-    .gdg-dropdown-trigger [data-slot="selector-button"] {
-        border: 0;
-        outline: 0;
-        box-shadow: none;
-    }
+/* Keep Autocomplete inner focus ring from overriding custom border styles. */
+.gdg-dropdown-trigger [data-slot="input-wrapper"] {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+}
 
-    .gdg-dropdown-trigger[data-focus-visible="true"],
-    .gdg-dropdown-trigger [data-focus-visible="true"] {
-        outline: 0;
-        box-shadow: none;
-    }
+.gdg-dropdown-trigger [data-slot="selector-button"] {
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+}
 
-    /* Force-disable NextUI focus ring/shadow on input-like wrappers globally. */
-    [data-slot="input-wrapper"],
-    [data-slot="input-wrapper"]:focus-within,
-    [data-slot="input-wrapper"][data-focus="true"],
-    [data-slot="input-wrapper"][data-focus-visible="true"] {
-        outline: 0;
-        box-shadow: none;
-        background: transparent;
-        border: none;
-    }
+.gdg-dropdown-trigger[data-focus-visible="true"],
+.gdg-dropdown-trigger [data-focus-visible="true"] {
+    outline: 0;
+    box-shadow: none;
+}
 
+/* Force-disable NextUI focus ring/shadow on input-like wrappers globally. */
+[data-slot="input-wrapper"],
+[data-slot="input-wrapper"]:focus-within,
+[data-slot="input-wrapper"][data-focus="true"],
+[data-slot="input-wrapper"][data-focus-visible="true"] {
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    border: none;
 }
 
 body {
