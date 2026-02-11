@@ -92,13 +92,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const response = await requestAccessTokenRefresh(storedRt)
         const data = unwrapApiResponse<RefreshResponseBody>(response.data)
         if (!alive) return
-        if (data?.user && data.accessToken) {
-          setUser(data.user, data.accessToken)
+
+        // Support both camelCase and snake_case for token field
+        const accessToken = data?.accessToken || (data as any)?.access_token
+
+        if (data?.user && accessToken) {
+          setUser(data.user, accessToken)
         } else {
+          console.warn('[AuthProvider] Refresh response missing data', {
+            hasUser: !!data?.user,
+            hasToken: !!accessToken
+          })
           clearAuth()
         }
-      } catch {
+      } catch (err) {
         if (alive) {
+          console.error('[AuthProvider] Bootstrap refresh failed', err)
           clearAuth()
         }
       }

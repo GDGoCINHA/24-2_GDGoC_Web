@@ -259,7 +259,14 @@ export default function SignupPage() {
 
       const data = unwrapApiResponse<SignupResponseBody>(response.data)
       if (data?.user && data.accessToken && data.refreshToken) {
+        console.log('[SignupPage] Signup success, saving to storage')
         setUser(data.user, data.accessToken, data.refreshToken)
+      } else {
+        console.warn('[SignupPage] Signup success but missing data', { 
+          hasUser: !!data?.user, 
+          hasAt: !!data?.accessToken, 
+          hasRt: !!data?.refreshToken 
+        })
       }
       sessionStorage.removeItem(PENDING_SIGNUP_STORAGE_KEY)
       router.replace(nextUrl)

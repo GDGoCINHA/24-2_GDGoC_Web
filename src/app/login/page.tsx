@@ -142,7 +142,14 @@ export default function LoginPage() {
         }
 
         if (data.user && data.accessToken && data.refreshToken) {
+          console.log('[LoginPage] Existing user login success, saving to storage')
           setUser(data.user, data.accessToken, data.refreshToken)
+        } else {
+          console.warn('[LoginPage] Login success but missing data', { 
+            hasUser: !!data.user, 
+            hasAt: !!data.accessToken, 
+            hasRt: !!data.refreshToken 
+          })
         }
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem(PENDING_SIGNUP_STORAGE_KEY)
