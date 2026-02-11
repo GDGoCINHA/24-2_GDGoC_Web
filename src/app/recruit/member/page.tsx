@@ -251,11 +251,12 @@ export default function Recruit() {
   const handlePhoneCheck = async () => {
     const candidate = formData.phoneNumber.trim()
     if (!candidate || !isPhoneNumberFormatValid(candidate)) return
-    setPhoneCheckState({ status: 'checking', checkedValue: candidate })
+    const digits = toPhoneDigits(candidate)
+    setPhoneCheckState({ status: 'checking', checkedValue: digits })
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/phone-number`,
-        { params: { phoneNumber: candidate } }
+        { params: { phoneNumber: digits } }
       )
       const isExists = response.data?.data?.isExists
       if (isExists) {
