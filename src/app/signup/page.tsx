@@ -258,7 +258,9 @@ export default function SignupPage() {
       })
 
       const data = unwrapApiResponse<SignupResponseBody>(response.data)
-      if (data?.user) setUser(data.user)
+      if (data?.user && data.accessToken && data.refreshToken) {
+        setUser(data.user, data.accessToken, data.refreshToken)
+      }
       sessionStorage.removeItem(PENDING_SIGNUP_STORAGE_KEY)
       router.replace(nextUrl)
     } catch (error: any) {

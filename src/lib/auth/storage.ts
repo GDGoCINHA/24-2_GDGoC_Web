@@ -3,6 +3,8 @@
 export type StoredAuthUser = object | null
 
 export const USER_STORAGE_KEY = 'gdgoc.user'
+export const ACCESS_TOKEN_KEY = 'gdgoc.at'
+export const REFRESH_TOKEN_KEY = 'gdgoc.rt'
 
 const getLocalStorage = (): Storage | null => {
   if (typeof window === 'undefined') return null
@@ -63,6 +65,8 @@ export const writeStoredUser = <T extends object>(user: T | null): void => {
 
 export const clearStoredAuth = (): void => {
   writeStoredUser(null)
+  writeStoredString(ACCESS_TOKEN_KEY, null)
+  writeStoredString(REFRESH_TOKEN_KEY, null)
 }
 
 type StorageListener = (payload: { key: string | null; newValue: string | null }) => void
@@ -74,6 +78,8 @@ export const subscribeAuthStorage = (listener: StorageListener): (() => void) =>
     if (event.storageArea !== window.localStorage) return
     if (
       event.key === USER_STORAGE_KEY ||
+      event.key === ACCESS_TOKEN_KEY ||
+      event.key === REFRESH_TOKEN_KEY ||
       event.key === null
     ) {
       listener({ key: event.key, newValue: event.newValue })

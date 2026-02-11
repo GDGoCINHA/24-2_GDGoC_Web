@@ -141,8 +141,8 @@ export default function LoginPage() {
           throw new Error('알 수 없는 로그인 응답입니다.')
         }
 
-        if (data.user) {
-          setUser(data.user)
+        if (data.user && data.accessToken && data.refreshToken) {
+          setUser(data.user, data.accessToken, data.refreshToken)
         }
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem(PENDING_SIGNUP_STORAGE_KEY)

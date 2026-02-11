@@ -1,15 +1,6 @@
 'use client'
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type FormEvent
-} from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 
 import {
@@ -269,7 +260,7 @@ export default function RecruitCore() {
     return () => {
       active = false
     }
-  }, [apiClient])
+  }, [apiClient, router])
 
   const validateStep = (step: RecruitStep) => {
     const nextErrors: Record<string, boolean> = {}

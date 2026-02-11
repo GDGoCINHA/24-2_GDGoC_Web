@@ -2,10 +2,10 @@
  * 스터디 리스트 정보를 불러옵니다.
  * @url URL/study?page=1
  * @method GET
- * @param {number} page - 페이지 번호. (필수)
- * @param {string} status - 스터디 상태, 예: "RECRUITING". (선택)
- * @param {string} creatorType - 생성자 유형, 예: "GDGOC". (선택)
- * @returns {object} studyList 배열과 meta 정보(page, pageCount)를 반환.
+ * @param page - 페이지 번호. (필수)
+ * @param status - 스터디 상태, 예: "RECRUITING". (선택)
+ * @param creatorType - 생성자 유형, 예: "GDGOC". (선택)
+ * @returns studyList 배열과 meta 정보(page, pageCount)를 반환.
  */
 // GDGOC
 const getStudiesGDGOC = {
@@ -79,8 +79,8 @@ const getStudiesPERSONAL = {
  * 스터디 상세 정보를 불러옵니다.
  * @url URL/study/{studyId}
  * @method GET
- * @param {number} studyId - 스터디 ID. (필수)
- * @returns {object} 스터디 상세 정보와 meta 데이터를 반환.
+ * @param studyId - 스터디 ID. (필수)
+ * @returns 스터디 상세 정보와 meta 데이터를 반환.
  */
 const getStudyDetails = {
     "data": {
@@ -125,7 +125,7 @@ const getStudyDetails = {
  *    expectedPlace: "정석학술정보도서관 지하1층" (선택)
  *    image: {object} (필수)
  * }
- * @returns {object} 등록 결과 데이터와 meta 정보를 반환.
+ * @returns 등록 결과 데이터와 meta 정보를 반환.
  */
 const createStudyResult = {
     "data": null,
@@ -140,7 +140,7 @@ const createStudyResult = {
  *    introduce: "저는 사실 엄청 멋있는 사람입니다!", (필수)
  *    activityTime: "수요일만 아니면 다 5시 이후로 가능!" (필수)
  * }
- * @returns {object} 신청 결과 데이터와 meta 정보를 반환.
+ * @returns 신청 결과 데이터와 meta 정보를 반환.
  */
 const applyStudyResult = {
     "data": null,
@@ -151,7 +151,7 @@ const applyStudyResult = {
  * [스터디 관리] 모집 중인 스터디와 모집 완료된 스터디를 나누어 조회합니다.
  * @url URL/study/me
  * @method GET
- * @returns {object} recruiting과 recruited 배열 및 meta 정보를 반환.
+ * @returns recruiting과 recruited 배열 및 meta 정보를 반환.
  */
 const getCreatedStudiesByStatus = {
     "data": {
@@ -179,9 +179,9 @@ const getCreatedStudiesByStatus = {
  * [스터디 관리] 특정 스터디의 지원자 목록을 조회합니다.
  * @url /study/{studyId}/attendee?page=1
  * @method GET
- * @param {number} studyId - 스터디 ID. (필수)
- * @param {number} page - 페이지 번호. (선택)
- * @returns {object} attendees 배열과 meta 정보(page, pageCount)를 반환.
+ * @param studyId - 스터디 ID. (필수)
+ * @param page - 페이지 번호. (선택)
+ * @returns attendees 배열과 meta 정보(page, pageCount)를 반환.
  */
 const getAttendeesByStudyId = {
     "data": {
@@ -212,9 +212,9 @@ const getAttendeesByStudyId = {
  * [스터디 관리] 특정 스터디의 특정 지원자 지원서 상세 정보를 조회합니다.
  * @url /study/{studyId}/attendee/{attendeeId}
  * @method GET
- * @param {number} studyId - 스터디 ID. (필수)
- * @param {number} attendeeId - 지원자 ID. (필수)
- * @returns {object} 지원자 상세 정보를 반환.
+ * @param studyId - 스터디 ID. (필수)
+ * @param attendeeId - 지원자 ID. (필수)
+ * @returns 지원자 상세 정보를 반환.
  */
 const getAttendeeDetailsByStudyId = {
     "data": {
@@ -244,7 +244,7 @@ const getAttendeeDetailsByStudyId = {
  *        }
  *    ]
  * }
- * @returns {object} 상태 업데이트 결과와 meta 정보를 반환.
+ * @returns 상태 업데이트 결과와 meta 정보를 반환.
  */
 const updateAttendeeStatusResult = {
     "data": null,
@@ -255,7 +255,7 @@ const updateAttendeeStatusResult = {
  * [스터디 관리] 내가 신청한 스터디 지원 결과를 조회합니다.
  * @url /study/attendee/result
  * @method GET
- * @returns {object} recruiting과 recruited 배열 및 meta 정보를 반환.
+ * @returns recruiting과 recruited 배열 및 meta 정보를 반환.
  */
 const getMyStudyApplyResult = {
     "data": {

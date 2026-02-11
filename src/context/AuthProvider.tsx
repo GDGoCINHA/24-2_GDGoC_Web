@@ -14,9 +14,14 @@ import { usePathname } from 'next/navigation'
 
 import {
   USER_STORAGE_KEY,
+  ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
   readStoredUser,
   subscribeAuthStorage,
-  writeStoredUser
+  writeStoredUser,
+  readStoredString,
+  writeStoredString,
+  clearStoredAuth
 } from '@/lib/auth/storage'
 import { requestAccessTokenRefresh, type RefreshResponseBody } from '@/services/auth/authClient'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
@@ -33,7 +38,7 @@ export interface AuthUser {
 
 export interface AuthContextValue {
   user: AuthUser
-  setUser: Dispatch<SetStateAction<AuthUser>>
+  setUser: (user: AuthUser, accessToken?: string, refreshToken?: string) => void
   clearAuth: () => void
 }
 
@@ -56,12 +61,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     })
   }, [])
 
-  const setUser = useCallback<Dispatch<SetStateAction<AuthUser>>>((value) => {
-    setUserState((prev) => {
-      const next = typeof value === 'function' ? value(prev) : value
-      writeStoredUser(next)
-      return next
-    })
+  const setUser = useCallback((user: AuthUser, accessToken?: string, refreshToken?: string) => {
+    writeStoredUser(user)
+    if (accessToken) writeStoredString(ACCESS_TOKEN_KEY, accessToken)
+    if (refreshToken) writeStoredString(REFRESH_TOKEN_KEY, refreshToken)
+    setUserState(user)
   }, [])
 
   useEffect(() => {
@@ -78,18 +82,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return
       }
 
+      const storedRt = readStoredString(REFRESH_TOKEN_KEY)
+      if (!storedRt) {
+        setUser(null)
+        return
+      }
+
       try {
-        const response = await requestAccessTokenRefresh()
+        const response = await requestAccessTokenRefresh(storedRt)
         const data = unwrapApiResponse<RefreshResponseBody>(response.data)
         if (!alive) return
-        if (data?.user) {
-          setUser(data.user)
+        if (data?.user && data.accessToken) {
+          setUser(data.user, data.accessToken)
         } else {
-          setUser(null)
+          clearAuth()
         }
       } catch {
         if (alive) {
-          setUser(null)
+          clearAuth()
         }
       }
     }
@@ -101,8 +111,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [setUser, pathname])
 
   const clearAuth = useCallback(() => {
-    setUser(null)
-  }, [setUser])
+    clearStoredAuth()
+    setUserState(null)
+  }, [])
 
   const contextValue = useMemo<AuthContextValue>(
     () => ({
