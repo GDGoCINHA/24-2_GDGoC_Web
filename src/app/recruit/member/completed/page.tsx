@@ -132,7 +132,7 @@ export default function RecruitSubmit() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <p className="typo-s2 text-white mobile:typo-m-s2 mb-1">💵 25-2 회비</p>
+                <p className="typo-s2 text-white mobile:typo-m-s2 mb-1">💵 26-1 회비</p>
                 <BulletPoint>20,000 원</BulletPoint>
               </div>
 
@@ -143,7 +143,7 @@ export default function RecruitSubmit() {
                   ] 으로 변경해주세요!
                 </BulletPoint>
                 <BulletPoint>
-                  → ex) <span className="font-bold">24김인하</span>
+                  → ex) <span className="font-bold">25김인하</span>
                 </BulletPoint>
               </div>
 

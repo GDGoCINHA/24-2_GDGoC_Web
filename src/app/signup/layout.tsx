@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 export const metadata: Metadata = {
-  title: 'SignUp',
-  description: 'GDGoC 가입을 완료하세요'
+  title: '회원가입',
+  description: 'GDGoC INHA 멤버 가입을 완료하세요.'
 }
 
 export default function SignupLayout({ children }: { children: ReactNode }) {

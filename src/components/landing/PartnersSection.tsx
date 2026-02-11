@@ -48,11 +48,11 @@ function PartnersSection() {
             <div id='logos' className='w-full'>
                 <div className='text-white text-[3.5vw] mobile:text-2xl mt-60 mobile:mt-24 w-full text-center'>
                     <span className='font-google-sans-flex font-extrabold'>
-                        <span className='text-red-400'>G</span>
-                        <span className='text-green-400'>D</span>
-                        <span className='text-yellow-400'>G</span>
-                        <span className='text-blue-400'>o</span>
-                        <span className='text-red-400'>C</span>
+                        <span className='text-red'>G</span>
+                        <span className='text-green'>D</span>
+                        <span className='text-yellow'>G</span>
+                        <span className='text-blue'>o</span>
+                        <span className='text-red'>C</span>
                         <span className='text-white ml-2'>INHA</span>
                     </span>
                     와 함께하는 단체
