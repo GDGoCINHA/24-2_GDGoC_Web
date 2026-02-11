@@ -10,6 +10,7 @@ import bg from '@public/images/bgimg.png'
 export default function HeroSection({ router }) {
   const subTitleRef = useRef(null)
   const buttonRef = useRef(null)
+  const linkRef = useRef(null)
 
   const animation = (typeHangul: any) => {
     typeHangul.type('#typing-effect', {
@@ -46,6 +47,12 @@ export default function HeroSection({ router }) {
             })
           }
         }
+      )
+
+      gsap.fromTo(
+        linkRef.current,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, delay: 0.8, ease: 'power1.out' }
       )
     })
   }
@@ -96,7 +103,7 @@ export default function HeroSection({ router }) {
             </span>
           </div>
           <p className="text-white/90 mt-32 text-[35px] mobile:text-2xl mobile:mt-[17svh] font-bold">
-            2025-2 Recruitment
+            2026-1 Recruitment
           </p>
         </div>
         <Button
@@ -107,6 +114,15 @@ export default function HeroSection({ router }) {
         >
           <span className="font-semibold">지원하기</span>
         </Button>
+        <p ref={linkRef} className="opacity-0 mt-6 text-white/60 typo-c1 mobile:text-[10px]">
+          지원 후 일정이 궁금하시다면?{' '}
+          <button 
+            onClick={() => router.push('/recruit/member/completed')}
+            className="underline underline-offset-4 hover:text-white transition-colors"
+          >
+            일정 안내 바로가기
+          </button>
+        </p>
       </div>
     </div>
   )
