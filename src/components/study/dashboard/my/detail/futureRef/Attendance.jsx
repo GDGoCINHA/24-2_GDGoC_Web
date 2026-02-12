@@ -19,11 +19,11 @@ export default function Attendance() {
         const baseClasses = "px-3 py-1 rounded-full text-sm font-medium text-white";
 
         if (status === 'ATTEND')
-            return `${baseClasses} bg-green-500`;
+            return `${baseClasses} bg-green-400`;
         if (status === 'LATE')
-            return `${baseClasses} bg-yellow-500`;
+            return `${baseClasses} bg-yellow-400`;
         if (status === 'ABSENT')
-            return `${baseClasses} bg-red-500`;
+            return `${baseClasses} bg-red-400`;
 
         return `${baseClasses} bg-blue-700`;
     };
@@ -35,19 +35,19 @@ export default function Attendance() {
             <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between">
                 <div className="flex items-center space-x-4 mb-4 md:mb-0">
                     <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-green-400"></div>
                         <span>출석</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                         <span>지각</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-red-400"></div>
                         <span>결석</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-blue-400"></div>
                         <span>미확인</span>
                     </div>
                 </div>

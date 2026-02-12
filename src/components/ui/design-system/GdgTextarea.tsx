@@ -1,0 +1,161 @@
+'use client'
+
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  type ChangeEvent,
+  type TextareaHTMLAttributes
+} from 'react'
+import { cn } from '@/utils/cn'
+
+export const GDG_TEXTAREA_DEVICES = ['pc', 'mobile'] as const
+export const GDG_TEXTAREA_STATES = ['default', 'error', 'disabled'] as const
+
+export interface GdgTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  device?: (typeof GDG_TEXTAREA_DEVICES)[number]
+  state?: 'default' | 'error' | 'disabled'
+  label?: string
+  helperText?: string
+  errorText?: string
+  fullWidth?: boolean
+}
+
+const WIDTH_CLASS: Record<'pc' | 'mobile', string> = {
+  pc: 'w-[550px]',
+  mobile: 'w-[343px]'
+}
+
+const TA_STATE: Record<
+  'default' | 'error' | 'disabled',
+  { wrapper: string; input: string; helper: string }
+> = {
+  default: {
+    wrapper: 'border-gray-800 bg-black text-white',
+    input: 'placeholder:text-gray-700',
+    helper: 'text-gray-400'
+  },
+  error: {
+    wrapper: 'border-red bg-black text-white',
+    input: 'placeholder:text-gray-700',
+    helper: 'text-red'
+  },
+  disabled: {
+    wrapper: 'border-gray-100 bg-gray-100 text-white/40 cursor-not-allowed',
+    input: 'placeholder:text-gray-700',
+    helper: 'text-white/40'
+  }
+}
+
+export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
+  (
+    {
+      device = 'pc',
+      state = 'default',
+      label,
+      helperText,
+      errorText,
+      className,
+      style,
+      fullWidth,
+      disabled,
+      id,
+      rows = 4,
+      maxLength,
+      onChange,
+      value,
+      ...rest
+    },
+    forwardedRef
+  ) => {
+    const generatedId = useId()
+    const fieldId = id ?? generatedId
+    const computedState: 'default' | 'error' | 'disabled' = disabled ? 'disabled' : state
+
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+    const mergeRefs = useCallback(
+      (node: HTMLTextAreaElement | null) => {
+        textareaRef.current = node
+        if (typeof forwardedRef === 'function') {
+          forwardedRef(node)
+        } else if (forwardedRef) {
+          forwardedRef.current = node
+        }
+      },
+      [forwardedRef]
+    )
+
+    const adjustHeight = useCallback(() => {
+      const el = textareaRef.current
+      if (!el) return
+      el.style.height = 'auto'
+      el.style.height = `${el.scrollHeight}px`
+    }, [])
+
+    useEffect(() => {
+      adjustHeight()
+    }, [adjustHeight, value, rows])
+
+    const handleChange = useCallback(
+      (event: ChangeEvent<HTMLTextAreaElement>) => {
+        adjustHeight()
+        onChange?.(event)
+      },
+      [adjustHeight, onChange]
+    )
+
+    const currentLength = typeof value === 'string' ? value.length : 0
+
+    return (
+      <label
+        className={cn('flex w-full flex-col gap-2', className)}
+        htmlFor={fieldId}
+        style={style}
+      >
+        {label && (
+          <span className="text-[14px] font-semibold uppercase tracking-[0.2em] text-white/80">
+            {label}
+          </span>
+        )}
+        <div
+          className={cn(
+            'relative rounded-3xl border px-4 py-3 transition-colors duration-150',
+            fullWidth ? 'w-full' : WIDTH_CLASS[device],
+            TA_STATE[computedState].wrapper
+          )}
+        >
+          <textarea
+            {...rest}
+            id={fieldId}
+            ref={mergeRefs}
+            disabled={disabled}
+            rows={rows}
+            maxLength={maxLength}
+            value={value}
+            className={cn(
+              'w-full bg-transparent font-medium typo-pc-b2 mobile:typo-m-b3 pc:placeholder:typo-pc-b2 mobile:placeholder:typo-m-b3 placeholder:font-medium focus:outline-none resize-none overflow-hidden block',
+              TA_STATE[computedState].input,
+              maxLength ? 'pb-6' : ''
+            )}
+            style={{ ...style, height: 'auto' }}
+            onChange={handleChange}
+          />
+          {maxLength && (
+            <div className="absolute bottom-3 right-4 text-[12px] leading-[18px] text-gray-400 font-medium">
+              {currentLength}/{maxLength}
+            </div>
+          )}
+        </div>
+        {(helperText || errorText) && (
+          <span className={cn('pl-2 text-[12px] leading-[18px]', TA_STATE[computedState].helper)}>
+            {computedState === 'error' ? (errorText ?? helperText) : helperText}
+          </span>
+        )}
+      </label>
+    )
+  }
+)
+
+GdgTextarea.displayName = 'GdgTextarea'
