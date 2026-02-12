@@ -43,12 +43,12 @@ function CoreMemberPromoSection() {
     <section className="relative left-1/2 w-[100dvw] -translate-x-1/2 overflow-hidden min-h-[640px] mobile:min-h-[572px]">
       <div
         aria-hidden
-        className="absolute inset-0 bg-center bg-no-repeat bg-cover mobile:hidden"
+        className="absolute inset-0 bg-center bg-no-repeat bg-[length:100%_auto] mobile:hidden"
         style={{ backgroundImage: "url('/images/recruit/core_pic.jpeg')" }}
       />
       <div
         aria-hidden
-        className="absolute inset-0 hidden mobile:block bg-center bg-no-repeat bg-cover"
+        className="absolute inset-0 hidden mobile:block bg-center bg-no-repeat bg-[length:100%_auto]"
         style={{ backgroundImage: "url('/images/recruit/core_pic_m.jpg')" }}
       />
       <div
