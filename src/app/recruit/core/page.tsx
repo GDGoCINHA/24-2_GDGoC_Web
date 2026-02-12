@@ -14,6 +14,7 @@ import {
   GdgUploadButton,
   GdgInputField
 } from '@/components/ui/design-system'
+import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { cn } from '@/utils/cn'
 import { formatPhoneNumberInput, toPhoneDigits } from '@/utils/phoneNumber'
@@ -109,7 +110,7 @@ function StepBar({
               onClick={() => onStepClick(stepIndex)}
               disabled={!isClickable}
               className={cn(
-                'rounded-full border bg-black px-3 py-1.5 whitespace-nowrap typo-b3 mobile:typo-c1 transition-colors',
+                'rounded-full border bg-black px-3 py-1.5 whitespace-nowrap typo-pc-b3 mobile:typo-m-c1 transition-colors',
                 isCurrent && 'bg-red border-red text-white',
                 !isCurrent && isActivated && 'border-red text-white',
                 !isCurrent && !isActivated && 'border-gray-400 text-gray-400',
@@ -166,11 +167,21 @@ function TextareaField({
         maxLength={maxLength}
         rows={rows}
         state={error ? 'error' : 'default'}
-        placeholder="내용을 입력하세요."
+        placeholder="내용을 입력해 주세요."
         fullWidth
-        className="[&_textarea]:mobile:text-sm [&_textarea]:mobile:leading-5"
       />
     </GdgFieldContainer>
+  )
+}
+
+function Bullet({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-start w-full">
+      <span className="w-5 shrink-0 text-center text-[18px] mobile:text-[16px] leading-none font-bold mt-[1px]">
+        •
+      </span>
+      <div className="typo-pc-b2 mobile:typo-m-b3 flex-1">{children}</div>
+    </div>
   )
 }
 
@@ -404,7 +415,7 @@ export default function RecruitCore() {
         <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
           <div className="col-span-4 flex items-center gap-3 mobile:gap-2">
             <GdgLogo mode="auto" />
-            <h1 className="typo-h3 text-white mobile:typo-m-h3">Core Member 지원</h1>
+            <h1 className="typo-pc-h3 text-white mobile:typo-m-h2">Core Member 지원</h1>
           </div>
 
           <div className="col-span-4">
@@ -418,7 +429,7 @@ export default function RecruitCore() {
           {currentStep === 0 ? (
             <>
               <div className="col-span-4 rounded-xl bg-gray-100 px-4 py-3 mobile:px-3.5 mobile:py-3">
-                <ul className="list-disc space-y-1 pl-5 typo-b3 text-white mobile:typo-c1">
+                <ul className="list-disc space-y-1 pl-5 typo-pc-b3 text-white mobile:typo-m-c1">
                   <li>
                     아래 정보는 회원가입 시 입력한 정보를 기반으로 <b>자동 입력</b>됩니다.
                   </li>
@@ -431,7 +442,9 @@ export default function RecruitCore() {
                 </ul>
               </div>
 
-              {prefillError ? <p className="col-span-4 typo-c1 text-red">{prefillError}</p> : null}
+              {prefillError ? (
+                <p className="col-span-4 typo-pc-c1 mobile:typo-m-c2 text-red">{prefillError}</p>
+              ) : null}
 
               <div className="col-span-4 grid grid-cols-4 gap-5 mobile:grid-cols-2 mobile:gap-2">
                 <div className="col-span-1 mobile:col-span-1">
@@ -448,7 +461,7 @@ export default function RecruitCore() {
                         aria-label="이름"
                         value={formData.name}
                         onChange={(e) => handleInputValueChange('name', e.target.value)}
-                        placeholder="홍길동"
+                        placeholder="이름을 입력해 주세요."
                         disabled
                       />
                     </div>
@@ -459,7 +472,7 @@ export default function RecruitCore() {
                         aria-label="이름"
                         value={formData.name}
                         onChange={(e) => handleInputValueChange('name', e.target.value)}
-                        placeholder="홍길동"
+                        placeholder="이름을 입력해 주세요."
                         disabled
                       />
                     </div>
@@ -480,7 +493,7 @@ export default function RecruitCore() {
                         aria-label="학번"
                         value={formData.studentId}
                         onChange={(e) => handleInputValueChange('studentId', e.target.value)}
-                        placeholder="12243421"
+                        placeholder="학번을 입력해 주세요."
                         disabled
                       />
                     </div>
@@ -491,7 +504,7 @@ export default function RecruitCore() {
                         aria-label="학번"
                         value={formData.studentId}
                         onChange={(e) => handleInputValueChange('studentId', e.target.value)}
-                        placeholder="12243421"
+                        placeholder="학번을 입력해 주세요."
                         disabled
                       />
                     </div>
@@ -513,7 +526,7 @@ export default function RecruitCore() {
                         type="email"
                         value={formData.email}
                         onChange={(e) => handleInputValueChange('email', e.target.value)}
-                        placeholder="abcd1234@inha.edu"
+                        placeholder="이메일을 입력해 주세요."
                         disabled
                       />
                     </div>
@@ -525,7 +538,7 @@ export default function RecruitCore() {
                         type="email"
                         value={formData.email}
                         onChange={(e) => handleInputValueChange('email', e.target.value)}
-                        placeholder="abcd1234@inha.edu"
+                        placeholder="이메일을 입력해 주세요."
                         disabled
                       />
                     </div>
@@ -578,7 +591,7 @@ export default function RecruitCore() {
                       aria-label="전화번호"
                       value={formData.phone}
                       onChange={(e) => handleInputValueChange('phone', e.target.value)}
-                      placeholder="010-1234-1234"
+                      placeholder="전화번호를 입력해 주세요."
                       state={errors.phone ? 'error' : 'available'}
                     />
                   </div>
@@ -589,7 +602,7 @@ export default function RecruitCore() {
                       aria-label="전화번호"
                       value={formData.phone}
                       onChange={(e) => handleInputValueChange('phone', e.target.value)}
-                      placeholder="010-1234-1234"
+                      placeholder="전화번호를 입력해 주세요."
                       state={errors.phone ? 'error' : 'available'}
                     />
                   </div>
@@ -699,7 +712,7 @@ export default function RecruitCore() {
 
               <div className="col-span-4 space-y-2">
                 <div className="flex items-center gap-3 pl-2 mobile:gap-2">
-                  <p className="typo-s3 text-white mobile:typo-s3">파일 첨부</p>
+                  <p className="typo-pc-s3 text-white mobile:typo-m-s2">파일 첨부</p>
                   <p className="typo-c2 text-gray-700">다중 파일 업로드 가능</p>
                 </div>
 
@@ -745,67 +758,68 @@ export default function RecruitCore() {
           {currentStep === 2 ? (
             <>
               <div className="col-span-4 space-y-2">
-                <p className="pl-2 typo-s3 text-white">모집 일정</p>
+                <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">모집 일정</p>
                 <div className="rounded-xl bg-gray-100 px-4 py-3 text-white">
-                  <div className="space-y-4 typo-b2 mobile:space-y-3 mobile:typo-b3">
+                  <div className="space-y-4 typo-pc-b2 mobile:space-y-3 mobile:typo-m-b3">
                     <div className="space-y-1">
-                      <p>✅ 서류 지원 기간</p>
-                      <p>2025. 12. 26.(금) - 2026. 01. 09.(금) 23:59:59</p>
+                      <Bullet>서류 지원 기간</Bullet>
+                      <p>2026. 2. 12.(목) - 2026. 3. 14.(토) 23:59:59</p>
                     </div>
                     <div className="space-y-1">
-                      <p>✅ 서류 결과 발표</p>
-                      <p>~ 2026. 01. 10.(토)</p>
+                      <Bullet>서류 결과 발표</Bullet>
+                      <p>~ 2026. 3. 15.(일)</p>
                     </div>
                     <div className="space-y-1">
-                      <p>✅ 면접 진행 기간</p>
-                      <p>2026. 01. 12.(월) - 2026. 01. 16.(금)</p>
+                      <Bullet>면접 진행 기간</Bullet>
+                      <p>2026. 3. 16.(월) - 2026. 3. 20.(금)</p>
                       <p className="typo-c2 text-gray-700">
                         ※ 지원자 및 면접관 일정에 따라 마감 전 면접이 가능할 수 있습니다.
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p>✅ 최종 결과 발표</p>
-                      <p>~ 2026. 01. 16.(금)</p>
+                      <Bullet>최종 결과 발표</Bullet>
+                      <p>~ 2026. 3. 21.(토)</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="col-span-4 space-y-2">
-                <p className="pl-2 typo-s3 text-white">면접 안내</p>
-                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-b2 mobile:typo-b3">
-                  <p>
-                    • 원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.
-                  </p>
-                  <p className="mt-2">• 면접은 인하대학교 내부 장소에서 진행됩니다.</p>
+                <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">면접 안내</p>
+                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-pc-b2 mobile:typo-m-b3">
+                  <Bullet>원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.</Bullet>
+                  <div className="mt-2">
+                    <Bullet>면접은 인하대학교 내부 장소에서 진행됩니다.</Bullet>
+                  </div>
                 </div>
               </div>
 
-              <div className="col-span-4 space-y-2">
-                <p className="pl-2 typo-s3 text-white">활동 안내</p>
-                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-b2 mobile:typo-b3">
-                  <p>• 운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다.</p>
-                  <p className="mt-1 typo-c2 text-gray-700">※ 일정은 1월 내로 공지 드립니다.</p>
+              <div className="col-span-4 space-y-4">
+                <div className="space-y-2">
+                  <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">활동 안내</p>
+                  <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-pc-b2 mobile:typo-m-b3">
+                    <Bullet>운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다.</Bullet>
+                    <p className="mt-1 typo-c2 text-gray-700">※ 일정은 3월 내로 공지 드립니다.</p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="col-span-4 flex items-center justify-end gap-2">
-                <span className="typo-s3 text-red">*</span>
-                <p className="typo-b3 text-white">전체 일정을 확인하였습니다.</p>
-                <span className="hidden pc:inline-flex">
-                  <GdgCheckbox
-                    checked={scheduleChecked}
-                    onCheckedChange={setScheduleChecked}
-                    size="pc"
-                  />
-                </span>
-                <span className="inline-flex pc:hidden">
-                  <GdgCheckbox
-                    checked={scheduleChecked}
-                    onCheckedChange={setScheduleChecked}
-                    size="mobile"
-                  />
-                </span>
+                <div className="flex items-center justify-end gap-2">
+                  <span className="typo-pc-b3 mobile:typo-m-c1 text-red">*</span>
+                  <p className="typo-pc-b3 mobile:typo-m-c1 text-white">전체 일정을 확인하였습니다.</p>
+                  <span className="hidden pc:inline-flex">
+                    <GdgCheckbox
+                      checked={scheduleChecked}
+                      onCheckedChange={setScheduleChecked}
+                      size="pc"
+                    />
+                  </span>
+                  <span className="inline-flex pc:hidden">
+                    <GdgCheckbox
+                      checked={scheduleChecked}
+                      onCheckedChange={setScheduleChecked}
+                      size="mobile"
+                    />
+                  </span>
+                </div>
               </div>
 
               {errors.scheduleCheck ? (
@@ -818,40 +832,29 @@ export default function RecruitCore() {
 
           {currentStep === 3 ? (
             <>
-              <div className="col-span-4 space-y-2">
-                <p className="pl-2 typo-s3 text-white">개인정보 수집 및 이용 동의</p>
-                <div className="rounded-xl bg-gray-100 px-4 py-3">
-                  <p className="typo-b2 text-white mobile:typo-b3">
-                    개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집
-                    및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서
-                    내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보
-                    수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및
-                    이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서
-                    내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보
-                    수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및
-                    이용동의서 내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서
-                    내용 개인정보 수집 및 이용동의서 내용 개인정보 수집 및 이용동의서 내용
-                  </p>
+              <div className="col-span-4 space-y-4">
+                <div className="space-y-2">
+                  <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">개인정보 수집 및 이용 동의</p>
+                  <PrivacyPolicyNotice target="core" showTitle={false} compact />
                 </div>
-              </div>
-
-              <div className="col-span-4 flex items-center justify-end gap-2">
-                <span className="typo-s3 text-red">*</span>
-                <p className="typo-b3 text-white">동의합니다.</p>
-                <span className="hidden pc:inline-flex">
-                  <GdgCheckbox
-                    checked={agreementChecked}
-                    onCheckedChange={setAgreementChecked}
-                    size="pc"
-                  />
-                </span>
-                <span className="inline-flex pc:hidden">
-                  <GdgCheckbox
-                    checked={agreementChecked}
-                    onCheckedChange={setAgreementChecked}
-                    size="mobile"
-                  />
-                </span>
+                <div className="flex items-center justify-end gap-2">
+                  <span className="typo-pc-b3 mobile:typo-m-c1 text-red">*</span>
+                  <p className="typo-pc-b3 mobile:typo-m-c1 text-white">개인정보 처리방침에 동의합니다.</p>
+                  <span className="hidden pc:inline-flex">
+                    <GdgCheckbox
+                      checked={agreementChecked}
+                      onCheckedChange={setAgreementChecked}
+                      size="pc"
+                    />
+                  </span>
+                  <span className="inline-flex pc:hidden">
+                    <GdgCheckbox
+                      checked={agreementChecked}
+                      onCheckedChange={setAgreementChecked}
+                      size="mobile"
+                    />
+                  </span>
+                </div>
               </div>
 
               {errors.agreementCheck ? (

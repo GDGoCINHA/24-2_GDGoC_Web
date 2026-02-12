@@ -3,7 +3,12 @@
 import { forwardRef, useId, type InputHTMLAttributes } from 'react'
 import { cn } from '@/utils/cn'
 import { Search } from 'lucide-react'
-import { CONTROL_META, getMobileWidthClass, getPcWidthClass } from './controlMeta'
+import {
+  CONTROL_META,
+  getMobileWidthClass,
+  getPcWidthClass,
+  getPlaceholderTypoByText
+} from './controlMeta'
 
 export const GDG_SEARCH_FIELD_DEVICES = ['pc', 'mobile'] as const
 export const GDG_SEARCH_FIELD_WIDTHS = ['full', 'half', 'twoThirds'] as const
@@ -34,7 +39,7 @@ export const GdgSearchField = forwardRef<HTMLInputElement, GdgSearchFieldProps>(
         style={style}
       >
         {label && (
-          <span className="typo-s3 uppercase tracking-[0.2em] text-white/80">
+          <span className="typo-pc-s3 mobile:typo-m-s2 uppercase tracking-[0.2em] text-white/80">
             {label}
           </span>
         )}
@@ -57,7 +62,9 @@ export const GdgSearchField = forwardRef<HTMLInputElement, GdgSearchFieldProps>(
             ref={ref}
             className={cn(
               'h-full min-w-0 flex-1 bg-transparent focus:outline-none text-white !m-0 py-0 leading-normal',
-              isPc && width === 'full' ? 'typo-pc-b2 placeholder:text-gray-700' : 'typo-m-b3 placeholder:text-gray-700',
+              controlMeta.text,
+              getPlaceholderTypoByText(controlMeta.text),
+              'placeholder:text-gray-700',
               rest.disabled && 'text-white/40 placeholder:text-gray-700 cursor-not-allowed'
             )}
           />

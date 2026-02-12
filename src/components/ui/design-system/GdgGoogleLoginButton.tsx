@@ -24,6 +24,7 @@ export function GdgGoogleLoginButton({
 }: GdgGoogleLoginButtonProps) {
   // Fixed dimensions from design spec
   const sizeClasses = device === 'pc' ? 'w-[300px] h-[52px]' : 'w-[260px] h-[46px]'
+  const typoClasses = 'typo-pc-s2 mobile:typo-m-s3'
   
   return (
     <GdgButton
@@ -32,7 +33,7 @@ export function GdgGoogleLoginButton({
       onClick={onClick}
       disabled={disabled}
       loading={loading}
-      className={sizeClasses}
+      className={`${sizeClasses} ${typoClasses}`}
       icon={<Image src="/icons/logo/google-g.svg" alt="Google logo" height={20} width={20} />}
     >
       Google 계정으로 로그인

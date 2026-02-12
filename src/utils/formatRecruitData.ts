@@ -13,7 +13,6 @@ export const formatRecruitData = (mainRecruitData) => {
             gender: mainRecruitDataObject[4]?.gender || "",
             birth: mainRecruitDataObject[4]?.birth || "",
             major: mainRecruitDataObject[5]?.major || "",
-            doubleMajor: mainRecruitDataObject[5]?.doubleMajor || "",
             isPayed: mainRecruitDataObject[11]?.isPayed || false
         },
         answers: {

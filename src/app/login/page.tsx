@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
-import { Button } from '@nextui-org/react'
-import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import Loader from '@/components/ui/common/Loader'
@@ -145,10 +143,10 @@ export default function LoginPage() {
           console.log('[LoginPage] Existing user login success, saving to storage')
           setUser(data.user, data.accessToken, data.refreshToken)
         } else {
-          console.warn('[LoginPage] Login success but missing data', { 
-            hasUser: !!data.user, 
-            hasAt: !!data.accessToken, 
-            hasRt: !!data.refreshToken 
+          console.warn('[LoginPage] Login success but missing data', {
+            hasUser: !!data.user,
+            hasAt: !!data.accessToken,
+            hasRt: !!data.refreshToken
           })
         }
         if (typeof window !== 'undefined') {
@@ -227,24 +225,27 @@ export default function LoginPage() {
   }, [googleClientId, googleRedirectUri, nextUrl])
 
   const RenderPcView = () => (
-    <div className="mx-auto flex min-h-screen w-full max-w-[1128px] flex-col items-center justify-center px-6 py-16">
-      <div className="w-full max-w-[550px] space-y-6">
+    <div className="mx-auto -mt-6 flex min-h-screen w-full max-w-[1128px] flex-col items-center justify-center px-6 py-16">
+      <div className="w-[550px] space-y-6">
         <div className="flex items-center gap-3">
           <GdgLogo mode="pc" variant="long" priority />
         </div>
-        <div className="rounded-[20px] border border-white/10 bg-black px-10 py-14 text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]">
-          <div className="flex flex-col items-center gap-6 text-center">
+        <div className="rounded-[20px] border border-white/10 bg-black m-auto text-white shadow-[0_0_12px_rgba(250,250,250,0.25)] h-[315px]">
+          <div className="flex h-full flex-col items-center justify-center gap-6 text-center">
             <div className="space-y-2 text-center">
-              <p className="typo-h4 text-white">
-                방문을 환영합니다!
-              </p>
-              <p className="typo-b3 text-white">
+              <p className="typo-pc-h4 text-white">방문을 환영합니다!</p>
+              <p className="typo-pc-b3 text-white">
                 GDGoC INHA 홈페이지를 이용하려면 로그인하세요.
               </p>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <GdgGoogleLoginButton device="pc" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
-              <div className="space-y-1 typo-c1 text-gray-400">
+              <GdgGoogleLoginButton
+                device="pc"
+                onClick={handleGoogleLogin}
+                disabled={!canUseGoogleLogin || loading}
+                loading={loading}
+              />
+              <div className="space-y-1 typo-pc-c2 text-gray-400">
                 <p>@inha.edu 계정만 사용 가능합니다</p>
                 {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
               </div>
@@ -256,23 +257,24 @@ export default function LoginPage() {
   )
 
   const RenderMobileView = () => (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-16 text-white">
-      <div className="w-full max-w-[343px] space-y-4">
+    <div className="relative -mt-6 flex min-h-screen flex-col items-center justify-center px-4 py-16 text-white">
+      <div className="w-[343px] space-y-4">
         <div className="flex items-center gap-2">
           <GdgLogo mode="mobile" variant="long" />
         </div>
-        <div className="rounded-[20px] border border-white/10 bg-black px-[41px] py-10 text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]">
-          <div className="flex flex-col items-center gap-6 text-center">
+        <div className="rounded-[20px] border border-white/10 bg-black m-auto text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]  h-[212px]">
+          <div className="flex h-full flex-col items-center justify-center gap-6 text-center">
             <div className="space-y-2 text-center">
-              <p className="typo-m-h3 text-white">
-                방문을 환영합니다!
-              </p>
-              <p className="typo-m-c1 text-white">
-                GDGoC INHA 홈페이지를 이용하려면 로그인하세요.
-              </p>
+              <p className="typo-m-h3 text-white">방문을 환영합니다!</p>
+              <p className="typo-m-c2 text-white">GDGoC INHA 홈페이지를 이용하려면 로그인하세요.</p>
             </div>
             <div className="flex flex-col items-center gap-2">
-              <GdgGoogleLoginButton device="mobile" onClick={handleGoogleLogin} disabled={!canUseGoogleLogin || loading} loading={loading} />
+              <GdgGoogleLoginButton
+                device="mobile"
+                onClick={handleGoogleLogin}
+                disabled={!canUseGoogleLogin || loading}
+                loading={loading}
+              />
               <div className="space-y-1 typo-m-c2 text-gray-400">
                 <p>@inha.edu 계정만 사용 가능합니다</p>
                 {errorMessage ? <p className="text-red">{errorMessage}</p> : null}

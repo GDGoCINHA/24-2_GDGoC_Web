@@ -7,12 +7,14 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { GdgMajorDropdown } from '@/components/ui/design-system/GdgMajorDropdown'
 import {
   GdgButton,
+  GdgCheckbox,
   GdgFieldContainer,
   GdgLogo,
   GdgInputField,
   type GdgFieldStatus
 } from '@/components/ui/design-system'
 import Loader from '@/components/ui/common/Loader'
+import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
 import { useAuth } from '@/hooks/useAuth'
 import {
   checkPhoneNumberDuplicated,
@@ -71,6 +73,7 @@ export default function SignupPage() {
   const [studentId, setStudentId] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [major, setMajor] = useState('')
+  const [isPrivacyAgreed, setIsPrivacyAgreed] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [globalError, setGlobalError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -294,7 +297,8 @@ export default function SignupPage() {
     name.trim() !== '' &&
     major !== '' &&
     studentId.trim() === studentCheckState.verifiedValue &&
-    phoneNumber.trim() === phoneCheckState.verifiedValue
+    phoneNumber.trim() === phoneCheckState.verifiedValue &&
+    isPrivacyAgreed
 
   const studentStatusMessage = studentId === studentCheckState.verifiedValue ? '※ 가입 가능한 학번입니다.' : studentCheckState.message
   const studentStatus: GdgFieldStatus | undefined =
@@ -317,14 +321,14 @@ export default function SignupPage() {
             <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
               <div className="col-span-4 flex items-center gap-3 pb-8 mobile:gap-2 mobile:pb-2">
                 <GdgLogo mode="auto" />
-                <p className="typo-h3 mobile:typo-m-h3 text-white">회원가입</p>
+                <p className="typo-pc-h3 mobile:typo-m-h2 text-white">회원가입</p>
               </div>
 
               {/* PC Version */}
               <div className="pc:contents hidden">
                 <div className="col-span-4">
                   <GdgFieldContainer label="이름" required>
-                    <GdgInputField device="pc" aria-label="이름" placeholder="홍길동" value={name} onChange={(e) => setName(e.target.value)} state={fieldErrors.name ? 'error' : 'available'} width="full" />
+                    <GdgInputField device="pc" aria-label="이름" placeholder="이름을 입력해 주세요." value={name} onChange={(e) => setName(e.target.value)} state={fieldErrors.name ? 'error' : 'available'} width="full" />
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
@@ -368,7 +372,7 @@ export default function SignupPage() {
               <div className="pc:hidden contents">
                 <div className="col-span-4">
                   <GdgFieldContainer label="이름" required>
-                    <GdgInputField device="mobile" aria-label="이름" placeholder="홍길동" value={name} onChange={(e) => setName(e.target.value)} state={fieldErrors.name ? 'error' : 'available'} width="full" />
+                    <GdgInputField device="mobile" aria-label="이름" placeholder="이름을 입력해 주세요." value={name} onChange={(e) => setName(e.target.value)} state={fieldErrors.name ? 'error' : 'available'} width="full" />
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
@@ -408,7 +412,21 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              {globalError && <p className="typo-c1 col-span-4 text-center text-red">{globalError}</p>}
+              <div className="col-span-4 space-y-4">
+                <PrivacyPolicyNotice target="signup" compact />
+                <div className="flex items-center justify-end gap-2">
+                  <p className="typo-pc-b3 mobile:typo-m-c1 text-white text-right">
+                    <span className="text-red typo-pc-b3 mobile:typo-m-c1">* </span>개인정보 처리방침에 동의합니다.
+                  </p>
+                  <GdgCheckbox
+                    size="mobile"
+                    checked={isPrivacyAgreed}
+                    onCheckedChange={setIsPrivacyAgreed}
+                  />
+                </div>
+              </div>
+
+              {globalError && <p className="typo-pc-c1 mobile:typo-m-c1 col-span-4 text-center text-red">{globalError}</p>}
 
               <div className="col-span-4 flex justify-end gap-5 pt-12 mobile:grid mobile:grid-cols-3 mobile:gap-2 mobile:pt-8">
                 <div className="hidden mobile:block" aria-hidden />

@@ -132,7 +132,7 @@ export function DesignSystemShowcase() {
                   >
                     {buttonState[device].active ? 'ACTIVE' : 'DEFAULT'}
                   </GdgButton>
-                  <p className="typo-c1 text-gray-400">{`click: ${buttonState[device].clicks}`}</p>
+                  <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-400">{`click: ${buttonState[device].clicks}`}</p>
                 </div>
               </div>
             ))}
@@ -249,7 +249,7 @@ export function DesignSystemShowcase() {
                   </GdgSegmentedButton>
                 ))}
               </div>
-              <p className="typo-c1 text-gray-400">{`selected: ${segmentedPressed[device]}`}</p>
+              <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-400">{`selected: ${segmentedPressed[device]}`}</p>
               <div className="grid grid-flow-col auto-cols-fr gap-1 w-fit">
                 {GDG_SEGMENTED_BUTTON_EDGES.map((edge) => (
                   <GdgSegmentedButton
@@ -537,7 +537,7 @@ export function DesignSystemShowcase() {
                     setCheckboxChecked((prev) => ({ ...prev, [size]: checked }))
                   }
                 />
-                <p className="typo-c1 text-gray-400">
+                <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-400">
                   {checkboxChecked[size] ? 'checked' : 'unchecked'}
                 </p>
                 <GdgCheckbox size={size} checked={false} disabled />

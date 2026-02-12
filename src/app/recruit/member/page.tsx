@@ -6,6 +6,7 @@ import { Select, SelectItem } from '@nextui-org/react'
 import axios from 'axios'
 
 import Loader from '@/components/ui/common/Loader'
+import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
 import {
   GdgButton,
   GdgCheckbox,
@@ -220,9 +221,9 @@ export default function Recruit() {
     if (!candidate || candidate.length !== 8) return
     setStudentCheckState({ status: 'checking', checkedValue: candidate })
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/student-id`,
-        { params: { studentId: candidate } }
+        { studentId: candidate }
       )
       const isExists = response.data?.data?.isExists
       if (isExists) {
@@ -254,9 +255,9 @@ export default function Recruit() {
     const digits = toPhoneDigits(candidate)
     setPhoneCheckState({ status: 'checking', checkedValue: digits })
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/phone-number`,
-        { params: { phoneNumber: digits } }
+        { phoneNumber: digits }
       )
       const isExists = response.data?.data?.isExists
       if (isExists) {
@@ -288,9 +289,9 @@ export default function Recruit() {
     const fullEmail = `${emailLocal}@${formData.emailDomain}`
     setEmailCheckState({ status: 'checking', checkedValue: fullEmail })
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/email`,
-        { params: { email: fullEmail } }
+        { email: fullEmail }
       )
       const isExists = response.data?.data?.isExists
       if (isExists) {
@@ -317,7 +318,7 @@ export default function Recruit() {
   }
 
   const isFormValid = useMemo(() => {
-    const required = ['name', 'gender', 'birth', 'major', 'enrolledClassification', 'gdgFeedback']
+    const required = ['name', 'gender', 'birth', 'major', 'enrolledClassification']
     const hasStrings = required.every(
       (f) => String(formData[f as keyof RecruitFormState]).trim() !== ''
     )
@@ -455,7 +456,7 @@ export default function Recruit() {
           <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
             <div className="col-span-4 flex items-center gap-3 pb-8 mobile:gap-2 mobile:pb-2">
               <GdgLogo mode="auto" />
-              <p className="typo-h3 text-white mobile:typo-m-h3">GDGoC Inha Univ. 지원</p>
+              <p className="typo-h3 text-white mobile:typo-m-h3">GDGoC INHA 지원</p>
             </div>
 
             <div className="col-span-4 space-y-8 mobile:space-y-6">
@@ -470,7 +471,7 @@ export default function Recruit() {
                         device="pc"
                         value={formData.name}
                         onChange={(e) => handleValueChange('name')(e.target.value)}
-                        placeholder="이름을 입력하세요."
+                        placeholder="이름을 입력해 주세요."
                         width="twoThirds"
                       />
                     </GdgFieldContainer>
@@ -481,7 +482,7 @@ export default function Recruit() {
                         device="mobile"
                         value={formData.name}
                         onChange={(e) => handleValueChange('name')(e.target.value)}
-                        placeholder="이름을 입력하세요."
+                        placeholder="이름을 입력해 주세요."
                         width="twoThirds"
                       />
                     </GdgFieldContainer>
@@ -517,7 +518,7 @@ export default function Recruit() {
                       device="pc"
                       value={formData.birth}
                       onChange={(e) => handleValueChange('birth')(e.target.value)}
-                      placeholder="YYYY.MM.DD"
+                      placeholder="생년월일을 입력해 주세요. (YYYY.MM.DD)"
                       width="full"
                     />
                   </div>
@@ -526,7 +527,7 @@ export default function Recruit() {
                       device="mobile"
                       value={formData.birth}
                       onChange={(e) => handleValueChange('birth')(e.target.value)}
-                      placeholder="YYYY.MM.DD"
+                      placeholder="생년월일을 입력해 주세요. (YYYY.MM.DD)"
                       width="full"
                     />
                   </div>
@@ -675,7 +676,7 @@ export default function Recruit() {
                         aria-label="학번"
                         value={formData.studentId}
                         onChange={(e) => handleValueChange('studentId')(e.target.value)}
-                        placeholder="학번을 입력하세요."
+                        placeholder="학번을 입력해 주세요."
                         width="twoThirds"
                         state={studentStatus === 'error' ? 'error' : 'available'}
                       />
@@ -687,7 +688,7 @@ export default function Recruit() {
                         aria-label="학번"
                         value={formData.studentId}
                         onChange={(e) => handleValueChange('studentId')(e.target.value)}
-                        placeholder="학번을 입력하세요."
+                        placeholder="학번을 입력해 주세요."
                         width="twoThirds"
                         state={studentStatus === 'error' ? 'error' : 'available'}
                       />
@@ -738,7 +739,7 @@ export default function Recruit() {
                         aria-label="전화번호"
                         value={formData.phoneNumber}
                         onChange={(e) => handleValueChange('phoneNumber')(e.target.value)}
-                        placeholder="전화번호를 입력하세요."
+                        placeholder="전화번호를 입력해 주세요."
                         width="twoThirds"
                         state={phoneStatus === 'error' ? 'error' : 'available'}
                       />
@@ -750,7 +751,7 @@ export default function Recruit() {
                         aria-label="전화번호"
                         value={formData.phoneNumber}
                         onChange={(e) => handleValueChange('phoneNumber')(e.target.value)}
-                        placeholder="전화번호를 입력하세요."
+                        placeholder="전화번호를 입력해 주세요."
                         width="twoThirds"
                         state={phoneStatus === 'error' ? 'error' : 'available'}
                       />
@@ -800,12 +801,10 @@ export default function Recruit() {
                         device="pc"
                         value={formData.emailLocal}
                         onChange={(e) => handleValueChange('emailLocal')(e.target.value)}
-                        placeholder="이메일"
+                        placeholder="이메일 아이디를 입력해 주세요."
                         width="twoThirds"
                         state={emailStatus === 'error' ? 'error' : 'available'}
-                        endAdornment={
-                          <span className="typo-pc-b2 text-white mr-1">@inha.edu</span>
-                        }
+                        endAdornment={<span className="typo-pc-b2 text-white mr-1">@inha.edu</span>}
                       />
                     </div>
 
@@ -814,12 +813,10 @@ export default function Recruit() {
                         device="mobile"
                         value={formData.emailLocal}
                         onChange={(e) => handleValueChange('emailLocal')(e.target.value)}
-                        placeholder="이메일"
+                        placeholder="이메일 아이디"
                         width="twoThirds"
                         state={emailStatus === 'error' ? 'error' : 'available'}
-                        endAdornment={
-                          <span className="typo-m-b3 text-white mr-1">@inha.edu</span>
-                        }
+                        endAdornment={<span className="typo-m-b3 text-white mr-1">@inha.edu</span>}
                       />
                     </div>
                   </>
@@ -871,26 +868,30 @@ export default function Recruit() {
                   ))}
                 </Select>
               </GdgFieldContainer>
-              <GdgFieldContainer label="동아리 운영에 바라는 점" required>
+              <GdgFieldContainer label="동아리 운영에 바라는 점">
                 <GdgTextarea
                   value={formData.gdgFeedback}
                   onChange={(e) =>
-                    setFormData((p) => ({ ...p, gdgFeedback: e.target.value.slice(0, 500) }))
+                    setFormData((p) => ({ ...p, gdgFeedback: e.target.value.slice(0, 100) }))
                   }
-                  maxLength={500}
-                  placeholder="내용을 입력하세요."
+                  maxLength={100}
+                  placeholder="내용을 입력해 주세요."
                   fullWidth
                 />
               </GdgFieldContainer>
-              <div className="flex items-center justify-end gap-2">
-                <p className="typo-c1 text-white text-right">
-                  <span className="text-red">* </span>입력한 정보는 운영 목적으로만 사용됩니다.
-                </p>
-                <GdgCheckbox
-                  size="mobile"
-                  checked={formData.isPayed}
-                  onCheckedChange={(c) => setFormData((p) => ({ ...p, isPayed: c }))}
-                />
+
+              <div className="space-y-4">
+                <PrivacyPolicyNotice target="member" compact />
+                <div className="flex items-center justify-end gap-2">
+                  <p className="typo-pc-b3 mobile:typo-m-c1 text-white text-right">
+                    <span className="text-red typo-pc-b3 mobile:typo-m-c1">* </span>개인정보 처리방침에 동의합니다.
+                  </p>
+                  <GdgCheckbox
+                    size="mobile"
+                    checked={formData.isPayed}
+                    onCheckedChange={(c) => setFormData((p) => ({ ...p, isPayed: c }))}
+                  />
+                </div>
               </div>
             </div>
 
@@ -903,7 +904,7 @@ export default function Recruit() {
                   type="submit"
                   disabled={!isFormValid || loading}
                   widthToken="small"
-                  size="small"
+                  size="large"
                   variant={isFormValid ? 'active' : 'disabled'}
                 >
                   제출하기
@@ -915,7 +916,7 @@ export default function Recruit() {
                   type="submit"
                   disabled={!isFormValid || loading}
                   widthToken="small"
-                  size="small"
+                  size="large"
                   variant={isFormValid ? 'active' : 'disabled'}
                   fullWidth
                 >
