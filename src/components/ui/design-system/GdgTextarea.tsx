@@ -135,7 +135,7 @@ export const GdgTextarea = forwardRef<HTMLTextAreaElement, GdgTextareaProps>(
             maxLength={maxLength}
             value={value}
             className={cn(
-              'w-full bg-transparent font-medium pc:text-base pc:leading-6 mobile:text-sm mobile:leading-5 placeholder:font-medium focus:outline-none resize-none overflow-hidden block',
+              'w-full bg-transparent font-medium typo-pc-b2 mobile:typo-m-b3 pc:placeholder:typo-pc-b2 mobile:placeholder:typo-m-b3 placeholder:font-medium focus:outline-none resize-none overflow-hidden block',
               TA_STATE[computedState].input,
               maxLength ? 'pb-6' : ''
             )}

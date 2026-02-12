@@ -113,15 +113,21 @@ export const requestLogout = (refreshToken?: string): Promise<AxiosResponse<void
 export const checkStudentIdDuplicated = (
   studentId: string
 ): Promise<AxiosResponse<ApiEnvelope<DuplicateCheckResponseBody>>> =>
-  axios.get(`${AUTH_BASE_URL}/check/student-id`, {
-    ...defaultConfig,
-    params: { studentId }
-  })
+  axios.post(
+    `${AUTH_BASE_URL}/check/student-id`,
+    { studentId },
+    {
+      ...defaultConfig
+    }
+  )
 
 export const checkPhoneNumberDuplicated = (
   phoneNumber: string
 ): Promise<AxiosResponse<ApiEnvelope<DuplicateCheckResponseBody>>> =>
-  axios.get(`${AUTH_BASE_URL}/check/phone-number`, {
-    ...defaultConfig,
-    params: { phoneNumber }
-  })
+  axios.post(
+    `${AUTH_BASE_URL}/check/phone-number`,
+    { phoneNumber },
+    {
+      ...defaultConfig
+    }
+  )

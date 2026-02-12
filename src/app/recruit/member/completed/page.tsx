@@ -1,208 +1,173 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { GdgLogo } from '@/components/ui/design-system'
 import { cn } from '@/utils/cn'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2 w-full max-w-[550px]">
-      <h2 className="typo-s2 typo-m-s1 text-white pl-2">{title}</h2>
-      <div className="flex flex-col gap-4 bg-gray-100 rounded-xl p-4 w-full">{children}</div>
-    </div>
+    <section className="flex flex-col gap-2 w-full max-w-[720px]">
+      <h2 className="typo-pc-s2 mobile:typo-m-s1 text-white pl-1">{title}</h2>
+      <div className="flex flex-col gap-2.5 w-full">{children}</div>
+    </section>
   )
 }
 
-function InfoRow({
-  icon,
-  label,
-  content,
-  subContent
-}: {
-  icon?: string
-  label?: string
-  content: React.ReactNode
-  subContent?: string
-}) {
+function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="flex flex-col gap-1 w-full">
-      <div className="flex gap-2 items-start text-white typo-b2 mobile:typo-b3">
-        {icon && <span className="shrink-0">{icon}</span>}
-        <div className="flex flex-col gap-1 w-full">
-          {label && <span className="font-bold">{label}</span>}
-          <div className="whitespace-pre-wrap">{content}</div>
-        </div>
-      </div>
-      {subContent && (
-        <p className="text-gray-700 text-[11px] leading-[14px] text-right w-full">{subContent}</p>
+    <div
+      className={cn(
+        'rounded-lg bg-gray-100 text-white px-4 py-2.5 min-h-11 mobile:min-h-10 flex items-center',
+        className
       )}
+    >
+      {children}
     </div>
   )
 }
 
-function BulletPoint({ children }: { children: React.ReactNode }) {
+function Bullet({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex gap-2 items-start text-white typo-b2 mobile:typo-b3">
-      <span className="shrink-0">•</span>
-      <div className="whitespace-pre-wrap">{children}</div>
+    <div className="flex items-start w-full">
+      <span className="w-5 shrink-0 text-center text-[18px] mobile:text-[16px] leading-none font-bold mt-[1px]">
+        •
+      </span>
+      <div className="typo-pc-b2 mobile:typo-m-b3 flex-1">{children}</div>
     </div>
+  )
+}
+
+function CoreMemberPromoSection() {
+  return (
+    <section className="relative left-1/2 w-[100dvw] -translate-x-1/2 overflow-hidden min-h-[640px] mobile:min-h-[572px]">
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-center bg-no-repeat bg-[length:100%_auto]"
+        style={{ backgroundImage: "url('/images/activity/core_pic.jpeg')" }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(30,30,30,0)_0%,rgba(30,30,30,0.55)_56%,rgba(30,30,30,0.95)_100%)]"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-[linear-gradient(180deg,#1e1e1e_0%,rgba(30,30,30,0.7)_50%,#1e1e1e_100%)]"
+      />
+
+      <div className="relative z-10 mx-auto h-full w-full max-w-[720px] flex flex-col items-center justify-center gap-10 mobile:gap-8 px-6 py-16 mobile:px-5 mobile:py-10 text-center text-white">
+        <div className="flex flex-col items-center gap-6 mobile:gap-4">
+          <h3 className="typo-pc-h4 mobile:typo-m-h3 whitespace-pre-line">
+            {'잠깐!\n혹시 코어 멤버에 대해 들어보셨나요?'}
+          </h3>
+
+          <div className="typo-pc-b2 mobile:typo-m-b3 text-gray-900 whitespace-pre-line">
+            {`코어 멤버는 GDGoC INHA 활동의 꽃,
+동아리를 직접 기획하고 운영하는 핵심 운영진입니다.
+
+행사를 만들고, 팀을 이끌고,
+동아리의 방향을 함께 고민합니다.
+
+단순한 참여를 넘어 직접 만들어보고 싶다면,
+
+.
+.
+.`}
+          </div>
+        </div>
+
+        <Link
+          href="/recruit/core"
+          className="inline-flex h-13 mobile:h-11 items-center justify-center rounded-full bg-red px-12 mobile:px-10 text-white typo-pc-s3 mobile:typo-m-s2"
+        >
+          코어 멤버 모집 바로가기
+        </Link>
+      </div>
+    </section>
   )
 }
 
 export default function RecruitSubmit() {
   return (
-    <main className="min-h-screen bg-black overflow-x-hidden">
-      <div className="relative z-10 pt-18 pb-32 mobile:pt-12 mobile:pb-24 px-4 layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-10">
-        {/* Header */}
+    <main className="min-h-screen bg-black">
+      <div className="pt-18 pb-28 mobile:pt-12 mobile:pb-20 layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8">
         <div className="col-span-4 flex items-center gap-3 mobile:gap-2">
           <GdgLogo mode="auto" />
-          <h1 className="typo-h3 text-white mobile:typo-m-h3">GDGoC Inha Univ. 모집 안내</h1>
+          <h1 className="typo-pc-h3 text-white mobile:typo-m-h2">GDGoC INHA 지원 완료</h1>
         </div>
 
-        {/* Content Sections */}
-        <div className="col-span-4 flex flex-col gap-10 w-full">
-          {/* 모집 일정 */}
-          <Section title="모집 일정">
-            <InfoRow
-              icon="✅"
-              content={
-                <>
-                  <span className="font-bold">이런 저런 기간 : </span>
-                  2025. <span className="font-bold">12. 26.</span>(금) - 2026.{' '}
-                  <span className="font-bold">01. 09.</span>(금) 23:59:59
-                </>
-              }
-            />
-            <InfoRow
-              icon="✅"
-              content={
-                <>
-                  <span className="font-bold">이런 저런 발표 : </span>~ 2026.{' '}
-                  <span className="font-bold">01. 10.</span>(토)
-                </>
-              }
-            />
-            <InfoRow
-              icon="✅"
-              content={
-                <>
-                  <span className="font-bold">이런 저런 기간 : </span>
-                  2026. <span className="font-bold">01. 12.</span>(월) - 2026.{' '}
-                  <span className="font-bold">01. 16.</span>(금)
-                </>
-              }
-              subContent="※ 이런 저런 안내문구 얄라리 얄라셩"
-            />
-            <InfoRow
-              icon="✅"
-              content={
-                <>
-                  <span className="font-bold">최종 결과 발표 : </span>~ 2026.{' '}
-                  <span className="font-bold">01. 16.</span>(금)
-                </>
-              }
-            />
-          </Section>
-
-          {/* 입금 안내 */}
-          <Section title="입금 안내">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <BulletPoint>
-                  회비 납부 확인 후,{' '}
-                  <span className="font-bold">
-                    GDG on Campus 멤버로서 모든 활동들에 대한 참가 권한
-                  </span>
-                  을 얻게 됩니다.
-                </BulletPoint>
-                <BulletPoint>
-                  프로젝트, 스터디 등 일부 활동은 운영 소요에 따라{' '}
-                  <span className="font-bold">추가금이 산정</span>될 수 있습니다.
-                </BulletPoint>
-                <BulletPoint>
-                  모든 회비는 커뮤니티 운영비로{' '}
-                  <span className="font-bold">투명하게 사용, 처리</span>됩니다.
-                </BulletPoint>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <p className="typo-s2 text-white mobile:typo-m-s2 mb-1">👛 입금 계좌</p>
-                <BulletPoint>토스뱅크 1001-9049-2082 | 예금주명 GDGoC INHA</BulletPoint>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <p className="typo-s2 text-white mobile:typo-m-s2 mb-1">💵 26-1 회비</p>
-                <BulletPoint>20,000 원</BulletPoint>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <p className="typo-s2 text-white mobile:typo-m-s2 mb-1">📌 주의사항</p>
-                <BulletPoint>
-                  회비 납부 시 입금자명을 반드시 [<span className="font-bold">2자리 학번+이름</span>
-                  ] 으로 변경해주세요!
-                </BulletPoint>
-                <BulletPoint>
-                  → ex) <span className="font-bold">25김인하</span>
-                </BulletPoint>
-              </div>
-
-              <div className="flex flex-col gap-1 pt-2">
-                <p className="typo-b3 text-white">
-                  <span className="font-bold">문의사항</span>: 박우찬 | 010-2087-1816
-                </p>
-              </div>
-            </div>
-          </Section>
-
-          {/* 동아리 톡방 초대 일정 안내 */}
-          <Section title="동아리 톡방 초대 일정 안내">
-            <div className="flex flex-col gap-1 w-full">
-              <BulletPoint>어쩌구 저쩌구</BulletPoint>
-              <p className="text-gray-700 text-[11px] leading-[14px] text-right w-full">
-                ※ 이런 저런 안내문구 얄라리 얄라셩
-              </p>
-            </div>
-          </Section>
-        </div>
-      </div>
-
-      {/* Core Member Promotion Section */}
-      <div className="relative w-full h-[560px] mobile:h-[417px] flex flex-col items-center justify-center gap-6 overflow-hidden">
-        {/* Background Image Placeholder */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-[rgba(0,0,0,0.4)] to-[#1a1a1a] z-10" />
-          {/* Replace with actual image when available */}
-          <div className="w-full h-full bg-gray-800 opacity-50 relative">
-            <Image
-              src="/images/bgimg.png"
-              alt="Core Member Promotion Background"
-              fill
-              className="object-cover opacity-60"
-              priority
-            />
-          </div>
-        </div>
-
-        <div className="relative z-20 flex flex-col items-center gap-6 text-center px-4">
-          <div className="text-white">
-            <p className="typo-h4 mobile:typo-m-h3 font-extrabold mb-1">근데 혹시...</p>
-            <p className="typo-h4 mobile:typo-m-h3 font-extrabold">
-              운영진(CORE)엔 관심 없으시술...?
+        <div className="col-span-4 flex flex-col gap-8 w-full">
+          <section className="w-full max-w-[720px]">
+            <h2 className="typo-pc-h4 mobile:typo-m-h3 text-white">지원해주셔서 감사합니다.</h2>
+            <p className="typo-pc-b2 mobile:typo-m-b1 text-gray-800 mt-2">
+              아래 안내 사항을 확인해 주세요.
             </p>
-          </div>
+          </section>
 
-          <div className="text-white typo-b2 mobile:typo-m-b3">
-            <p>운영진 하면 뭐가 좋고 이래 좋고 저래 좋고</p>
-            <p>암튼 사기문구 줄줄줄</p>
-          </div>
+          <Section title="모집 안내">
+            <Card className="flex-col items-start gap-2">
+              <Bullet>
+                <span className="font-bold mr-2">집중 모집 기간</span>
+                <span>2/12 ~ 3/15</span>
+              </Bullet>
+            </Card>
 
-          <Link
-            href="/recruit/core"
-            className="inline-flex items-center justify-center rounded-full bg-red px-12 py-3.5 text-white font-bold text-[14px] leading-[20px] hover:bg-red-400 transition-colors shadow-[0px_2px_50px_rgba(0,0,0,0.35)]"
-          >
-            운영진(CORE) 지원하러 가기
-          </Link>
+            <p className="typo-pc-c1 mobile:typo-m-c2 text-gray-500 pl-4">
+              이후 상시 모집으로 전환됩니다.
+            </p>
+          </Section>
+
+          <Section title="회비 안내">
+            <Card className="flex-col items-start gap-2">
+              <Bullet>
+                <span className="font-bold mr-2">회비</span>
+                <span>20,000원</span>
+              </Bullet>
+              <Bullet>
+                <span className="font-bold mr-2">입금 계좌</span>
+                <span>신한 110-333-968130 (예금주: 백승엽)</span>
+              </Bullet>
+              <Bullet>
+                회비 납부 확인 후, GDGoC INHA의 멤버로서 모든 활동들에 대한 참가 권한을 얻게 됩니다.
+              </Bullet>
+              <Bullet>
+                프로젝트와 스터디 등 일부 활동은 운영 소요에 따라 추가금이 산정될 수 있습니다.
+              </Bullet>
+              <Bullet>모든 회비는 커뮤니티 운영비로 투명하게 사용, 처리됩니다.</Bullet>
+            </Card>
+            <p className="typo-pc-c1 mobile:typo-m-c2 text-gray-500 pl-4">
+              회비 입금이 완료되어야 최종 등록이 확정됩니다.
+            </p>
+          </Section>
+
+          <Section title="동아리 톡방 초대 안내">
+            <Card className="flex-col items-start gap-2">
+              <Bullet>동아리 단체 채팅방은 매주 금요일에 일괄 초대됩니다.</Bullet>
+            </Card>
+          </Section>
+
+          <Section title="문의 방법">
+            <Card className="flex-col items-start gap-2.5">
+              <Bullet>
+                <span className="font-bold mr-2">카카오톡 오픈채팅</span>
+                <br />
+                <Link
+                  href="https://open.kakao.com/o/s3fxV67h"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="typo-pc-b3 mobile:typo-m-c1 text-[#9EC0FF] underline break-all"
+                >
+                  https://open.kakao.com/o/s3fxV67h
+                </Link>
+              </Bullet>
+              <Bullet>
+                <span className="font-bold mr-2">인스타그램 DM</span>
+                <br />
+                <span>@gdgoc.inha</span>
+              </Bullet>
+            </Card>
+          </Section>
+
+          <CoreMemberPromoSection />
         </div>
       </div>
     </main>

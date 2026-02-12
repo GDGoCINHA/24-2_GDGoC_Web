@@ -3,7 +3,13 @@
 import { forwardRef, type InputHTMLAttributes, type ReactNode, useId } from 'react'
 import { cn } from '@/utils/cn'
 import type { Device, PcWidthVariant, SizeToken, WidthToken } from './controlMeta'
-import { CONTROL_META, getMobileWidthClass, getPcWidthClass, isWideOnlyWidth } from './controlMeta'
+import {
+  CONTROL_META,
+  getMobileWidthClass,
+  getPcWidthClass,
+  getPlaceholderTypoByText,
+  isWideOnlyWidth
+} from './controlMeta'
 
 export const GDG_INPUT_STATES = ['available', 'disabled', 'error'] as const
 export type InputState = (typeof GDG_INPUT_STATES)[number]
@@ -21,19 +27,19 @@ const STATE_CLASS: Record<
     wrapper: 'border-gray-800 bg-black text-white',
     input: 'text-white placeholder:text-gray-700',
     adornment: 'text-white',
-    helper: 'typo-c1 pl-2 text-gray-600'
+    helper: 'typo-pc-c1 mobile:typo-m-c1 pl-2 text-gray-600'
   },
   error: {
     wrapper: 'border-red bg-black text-white',
     input: 'text-white placeholder:text-gray-700',
     adornment: 'text-red',
-    helper: 'typo-c1 pl-2 text-red'
+    helper: 'typo-pc-c1 mobile:typo-m-c1 pl-2 text-red'
   },
   disabled: {
     wrapper: 'border-gray-400 bg-gray-400 text-gray-900 cursor-not-allowed',
     input: 'text-gray-900 placeholder:text-gray-700 cursor-not-allowed',
     adornment: 'text-gray-900',
-    helper: 'typo-c1 pl-2 text-gray-900'
+    helper: 'typo-pc-c1 mobile:typo-m-c1 pl-2 text-gray-900'
   }
 }
 
@@ -97,7 +103,7 @@ export const GdgInputField = forwardRef<HTMLInputElement, GdgInputFieldProps>(
         htmlFor={fieldId}
         style={style}
       >
-        {label && <span className="typo-s3 uppercase tracking-[0.2em] text-white/80">{label}</span>}
+        {label && <span className="typo-pc-s3 mobile:typo-m-s2 uppercase tracking-[0.2em] text-white/80">{label}</span>}
         <div
           className={cn(
             'flex items-center gap-2 rounded-full border transition-colors duration-150',
@@ -121,6 +127,7 @@ export const GdgInputField = forwardRef<HTMLInputElement, GdgInputFieldProps>(
             className={cn(
               'h-full w-full min-w-0 flex-1 bg-transparent placeholder:font-medium focus:outline-none py-0 leading-normal',
               controlMeta.text,
+              getPlaceholderTypoByText(controlMeta.text),
               STATE_CLASS[computedState].input
             )}
           />

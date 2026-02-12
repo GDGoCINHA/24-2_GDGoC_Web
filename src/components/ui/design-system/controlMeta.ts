@@ -62,3 +62,16 @@ export const CONTROL_META: Record<Device, ControlMetaMap> = {
 
 export const getControlMeta = (device: Device, size: WidthToken): ControlMeta =>
   CONTROL_META[device][size] ?? CONTROL_META[device].default
+
+export const getPlaceholderTypoByText = (textTypo: string): string => {
+  switch (textTypo) {
+    case 'typo-pc-b2':
+      return 'placeholder:typo-pc-b2'
+    case 'typo-pc-c1':
+      return 'placeholder:typo-pc-c1'
+    case 'typo-m-b3':
+      return 'placeholder:typo-m-b3'
+    default:
+      return ''
+  }
+}

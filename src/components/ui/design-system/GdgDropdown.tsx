@@ -8,6 +8,7 @@ import {
   CONTROL_META,
   getControlMeta,
   getMobileWidthClass,
+  getPlaceholderTypoByText,
   getPcWidthClass,
   isWideOnlyWidth
 } from './controlMeta'
@@ -196,6 +197,7 @@ export function GdgDropdown({
               'py-0',
               'leading-normal',
               controlMeta.text,
+              getPlaceholderTypoByText(controlMeta.text),
               'text-white',
               'placeholder:text-gray-700',
               'placeholder:font-medium',
@@ -235,7 +237,7 @@ export function GdgDropdown({
             ))}
       </Autocomplete>
       {caption && (
-        <p className={cn('typo-c1 pl-2', hasError ? 'text-red' : 'text-gray-400')}>{caption}</p>
+        <p className={cn('typo-pc-c1 mobile:typo-m-c1 pl-2', hasError ? 'text-red' : 'text-gray-400')}>{caption}</p>
       )}
     </div>
   )
