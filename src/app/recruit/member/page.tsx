@@ -384,7 +384,7 @@ export default function Recruit() {
           formattedData
         )
       }
-      router.push('/recruit/member/completed')
+      router.push('/recruit/member/completed?from=recruit')
     } catch (error: any) {
       setGlobalError(error.response?.data?.message || '지원서 제출 중 오류가 발생했습니다.')
     } finally {
@@ -601,9 +601,9 @@ export default function Recruit() {
                 {/* 증빙 서류 */}
                 {formData.enrolledClassification === '군휴학' && (
                   <GdgFieldContainer
-                    label="증빙 서류 (군휴학)"
+                    label="증빙 서류 (군 휴학)"
                     required
-                    caption="PDF, JPG, PNG 파일만 가능합니다."
+                    caption="포털에서 군휴학 신청내역 캡쳐"
                   >
                     <input
                       type="file"
