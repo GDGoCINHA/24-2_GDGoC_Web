@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { GdgLogo } from '@/components/ui/design-system'
 import { cn } from '@/utils/cn'
 
@@ -42,8 +43,13 @@ function CoreMemberPromoSection() {
     <section className="relative left-1/2 w-[100dvw] -translate-x-1/2 overflow-hidden min-h-[640px] mobile:min-h-[572px]">
       <div
         aria-hidden
-        className="absolute inset-0 bg-center bg-no-repeat bg-[length:100%_auto]"
-        style={{ backgroundImage: "url('/images/activity/core_pic.jpeg')" }}
+        className="absolute inset-0 bg-center bg-no-repeat bg-cover mobile:hidden"
+        style={{ backgroundImage: "url('/images/recruit/core_pic.jpeg')" }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 hidden mobile:block bg-center bg-no-repeat bg-cover"
+        style={{ backgroundImage: "url('/images/recruit/core_pic_m.jpg')" }}
       />
       <div
         aria-hidden
@@ -87,21 +93,28 @@ function CoreMemberPromoSection() {
 }
 
 export default function RecruitSubmit() {
+  const searchParams = useSearchParams()
+  const isFromRecruit = searchParams.get('from') === 'recruit'
+
   return (
     <main className="min-h-screen bg-black">
       <div className="pt-18 pb-28 mobile:pt-12 mobile:pb-20 layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8">
         <div className="col-span-4 flex items-center gap-3 mobile:gap-2">
           <GdgLogo mode="auto" />
-          <h1 className="typo-pc-h3 text-white mobile:typo-m-h2">GDGoC INHA 지원 완료</h1>
+          <h1 className="typo-pc-h3 text-white mobile:typo-m-h2">
+            {isFromRecruit ? 'GDGoC INHA 지원 완료' : 'GDGoC INHA 일정 안내'}
+          </h1>
         </div>
 
         <div className="col-span-4 flex flex-col gap-8 w-full">
-          <section className="w-full max-w-[720px]">
-            <h2 className="typo-pc-h4 mobile:typo-m-h3 text-white">지원해주셔서 감사합니다.</h2>
-            <p className="typo-pc-b2 mobile:typo-m-b1 text-gray-800 mt-2">
-              아래 안내 사항을 확인해 주세요.
-            </p>
-          </section>
+          {isFromRecruit && (
+            <section className="w-full max-w-[720px]">
+              <h2 className="typo-pc-h4 mobile:typo-m-h3 text-white">지원해주셔서 감사합니다.</h2>
+              <p className="typo-pc-b2 mobile:typo-m-b1 text-gray-800 mt-2">
+                아래 안내 사항을 확인해 주세요.
+              </p>
+            </section>
+          )}
 
           <Section title="모집 안내">
             <Card className="flex-col items-start gap-2">
