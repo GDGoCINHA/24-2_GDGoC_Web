@@ -140,6 +140,10 @@ export default function RecruitSubmit() {
                 <span>신한 110-333-968130 (예금주: 백승엽)</span>
               </Bullet>
               <Bullet>
+                회비 납부 시 반드시 입금자명을 {"\'"}학번 + 이름{"\'"} 형식(예: 24김인하) 으로
+                변경한 후 송금해주시기 바랍니다.
+              </Bullet>
+              <Bullet>
                 회비 납부 확인 후, GDGoC INHA의 멤버로서 모든 활동들에 대한 참가 권한을 얻게 됩니다.
               </Bullet>
               <Bullet>
