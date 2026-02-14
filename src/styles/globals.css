@@ -17,13 +17,13 @@
     --color-white-40: color-mix(in srgb, var(--color-white) 40%, transparent);
 
     --color-red: #EA4335;
-    --color-red-400: #4F1C17;
+    --color-red-400: #641C16;
     --color-blue: #4285F4;
-    --color-blue-400: #1E3252;
+    --color-blue-400: #1C3862;
     --color-green: #34A853;
-    --color-green-400: #143D1F;
+    --color-green-400: #165A28;
     --color-yellow: #F9AB00;
-    --color-yellow-400: #493812;
+    --color-yellow-400: #674C14;
 
     --color-gray-100: #333333;
     --color-gray-200: #424242;
