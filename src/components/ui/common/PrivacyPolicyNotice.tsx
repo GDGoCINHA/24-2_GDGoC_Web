@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn'
 
-type PolicyTarget = 'signup' | 'member' | 'core'
+type PolicyTarget = 'signup' | 'member' | 'core' | 'memo'
 
 type PolicyRow = {
   category: string
@@ -38,6 +38,14 @@ const POLICY_ROWS: Record<PolicyTarget, PolicyRow[]> = {
       purpose: ['선발 전형 진행 및 결과 안내', '선발 후 명부 관리 및 권한 부여'],
       fields: '이름, 학번, 이메일, 주전공, 휴대전화번호',
       retention: '임기 종료 시까지 (미선발 시 5일 이내 파기)'
+    }
+  ],
+  memo: [
+    {
+      category: '신입생 지원 알림 신청',
+      purpose: ['신입생 지원 일정 안내', '지원 가능 시점 알림 전달'],
+      fields: '이름, 휴대전화번호, 이메일',
+      retention: '신입생 지원 기간 종료 시까지 (또는 동의 철회 시)'
     }
   ]
 }

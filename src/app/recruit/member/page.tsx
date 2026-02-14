@@ -1,35 +1,30 @@
 'use client'
 
-import { type FormEvent, useMemo, useRef, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Select, SelectItem } from '@nextui-org/react'
+import React, {type FormEvent, useMemo, useRef, useState} from 'react'
+import {useRouter, useSearchParams} from 'next/navigation'
+import {Select, SelectItem} from '@nextui-org/react'
 import axios from 'axios'
 
 import Loader from '@/components/ui/common/Loader'
-import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
+import {PrivacyPolicyNotice} from '@/components/ui/common/PrivacyPolicyNotice'
 import {
-  GdgButton,
-  GdgCheckbox,
-  GdgDropdown,
-  GdgFieldContainer,
-  type GdgFieldStatus,
-  GdgFileCard,
-  GdgInputField,
-  GdgLogo,
-  GdgMajorDropdown,
-  GdgTextarea,
-  GdgUploadButton
+    GdgButton,
+    GdgCheckbox,
+    GdgDropdown,
+    GdgFieldContainer,
+    type GdgFieldStatus,
+    GdgFileCard,
+    GdgInputField,
+    GdgLogo,
+    GdgMajorDropdown,
+    GdgTextarea,
+    GdgUploadButton
 } from '@/components/ui/design-system'
-import { interestOptions } from '@/constant/interestOptions'
-import { wishOptions } from '@/constant/wishOptions'
-import { formatRecruitData } from '@/utils/formatRecruitData'
-import { formatDateInput } from '@/utils/date'
-import {
-  formatPhoneNumberInput,
-  isPhoneNumberFormatValid,
-  toPhoneDigits
-} from '@/utils/phoneNumber'
-import { useAuth } from '@/hooks/useAuth'
+import {interestOptions} from '@/constant/interestOptions'
+import {wishOptions} from '@/constant/wishOptions'
+import {formatRecruitData} from '@/utils/formatRecruitData'
+import {formatDateInput} from '@/utils/date'
+import {formatPhoneNumberInput, isPhoneNumberFormatValid, toPhoneDigits} from '@/utils/phoneNumber'
 
 type RecruitFormState = {
   privacyAgreement: boolean
@@ -119,7 +114,6 @@ const recruitMultiSelectItemClasses = {
 export default function Recruit() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
   const isPreview = searchParams?.get('preview') === '1'
   const [formData, setFormData] = useState<RecruitFormState>(initialFormState)
   const [loading, setLoading] = useState(false)
@@ -130,7 +124,7 @@ export default function Recruit() {
   const [emailCheckState, setEmailCheckState] = useState<DuplicateCheckState>({ status: 'idle' })
   const [isSubmitted, setIsSubmitted] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [globalError, setGlobalError] = useState<string | null>(null)
+  const [, setGlobalError] = useState<string | null>(null)
 
   const interestDropdownOptions = useMemo(
     () => interestOptions.map((option) => ({ id: option, label: option })),
@@ -457,6 +451,39 @@ export default function Recruit() {
             <div className="col-span-4 flex items-center gap-3 pb-8 mobile:gap-2 mobile:pb-2">
               <GdgLogo mode="auto" />
               <p className="typo-h3 text-white mobile:typo-m-h3">GDGoC INHA 지원</p>
+            </div>
+
+            <div className="col-span-4 pb-2 mobile:typo-m-s3 flex flex-col items-center text-center">
+              <div className="pc:contents hidden">
+                <GdgButton
+                  device="pc"
+                  type="button"
+                  size="small"
+                  variant="active"
+                  widthToken="full"
+                  onClick={() => router.push('/recruit/member/memo')}
+                >
+                  신입생 지원 알림 신청 바로가기
+                </GdgButton>
+                <p className="mt-2 typo-pc-c2 text-gray-400">
+                  신입생분들은 학번이 나오지 않아 지금은 지원이 어려워요.
+                </p>
+              </div>
+              <div className="pc:hidden contents">
+                <GdgButton
+                  device="mobile"
+                  type="button"
+                  size="small"
+                  variant="active"
+                  widthToken="full"
+                  onClick={() => router.push('/recruit/member/memo')}
+                >
+                  신입생 지원 알림 신청 바로가기
+                </GdgButton>
+                <p className="mt-2 typo-m-c1 text-gray-400">
+                  신입생분들은 학번이 나오지 않아 지금은 지원이 어려워요.
+                </p>
+              </div>
             </div>
 
             <div className="col-span-4 space-y-8 mobile:space-y-6">
@@ -884,7 +911,8 @@ export default function Recruit() {
                 <PrivacyPolicyNotice target="member" compact />
                 <div className="flex items-center justify-end gap-2">
                   <p className="typo-pc-b3 mobile:typo-m-c1 text-white text-right">
-                    <span className="text-red typo-pc-b3 mobile:typo-m-c1">* </span>개인정보 처리방침에 동의합니다.
+                    <span className="text-red typo-pc-b3 mobile:typo-m-c1">* </span>개인정보
+                    처리방침에 동의합니다.
                   </p>
                   <GdgCheckbox
                     size="mobile"
