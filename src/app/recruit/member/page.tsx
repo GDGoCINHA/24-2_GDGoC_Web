@@ -22,29 +22,21 @@ import {
 } from '@/components/ui/design-system'
 import {interestOptions} from '@/constant/interestOptions'
 import {wishOptions} from '@/constant/wishOptions'
-import {formatRecruitData} from '@/utils/formatRecruitData'
 import {formatDateInput} from '@/utils/date'
 import {usePhoneNumber} from '@/hooks/usePhoneNumber'
 
 type RecruitFormState = {
-  privacyAgreement: boolean
   name: string
   gender: string
   birth: string
   major: string
   enrolledClassification: string
-  grade: string
   studentId: string
   phoneNumber: string
-  nationality: string
   emailLocal: string
   emailDomain: string
   gdgInterest: string[]
   gdgWish: string[]
-  gdgPeriod: string[]
-  gdgRoute: string
-  gdgRouteEtc: string
-  gdgExpect: string[]
   gdgFeedback: string
   isPayed: boolean
   proofFile: File | null
@@ -60,24 +52,17 @@ interface DuplicateCheckState {
 }
 
 const initialFormState: RecruitFormState = {
-  privacyAgreement: false,
   name: '',
   gender: '',
   birth: '',
   major: '',
   enrolledClassification: '',
-  grade: '1학년',
   studentId: '',
   phoneNumber: '',
-  nationality: '대한민국',
   emailLocal: '',
   emailDomain: 'inha.edu',
   gdgInterest: [],
   gdgWish: [],
-  gdgPeriod: [],
-  gdgRoute: '기타',
-  gdgRouteEtc: '',
-  gdgExpect: [],
   gdgFeedback: '',
   isPayed: false,
   proofFile: null
@@ -348,9 +333,7 @@ export default function Recruit() {
           enrolledClassification: formData.enrolledClassification
         })
         map.set(3, {
-          grade: formData.grade,
-          phoneNumber: toDigits(formData.phoneNumber),
-          nationality: formData.nationality
+          phoneNumber: toDigits(formData.phoneNumber)
         })
         map.set(4, {
           gender: formData.gender,
@@ -358,16 +341,18 @@ export default function Recruit() {
           email: `${formData.emailLocal.trim()}@${formData.emailDomain}`
         })
         map.set(5, { major: formData.major })
+        map.set(8, { gdgInterest: formData.gdgInterest })
+        map.set(9, { gdgWish: formData.gdgWish })
         map.set(10, { gdgFeedback: formData.gdgFeedback })
         map.set(11, { isPayed: formData.isPayed })
         return map
       }
-      const formattedData = formatRecruitData(buildRecruitMap())
+      const payload = Object.fromEntries(buildRecruitMap())
       if (formData.enrolledClassification === '군휴학' && formData.proofFile) {
         const fd = new FormData()
         fd.append(
           'request',
-          new Blob([JSON.stringify(formattedData)], { type: 'application/json' })
+          new Blob([JSON.stringify(payload)], { type: 'application/json' })
         )
         fd.append('file', formData.proofFile)
         await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`, fd, {
@@ -376,7 +361,7 @@ export default function Recruit() {
       } else {
         await axios.post(
           `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`,
-          formattedData
+          payload
         )
       }
       router.push('/recruit/member/completed?from=recruit')
