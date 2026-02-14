@@ -63,17 +63,28 @@ export default function UserDetailsModal({ user, isOpen, onClose, preventClose }
               WANT_TO_GET: '얻어가고 싶은 거',
               EXPECTED_ACTIVITY: '기대하는 활동',
               FEEDBACK: '피드백',
+              PROOF_FILE: '재학 상태 증빙 파일',
             };
 
             const question = questionMap[answer?.inputType] ?? answer?.inputType ?? '질문';
             const value = answer?.responseValue;
             const response = Array.isArray(value) ? value.join(', ') : value;
+            const isLinkValue = typeof response === 'string' && /^https?:\/\//.test(response);
 
             return (
               <div key={answer?.id ?? idx}>
                 <hr className='border-[#5b5b6699]' />
                 <div className={clsx(infoTextStyle)}>{question}</div>
-                <div className='text-sm'>{response || '없음'}</div>
+                {isLinkValue ? (
+                  <Button
+                    className='!bg-[#4285F4] !text-white'
+                    onPress={() => window.open(response, '_blank', 'noopener,noreferrer')}
+                  >
+                    파일 열기
+                  </Button>
+                ) : (
+                  <div className='text-sm'>{response || '없음'}</div>
+                )}
               </div>
             );
           })}

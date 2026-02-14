@@ -326,7 +326,6 @@ export default function Recruit() {
       setLoading(true)
       const buildRecruitMap = () => {
         const map = new Map<number, Record<string, unknown>>()
-        map.set(1, { isAgree: formData.isPayed })
         map.set(2, {
           name: formData.name,
           studentId: formData.studentId,
@@ -341,10 +340,12 @@ export default function Recruit() {
           email: `${formData.emailLocal.trim()}@${formData.emailDomain}`
         })
         map.set(5, { major: formData.major })
-        map.set(8, { gdgInterest: formData.gdgInterest })
-        map.set(9, { gdgWish: formData.gdgWish })
-        map.set(10, { gdgFeedback: formData.gdgFeedback })
-        map.set(11, { isPayed: formData.isPayed })
+        map.set(6, {
+          gdgInterest: formData.gdgInterest,
+          gdgWish: formData.gdgWish,
+          gdgFeedback: formData.gdgFeedback,
+          isPayed: formData.isPayed
+        })
         return map
       }
       const payload = Object.fromEntries(buildRecruitMap())
