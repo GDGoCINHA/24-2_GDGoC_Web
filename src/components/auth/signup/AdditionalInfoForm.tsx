@@ -2,6 +2,7 @@
 
 import { GdgInput } from '@/components/ui/input/GdgInput'
 import { MajorAutocomplete } from '@/components/ui/input/MajorAutocomplete'
+import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 
 export default function AdditionalInfoForm({
   major,
@@ -11,6 +12,8 @@ export default function AdditionalInfoForm({
   phoneNumber,
   setPhoneNumber
 }) {
+  const { formatInput } = usePhoneNumber()
+
   return (
     <div className="w-full">
       <div className="flex flex-col w-full mt-10 gap-2">
@@ -38,19 +41,7 @@ export default function AdditionalInfoForm({
           placeholder="전화번호를 입력해주세요 (예: 010-1234-5678)"
           className="w-full"
           value={phoneNumber}
-          onChange={(e) => {
-            const value = e.target.value.replace(/[^0-9]/g, '')
-            if (value.length <= 11) {
-              let formattedNumber = value
-              if (value.length > 3) {
-                formattedNumber = value.slice(0, 3) + '-' + value.slice(3)
-              }
-              if (value.length > 7) {
-                formattedNumber = formattedNumber.slice(0, 8) + '-' + formattedNumber.slice(8)
-              }
-              setPhoneNumber(formattedNumber)
-            }
-          }}
+          onChange={(e) => setPhoneNumber(formatInput(e.target.value))}
         />
       </div>
     </div>

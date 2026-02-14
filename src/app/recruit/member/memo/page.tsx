@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
 import { GdgButton, GdgCheckbox, GdgFieldContainer, GdgInputField, GdgLogo } from '@/components/ui/design-system'
-import { formatPhoneNumberInput, isPhoneNumberFormatValid } from '@/utils/phoneNumber'
+import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 
 type MemoFormState = {
   name: string
@@ -31,8 +31,9 @@ export default function RecruitMemberMemoPage() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState<MemoFormState>(initialFormState)
+  const { formatInput, isValidFormat, toDigits } = usePhoneNumber()
 
-  const isPhoneValid = isPhoneNumberFormatValid(formData.phoneNumber)
+  const isPhoneValid = isValidFormat(formData.phoneNumber)
   const isEmailValid = EMAIL_PATTERN.test(formData.email.trim())
 
   const isFormValid = useMemo(
@@ -54,9 +55,11 @@ export default function RecruitMemberMemoPage() {
 
     try {
       setIsSaving(true)
+      const normalizedPhoneNumber = toDigits(formData.phoneNumber)
+
       await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/memo`, {
         name: formData.name.trim(),
-        phoneNumber: formData.phoneNumber,
+        phoneNumber: normalizedPhoneNumber,
         email: formData.email.trim(),
         privacyAgreement: formData.privacyAgreement,
         freshmanMemoAgreement: formData.freshmanMemoAgreement
@@ -139,7 +142,7 @@ export default function RecruitMemberMemoPage() {
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      phoneNumber: formatPhoneNumberInput(e.target.value)
+                      phoneNumber: formatInput(e.target.value)
                     }))
                   }
                   placeholder="전화번호를 입력해 주세요. (010-1234-5678)"
@@ -154,7 +157,7 @@ export default function RecruitMemberMemoPage() {
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      phoneNumber: formatPhoneNumberInput(e.target.value)
+                      phoneNumber: formatInput(e.target.value)
                     }))
                   }
                   placeholder="전화번호를 입력해 주세요."

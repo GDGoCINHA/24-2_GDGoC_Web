@@ -24,7 +24,7 @@ import {interestOptions} from '@/constant/interestOptions'
 import {wishOptions} from '@/constant/wishOptions'
 import {formatRecruitData} from '@/utils/formatRecruitData'
 import {formatDateInput} from '@/utils/date'
-import {formatPhoneNumberInput, isPhoneNumberFormatValid, toPhoneDigits} from '@/utils/phoneNumber'
+import {usePhoneNumber} from '@/hooks/usePhoneNumber'
 
 type RecruitFormState = {
   privacyAgreement: boolean
@@ -114,6 +114,7 @@ const recruitMultiSelectItemClasses = {
 export default function Recruit() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { formatInput, isValidFormat, toDigits } = usePhoneNumber()
   const isPreview = searchParams?.get('preview') === '1'
   const [formData, setFormData] = useState<RecruitFormState>(initialFormState)
   const [loading, setLoading] = useState(false)
@@ -148,7 +149,7 @@ export default function Recruit() {
   const handleValueChange = (field: keyof RecruitFormState) => (value: string) => {
     const nextValue =
       field === 'phoneNumber'
-        ? formatPhoneNumberInput(value)
+        ? formatInput(value)
         : field === 'birth'
           ? formatDateInput(value)
           : value
@@ -245,8 +246,8 @@ export default function Recruit() {
 
   const handlePhoneCheck = async () => {
     const candidate = formData.phoneNumber.trim()
-    if (!candidate || !isPhoneNumberFormatValid(candidate)) return
-    const digits = toPhoneDigits(candidate)
+    if (!candidate || !isValidFormat(candidate)) return
+    const digits = toDigits(candidate)
     setPhoneCheckState({ status: 'checking', checkedValue: digits })
     try {
       const response = await axios.post(
@@ -348,7 +349,7 @@ export default function Recruit() {
         })
         map.set(3, {
           grade: formData.grade,
-          phoneNumber: toPhoneDigits(formData.phoneNumber),
+          phoneNumber: toDigits(formData.phoneNumber),
           nationality: formData.nationality
         })
         map.set(4, {
@@ -431,7 +432,7 @@ export default function Recruit() {
     formData.studentId.trim() === studentCheckState.verifiedValue
   const isPhoneCheckDisabled =
     !formData.phoneNumber.trim() ||
-    !isPhoneNumberFormatValid(formData.phoneNumber) ||
+    !isValidFormat(formData.phoneNumber) ||
     phoneCheckState.status === 'checking' ||
     formData.phoneNumber.trim() === phoneCheckState.verifiedValue
   const isEmailCheckDisabled =

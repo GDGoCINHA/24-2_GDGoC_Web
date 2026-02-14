@@ -24,12 +24,8 @@ import {
   signupWithProfile
 } from '@/services/auth/authClient'
 import { PENDING_SIGNUP_STORAGE_KEY, type PendingSignupPayload } from '@/constant/auth'
+import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
-import {
-  formatPhoneNumberInput,
-  isPhoneNumberFormatValid,
-  toPhoneDigits
-} from '@/utils/phoneNumber'
 
 const DEFAULT_FALLBACK_ROUTE = '/'
 const STUDENT_ID_PATTERN = /^12\d{6}$/
@@ -65,6 +61,7 @@ export default function SignupPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { setUser } = useAuth()
+  const { formatInput, isValidFormat, toDigits } = usePhoneNumber()
   const isPreview = searchParams?.get('preview') === '1'
 
   const [pendingInfo, setPendingInfo] = useState<PendingSignupPayload | null>(null)
@@ -131,7 +128,7 @@ export default function SignupPage() {
   const requestedNext = pendingInfo?.next ?? searchParams?.get('next') ?? null
   const nextUrl = useMemo(() => getSafeNextUrl(requestedNext), [requestedNext])
 
-  const phoneDigits = toPhoneDigits(phoneNumber)
+  const phoneDigits = toDigits(phoneNumber)
 
   const handleStudentIdChange = useCallback(
     (value: string) => {
@@ -157,7 +154,7 @@ export default function SignupPage() {
 
   const handlePhoneNumberChange = useCallback(
     (value: string) => {
-      const nextValue = formatPhoneNumberInput(value)
+      const nextValue = formatInput(value)
       setPhoneNumber(nextValue)
 
       if (phoneCheckState.verifiedValue === nextValue && nextValue !== '') {
@@ -212,9 +209,9 @@ export default function SignupPage() {
 
   const handlePhoneCheck = useCallback(async () => {
     const candidate = phoneNumber.trim()
-    if (!candidate || !isPhoneNumberFormatValid(candidate)) return
+    if (!candidate || !isValidFormat(candidate)) return
 
-    const digits = toPhoneDigits(candidate)
+    const digits = toDigits(candidate)
     setPhoneCheckState({ status: 'checking', checkedValue: digits })
 
     try {
@@ -289,7 +286,7 @@ export default function SignupPage() {
 
   const isPhoneCheckDisabled = 
     !phoneNumber.trim() || 
-    !isPhoneNumberFormatValid(phoneNumber) || 
+    !isValidFormat(phoneNumber) || 
     phoneCheckState.status === 'checking' || 
     phoneNumber.trim() === phoneCheckState.verifiedValue
 
