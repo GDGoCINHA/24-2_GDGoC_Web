@@ -6,6 +6,7 @@ import { Autocomplete, AutocompleteItem, AutocompleteSection } from '@nextui-org
 import axios from 'axios';
 
 import TransparentInput from '@/components/ui/input/TransparentInput';
+import { usePhoneNumber } from '@/hooks/usePhoneNumber';
 
 import { majorOptions } from '@/constant/majorOptions';
 
@@ -13,6 +14,7 @@ export default function AuthFindId({ handleBackToLogin }) {
   const [name, setName] = useState('');
   const [major, setMajor] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const { formatInput } = usePhoneNumber();
 
   const handleSubmitFindId = async () => {
     try {
@@ -115,21 +117,7 @@ export default function AuthFindId({ handleBackToLogin }) {
         value={phoneNumber}
         autoComplete={false}
         onChange={(e) => {
-          const value = e.target.value.replace(/[^0-9]/g, '');
-          if (value.length <= 11) {
-            let formattedNumber = '';
-            if (value.length > 3) {
-              formattedNumber += value.slice(0, 3) + '-';
-              if (value.length > 7) {
-                formattedNumber += value.slice(3, 7) + '-' + value.slice(7);
-              } else {
-                formattedNumber += value.slice(3);
-              }
-            } else {
-              formattedNumber = value;
-            }
-            setPhoneNumber(formattedNumber);
-          }
+          setPhoneNumber(formatInput(e.target.value));
         }}
       />
 

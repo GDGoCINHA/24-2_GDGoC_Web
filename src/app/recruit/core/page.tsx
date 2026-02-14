@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/design-system'
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import { cn } from '@/utils/cn'
-import { formatPhoneNumberInput, toPhoneDigits } from '@/utils/phoneNumber'
 
 type RecruitStep = 0 | 1 | 2 | 3
 
@@ -188,6 +188,7 @@ function Bullet({ children }: { children: React.ReactNode }) {
 export default function RecruitCore() {
   const router = useRouter()
   const { apiClient } = useAuthenticatedApi()
+  const { formatInput, toDigits } = usePhoneNumber()
 
   const [currentStep, setCurrentStep] = useState<RecruitStep>(0)
   const [maxReachedStep, setMaxReachedStep] = useState<RecruitStep>(0)
@@ -251,7 +252,7 @@ export default function RecruitCore() {
           studentId: prev.studentId || payload.studentId || '',
           email: prev.email || payload.email || '',
           major: prev.major || payload.major || '',
-          phone: formatPhoneNumberInput(prev.phone || payload.phone || '')
+          phone: formatInput(prev.phone || payload.phone || '')
         }))
       } catch (error: any) {
         if (!active) return
@@ -302,7 +303,7 @@ export default function RecruitCore() {
   const handleInputValueChange = (name: keyof RecruitFormData, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'phone' ? formatPhoneNumberInput(value) : value
+      [name]: name === 'phone' ? formatInput(value) : value
     }))
   }
 
@@ -384,7 +385,7 @@ export default function RecruitCore() {
         snapshot: {
           name: formData.name,
           studentId: formData.studentId,
-          phone: toPhoneDigits(formData.phone),
+          phone: toDigits(formData.phone),
           major: formData.major,
           email: formData.email
         },
