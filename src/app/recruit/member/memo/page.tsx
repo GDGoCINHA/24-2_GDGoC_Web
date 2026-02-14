@@ -62,6 +62,7 @@ export default function RecruitMemberMemoPage() {
         freshmanMemoAgreement: formData.freshmanMemoAgreement
       })
       alert('신입생 지원 알림 신청이 완료되었습니다.')
+      router.push('/')
     } catch {
       alert('신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
     } finally {
