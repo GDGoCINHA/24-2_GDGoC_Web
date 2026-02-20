@@ -1,7 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { type ComponentPropsWithoutRef, type MouseEventHandler } from 'react'
+import {
+  type ComponentPropsWithoutRef,
+  type MouseEvent,
+  type MouseEventHandler,
+  useRef,
+  useState
+} from 'react'
 import { cn } from '@/utils/cn'
 
 export const GDG_FILE_CARD_ACTIONS = ['remove', 'download', 'none'] as const
@@ -121,6 +127,14 @@ export interface GdgUploadButtonProps extends ComponentPropsWithoutRef<'button'>
   label?: string
 }
 
+type Ripple = {
+  id: number
+  x: number
+  y: number
+  size: number
+  active: boolean
+}
+
 /**
  * GdgUploadButton Component
  * Red CTA button for file selection.
@@ -130,8 +144,13 @@ export function GdgUploadButton({
   device = 'auto',
   label = '+ 파일 선택',
   className,
+  onClick,
+  disabled,
   ...rest
 }: GdgUploadButtonProps) {
+  const [ripples, setRipples] = useState<Ripple[]>([])
+  const rippleIdRef = useRef(0)
+
   const widthClass =
     device === 'auto' ? 'pc:w-137.5 mobile:w-85.75' : device === 'pc' ? 'w-137.5' : 'w-85.75'
 
@@ -144,20 +163,67 @@ export function GdgUploadButton({
         ? 'typo-pc-b2'
         : 'typo-m-b3'
 
+  const triggerRipple = (event: MouseEvent<HTMLButtonElement>) => {
+    if (disabled) return
+
+    const element = event.currentTarget
+    const rect = element.getBoundingClientRect()
+    const size = Math.max(rect.width, rect.height) * 2
+    const isKeyboardClick = event.detail === 0
+    const x = isKeyboardClick ? rect.width / 2 : event.clientX - rect.left
+    const y = isKeyboardClick ? rect.height / 2 : event.clientY - rect.top
+    const id = rippleIdRef.current++
+
+    setRipples((prev) => [...prev, { id, x, y, size, active: false }])
+
+    requestAnimationFrame(() => {
+      setRipples((prev) =>
+        prev.map((ripple) => (ripple.id === id ? { ...ripple, active: true } : ripple))
+      )
+    })
+
+    window.setTimeout(() => {
+      setRipples((prev) => prev.filter((ripple) => ripple.id !== id))
+    }, 550)
+  }
+
   return (
     <button
       type="button"
       {...rest}
+      disabled={disabled}
+      onClick={(event) => {
+        triggerRipple(event)
+        onClick?.(event)
+      }}
       className={cn(
-        'inline-flex items-center justify-center rounded-lg bg-red px-4 font-medium text-white shadow-[0px_2px_50px_rgba(0,0,0,0.35)] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white/40',
+        'relative isolate inline-flex items-center justify-center overflow-hidden rounded-lg bg-red px-4 font-medium text-white shadow-[0px_2px_50px_rgba(0,0,0,0.35)] transition-all duration-200 ease-out focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-white/40',
         heightClass,
         widthClass,
         typoClass,
-        rest.disabled && 'cursor-not-allowed border-gray-100 bg-gray-100 text-white/40 opacity-70',
+        !disabled && 'cursor-pointer active:scale-[0.98] active:translate-y-px',
+        disabled && 'cursor-not-allowed border-gray-100 bg-gray-100 text-white/40 opacity-70',
         className
       )}
     >
-      <span>{label}</span>
+      <span className="pointer-events-none absolute inset-0">
+        {ripples.map((ripple) => (
+          <span
+            key={ripple.id}
+            className="absolute rounded-full bg-white/35"
+            style={{
+              left: ripple.x,
+              top: ripple.y,
+              width: ripple.size,
+              height: ripple.size,
+              transform: `translate(-50%, -50%) scale(${ripple.active ? 1 : 0})`,
+              opacity: ripple.active ? 0 : 0.35,
+              transition: 'transform 550ms ease-out, opacity 550ms ease-out'
+            }}
+          />
+        ))}
+      </span>
+      <span className="relative z-10">{label}</span>
     </button>
   )
 }

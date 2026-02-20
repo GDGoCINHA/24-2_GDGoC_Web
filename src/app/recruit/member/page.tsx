@@ -440,39 +440,6 @@ export default function Recruit() {
               <p className="typo-h3 text-white mobile:typo-m-h3">GDGoC INHA 지원</p>
             </div>
 
-            <div className="col-span-4 pb-2 mobile:typo-m-s3 flex flex-col items-center text-center">
-              <div className="pc:contents hidden">
-                <GdgButton
-                  device="pc"
-                  type="button"
-                  size="small"
-                  variant="active"
-                  widthToken="full"
-                  onClick={() => router.push('/recruit/member/memo')}
-                >
-                  신입생 지원 알림 신청 바로가기
-                </GdgButton>
-                <p className="mt-2 typo-pc-c2 text-gray-400">
-                  신입생분들은 학번이 나오지 않아 지금은 지원이 어려워요.
-                </p>
-              </div>
-              <div className="pc:hidden contents">
-                <GdgButton
-                  device="mobile"
-                  type="button"
-                  size="small"
-                  variant="active"
-                  widthToken="full"
-                  onClick={() => router.push('/recruit/member/memo')}
-                >
-                  신입생 지원 알림 신청 바로가기
-                </GdgButton>
-                <p className="mt-2 typo-m-c1 text-gray-400">
-                  신입생분들은 학번이 나오지 않아 지금은 지원이 어려워요.
-                </p>
-              </div>
-            </div>
-
             <div className="col-span-4 space-y-8 mobile:space-y-6">
               <p className="typo-h5 text-white mobile:typo-m-h4">기본 정보</p>
 

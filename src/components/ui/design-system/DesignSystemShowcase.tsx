@@ -236,7 +236,7 @@ export function DesignSystemShowcase() {
           {GDG_SEGMENTED_BUTTON_DEVICES.map((device) => (
             <div key={device} className="space-y-2">
               <p className="text-xs text-white/60">{device}</p>
-              <div className="grid grid-flow-col auto-cols-fr gap-1 w-fit">
+              <div className="grid grid-flow-col auto-cols-fr gap-0 w-fit">
                 {GDG_SEGMENTED_BUTTON_EDGES.map((edge) => (
                   <GdgSegmentedButton
                     key={`${device}-${edge}`}
@@ -250,7 +250,7 @@ export function DesignSystemShowcase() {
                 ))}
               </div>
               <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-400">{`selected: ${segmentedPressed[device]}`}</p>
-              <div className="grid grid-flow-col auto-cols-fr gap-1 w-fit">
+              <div className="grid grid-flow-col auto-cols-fr gap-0 w-fit">
                 {GDG_SEGMENTED_BUTTON_EDGES.map((edge) => (
                   <GdgSegmentedButton
                     key={`${device}-${edge}-disabled`}

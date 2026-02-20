@@ -28,3 +28,14 @@ export { GdgLogo } from './GdgLogo'
 export type { GdgLogoProps } from './GdgLogo'
 export { GdgGoogleLoginButton } from './GdgGoogleLoginButton'
 export type { GdgGoogleLoginButtonProps } from './GdgGoogleLoginButton'
+export { GdgSiteHeader } from './GdgSiteHeader'
+export type { GdgSiteHeaderProps } from './GdgSiteHeader'
+export { GdgSiteFooter } from './GdgSiteFooter'
+export type { GdgSiteFooterProps, GdgFooterMenuSection } from './GdgSiteFooter'
+export {
+  GDG_HEADER_FOOTER_PRESETS,
+  GDG_DEFAULT_MAIN_MENUS,
+  GDG_DEFAULT_FOOTER_SECTIONS
+} from './GdgSiteNav.presets'
+export type { GdgHeaderFooterPreset } from './GdgSiteNav.presets'
+export type { GdgMenuLink } from './GdgSiteNav.types'

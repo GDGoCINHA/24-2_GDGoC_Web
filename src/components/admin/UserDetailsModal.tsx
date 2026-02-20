@@ -3,6 +3,84 @@
 import React, { useEffect } from 'react';
 import { Button } from '@nextui-org/react';
 import clsx from 'clsx';
+import { formatPhoneNumberDisplay } from '@/utils/phoneNumber';
+
+const FIELD_LABELS = {
+  id: 'ID',
+  name: '이름',
+  studentId: '학번',
+  enrolledClassification: '재학 구분',
+  phoneNumber: '전화번호',
+  email: '이메일',
+  gender: '성별',
+  birth: '생년월일',
+  major: '전공',
+  admissionSemester: '입학 학기',
+  isPayed: '회비 송금 여부',
+  createdAt: '생성 시각',
+  updatedAt: '수정 시각',
+};
+
+const PRIMARY_FIELD_ORDER = [
+  'name',
+  'studentId',
+  'enrolledClassification',
+  'phoneNumber',
+  'email',
+  'gender',
+  'birth',
+  'major',
+  'isPayed',
+];
+
+const RESERVED_KEYS = new Set(['answers', 'id', 'admissionSemester', 'createdAt', 'updatedAt']);
+
+const ENROLLED_CLASSIFICATION_LABELS = {
+  FULL_REGISTRATION: '재학',
+  LEAVE_OF_ABSENCE: '휴학',
+  MILITARY_LEAVE: '군휴학',
+  GRADUATION: '졸업',
+  PARTIAL_REGISTRATION: '부분등록',
+  COMPLETION: '수료',
+};
+
+const GENDER_LABELS = {
+  MALE: '남성',
+  FEMALE: '여성',
+  PRIVATE: '비공개',
+};
+
+const formatValue = (value) => {
+  if (value === undefined || value === null || value === '') return '-';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '-';
+    if (value.every((item) => ['string', 'number', 'boolean'].includes(typeof item))) {
+      return value.join(', ');
+    }
+    return JSON.stringify(value, null, 2);
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value, null, 2);
+  }
+  return String(value);
+};
+
+const formatFieldValue = (key, value) => {
+  if (typeof value === 'string' && (key === 'phoneNumber' || key === 'phone')) {
+    return formatPhoneNumberDisplay(value);
+  }
+  if (key === 'enrolledClassification' && typeof value === 'string') {
+    return ENROLLED_CLASSIFICATION_LABELS[value] ?? value;
+  }
+  if (key === 'gender' && typeof value === 'string') {
+    return GENDER_LABELS[value] ?? value;
+  }
+  if (key === 'isPayed' && typeof value === 'boolean') {
+    return value ? '입금 완료' : '미입금';
+  }
+  return formatValue(value);
+};
 
 export default function UserDetailsModal({ user, isOpen, onClose, preventClose }) {
   useEffect(() => {
@@ -24,31 +102,44 @@ export default function UserDetailsModal({ user, isOpen, onClose, preventClose }
   const valueStyle = 'p-3';
   const infoTextStyle = 'font-bold text-xl py-[10px]';
 
+  const userRecord = user && typeof user === 'object' ? user : {};
+  const allKeys = Object.keys(userRecord).filter((key) => !RESERVED_KEYS.has(key));
+  const orderedKeys = PRIMARY_FIELD_ORDER.filter((key) => allKeys.includes(key));
+  const remainingKeys = allKeys.filter((key) => !PRIMARY_FIELD_ORDER.includes(key));
+  const displayKeys = [...orderedKeys, ...remainingKeys];
+
   return (
-    <div className='fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/50'>
+    <div
+      className='fixed inset-0 flex items-center justify-center p-4 z-50 bg-black/50'
+      onClick={(event) => {
+        if (preventClose) return;
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className='max-w-[600px] w-full max-h-[90vh] mobile:max-h-[80vh] bg-[#27272A] rounded-lg shadow-md p-6 overflow-y-auto'>
         <div className='text-lg font-bold text-center text-white mb-4'>User Details</div>
 
-        {/* User Basic Info (공통 + 코어 지원 정보 포함) */}
         <table className='w-full border-collapse border text-white mb-6'>
           <tbody>
-            {[
-              ['이름', user?.name],
-              ['전공', user?.major],
-              ['학번', user?.studentId],
-              ['회비 송금 여부', typeof user?.isPayed === 'boolean' ? (user.isPayed ? 'Yes' : 'No') : undefined],
-              ['이메일', user?.email],
-              ['전화번호', user?.phone],
-              ['지원팀', user?.team],
-              ['제출 시각', user?.createdAt],
-            ]
-              .filter(([, val]) => val !== undefined && val !== null && val !== '')
-              .map(([label, userValue], idx) => (
-                <tr key={idx} className={rowStyle}>
+            {displayKeys.map((key) => {
+              const value = formatFieldValue(key, userRecord[key]);
+              const isMultiline = typeof value === 'string' && (value.includes('\n') || value.length > 100);
+              const label = FIELD_LABELS[key] ?? key;
+              return (
+                <tr key={key} className={rowStyle}>
                   <td className={clsx(cellStyle)}>{label}</td>
-                  <td className={clsx(valueStyle)}>{userValue}</td>
+                  <td className={clsx(valueStyle)}>
+                    {isMultiline ? (
+                      <pre className='whitespace-pre-wrap break-all text-sm m-0'>{value}</pre>
+                    ) : (
+                      value
+                    )}
+                  </td>
                 </tr>
-              ))}
+              );
+            })}
           </tbody>
         </table>
 
@@ -124,7 +215,7 @@ export default function UserDetailsModal({ user, isOpen, onClose, preventClose }
         </div>
 
         <div className='flex justify-end mt-6'>
-          <Button color='primary' onPress={onClose}>
+          <Button color='primary' onPress={onClose} isDisabled={Boolean(preventClose)}>
             Close
           </Button>
         </div>
