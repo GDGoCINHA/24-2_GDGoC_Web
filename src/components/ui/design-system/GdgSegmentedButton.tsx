@@ -5,10 +5,13 @@ import { cn } from '@/utils/cn'
 
 export const GDG_SEGMENTED_BUTTON_DEVICES = ['pc', 'mobile'] as const
 export const GDG_SEGMENTED_BUTTON_EDGES = ['left', 'right'] as const
+export const GDG_SEGMENTED_BUTTON_STATES = ['default', 'pressed', 'disabled'] as const
 
 export type GdgSegmentedButtonProps = {
   device?: (typeof GDG_SEGMENTED_BUTTON_DEVICES)[number]
   edge?: (typeof GDG_SEGMENTED_BUTTON_EDGES)[number]
+  state?: (typeof GDG_SEGMENTED_BUTTON_STATES)[number]
+  // Backward compatibility. Prefer `state`.
   pressed?: boolean
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
@@ -24,7 +27,7 @@ const EDGE_RADIUS: Record<'pc' | 'mobile', Record<'left' | 'right', string>> = {
 }
 
 const STATE_CLASS = {
-  pressed: 'bg-red border-red text-white',
+  pressed: 'bg-red-400 border-red text-white',
   default: 'bg-gray-100 border-gray-100 text-white',
   disabled: 'bg-gray-400 border-gray-400 text-white/70'
 }
@@ -32,23 +35,28 @@ const STATE_CLASS = {
 export function GdgSegmentedButton({
   device = 'pc',
   edge = 'left',
+  state,
   pressed = false,
   className,
   style,
   children,
   ...rest
 }: GdgSegmentedButtonProps) {
-  const isDisabled = Boolean(rest.disabled)
+  const resolvedState =
+    rest.disabled || state === 'disabled'
+      ? 'disabled'
+      : state ?? (pressed ? 'pressed' : 'default')
+  const isDisabled = resolvedState === 'disabled'
 
   return (
     <button
       type="button"
-      aria-pressed={pressed}
+      aria-pressed={resolvedState === 'pressed'}
       {...rest}
       className={cn(
         'inline-flex h-11 items-center justify-center border text-base font-medium leading-6 transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/40 font-pretendard whitespace-nowrap px-4',
         EDGE_RADIUS[device][edge],
-        isDisabled ? STATE_CLASS.disabled : pressed ? STATE_CLASS.pressed : STATE_CLASS.default,
+        STATE_CLASS[resolvedState],
         isDisabled && 'pointer-events-none cursor-not-allowed',
         className
       )}

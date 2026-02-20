@@ -17,6 +17,7 @@ import {
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
+import { unwrapApiResponse } from '@/utils/api/unwrap'
 import { cn } from '@/utils/cn'
 
 type RecruitStep = 0 | 1 | 2 | 3
@@ -49,12 +50,16 @@ type PrefillPayload = {
   phone?: string
 }
 
+type S3UploadResponse = {
+  s3Key?: string
+}
+
 const STEPS = ['기본정보', '내용작성', '일정안내', '약관동의'] as const
 const TEAM_OPTIONS = [
   { id: 'BD', label: 'BD' },
   { id: 'HR', label: 'HR' },
   { id: 'TECH', label: 'TECH' },
-  { id: 'PR/DESIGN', label: 'PR·DESIGN' }
+  { id: 'PR_DESIGN', label: 'PR·DESIGN' }
 ] as const
 
 const unwrapPrefill = (raw: unknown): PrefillPayload | null => {
@@ -194,6 +199,7 @@ export default function RecruitCore() {
   const [maxReachedStep, setMaxReachedStep] = useState<RecruitStep>(0)
   const [errors, setErrors] = useState<Record<string, boolean>>({})
   const [prefillError, setPrefillError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [scheduleChecked, setScheduleChecked] = useState(false)
   const [agreementChecked, setAgreementChecked] = useState(false)
 
@@ -367,6 +373,29 @@ export default function RecruitCore() {
     setCurrentStep(step)
   }
 
+  const uploadAttachedFiles = async (files: FormFile[]) => {
+    const uploadTargets = files.filter((item): item is FormFile & { file: File } => Boolean(item.file))
+    if (uploadTargets.length === 0) return []
+
+    const uploads = uploadTargets.map(async (target) => {
+      const formData = new FormData()
+      formData.append('file', target.file)
+
+      const response = await apiClient.post('/resource/image', formData, {
+        params: { s3key: 'study' }
+      })
+
+      const payload = unwrapApiResponse<S3UploadResponse>(response.data)
+      if (!payload?.s3Key) {
+        throw new Error(`${target.name} 업로드 응답에 s3Key가 없습니다.`)
+      }
+
+      return payload.s3Key
+    })
+
+    return Promise.all(uploads)
+  }
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
@@ -381,6 +410,9 @@ export default function RecruitCore() {
     }
 
     try {
+      setIsSubmitting(true)
+      const fileUrls = await uploadAttachedFiles(formData.files)
+
       const payload = {
         snapshot: {
           name: formData.name,
@@ -394,7 +426,7 @@ export default function RecruitCore() {
         wish: formData.role,
         strengths: formData.strength,
         pledge: formData.determination,
-        fileUrls: []
+        fileUrls
       }
 
       await apiClient.post('/recruit/core/applications', payload)
@@ -407,6 +439,8 @@ export default function RecruitCore() {
       } else {
         alert('지원서 제출 중 오류가 발생했습니다.')
       }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -884,11 +918,11 @@ export default function RecruitCore() {
               type="submit"
               device="pc"
               size="small"
-              variant={isCurrentStepValid ? 'active' : 'disabled'}
+              variant={isCurrentStepValid && !isSubmitting ? 'active' : 'disabled'}
               widthToken="small"
-              disabled={!isCurrentStepValid}
+              disabled={!isCurrentStepValid || isSubmitting}
             >
-              {currentStep === 3 ? '제출하기' : '다음'}
+              {currentStep === 3 ? (isSubmitting ? '제출 중...' : '제출하기') : '다음'}
             </GdgButton>
           </div>
 
@@ -913,11 +947,11 @@ export default function RecruitCore() {
               type="submit"
               device="mobile"
               size="small"
-              variant={isCurrentStepValid ? 'active' : 'disabled'}
+              variant={isCurrentStepValid && !isSubmitting ? 'active' : 'disabled'}
               fullWidth
-              disabled={!isCurrentStepValid}
+              disabled={!isCurrentStepValid || isSubmitting}
             >
-              {currentStep === 3 ? '제출하기' : '다음'}
+              {currentStep === 3 ? (isSubmitting ? '제출 중...' : '제출하기') : '다음'}
             </GdgButton>
           </div>
         </div>

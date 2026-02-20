@@ -82,6 +82,18 @@ export const loginWithGoogleIdToken = (
     }
   )
 
+export const loginWithAdminCredentials = (
+  adminId: string,
+  password: string
+): Promise<AxiosResponse<LoginExistingUserResponse>> =>
+  axios.post(
+    `${AUTH_BASE_URL}/admin/login`,
+    { adminId, password },
+    {
+      ...defaultConfig
+    }
+  )
+
 export const signupWithProfile = (
   payload: SignupRequestPayload
 ): Promise<AxiosResponse<SignupResponseBody>> =>
