@@ -179,6 +179,18 @@ export default function DashboardMembersPage() {
           <div className="flex items-center gap-3">
             <h1 className="typo-h4 mobile:typo-m-h3">Members Dashboard</h1>
             <Link
+              href="/dashboard/users"
+              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+            >
+              Users
+            </Link>
+            <Link
+              href="/dashboard/mbti"
+              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+            >
+              MBTI
+            </Link>
+            <Link
               href="/dashboard/memo"
               className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
             >

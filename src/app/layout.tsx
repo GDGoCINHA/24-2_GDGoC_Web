@@ -181,7 +181,11 @@ export default function RootLayout({ children }) {
       style={{ colorScheme: 'dark' }}
       suppressHydrationWarning
     >
-      <body className={`${pretendard.className} antialiased`}>
+      <body
+        className={`${pretendard.className} antialiased`}
+        style={{ WebkitTextSizeAdjust: '100%' }}
+        suppressHydrationWarning
+      >
         <Script
           src="https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js"
           strategy="beforeInteractive"
