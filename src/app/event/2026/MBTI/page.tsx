@@ -1,23 +1,13 @@
 'use client'
 
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  ChevronLeft,
-  Flame,
-  GraduationCap,
-  Hammer,
-  Leaf,
-  NotebookPen,
-  Palette,
-  Rocket,
-  Sparkles
-} from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChevronLeft } from 'lucide-react'
 import { FaInstagram } from 'react-icons/fa'
 import { SiNotion } from 'react-icons/si'
 
-import { GdgLogo } from '@/components/ui/design-system'
+import { GdgCheckbox, GdgLogo } from '@/components/ui/design-system'
 import mbtiTypeMetaRaw from './mbtiTypeMeta.json'
 
 type Axis = 'LC' | 'PS' | 'TU' | 'IF'
@@ -79,73 +69,73 @@ const QUESTIONS: Question[] = [
     id: 1,
     axis: 'LC',
     prompt: '에러가 발생했을 때 더 가까운 행동은?',
-    options: { A: '원인을 단계별로 추적한다', B: '이것저것 바꿔보며 해결한다' }
+    options: { A: '원인 단계별 추적', B: '다양한 시도 기반 해결' }
   },
   {
     id: 2,
     axis: 'PS',
     prompt: '프로젝트 시작할 때 나는?',
-    options: { A: '구조·설계부터 잡는다', B: '일단 만들어보며 수정한다' }
+    options: { A: '구조·설계 선행', B: '구현 후 수정' }
   },
   {
     id: 3,
     axis: 'TU',
     prompt: '더 뿌듯한 순간은?',
-    options: { A: '로직이 완벽히 맞아떨어질 때', B: '화면/결과가 예쁘게 나왔을 때' }
+    options: { A: '로직 완성의 성취감', B: '화면/결과 완성의 성취감' }
   },
   {
     id: 4,
     axis: 'IF',
     prompt: '개발할 때 더 편한 환경은?',
-    options: { A: '혼자 조용히 집중', B: '같이 얘기하며 진행' }
+    options: { A: '단독 집중 환경', B: '대화 기반 협업 환경' }
   },
   {
     id: 5,
     axis: 'LC',
     prompt: '새로운 기술을 접하면?',
-    options: { A: '공식 문서부터 본다', B: '영상·예제부터 따라 한다' }
+    options: { A: '공식 문서 우선 학습', B: '영상·예제 우선 학습' }
   },
   {
     id: 6,
     axis: 'PS',
     prompt: '마감이 다가오면?',
-    options: { A: '이미 대부분 끝나 있다', B: '그때부터 몰아서 속도 낸다' }
+    options: { A: '사전 완료 중심 진행', B: '마감 임박 집중 스퍼트' }
   },
   {
     id: 7,
     axis: 'TU',
     prompt: '더 신경 쓰는 부분은?',
-    options: { A: '성능, 구조, 안정성', B: '사용성, 직관성' }
+    options: { A: '성능·구조·안정성 중심', B: '사용성·직관성 중심' }
   },
   {
     id: 8,
     axis: 'IF',
     prompt: '팀 프로젝트에서 나는?',
-    options: { A: '맡은 파트 확실히 책임진다', B: '전체 흐름을 보며 조율한다' }
+    options: { A: '담당 파트 책임 수행', B: '전체 흐름 기반 조율' }
   },
   {
     id: 9,
     axis: 'LC',
-    prompt: '코드 스타일은?',
-    options: { A: '정리·규칙·일관성이 중요', B: '유연하고 빠른 구현이 중요' }
+    prompt: '작업물(코드/문서/디자인) 스타일은?',
+    options: { A: '정리·규칙·일관성 중심', B: '유연·속도 중심' }
   },
   {
     id: 10,
     axis: 'PS',
-    prompt: '개발을 하며 더 중요한 건?',
-    options: { A: '계획대로 완성하는 것', B: '상황에 맞게 바꾸는 것' }
+    prompt: '개발(작업)을 하며 더 중요한 것은?',
+    options: { A: '계획 기반 완성', B: '상황 기반 조정' }
   },
   {
     id: 11,
     axis: 'TU',
     prompt: '기능을 추가할 때 더 먼저 고려하는 것은?',
-    options: { A: '내부 구조가 깔끔하게 유지되는가', B: '사용자가 이해하기 쉽게 보이는가' }
+    options: { A: '내부 구조의 깔끔한 유지', B: '사용자 관점의 직관적 이해' }
   },
   {
     id: 12,
     axis: 'IF',
     prompt: '문제 해결 방식은?',
-    options: { A: '혼자 충분히 고민한 뒤 공유한다', B: '중간중간 계속 의견을 나누며 해결한다' }
+    options: { A: '충분한 개인 고민 후 공유', B: '과정 중 지속적 의견 교환' }
   }
 ]
 
@@ -168,13 +158,22 @@ const PROFILE_IMAGES: Record<string, string> = {
   CSUF: '/images/MBTI/16_CSUF.jpg'
 }
 
-const getShortPreviewImageSrc = (type: string) => `/images/MBTI/mbti-${type}.png`
-
 const ICON_DOWNLOAD_LOCAL = '/icons/ui/mbti-download.svg'
 const ICON_ENTER_LOCAL = '/icons/ui/mbti-enter-outline.svg'
 const ICON_CALENDAR_LOCAL = '/icons/ui/mbti-calendar.svg'
 const ICON_STATS = '/icons/ui/mbti-stats.svg'
 const ICON_RETRY = '/icons/ui/mbti-retry.svg'
+const getShortPreviewImageSrc = (type: string) => `/images/MBTI/mbti-${type}.png`
+const TYPE_ICON_BY_KIND: Record<string, { sm: string; lg: string }> = {
+  cap: { sm: '/icons/ui/mbti-types/cap-16.svg', lg: '/icons/ui/mbti-types/cap.svg' },
+  rocket: { sm: '/icons/ui/mbti-types/rocket-16.svg', lg: '/icons/ui/mbti-types/rocket.svg' },
+  palette: { sm: '/icons/ui/mbti-types/palette-16.svg', lg: '/icons/ui/mbti-types/palette.svg' },
+  flame: { sm: '/icons/ui/mbti-types/flame-16.svg', lg: '/icons/ui/mbti-types/flame.svg' },
+  hammer: { sm: '/icons/ui/mbti-types/hammer-16.svg', lg: '/icons/ui/mbti-types/hammer.svg' },
+  leaf: { sm: '/icons/ui/mbti-types/leaf-16.svg', lg: '/icons/ui/mbti-types/leaf.svg' },
+  note: { sm: '/icons/ui/mbti-types/note-16.svg', lg: '/icons/ui/mbti-types/note.svg' },
+  sparkle: { sm: '/icons/ui/mbti-types/sparkle-16.svg', lg: '/icons/ui/mbti-types/sparkle.svg' }
+}
 
 const TYPE_META = mbtiTypeMetaRaw as Record<string, MbtiTypeMeta>
 
@@ -649,36 +648,36 @@ const AXIS_LABELS: Record<Axis, [string, string]> = {
   IF: ['I', 'F']
 }
 
-function Header() {
+function HeaderWithBack({
+  onBack,
+  backgroundClassName = 'bg-white',
+  showBack = true
+}: {
+  onBack: () => void
+  backgroundClassName?: string
+  showBack?: boolean
+}) {
   return (
-    <header className="sticky top-0 z-20 h-14 w-full bg-white shadow-[0_0_4px_rgba(30,30,30,0.25)]">
-      <div className="flex h-full items-center justify-center gap-2">
-        <GdgLogo mode="mobile" variant="icon" />
-        <div className="font-google-sans-flex leading-none">
-          <p className="text-[14px] tracking-[-0.14px] text-black">Google Developer Group</p>
-          <p className="mt-0.5 text-[10px] tracking-[-0.1px] text-blue">Inha University</p>
-        </div>
-      </div>
-    </header>
-  )
-}
-
-function HeaderWithBack({ onBack }: { onBack: () => void }) {
-  return (
-    <header className="relative h-14 w-full bg-[#f0f0f0] shadow-[0_0_4px_rgba(30,30,30,0.25)]">
-      <button
-        type="button"
-        aria-label="이전으로"
-        onClick={onBack}
-        className="absolute left-4 top-1/2 z-20 -translate-y-1/2 text-[#1e1e1e]"
-      >
-        <ChevronLeft size={20} />
-      </button>
-      <div className="flex h-full items-center justify-center gap-2">
-        <GdgLogo mode="mobile" variant="icon" />
-        <div className="font-google-sans-flex leading-none">
-          <p className="text-[14px] tracking-[-0.14px] text-black">Google Developer Group</p>
-          <p className="mt-0.5 text-[10px] tracking-[-0.1px] text-blue">Inha University</p>
+    <header
+      className={`sticky top-0 z-20 h-14 w-full ${backgroundClassName} shadow-[0_0_4px_rgba(30,30,30,0.25)]`}
+    >
+      <div className="mx-auto relative flex h-full w-full max-w-[375px] items-center justify-center px-4">
+        {showBack ? (
+          <button
+            type="button"
+            aria-label="이전으로"
+            onClick={onBack}
+            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 text-[#1e1e1e]"
+          >
+            <ChevronLeft size={20} />
+          </button>
+        ) : null}
+        <div className="flex items-center justify-center gap-2">
+          <GdgLogo mode="mobile" variant="icon" />
+          <div className="font-google-sans-flex leading-none">
+            <p className="text-[14px] tracking-[-0.14px] text-black">Google Developer Group</p>
+            <p className="mt-0.5 text-[10px] tracking-[-0.1px] text-blue">Inha University</p>
+          </div>
         </div>
       </div>
     </header>
@@ -733,16 +732,78 @@ function AboutGdgocSection() {
 
 function TypeSymbolIcon({ code, size = 24 }: { code: string; size?: number }) {
   const meta = MBTI_BY_TAG[code]?.meta ?? DEFAULT_TYPE_META
-  const props = { size, color: meta.iconColor, strokeWidth: 2 }
+  const iconSet = TYPE_ICON_BY_KIND[meta.iconKind] ?? TYPE_ICON_BY_KIND.cap
+  const iconSrc = size <= 16 ? iconSet.sm : iconSet.lg
+  return <img src={iconSrc} alt="" width={size} height={size} className="shrink-0" />
+}
 
-  if (meta.iconKind === 'rocket') return <Rocket {...props} />
-  if (meta.iconKind === 'palette') return <Palette {...props} />
-  if (meta.iconKind === 'flame') return <Flame {...props} />
-  if (meta.iconKind === 'hammer') return <Hammer {...props} />
-  if (meta.iconKind === 'leaf') return <Leaf {...props} />
-  if (meta.iconKind === 'note') return <NotebookPen {...props} />
-  if (meta.iconKind === 'sparkle') return <Sparkles {...props} />
-  return <GraduationCap {...props} />
+function ShortResultPreviewHtml({ type, profile }: { type: string; profile: ResultType }) {
+  const short = MBTI_BY_TAG[type]?.meta.shortResult
+  const subtitle = short?.subtitle ?? profile.subtitle
+  const pointA = short?.points?.[0] ?? '유형별 강점이 분명합니다.'
+  const pointB = short?.points?.[1] ?? '실행과 협업의 균형을 갖췄습니다.'
+  const recommendation = short?.recommendation ?? profile.projects[0]?.name ?? '프로젝트 참여'
+  const illustrationSrc = profile.image || PROFILE_IMAGES[type] || PROFILE_IMAGES.LPTI
+
+  return (
+    <section className="mx-auto h-[666px] w-[375px] max-w-full bg-[#f0f0f0] p-4 pt-[74px]">
+      <div className="flex h-full flex-col items-center justify-between pb-[75px]">
+        <div className="flex w-full flex-col items-center gap-6">
+          <div className="flex flex-col items-center gap-4">
+            <p className="typo-m-b3 rounded-[400px] bg-[#fafafa] px-8 py-1 text-[#666]">나의 개발 유형은...</p>
+            <img
+              src={illustrationSrc}
+              alt={`${type} 이미지`}
+              width={180}
+              height={180}
+              className="rounded-lg"
+              loading="eager"
+              decoding="sync"
+              crossOrigin="anonymous"
+              onError={(event) => {
+                const fallback = PROFILE_IMAGES[type] || PROFILE_IMAGES.LPTI
+                if (event.currentTarget.src.endsWith(fallback)) {
+                  return
+                }
+                event.currentTarget.src = fallback
+              }}
+            />
+            <div className="flex w-[220px] flex-col items-center gap-2">
+              <div className="flex items-center gap-2">
+                <TypeSymbolIcon code={type} size={24} />
+                <p className="font-dunggeunmo text-[32px] leading-[34px] text-[#1e1e1e]">{type}</p>
+              </div>
+              <p className="font-dunggeunmo whitespace-nowrap text-center text-sm leading-[14px] text-[#1e1e1e]">
+                {subtitle}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex w-full flex-col gap-2">
+            <div className="flex h-20 flex-col justify-center gap-2 rounded-lg border border-[#b2b2b2] bg-[#fafafa] p-4">
+              <p className="typo-m-b3 text-[#1e1e1e]">• {pointA}</p>
+              <p className="typo-m-b3 text-[#1e1e1e]">• {pointB}</p>
+            </div>
+            <div className="flex h-[52px] items-center rounded-lg border border-[#b2b2b2] bg-[#fafafa] p-4">
+              <p className="typo-m-b3 text-[#1e1e1e]">
+                👉 추천: <span className="font-bold">{recommendation}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div className="h-6 w-[42px]">
+            <GdgLogo mode="mobile" variant="icon" />
+          </div>
+          <div className="font-google-sans-flex leading-none">
+            <p className="text-[14px] tracking-[-0.14px] text-[#1e1e1e]">Google Developer Group</p>
+            <p className="mt-0.5 text-[10px] tracking-[-0.1px] text-[#4285f4]">Inha University</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
 }
 
 function getFallbackProfile(code: string): ResultType {
@@ -779,6 +840,7 @@ function getFallbackProfile(code: string): ResultType {
 }
 
 export default function MbtiEventPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const [stage, setStage] = useState<Stage>('main')
   const [name, setName] = useState('')
@@ -959,7 +1021,7 @@ export default function MbtiEventPage() {
       .catch(() => undefined)
   }, [stage])
 
-  const handleDownloadShortResultPng = () => {
+  const handleDownloadShortResultPng = useCallback(() => {
     if (!result) {
       return
     }
@@ -967,24 +1029,61 @@ export default function MbtiEventPage() {
     link.download = `mbti-${result.type}.png`
     link.href = getShortPreviewImageSrc(result.type)
     link.click()
-  }
+  }, [result])
+
+  const handleBack = useCallback(() => {
+    if (isPolicyModalOpen) {
+      setIsPolicyModalOpen(false)
+      return
+    }
+    if (isShortPreviewOpen) {
+      setIsShortPreviewOpen(false)
+      return
+    }
+
+    if (stage === 'allResultDetail') {
+      setStage('allResults')
+      return
+    }
+
+    if (stage === 'allResults') {
+      setStage(allResultsEntryStage)
+      return
+    }
+
+    if (stage === 'result') {
+      if (Object.keys(answers).length > 0) {
+        setStage('quiz')
+      } else {
+        setStage('main')
+      }
+      return
+    }
+
+    if (stage === 'quiz') {
+      setStage('main')
+      return
+    }
+
+    router.back()
+  }, [
+    isPolicyModalOpen,
+    isShortPreviewOpen,
+    stage,
+    allResultsEntryStage,
+    answers,
+    router
+  ])
 
   return (
     <main className="min-h-screen bg-white text-black">
-      <section className="mx-auto min-h-screen w-full max-w-[375px] bg-white">
-        {stage === 'allResults' || stage === 'allResultDetail' ? (
-          <HeaderWithBack
-            onBack={() => {
-              if (stage === 'allResultDetail') {
-                setStage('allResults')
-                return
-              }
-              setStage(allResultsEntryStage)
-            }}
-          />
-        ) : (
-          <Header />
-        )}
+      <HeaderWithBack
+        onBack={handleBack}
+        backgroundClassName={stage === 'allResults' || stage === 'allResultDetail' ? 'bg-[#f0f0f0]' : 'bg-white'}
+        showBack={stage !== 'main'}
+      />
+
+      <section className="mx-auto min-h-[calc(100vh-56px)] w-full max-w-[375px] bg-white">
 
         {stage === 'main' ? (
           <>
@@ -1039,16 +1138,13 @@ export default function MbtiEventPage() {
                       개인정보 수집 및 활용
                     </button>
                     <p className="typo-m-b3">에 동의합니다.</p>
-                    <button
-                      type="button"
+                    <GdgCheckbox
                       aria-label="개인정보 수집 및 활용 동의"
-                      className={`ml-1 grid size-5 place-items-center rounded-[4px] border ${
-                        isPolicyAgreed ? 'border-red bg-red text-white' : 'border-black bg-white'
-                      }`}
-                      onClick={() => setIsPolicyAgreed((prev) => !prev)}
-                    >
-                      {isPolicyAgreed ? '✓' : ''}
-                    </button>
+                      size="pc"
+                      checked={isPolicyAgreed}
+                      className={`ml-1 ${isPolicyAgreed ? '' : 'border-black'}`}
+                      onCheckedChange={setIsPolicyAgreed}
+                    />
                   </div>
                 </div>
               </div>
@@ -1425,21 +1521,22 @@ export default function MbtiEventPage() {
               </section>
             </div>
 
-            <section className="mt-10 text-center">
+            <section className="mt-10 flex flex-col items-center gap-4 text-center">
               <p className="typo-m-b3 text-black">내 결과 공유하기</p>
-              <div className="mt-2 flex items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
                 <button
                   type="button"
-                  className="grid size-12 place-items-center rounded-full bg-[#fafafa] text-black shadow-[0_0_4px_rgba(30,30,30,0.25)]"
+                  className="grid size-12 place-items-center rounded-full bg-[#fafafa] p-[10px] text-black shadow-[0_0_4px_rgba(30,30,30,0.25)]"
                   onClick={() => setIsShortPreviewOpen(true)}
                 >
                   <img src={ICON_DOWNLOAD_LOCAL} alt="결과 다운로드" className="size-5" />
                 </button>
+                <p className="text-center text-xs font-medium leading-[18px] text-[#979797]">
+                  이미지 다운로드 후 인스타 스토리에 공유하고
+                  <br />
+                  @gdgoc.inha를 태그해 주세요.
+                </p>
               </div>
-              <p className="mt-2 whitespace-pre-line text-xs font-medium leading-[18px] text-[#666]">
-                이미지 다운로드 후 인스타 스토리에 공유하고{'\n'}
-                <span className="font-bold">@gdgoc.inha</span>를 태그해 주세요.
-              </p>
             </section>
 
             <section className="mt-8 space-y-4">
@@ -1477,31 +1574,26 @@ export default function MbtiEventPage() {
 
         {stage === 'result' && result && isShortPreviewOpen ? (
           <div className="fixed inset-0 z-50 bg-black/25 px-4 py-8">
-            <div className="mx-auto w-full max-w-[375px] rounded-lg bg-white p-4 shadow-[0_0_8px_rgba(30,30,30,0.25)]">
-              <div className="flex justify-end">
+            <div className="mx-auto flex w-full max-w-[375px] flex-col gap-4">
+              <div className="relative">
                 <button
                   type="button"
-                  className="text-xl leading-none text-black"
+                  className="absolute right-2 top-2 z-10 grid size-8 place-items-center rounded-full bg-white text-xl leading-none text-black shadow-[0_0_8px_rgba(30,30,30,0.25)]"
                   onClick={() => setIsShortPreviewOpen(false)}
                   aria-label="짧은 결과 닫기"
                 >
                   ×
                 </button>
-              </div>
-
-              <section className="mx-auto w-full max-w-[343px] pb-2">
                 <img
                   src={getShortPreviewImageSrc(result.type)}
                   alt={`${result.type} 짧은 결과 이미지`}
-                  className="h-auto w-full rounded-2xl"
-                  loading="eager"
-                  decoding="sync"
+                  className="h-auto w-full rounded-lg"
                 />
-              </section>
+              </div>
 
               <button
                 type="button"
-                className="font-dunggeunmo mt-4 h-12 w-full rounded-lg bg-red text-sm text-white shadow-[0_0_4px_rgba(30,30,30,0.25)]"
+                className="font-dunggeunmo h-12 w-full rounded-lg bg-red text-sm text-white shadow-[0_0_4px_rgba(30,30,30,0.25)]"
                 onClick={handleDownloadShortResultPng}
               >
                 PNG 저장하기
@@ -1533,37 +1625,20 @@ export default function MbtiEventPage() {
                 <div className="mt-4 flex items-center justify-end gap-1">
                   <span className="text-base font-bold leading-6 text-red">*</span>
                   <p className="typo-m-b3">개인정보 수집 및 활용에 동의합니다.</p>
-                  <button
-                    type="button"
+                  <GdgCheckbox
                     aria-label="모달 동의 체크"
-                    className={`ml-1 grid size-5 place-items-center rounded-[4px] border ${
-                      isPolicyAgreed ? 'border-red bg-red text-white' : 'border-black bg-white'
-                    }`}
-                    onClick={() => {
-                      setIsPolicyAgreed(true)
-                      setIsPolicyModalOpen(false)
+                    size="pc"
+                    checked={isPolicyAgreed}
+                    className={`ml-1 ${isPolicyAgreed ? '' : 'border-black'}`}
+                    onCheckedChange={(checked) => {
+                      setIsPolicyAgreed(checked)
+                      if (checked) {
+                        setIsPolicyModalOpen(false)
+                      }
                     }}
-                  >
-                    {isPolicyAgreed ? '✓' : ''}
-                  </button>
+                  />
                 </div>
               </section>
-
-              <button
-                type="button"
-                disabled={!canStart}
-                className={`font-dunggeunmo mt-8 h-12 w-full rounded-lg text-base leading-5 text-white shadow-[0_0_4px_rgba(30,30,30,0.25)] ${
-                  canStart ? 'bg-red' : 'cursor-not-allowed bg-gray-500'
-                }`}
-                onClick={() => {
-                  if (canStart) {
-                    setIsPolicyModalOpen(false)
-                    setStage('quiz')
-                  }
-                }}
-              >
-                시작하기
-              </button>
             </div>
           </div>
         ) : null}
