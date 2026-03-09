@@ -26,6 +26,8 @@
     "framer-motion": "^12.24.7",
     "gsap": "^3.14.2",
     "hangul-js": "^0.2.6",
+    "html-to-image": "^1.11.13",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.562.0",
     "next": "^15.5.12",
     "react": "18.3.1",

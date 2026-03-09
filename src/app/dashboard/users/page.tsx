@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 
 import Loader from '@/components/ui/common/Loader'
 import { useAuth } from '@/hooks/useAuth'
@@ -247,7 +248,21 @@ export default function DashboardUsersPage() {
 
       <div className="mx-auto w-full max-w-[1280px] space-y-6">
         <div className="flex flex-col gap-4 pc:flex-row pc:items-center pc:justify-between">
-          <h1 className="typo-h4 mobile:typo-m-h3">Users Dashboard</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="typo-h4 mobile:typo-m-h3">Users Dashboard</h1>
+            <Link
+              href="/dashboard/members"
+              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+            >
+              Members
+            </Link>
+            <Link
+              href="/dashboard/mbti"
+              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+            >
+              MBTI
+            </Link>
+          </div>
           <div className="flex w-full gap-2 pc:w-auto">
             <input
               value={searchInput}

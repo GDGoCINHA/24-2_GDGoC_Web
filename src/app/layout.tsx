@@ -42,6 +42,26 @@ const ocra = localFont({
   fallback: ['monospace']
 })
 
+const stardust = localFont({
+  src: '../../public/fonts/stardust/Stardust.woff2',
+  display: 'swap',
+  variable: '--font-local-stardust',
+  preload: true,
+  weight: '400',
+  style: 'normal',
+  fallback: ['Pretendard', 'sans-serif']
+})
+
+const dunggeunmo = localFont({
+  src: '../../public/fonts/dunggeunmo/DungGeunMo.woff2',
+  display: 'swap',
+  variable: '--font-local-dunggeunmo',
+  preload: true,
+  weight: '400',
+  style: 'normal',
+  fallback: ['Pretendard', 'sans-serif']
+})
+
 export const viewport = {
   width: 'device-width',
   initialScale: 1.0,
@@ -157,11 +177,15 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${ocra.variable} ${googleSansFlex.variable} dark`}
+      className={`${pretendard.variable} ${ocra.variable} ${googleSansFlex.variable} ${stardust.variable} ${dunggeunmo.variable} dark`}
       style={{ colorScheme: 'dark' }}
       suppressHydrationWarning
     >
-      <body className={`${pretendard.className} antialiased`}>
+      <body
+        className={`${pretendard.className} antialiased`}
+        style={{ WebkitTextSizeAdjust: '100%' }}
+        suppressHydrationWarning
+      >
         <Script
           src="https://unpkg.com/type-hangul@0.2.4/dist/type-hangul.bundle.js"
           strategy="beforeInteractive"
