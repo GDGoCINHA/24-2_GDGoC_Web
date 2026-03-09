@@ -1,0 +1,178 @@
+{
+  "LPTI": {
+    "subtitle": "전략형 설계자",
+    "iconKind": "cap",
+    "iconColor": "#4285F4",
+    "teammateGridSubtitle": "전략형\n백엔드 개발자",
+    "shortResult": {
+      "subtitle": "전략형 백엔드 개발자",
+      "points": ["논리 + 계획 + 기술 중심", "구조 설계, 서버, 데이터 좋아함"],
+      "recommendation": "백엔드 / 알고리즘 / 시스템"
+    }
+  },
+  "LPTF": {
+    "subtitle": "팀 중심 설계자",
+    "iconKind": "cap",
+    "iconColor": "#4285F4",
+    "teammateGridSubtitle": "팀 중심\n설계자",
+    "shortResult": {
+      "subtitle": "팀 중심 설계자",
+      "points": ["설계력 + 협업 능력", "팀 프로젝트의 중심축"],
+      "recommendation": "팀 프로젝트 / 아키텍처"
+    }
+  },
+  "LSTI": {
+    "subtitle": "실전형 개인 플레이어",
+    "iconKind": "rocket",
+    "iconColor": "#EA4335",
+    "teammateGridSubtitle": "실전형\n개인 플레이어",
+    "shortResult": {
+      "subtitle": "실전형 개인 플레이어",
+      "points": ["빠른 구현 + 기술 집중", "사이드 프로젝트 장인"],
+      "recommendation": "풀스택 / 해커톤"
+    }
+  },
+  "LSTF": {
+    "subtitle": "실전형 팀 플레이어",
+    "iconKind": "rocket",
+    "iconColor": "#EA4335",
+    "teammateGridSubtitle": "실전형\n팀 플레이어",
+    "shortResult": {
+      "subtitle": "실전형 팀 플레이어",
+      "points": ["속도 + 협업 밸런스", "실행력 좋은 팀원"],
+      "recommendation": "팀 개발 / 스타트업"
+    }
+  },
+  "CPTI": {
+    "subtitle": "기획 감각형 설계자",
+    "iconKind": "palette",
+    "iconColor": "#F9AB00",
+    "teammateGridSubtitle": "기획 감각있는\n개발자",
+    "shortResult": {
+      "subtitle": "기획 감각있는 개발자",
+      "points": ["창의 + 계획 + 기술", "아이디어를 코드로 옮김"],
+      "recommendation": "서비스 기획 + 개발"
+    }
+  },
+  "CPTF": {
+    "subtitle": "아이디어 메이커",
+    "iconKind": "palette",
+    "iconColor": "#F9AB00",
+    "teammateGridSubtitle": "톡톡 튀는\n아이디어 메이커",
+    "shortResult": {
+      "subtitle": "톡톡 튀는 아이디어 메이커",
+      "points": ["창의 + 팀 + 사용자 감각", "브레인스토밍 핵심 인재"],
+      "recommendation": "기획 / UX 중심 프로젝트"
+    }
+  },
+  "CSTI": {
+    "subtitle": "자유로운 실험가",
+    "iconKind": "flame",
+    "iconColor": "#EA4335",
+    "teammateGridSubtitle": "자유로운\n실험가",
+    "shortResult": {
+      "subtitle": "자유로운 실험가",
+      "points": ["감각적 + 즉흥 + 기술", "새로운 거 시도하는 타입"],
+      "recommendation": "실험적 프로젝트 / 프로토타입"
+    }
+  },
+  "CSTF": {
+    "subtitle": "에너지 넘치는 크리에이터",
+    "iconKind": "flame",
+    "iconColor": "#EA4335",
+    "teammateGridSubtitle": "에너지 넘치는\n크리에이터",
+    "shortResult": {
+      "subtitle": "에너지 넘치는 크리에이터",
+      "points": ["분위기 메이커 + 실행력", "팀 사기 담당"],
+      "recommendation": "해커톤 / 팀 이벤트"
+    }
+  },
+  "LPUI": {
+    "subtitle": "기술 몰입형 장인",
+    "iconKind": "hammer",
+    "iconColor": "#4285F4",
+    "teammateGridSubtitle": "기술 몰입형\n장인",
+    "shortResult": {
+      "subtitle": "기술 몰입형 장인",
+      "points": ["기술·성능 집착", "디테일 강함"],
+      "recommendation": "백엔드 / 인프라"
+    }
+  },
+  "LPUF": {
+    "subtitle": "안정형 팀 엔지니어",
+    "iconKind": "hammer",
+    "iconColor": "#4285F4",
+    "teammateGridSubtitle": "안정형\n팀 엔지니어",
+    "shortResult": {
+      "subtitle": "안정형 팀 엔지니어",
+      "points": ["기술 + 사용자 + 팀", "믿고 맡기는 타입"],
+      "recommendation": "유지보수 / 협업 프로젝트"
+    }
+  },
+  "LSUI": {
+    "subtitle": "성장형 개발러",
+    "iconKind": "leaf",
+    "iconColor": "#34A853",
+    "teammateGridSubtitle": "성장형\n개발러",
+    "shortResult": {
+      "subtitle": "성장형 개발러",
+      "points": ["즉흥 + 기술 + 개인", "배우는 속도 빠름"],
+      "recommendation": "스터디 / 입문 프로젝트"
+    }
+  },
+  "LSUF": {
+    "subtitle": "팀에서 크는 새싹",
+    "iconKind": "leaf",
+    "iconColor": "#34A853",
+    "teammateGridSubtitle": "팀에서 크는\n새싹",
+    "shortResult": {
+      "subtitle": "팀에서 크는 새싹",
+      "points": ["배움 + 소통", "질문 잘함"],
+      "recommendation": "멘토링 / 팀 학습"
+    }
+  },
+  "CPUI": {
+    "subtitle": "사용자 중심 설계자",
+    "iconKind": "note",
+    "iconColor": "#34A853",
+    "teammateGridSubtitle": "사용자 중심\n설계자",
+    "shortResult": {
+      "subtitle": "사용자 중심 설계자",
+      "points": ["사용자 경험 + 구조", "UX 감각 좋음"],
+      "recommendation": "UX / 프론트엔드"
+    }
+  },
+  "CPUF": {
+    "subtitle": "공감형 기획자",
+    "iconKind": "note",
+    "iconColor": "#34A853",
+    "teammateGridSubtitle": "공감형\n기획자",
+    "shortResult": {
+      "subtitle": "공감형 기획자",
+      "points": ["사용자 + 팀", "서비스 시야 넓음"],
+      "recommendation": "기획 / 프론트 협업"
+    }
+  },
+  "CSUI": {
+    "subtitle": "감각적 크리에이터",
+    "iconKind": "sparkle",
+    "iconColor": "#F9AB00",
+    "teammateGridSubtitle": "감각적\n크리에이터",
+    "shortResult": {
+      "subtitle": "감각적 크리에이터",
+      "points": ["감성 + 몰입", "혼자 깊게 파는 타입"],
+      "recommendation": "디자인 연계 개발"
+    }
+  },
+  "CSUF": {
+    "subtitle": "분위기 메이커",
+    "iconKind": "sparkle",
+    "iconColor": "#F9AB00",
+    "teammateGridSubtitle": "센스있는\n분위기 메이커",
+    "shortResult": {
+      "subtitle": "센스있는 분위기 메이커",
+      "points": ["감각 + 소통", "팀 색깔 담당"],
+      "recommendation": "팀 프로젝트 / 발표"
+    }
+  }
+}

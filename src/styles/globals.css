@@ -11,6 +11,8 @@
     --font-pretendard: var(--font-local-pretendard, 'Pretendard Variable', 'Pretendard', sans-serif);
     --font-google-sans-flex: var(--font-local-google-sans-flex, 'Google Sans Flex', 'Pretendard', sans-serif);
     --font-ocra: var(--font-local-ocra, 'OCRAExtended', monospace);
+    --font-stardust: var(--font-local-stardust, 'Stardust', 'Pretendard', sans-serif);
+    --font-dunggeunmo: var(--font-local-dunggeunmo, 'DungGeunMo', 'Pretendard', sans-serif);
 
     --color-black: #1E1E1E;
     --color-white: #F0F0F0;
