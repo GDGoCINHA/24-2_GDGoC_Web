@@ -99,7 +99,7 @@ const QUESTIONS: Question[] = [
     id: 6,
     axis: 'PS',
     prompt: '마감이 다가오면?',
-    options: { A: '사전 완료 중심 진행', B: '마감 임박 집중 스퍼트' }
+    options: { A: '이미 대부분 끝나 있음', B: '그 때부터 몰아서 속도 냄' }
   },
   {
     id: 7,
@@ -751,7 +751,9 @@ function ShortResultPreviewHtml({ type, profile }: { type: string; profile: Resu
       <div className="flex h-full flex-col items-center justify-between pb-[75px]">
         <div className="flex w-full flex-col items-center gap-6">
           <div className="flex flex-col items-center gap-4">
-            <p className="typo-m-b3 rounded-[400px] bg-[#fafafa] px-8 py-1 text-[#666]">나의 개발 유형은...</p>
+            <p className="typo-m-b3 rounded-[400px] bg-[#fafafa] px-8 py-1 text-[#666]">
+              나의 개발 유형은...
+            </p>
             <img
               src={illustrationSrc}
               alt={`${type} 이미지`}
@@ -1068,25 +1070,19 @@ export default function MbtiEventPage() {
     }
 
     router.back()
-  }, [
-    isPolicyModalOpen,
-    isShortPreviewOpen,
-    stage,
-    allResultsEntryStage,
-    answers,
-    router
-  ])
+  }, [isPolicyModalOpen, isShortPreviewOpen, stage, allResultsEntryStage, answers, router])
 
   return (
     <main className="min-h-screen bg-white text-black">
       <HeaderWithBack
         onBack={handleBack}
-        backgroundClassName={stage === 'allResults' || stage === 'allResultDetail' ? 'bg-[#f0f0f0]' : 'bg-white'}
+        backgroundClassName={
+          stage === 'allResults' || stage === 'allResultDetail' ? 'bg-[#f0f0f0]' : 'bg-white'
+        }
         showBack={stage !== 'main'}
       />
 
       <section className="mx-auto min-h-[calc(100vh-56px)] w-full max-w-[375px] bg-white">
-
         {stage === 'main' ? (
           <>
             <div className="px-4 pb-8 pt-10">
@@ -1287,7 +1283,8 @@ export default function MbtiEventPage() {
                           </p>
                         </div>
                         <p className="text-xs font-medium leading-[18px] text-[#1e1e1e]">
-                          👉 추천: {short?.recommendation ?? profile.projects[0]?.name ?? '프로젝트 참여'}
+                          👉 추천:{' '}
+                          {short?.recommendation ?? profile.projects[0]?.name ?? '프로젝트 참여'}
                         </p>
                       </div>
                     </div>
@@ -1329,7 +1326,9 @@ export default function MbtiEventPage() {
 
             <div className="mt-10 space-y-6">
               <section>
-                <p className="mb-2 pl-2 text-base font-bold leading-6 text-black">당신은 이런 유형입니다</p>
+                <p className="mb-2 pl-2 text-base font-bold leading-6 text-black">
+                  당신은 이런 유형입니다
+                </p>
                 <div className="rounded-lg border border-gray-700 bg-[#fafafa] p-4">
                   <div className="space-y-2">
                     {allResultDetail.profile.overview.map((line) => (
@@ -1355,7 +1354,9 @@ export default function MbtiEventPage() {
               </section>
 
               <section>
-                <p className="mb-2 pl-2 text-base font-bold leading-6 text-black">이런 팀원과 잘 어울려요</p>
+                <p className="mb-2 pl-2 text-base font-bold leading-6 text-black">
+                  이런 팀원과 잘 어울려요
+                </p>
                 <div className="grid grid-cols-3 gap-2">
                   {allResultDetail.profile.teammates.map((code) => {
                     const typeMeta = MBTI_BY_TAG[code]?.meta ?? TYPE_META[code]
