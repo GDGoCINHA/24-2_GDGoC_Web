@@ -1119,7 +1119,7 @@ export default function MbtiEventPage() {
                     <p className="font-stardust text-base leading-6 text-black">▼ 학번</p>
                     <input
                       className="typo-m-b3 mt-2 h-12 w-full rounded-lg border border-gray-700 bg-[#fafafa] px-4 text-black outline-none"
-                      placeholder="학번을 입력하세요."
+                      placeholder="학번을 입력하세요. (예: 1224XXXX)"
                       value={studentId}
                       inputMode="numeric"
                       onChange={(event) =>
