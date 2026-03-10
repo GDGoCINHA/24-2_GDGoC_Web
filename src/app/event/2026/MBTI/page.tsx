@@ -176,6 +176,7 @@ const TYPE_ICON_BY_KIND: Record<string, { sm: string; lg: string }> = {
 }
 
 const TYPE_META = mbtiTypeMetaRaw as Record<string, MbtiTypeMeta>
+const STUDENT_ID_PATTERN = /^12\d{6}$/
 
 const RESULTS: Record<string, ResultType> = {
   LPTI: {
@@ -860,7 +861,8 @@ export default function MbtiEventPage() {
 
   const answeredCount = Object.keys(answers).length
   const isComplete = answeredCount === QUESTIONS.length
-  const canStart = name.trim().length > 0 && studentId.trim().length > 0 && isPolicyAgreed
+  const isStudentIdValid = STUDENT_ID_PATTERN.test(studentId.trim())
+  const canStart = name.trim().length > 0 && isStudentIdValid && isPolicyAgreed
 
   const result = useMemo(() => {
     const sharedType = sharedTypeRef.current
@@ -1127,6 +1129,11 @@ export default function MbtiEventPage() {
                       }
                     />
                   </label>
+                  {studentId.trim().length > 0 && !isStudentIdValid ? (
+                    <p className="typo-m-c2 mt-2 pl-1 text-red">
+                      ※ 학번은 12로 시작하는 8자리 숫자로 입력해 주세요.
+                    </p>
+                  ) : null}
 
                   <div className="mt-4 flex items-center justify-end gap-1">
                     <span className="text-base font-bold leading-6 text-red">*</span>
