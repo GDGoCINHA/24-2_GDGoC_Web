@@ -57,15 +57,16 @@ type TeamMatchingResponse = {
     matchedCount: number
     unmatchedCount: number
     teamSize: number
-    teamCount: number
-    teams: Array<{
-      teamNumber: number
-      members: Array<{
-        name: string
-        studentId: string
-        mbtiType: string
+      teamCount: number
+      teams: Array<{
+        teamNumber: number
+        members: Array<{
+          name: string
+          studentId: string
+          mbtiType: string | null
+          hasMbtiResult: boolean
+        }>
       }>
-    }>
     unmatchedCandidates: Array<{
       name: string
       studentId: string
@@ -160,7 +161,7 @@ export default function DashboardMbtiPage() {
 
   const [typeCounts, setTypeCounts] = useState<Array<{ mbtiType: string; count: number }>>([])
 
-  const [teamSize, setTeamSize] = useState(4)
+  const teamSize = 6
   const [csvCandidates, setCsvCandidates] = useState<CsvCandidate[]>([])
   const [csvFileName, setCsvFileName] = useState('')
   const [matchingLoading, setMatchingLoading] = useState(false)
@@ -444,21 +445,9 @@ export default function DashboardMbtiPage() {
               {csvFileName || 'CSV 파일 선택'}
             </label>
 
-            <label className="flex items-center gap-2 typo-pc-c2">
-              팀 인원
-              <input
-                type="number"
-                min={2}
-                max={10}
-                value={teamSize}
-                onChange={(event) => {
-                  const value = Number(event.target.value)
-                  if (Number.isNaN(value)) return
-                  setTeamSize(Math.min(10, Math.max(2, value)))
-                }}
-                className="h-11 w-20 rounded-lg border border-gray-300 bg-gray-100 px-3 text-white outline-none focus:border-white"
-              />
-            </label>
+            <div className="flex h-11 items-center rounded-lg border border-white/10 bg-gray-100/30 px-4 typo-pc-c2 text-gray-700">
+              팀 인원 6명 고정
+            </div>
 
             <button
               type="button"
@@ -471,6 +460,8 @@ export default function DashboardMbtiPage() {
 
           <div className="mt-3 rounded-lg border border-white/10 bg-gray-100/30 p-3 typo-pc-c2 text-gray-700">
             CSV 후보 인원: {csvCandidates.length}명
+            <br />
+            MBTI 참여자와 미참여자가 팀마다 최대한 고르게 섞이도록 6명씩 편성합니다.
           </div>
 
           {matchingError ? (
@@ -491,11 +482,11 @@ export default function DashboardMbtiPage() {
                   <p className="typo-pc-h4 text-white">{matchingResult.uniqueCandidates}</p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-gray-100/30 p-3">
-                  <p className="typo-pc-c2 text-gray-700">매칭 성공</p>
+                  <p className="typo-pc-c2 text-gray-700">팀 편성 인원</p>
                   <p className="typo-pc-h4 text-white">{matchingResult.matchedCount}</p>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-gray-100/30 p-3">
-                  <p className="typo-pc-c2 text-gray-700">결과 없음</p>
+                  <p className="typo-pc-c2 text-gray-700">편성 제외</p>
                   <p className="typo-pc-h4 text-white">{matchingResult.unmatchedCount}</p>
                 </div>
               </div>
@@ -514,7 +505,7 @@ export default function DashboardMbtiPage() {
                             {member.name} ({member.studentId})
                           </span>
                           <span className="rounded-full border border-white/20 px-2 py-1 typo-pc-c2">
-                            {member.mbtiType}
+                            {member.hasMbtiResult ? member.mbtiType : 'MBTI 미참여'}
                           </span>
                         </li>
                       ))}
