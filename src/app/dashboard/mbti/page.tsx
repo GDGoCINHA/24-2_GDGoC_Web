@@ -427,7 +427,7 @@ export default function DashboardMbtiPage() {
         <div className="rounded-xl border border-white/10 bg-black p-4">
           <h2 className="typo-pc-h4">CSV 기반 팀 매칭</h2>
           <p className="mt-1 typo-pc-c2 text-gray-700">
-            이름, 학번 CSV를 업로드하면 저장된 MBTI 결과와 매칭해 팀을 자동 분배합니다.
+            이름, 입학년도 2자리 CSV를 업로드하면 저장된 MBTI 결과와 매칭해 팀을 자동 분배합니다.
           </p>
 
           <div className="mt-4 grid gap-3 pc:grid-cols-[1fr_auto_auto] pc:items-center">
@@ -460,6 +460,8 @@ export default function DashboardMbtiPage() {
 
           <div className="mt-3 rounded-lg border border-white/10 bg-gray-100/30 p-3 typo-pc-c2 text-gray-700">
             CSV 후보 인원: {csvCandidates.length}명
+            <br />
+            학번은 `22`, `23`처럼 입학년도 2자리 기준으로 비교합니다.
             <br />
             MBTI 참여자와 미참여자가 팀마다 최대한 고르게 섞이도록 6명씩 편성합니다.
           </div>
