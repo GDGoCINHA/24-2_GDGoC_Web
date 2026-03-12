@@ -1,34 +1,56 @@
+'use client'
+
 import Link from 'next/link'
+
+import { useAuth } from '@/hooks/useAuth'
 
 const DASHBOARD_LINKS = [
   {
     href: '/dashboard/users',
     title: 'Users',
-    description: '유저 권한, 팀, 계정 상태를 확인하고 수정합니다.'
+    description: '유저 권한, 팀, 계정 상태를 확인하고 수정합니다.',
+    minRoleRank: 2
   },
   {
     href: '/dashboard/members',
     title: 'Members',
-    description: '신입 멤버 지원서와 회비 납부 상태를 확인합니다.'
+    description: '신입 멤버 지원서와 회비 납부 상태를 확인합니다.',
+    minRoleRank: 2
   },
   {
     href: '/dashboard/core-applications',
     title: 'Core 지원서',
-    description: '코어 지원서를 열람하고 합격/불합격을 처리합니다.'
+    description: '코어 지원서를 열람하고 합격/불합격을 처리합니다.',
+    minRoleRank: 3
   },
   {
     href: '/dashboard/mbti',
     title: 'MBTI',
-    description: 'MBTI 결과 조회와 팀 매칭을 진행합니다.'
+    description: 'MBTI 결과 조회와 팀 매칭을 진행합니다.',
+    minRoleRank: 2
   },
   {
     href: '/dashboard/memo',
     title: 'Memo 발송',
-    description: '신입생 알림 신청 대상에게 안내 메시지를 발송합니다.'
+    description: '신입생 알림 신청 대상에게 안내 메시지를 발송합니다.',
+    minRoleRank: 2
   }
 ] as const
 
+const ROLE_RANK: Record<string, number> = {
+  GUEST: 0,
+  MEMBER: 1,
+  CORE: 2,
+  LEAD: 3,
+  ORGANIZER: 4,
+  ADMIN: 5
+}
+
 export default function DashboardIndexPage() {
+  const { user } = useAuth()
+  const myRoleRank = ROLE_RANK[user?.userRole ?? 'GUEST'] ?? 0
+  const visibleLinks = DASHBOARD_LINKS.filter((item) => myRoleRank >= item.minRoleRank)
+
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white pc:px-10">
       <div className="mx-auto w-full max-w-[1280px] space-y-8">
@@ -41,7 +63,7 @@ export default function DashboardIndexPage() {
         </div>
 
         <div className="grid gap-4 pc:grid-cols-2">
-          {DASHBOARD_LINKS.map((item) => (
+          {visibleLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}
