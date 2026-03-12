@@ -145,7 +145,7 @@ export default function DashboardUsersPage() {
       if (myTeam !== 'HR' && target.team !== myTeam) return false
 
       if (myRole === 'LEAD') {
-        return target.userRole === 'MEMBER' || target.userRole === 'CORE'
+        return target.userRole === 'GUEST' || target.userRole === 'MEMBER' || target.userRole === 'CORE'
       }
 
       return target.userRole === 'GUEST' || target.userRole === 'MEMBER'
@@ -158,7 +158,7 @@ export default function DashboardUsersPage() {
     if (!myRole) return []
 
     const base = ROLE_OPTIONS.filter((role) => (ROLE_RANK[myRole] ?? -1) > (ROLE_RANK[role] ?? -1))
-    if (myRole === 'LEAD') return base.filter((role) => role === 'MEMBER' || role === 'CORE')
+    if (myRole === 'LEAD') return base.filter((role) => role === 'GUEST' || role === 'MEMBER' || role === 'CORE')
     if (myRole === 'CORE') return base.filter((role) => role === 'GUEST' || role === 'MEMBER')
     return base
   }
@@ -261,6 +261,12 @@ export default function DashboardUsersPage() {
               className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
             >
               MBTI
+            </Link>
+            <Link
+              href="/dashboard/core-applications"
+              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+            >
+              Core 지원서
             </Link>
           </div>
           <div className="flex w-full gap-2 pc:w-auto">
