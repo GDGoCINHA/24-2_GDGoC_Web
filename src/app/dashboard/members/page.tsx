@@ -196,6 +196,12 @@ export default function DashboardMembersPage() {
             >
               Memo 발송
             </Link>
+            <Link
+              href="/dashboard/core-applications"
+              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+            >
+              Core 지원서
+            </Link>
           </div>
           <div className="flex w-full gap-2 pc:w-auto">
             <input

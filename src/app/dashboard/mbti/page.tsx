@@ -296,6 +296,12 @@ export default function DashboardMbtiPage() {
           >
             Members
           </Link>
+          <Link
+            href="/dashboard/core-applications"
+            className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+          >
+            Core 지원서
+          </Link>
         </div>
 
         <div className="grid gap-4 pc:grid-cols-2">
