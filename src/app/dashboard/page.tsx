@@ -40,6 +40,12 @@ const DASHBOARD_LINKS = [
     title: 'Bingo',
     description: '대시보드 안에서 팀별 빙고 체크를 수정합니다.',
     minRoleRank: 2
+  },
+  {
+    href: '/dashboard/8bit',
+    title: '8bit 순위표',
+    description: '8bit 게임 점수 전체 컬럼을 순위표 형태로 조회합니다.',
+    minRoleRank: 2
   }
 ] as const
 
