@@ -34,6 +34,12 @@ const DASHBOARD_LINKS = [
     title: 'Memo 발송',
     description: '신입생 알림 신청 대상에게 안내 메시지를 발송합니다.',
     minRoleRank: 2
+  },
+  {
+    href: '/dashboard/bingo',
+    title: 'Bingo',
+    description: '대시보드 안에서 팀별 빙고 체크를 수정합니다.',
+    minRoleRank: 2
   }
 ] as const
 
