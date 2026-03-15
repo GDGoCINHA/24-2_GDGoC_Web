@@ -1,5 +1,7 @@
 'use client'
 
+import { ACCESS_TOKEN_KEY, readStoredString } from '@/lib/auth/storage'
+
 export type AuthorizedFetcher = (
   input: RequestInfo | URL,
   init?: RequestInit
@@ -71,10 +73,16 @@ export const createAuthorizedFetch = ({
   return async (input, init) => {
     const resolvedInput = resolveUrl(input, baseURL)
     const context: FetchContext = { input, init }
-    const initialInit = cloneInit(init)
 
     const dispatch = async (): Promise<Response> => {
-      const { target, options } = makeRequest(resolvedInput, initialInit)
+      const requestInit = cloneInit(init)
+      const accessToken = readStoredString(ACCESS_TOKEN_KEY)
+
+      if (accessToken && !requestInit.headers.has('Authorization')) {
+        requestInit.headers.set('Authorization', `Bearer ${accessToken}`)
+      }
+
+      const { target, options } = makeRequest(resolvedInput, requestInit)
       return fetch(target, options)
     }
 
