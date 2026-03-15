@@ -61,6 +61,7 @@ const TEAM_OPTIONS = [
   { id: 'TECH', label: 'TECH' },
   { id: 'PR_DESIGN', label: 'PR·DESIGN' }
 ] as const
+const CORE_RECRUIT_DEADLINE = '2026-03-14T23:59:59+09:00'
 
 const unwrapPrefill = (raw: unknown): PrefillPayload | null => {
   if (!raw || typeof raw !== 'object') return null
@@ -202,6 +203,7 @@ export default function RecruitCore() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [scheduleChecked, setScheduleChecked] = useState(false)
   const [agreementChecked, setAgreementChecked] = useState(false)
+  const isRecruitClosed = Date.now() > new Date(CORE_RECRUIT_DEADLINE).getTime()
 
   const [formData, setFormData] = useState<RecruitFormData>({
     name: '',
@@ -242,6 +244,19 @@ export default function RecruitCore() {
   }, [currentStep, formData, scheduleChecked, agreementChecked])
 
   useEffect(() => {
+    if (!isRecruitClosed) {
+      return
+    }
+
+    alert('코어 지원 기간이 종료되었습니다.')
+    router.replace('/recruit/core/completed?status=closed')
+  }, [isRecruitClosed, router])
+
+  useEffect(() => {
+    if (isRecruitClosed) {
+      return
+    }
+
     let active = true
 
     const fetchPrefill = async () => {
@@ -278,7 +293,7 @@ export default function RecruitCore() {
     return () => {
       active = false
     }
-  }, [apiClient, router])
+  }, [apiClient, isRecruitClosed, router])
 
   const validateStep = (step: RecruitStep) => {
     const nextErrors: Record<string, boolean> = {}
@@ -398,6 +413,12 @@ export default function RecruitCore() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (isRecruitClosed) {
+      alert('코어 지원 기간이 종료되었습니다.')
+      router.replace('/recruit/core/completed?status=closed')
+      return
+    }
 
     if (!validateStep(currentStep)) return
 
