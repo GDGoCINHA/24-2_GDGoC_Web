@@ -158,7 +158,7 @@ export default function RecruitSubmit() {
 
           <Section title="동아리 톡방 초대 안내">
             <Card className="flex-col items-start gap-2">
-              <Bullet>동아리 단체 채팅방은 회비 입금 완료자에 한해 매주 화요일, 목요일 초대됩니다.</Bullet>
+              <Bullet>동아리 단체 채팅방은 회비 입금 완료자에 한해 매주 금요일 초대됩니다.</Bullet>
               <Bullet>동아리 박람회 기간에는 당일 18시 이전 입금자까지 당일 초대됩니다.</Bullet>
             </Card>
           </Section>
