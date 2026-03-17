@@ -18,10 +18,16 @@ const DASHBOARD_LINKS = [
     minRoleRank: 2
   },
   {
-    href: '/dashboard/core-applications',
+    href: '/dashboard/core/application',
     title: 'Core 지원서',
     description: '코어 지원서를 열람하고 합격/불합격을 처리합니다.',
     minRoleRank: 3
+  },
+  {
+    href: '/dashboard/core/attendance',
+    title: 'Core 출석',
+    description: '코어 출석 현황을 조회하고 lead 이상은 출석을 기록합니다.',
+    minRoleRank: 2
   },
   {
     href: '/dashboard/mbti',

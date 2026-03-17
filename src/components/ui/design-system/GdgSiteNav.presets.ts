@@ -12,7 +12,7 @@ export const GDG_DEFAULT_MAIN_MENUS: GdgMenuLink[] = [
   { label: '멤버관리', url: '/admin/recruit-manager' },
   { label: '권한관리', url: '/admin/member-manager' },
   { label: '운영자 지원관리', url: '/coreadmin' },
-  { label: '출석 관리', url: '/core-attendance' }
+  { label: '출석 관리', url: '/dashboard/core/attendance' }
 ]
 
 export const GDG_DEFAULT_FOOTER_SECTIONS: GdgSiteFooterProps['sections'] = [

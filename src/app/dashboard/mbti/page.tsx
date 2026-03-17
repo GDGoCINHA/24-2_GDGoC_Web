@@ -297,10 +297,16 @@ export default function DashboardMbtiPage() {
             Members
           </Link>
           <Link
-            href="/dashboard/core-applications"
+            href="/dashboard/core/application"
             className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
           >
             Core 지원서
+          </Link>
+          <Link
+            href="/dashboard/core/attendance"
+            className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
+          >
+            Core 출석
           </Link>
         </div>
 

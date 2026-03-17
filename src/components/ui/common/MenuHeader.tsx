@@ -17,7 +17,7 @@ export default function MenuHeader() {
     { name: "멤버관리", href: "/admin/recruit-manager" },
     { name: "권한관리", href: "/admin/member-manager" },
     { name: "운영자 지원관리", href: "/coreadmin" },
-    { name: "출석 관리", href: "/core-attendance" },
+    { name: "출석 관리", href: "/dashboard/core/attendance" },
     // { name: "스터디", href: "#", onClick: () => alert('준비중입니다.') },
     // { name: "공지사항", href: "#", onClick: () => alert('준비중입니다.') },
     // { name: "프로젝트", href: "#", onClick: () => alert('준비중입니다.') },
@@ -61,7 +61,7 @@ export default function MenuHeader() {
           </Link>
         </NavbarItem>
         <NavbarItem>
-          <Link color="foreground" className="text-white" href="/core-attendance" >
+          <Link color="foreground" className="text-white" href="/dashboard/core/attendance" >
             출석 체크
           </Link>
         </NavbarItem>
