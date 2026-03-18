@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Loader from '@/components/ui/common/Loader'
 import UserDetailsModal from '@/components/admin/UserDetailsModal'
 import { GdgSegmentedButton } from '@/components/ui/design-system'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { formatPhoneNumberDisplay } from '@/utils/phoneNumber'
 
@@ -264,7 +265,7 @@ export default function DashboardMembersPage() {
                 members.map((member) => (
                   <tr key={member.id} className="border-t border-white/10 bg-black">
                     <td className="px-4 py-3 typo-pc-b3">{member.name}</td>
-                    <td className="px-4 py-3 typo-pc-b3">{member.major}</td>
+                    <td className="px-4 py-3 typo-pc-b3">{formatMajorLabel(member.major)}</td>
                     <td className="px-4 py-3 typo-pc-b3">{member.studentId}</td>
                     <td className="px-4 py-3 typo-pc-b3">
                       {formatPhoneNumberDisplay(member.phoneNumber)}

@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { Button } from '@nextui-org/react';
 import clsx from 'clsx';
+import { formatMajorLabel } from '@/constant/majorOptions';
 import { formatPhoneNumberDisplay } from '@/utils/phoneNumber';
 
 const FIELD_LABELS = {
@@ -78,6 +79,9 @@ const formatFieldValue = (key, value) => {
   }
   if (key === 'isPayed' && typeof value === 'boolean') {
     return value ? '입금 완료' : '미입금';
+  }
+  if (key === 'major' && typeof value === 'string') {
+    return formatMajorLabel(value);
   }
   return formatValue(value);
 };
