@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { formatMajorLabel } from '@/constant/majorOptions';
 import {
   ResponsiveContainer,
   PieChart,
@@ -21,7 +22,7 @@ function normalizeMembers(rawMembers = []) {
   return rawMembers.map((u) => ({
     id: u?.id ?? u?.member?.id,
     name: u?.name ?? u?.member?.name ?? '',
-    major: u?.major ?? u?.member?.major ?? u?.member?.majors?.main ?? '기타',
+    major: formatMajorLabel(u?.major ?? u?.member?.major ?? u?.member?.majors?.main ?? '기타'),
     admissionSemester: u?.admissionSemester ?? u?.member?.admissionSemester ?? '미상',
     studentId: String(u?.studentId ?? u?.member?.studentId ?? ''),
     isPayed: typeof (u?.isPayed ?? u?.member?.isPayed) === 'boolean' ? (u?.isPayed ?? u?.member?.isPayed) : false,
@@ -206,5 +207,4 @@ export default function AdminDashboard({ members = [], totalCount }) {
     </div>
   );
 }
-
 

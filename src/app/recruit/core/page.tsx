@@ -15,6 +15,7 @@ import {
   GdgInputField
 } from '@/components/ui/design-system'
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
+import { normalizeMajorCode } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
@@ -272,7 +273,7 @@ export default function RecruitCore() {
           name: prev.name || payload.name || '',
           studentId: prev.studentId || payload.studentId || '',
           email: prev.email || payload.email || '',
-          major: prev.major || payload.major || '',
+          major: prev.major || normalizeMajorCode(payload.major) || '',
           phone: formatInput(prev.phone || payload.phone || '')
         }))
       } catch (error: any) {
@@ -439,7 +440,7 @@ export default function RecruitCore() {
           name: formData.name,
           studentId: formData.studentId,
           phone: toDigits(formData.phone),
-          major: formData.major,
+          major: normalizeMajorCode(formData.major),
           email: formData.email
         },
         team: formData.team,

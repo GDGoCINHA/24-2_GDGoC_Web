@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { User, Chip, Checkbox } from '@nextui-org/react';
+import { formatMajorLabel } from '@/constant/majorOptions';
 
 const statusColorMap = {
   true: 'success',
@@ -28,7 +29,7 @@ export default function AdminTableCell({ user, columnKey, onTogglePay }) {
     case 'major':
       return (
         <div className='flex flex-col'>
-          <p className='text-white text-bold text-sm capitalize'>{user.major}</p>
+          <p className='text-white text-bold text-sm capitalize'>{formatMajorLabel(user.major)}</p>
           <p className='text-bold text-sm capitalize text-default-400'>{user.studentId}</p>
         </div>
       );
@@ -53,5 +54,4 @@ export default function AdminTableCell({ user, columnKey, onTogglePay }) {
       return cellValue;
   }
 }
-
 

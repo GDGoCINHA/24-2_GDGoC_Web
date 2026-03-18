@@ -1,6 +1,6 @@
 'use client'
 
-import { majorOptions } from '@/constant/majorOptions'
+import { majorOptions, normalizeMajorCode } from '@/constant/majorOptions'
 import { GdgDropdown, type GdgDropdownOptionGroup } from './GdgDropdown'
 
 export type GdgMajorDropdownProps = {
@@ -23,8 +23,8 @@ export function GdgMajorDropdown({
   const groupedOptions: GdgDropdownOptionGroup[] = majorOptions.map((group) => ({
     title: group.title,
     items: group.items.map((item) => ({
-      id: item.value,
-      label: item.value
+      id: item.code,
+      label: item.label
     }))
   }))
 
@@ -34,7 +34,7 @@ export function GdgMajorDropdown({
       size="full"
       placeholder="학과를 입력해 주세요."
       optionGroups={groupedOptions}
-      value={value}
+      value={normalizeMajorCode(value)}
       onChange={onChangeAction}
       autoFocus={autoFocus}
       isInvalid={isInvalid ?? Boolean(errorMessage)}

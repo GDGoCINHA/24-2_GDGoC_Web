@@ -2,6 +2,7 @@
 
 // components
 import GreenTextButton from "@/components/ui/button/GreenTextButton";
+import { formatMajorLabel } from '@/constant/majorOptions';
 
 export default function ApplicantInfoList({
                                               applications,
@@ -57,7 +58,7 @@ export default function ApplicantInfoList({
                                 onClick={() => handleApplicantDetailPopup(app.id)}
                             >
                                 <td className="py-4">{app.name}</td>
-                                <td className="py-4">{app.major}</td>
+                                <td className="py-4">{formatMajorLabel(app.major)}</td>
                                 <td className="py-4">{app.studentId}</td>
                                 <td className="py-4 text-center">
                                     {/* 이미 처리된 지원자가 있으면 상태 뱃지 표시 */}

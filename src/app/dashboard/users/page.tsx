@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 
 import Loader from '@/components/ui/common/Loader'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 
@@ -350,7 +351,7 @@ export default function DashboardUsersPage() {
                           <td className="px-4 py-3 typo-pc-b3">{user.id}</td>
                           <td className="px-4 py-3 typo-pc-b3">{user.name}</td>
                           <td className="px-4 py-3 typo-pc-b3">{user.email}</td>
-                          <td className="px-4 py-3 typo-pc-b3">{user.major || '-'}</td>
+                          <td className="px-4 py-3 typo-pc-b3">{formatMajorLabel(user.major)}</td>
                           <td className="px-4 py-3 typo-pc-b3">{user.studentId || '-'}</td>
                           <td className="px-4 py-3">
                             {editable ? (
