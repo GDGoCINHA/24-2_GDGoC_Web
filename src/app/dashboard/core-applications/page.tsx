@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 
 import Loader from '@/components/ui/common/Loader'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 
 type RecruitCoreResultStatus = 'SUBMITTED' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED'
@@ -341,7 +342,7 @@ export default function DashboardCoreApplicationsPage() {
                     >
                       <td className="px-4 py-3 typo-pc-b3">{application.name}</td>
                       <td className="px-4 py-3 typo-pc-b3">{application.studentId}</td>
-                      <td className="px-4 py-3 typo-pc-b3">{application.major}</td>
+                      <td className="px-4 py-3 typo-pc-b3">{formatMajorLabel(application.major)}</td>
                       <td className="px-4 py-3 typo-pc-b3">{application.team}</td>
                       <td className="px-4 py-3 typo-pc-b3">{application.resultStatus}</td>
                       <td className="px-4 py-3 typo-pc-b3">{formatDateTime(application.createdAt)}</td>
@@ -410,7 +411,7 @@ export default function DashboardCoreApplicationsPage() {
                     <div className="mt-3 space-y-2 typo-pc-b3">
                       <p>이름: {detail.snapshot.name}</p>
                       <p>학번: {detail.snapshot.studentId}</p>
-                      <p>전공: {detail.snapshot.major}</p>
+                      <p>전공: {formatMajorLabel(detail.snapshot.major)}</p>
                       <p>전화번호: {detail.snapshot.phone}</p>
                       <p>이메일: {detail.snapshot.email}</p>
                       <p>지원 팀: {detail.team}</p>

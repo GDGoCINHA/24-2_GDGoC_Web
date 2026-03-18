@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { Spinner } from "@nextui-org/react";
+import { formatMajorLabel } from '@/constant/majorOptions';
 
 // API Services
 import { useApplicantDetail } from '@/services/study/useApplicantDetail';
@@ -58,7 +59,7 @@ export default function ApplicantDetailModal({ apiClient, studyId, selectedAppli
                             <th className="p-2 bg-gray-200 text-center">학번</th>
                         </tr>
                         <tr className="border-b-2 border-gray-400">
-                            <td className="p-2 border-r-2 border-gray-400 text-center">{applicantDetail.major}</td>
+                            <td className="p-2 border-r-2 border-gray-400 text-center">{formatMajorLabel(applicantDetail.major)}</td>
                             <td className="p-2 text-center">{applicantDetail.studentId}</td>
                         </tr>
                         <tr className="border-b-2 border-gray-400">

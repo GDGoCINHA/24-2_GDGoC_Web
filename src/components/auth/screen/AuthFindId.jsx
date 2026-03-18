@@ -8,7 +8,7 @@ import axios from 'axios';
 import TransparentInput from '@/components/ui/input/TransparentInput';
 import { usePhoneNumber } from '@/hooks/usePhoneNumber';
 
-import { majorOptions } from '@/constant/majorOptions';
+import { majorOptions, normalizeMajorCode } from '@/constant/majorOptions';
 
 export default function AuthFindId({ handleBackToLogin }) {
   const [name, setName] = useState('');
@@ -92,14 +92,14 @@ export default function AuthFindId({ handleBackToLogin }) {
             base: 'bg-[#1c1c1c] text-white',
           },
         }}
-        selectedKeys={major}
-        onSelectionChange={setMajor}
+        selectedKeys={normalizeMajorCode(major)}
+        onSelectionChange={(value) => setMajor(String(value ?? ''))}
       >
         {majorOptions.map((major) => (
           <AutocompleteSection title={major.title} key={major.title} showDivider>
             {major.items.map((item) => (
-              <AutocompleteItem key={item.key} aria-label={item.value} value={item.value}>
-                {item.value}
+              <AutocompleteItem key={item.code} aria-label={item.label} value={item.code}>
+                {item.label}
               </AutocompleteItem>
             ))}
           </AutocompleteSection>
