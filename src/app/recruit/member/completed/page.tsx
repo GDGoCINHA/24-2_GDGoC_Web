@@ -137,7 +137,7 @@ export default function RecruitSubmit() {
               </Bullet>
               <Bullet>
                 <span className="font-bold mr-2">입금 계좌</span>
-                <span>신한 110-333-968130 (예금주: 백승엽)</span>
+                <span>하나 74891001642704 (예금주: 지디지오씨 인하)</span>
               </Bullet>
               <Bullet>
                 회비 납부 시 반드시 입금자명을 {"\'"}학번 + 이름{"\'"} 형식(예: 24김인하) 으로
