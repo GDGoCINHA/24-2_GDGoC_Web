@@ -51,8 +51,9 @@ type PrefillPayload = {
   phone?: string
 }
 
-type S3UploadResponse = {
-  s3Key?: string
+type PresignedUploadResponse = {
+  key?: string
+  uploadUrl?: string
 }
 
 const STEPS = ['기본정보', '내용작성', '일정안내', '약관동의'] as const
@@ -394,19 +395,31 @@ export default function RecruitCore() {
     if (uploadTargets.length === 0) return []
 
     const uploads = uploadTargets.map(async (target) => {
-      const formData = new FormData()
-      formData.append('file', target.file)
-
-      const response = await apiClient.post('/resource/image', formData, {
-        params: { s3key: 'study' }
+      const presignedResponse = await apiClient.post('/resource/presigned-upload', {
+        fileName: target.file.name,
+        contentType: target.file.type || 'application/octet-stream',
+        fileSize: target.file.size,
+        s3key: 'recruitCore'
       })
 
-      const payload = unwrapApiResponse<S3UploadResponse>(response.data)
-      if (!payload?.s3Key) {
-        throw new Error(`${target.name} 업로드 응답에 s3Key가 없습니다.`)
+      const payload = unwrapApiResponse<PresignedUploadResponse>(presignedResponse.data)
+      if (!payload?.key || !payload.uploadUrl) {
+        throw new Error(`${target.name} 업로드 URL 발급 응답이 올바르지 않습니다.`)
       }
 
-      return payload.s3Key
+      const uploadResponse = await fetch(payload.uploadUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': target.file.type || 'application/octet-stream'
+        },
+        body: target.file
+      })
+
+      if (!uploadResponse.ok) {
+        throw new Error(`${target.name} S3 업로드에 실패했습니다.`)
+      }
+
+      return payload.key
     })
 
     return Promise.all(uploads)
