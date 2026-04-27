@@ -44,6 +44,11 @@ type RecruitFormState = {
 
 type DuplicateCheckStatus = 'idle' | 'checking' | 'available' | 'duplicate' | 'unverified' | 'error'
 
+type PresignedUploadResponse = {
+  key?: string
+  uploadUrl?: string
+}
+
 interface DuplicateCheckState {
   status: DuplicateCheckStatus
   message?: string
@@ -350,26 +355,66 @@ export default function Recruit() {
       }
       const payload = Object.fromEntries(buildRecruitMap())
       if (formData.enrolledClassification === '군휴학' && formData.proofFile) {
-        const fd = new FormData()
-        fd.append(
-          'request',
-          new Blob([JSON.stringify(payload)], { type: 'application/json' })
-        )
-        fd.append('file', formData.proofFile)
-        await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`, fd, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-      } else {
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`,
-          payload
-        )
+        const proofFileKey = await uploadProofFile(formData.proofFile)
+        const step6 = payload[6] as Record<string, unknown>
+        payload[6] = {
+          ...step6,
+          proofFileUrl: proofFileKey
+        }
       }
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`,
+        payload
+      )
       router.push('/recruit/member/completed?from=recruit')
     } catch (error: any) {
       setGlobalError(error.response?.data?.message || '지원서 제출 중 오류가 발생했습니다.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const uploadProofFile = async (file: File) => {
+    const presignedResponse = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply/proof-file/presigned-upload`,
+      {
+        fileName: file.name,
+        contentType: file.type || 'application/octet-stream',
+        fileSize: file.size
+      }
+    )
+
+    const payload = unwrapPresignedUploadResponse(presignedResponse.data)
+    if (!payload?.key || !payload.uploadUrl) {
+      throw new Error('증빙 파일 업로드 URL 발급 응답이 올바르지 않습니다.')
+    }
+
+    const uploadResponse = await fetch(payload.uploadUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': file.type || 'application/octet-stream'
+      },
+      body: file
+    })
+
+    if (!uploadResponse.ok) {
+      throw new Error('증빙 파일 S3 업로드에 실패했습니다.')
+    }
+
+    return payload.key
+  }
+
+  const unwrapPresignedUploadResponse = (raw: unknown): PresignedUploadResponse | null => {
+    if (!raw || typeof raw !== 'object') return null
+
+    const record = raw as Record<string, unknown>
+    if ('data' in record && record.data && typeof record.data === 'object') {
+      return unwrapPresignedUploadResponse(record.data)
+    }
+
+    return {
+      key: typeof record.key === 'string' ? record.key : undefined,
+      uploadUrl: typeof record.uploadUrl === 'string' ? record.uploadUrl : undefined
     }
   }
 
