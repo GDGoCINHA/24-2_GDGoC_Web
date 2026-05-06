@@ -204,7 +204,9 @@ export const mockNeighbors = async (id: string): Promise<NoticeNeighbors> => {
     id: n.id,
     title: n.title,
     category: n.category,
-    createdAt: n.createdAt
+    createdAt: n.createdAt,
+    author: n.author,
+    viewCount: n.viewCount
   })
   return delay({
     prev: idx + 1 < sorted.length ? pickFields(sorted[idx + 1]) : null,

@@ -60,9 +60,14 @@ export interface NoticeListResponse {
   pageSize: number
 }
 
+export type NoticeNeighborItem = Pick<
+  Notice,
+  'id' | 'title' | 'category' | 'createdAt' | 'author' | 'viewCount'
+>
+
 export interface NoticeNeighbors {
-  prev: Pick<Notice, 'id' | 'title' | 'category' | 'createdAt'> | null
-  next: Pick<Notice, 'id' | 'title' | 'category' | 'createdAt'> | null
+  prev: NoticeNeighborItem | null
+  next: NoticeNeighborItem | null
 }
 
 export type NoticeAttachmentInput =
