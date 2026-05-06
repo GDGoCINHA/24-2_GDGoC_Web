@@ -3,6 +3,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Pencil } from 'lucide-react'
 
 import { NoticeCategoryFilter } from '@/components/notice/NoticeCategoryFilter'
 import { NoticeListTable } from '@/components/notice/NoticeListTable'
@@ -70,64 +71,87 @@ function NoticeListContent() {
   const totalPages = data ? Math.max(1, Math.ceil(data.total / data.pageSize)) : 1
   const totalCount = data ? data.pinned.length + data.total : 0
 
+  const handleSearchSubmit = (q: string, f: NoticeSearchField) => {
+    updateQuery({ query: q || undefined, field: f, page: undefined })
+  }
+
   return (
-    <main className="min-h-screen bg-black text-white">
-      <div className="mx-auto max-w-[1280px] px-8 py-12">
-        {/* 헤더 영역 */}
-        <div className="mb-6 flex items-end justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">공지사항</h1>
-            <p className="mt-2 text-sm text-gray-400">
-              GDGoC INHA의 소식을 빠르게 확인하세요.
-            </p>
+    <main className="bg-black text-white">
+      <div className="mx-auto flex w-[1280px] flex-col items-center gap-16 px-[80px] pt-[56px] pb-[120px]">
+        <div className="flex w-full flex-col gap-6">
+          {/* 타이틀 */}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2 text-white">
+              <h1 className="typo-h4">공지사항</h1>
+              <p className="typo-b3">GDGoC INHA의 소식을 빠르게 확인하세요.</p>
+            </div>
+
+            {/* 카테고리 필터 + 글쓰기 버튼 */}
+            <div className="flex w-full items-center justify-between">
+              <NoticeCategoryFilter
+                value={category}
+                onChange={(c) => updateQuery({ category: c, page: undefined })}
+              />
+              {isCorePlus && (
+                <Link
+                  href="/notice/new"
+                  className="inline-flex items-center gap-1 rounded-full bg-red px-4 py-2 typo-b3 text-white transition-opacity hover:opacity-90"
+                >
+                  <Pencil size={14} strokeWidth={2.4} />
+                  글쓰기
+                </Link>
+              )}
+            </div>
           </div>
-          {isCorePlus && (
-            <Link
-              href="/notice/new"
-              className="rounded-full bg-red px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
-            >
-              ✏ 글쓰기
-            </Link>
-          )}
+
+          {/* 본문 */}
+          <div className="flex w-full flex-col gap-4">
+            {/* 총 N개 + 상단 검색 */}
+            <div className="flex w-full items-end justify-between">
+              <p className="whitespace-nowrap typo-b3 text-white">
+                총 <span className="font-bold">{totalCount}개</span>
+              </p>
+              <NoticeSearchBar
+                initialQuery={query}
+                initialField={searchField}
+                onSubmit={handleSearchSubmit}
+              />
+            </div>
+
+            {/* 결과 영역 */}
+            {loading && (
+              <p className="py-12 text-center typo-b3 text-gray-700">불러오는 중...</p>
+            )}
+            {error && (
+              <p className="py-12 text-center typo-b3 text-red">{error.message}</p>
+            )}
+            {data && !loading && (
+              <NoticeListTable
+                pinned={data.pinned}
+                items={data.items}
+                totalRegular={data.total}
+                page={page}
+                pageSize={data.pageSize}
+              />
+            )}
+          </div>
         </div>
 
-        {/* 필터 + 검색 */}
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <NoticeCategoryFilter
-            value={category}
-            onChange={(c) => updateQuery({ category: c, page: undefined })}
+        {/* 하단 영역: 페이지네이션 + 검색 */}
+        <div className="flex w-[550px] flex-col items-center gap-4">
+          <NoticePagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={(p) =>
+              updateQuery({ page: p === 1 ? undefined : String(p) })
+            }
           />
           <NoticeSearchBar
             initialQuery={query}
             initialField={searchField}
-            onSubmit={(q, f) =>
-              updateQuery({ query: q || undefined, field: f, page: undefined })
-            }
+            onSubmit={handleSearchSubmit}
           />
         </div>
-
-        {/* 결과 영역 */}
-        {loading && (
-          <p className="py-12 text-center text-sm text-gray-400">불러오는 중...</p>
-        )}
-        {error && (
-          <p className="py-12 text-center text-sm text-red">{error.message}</p>
-        )}
-        {data && !loading && (
-          <>
-            <p className="mb-2 text-xs text-gray-400">총 {totalCount}개</p>
-            <NoticeListTable pinned={data.pinned} items={data.items} />
-            <div className="mt-8 flex justify-center">
-              <NoticePagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={(p) =>
-                  updateQuery({ page: p === 1 ? undefined : String(p) })
-                }
-              />
-            </div>
-          </>
-        )}
       </div>
     </main>
   )
@@ -137,7 +161,7 @@ export default function NoticeListPage() {
   return (
     <Suspense
       fallback={
-        <p className="py-12 text-center text-sm text-gray-400">불러오는 중...</p>
+        <p className="py-12 text-center typo-b3 text-gray-700">불러오는 중...</p>
       }
     >
       <NoticeListContent />

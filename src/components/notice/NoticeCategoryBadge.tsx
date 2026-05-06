@@ -1,40 +1,29 @@
 'use client'
 
-import {
-  GdgColorTag,
-  type GdgTagColor,
-  type GdgTagFill,
-  type GdgTagSize
-} from '@/components/ui/design-system'
 import { NOTICE_CATEGORY_LABEL } from '@/constant/notice'
 import type { NoticeCategory } from '@/services/notice/noticeApi'
+import { cn } from '@/utils/cn'
 
-const CATEGORY_TO_COLOR: Record<NoticeCategory, GdgTagColor> = {
-  OPERATION: 'red',
-  SCHEDULE: 'blue',
-  RECRUITMENT: 'green',
-  ETC: 'yellow'
+const CATEGORY_STYLE: Record<NoticeCategory, string> = {
+  OPERATION: 'bg-[#17386E] text-blue',
+  SCHEDULE: 'bg-green-400 text-green',
+  RECRUITMENT: 'bg-yellow-400 text-yellow',
+  ETC: 'bg-gray-200 text-gray-700'
 }
 
 export interface NoticeCategoryBadgeProps {
   category: NoticeCategory
-  fill?: GdgTagFill
-  size?: GdgTagSize
   className?: string
 }
 
-export const NoticeCategoryBadge = ({
-  category,
-  fill = 'on',
-  size = 'mini',
-  className
-}: NoticeCategoryBadgeProps) => (
-  <GdgColorTag
-    color={CATEGORY_TO_COLOR[category]}
-    fill={fill}
-    size={size}
-    className={className}
+export const NoticeCategoryBadge = ({ category, className }: NoticeCategoryBadgeProps) => (
+  <span
+    className={cn(
+      'inline-flex items-center justify-center rounded-[800px] px-3 py-1 typo-c2',
+      CATEGORY_STYLE[category],
+      className
+    )}
   >
     {NOTICE_CATEGORY_LABEL[category]}
-  </GdgColorTag>
+  </span>
 )

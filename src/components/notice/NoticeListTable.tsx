@@ -1,18 +1,19 @@
 'use client'
 
 import Link from 'next/link'
+import { Megaphone } from 'lucide-react'
 
 import { NoticeCategoryBadge } from '@/components/notice/NoticeCategoryBadge'
-import { NoticeStatusBadge } from '@/components/notice/NoticeStatusBadge'
+import { NOTICE_PAGE_SIZE } from '@/constant/notice'
 import type { Notice } from '@/services/notice/noticeApi'
-import { cn } from '@/utils/cn'
 
 export interface NoticeListTableProps {
   pinned: Notice[]
   items: Notice[]
+  totalRegular: number
+  page: number
+  pageSize?: number
 }
-
-const COLS = 'grid-cols-[60px_80px_1fr_120px_100px_60px]'
 
 const formatDate = (iso: string): string => {
   const d = new Date(iso)
@@ -22,51 +23,106 @@ const formatDate = (iso: string): string => {
   return `${yy}.${mm}.${dd}.`
 }
 
-const NoticeRow = ({ notice, pinned }: { notice: Notice; pinned: boolean }) => (
+const padNumber = (n: number): string => String(n).padStart(3, '0')
+
+interface RowDetailsProps {
+  authorName: string
+  createdAt: string
+  viewCount: number
+}
+
+const RowDetails = ({ authorName, createdAt, viewCount }: RowDetailsProps) => (
+  <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-20 whitespace-nowrap typo-b3 text-white">
+    <span>{authorName}</span>
+    <span>{formatDate(createdAt)}</span>
+    <span>{padNumber(viewCount)}</span>
+  </div>
+)
+
+const PinnedRow = ({ notice }: { notice: Notice }) => (
   <Link
     href={`/notice/${notice.id}`}
-    className={cn(
-      'grid items-center gap-4 border-b border-white/10 px-4 py-3 text-sm transition-colors hover:bg-white/5',
-      COLS,
-      pinned && 'bg-white/[0.04]'
-    )}
+    className="relative block h-11 w-full overflow-hidden border-b border-gray-500 bg-gray-200 transition-colors hover:bg-gray-200/80"
   >
-    <div>{pinned ? <NoticeStatusBadge status="PUBLISHED" /> : <span className="text-gray-500">—</span>}</div>
-    <div>
-      <NoticeCategoryBadge category={notice.category} fill="on" />
+    <Megaphone
+      size={20}
+      strokeWidth={1.6}
+      className="absolute left-[17px] top-1/2 -translate-y-1/2 text-white"
+    />
+    <div className="absolute left-[70px] top-1/2 flex -translate-y-1/2 items-center gap-2">
+      <NoticeCategoryBadge category={notice.category} />
+      <p className="w-[623px] truncate typo-b3 text-white">{notice.title}</p>
     </div>
-    <div className="truncate text-white">{notice.title}</div>
-    <div className="truncate text-gray-300">{notice.author.name}</div>
-    <div className="text-gray-300">{formatDate(notice.createdAt)}</div>
-    <div className="text-gray-300">{notice.viewCount}</div>
+    <RowDetails
+      authorName={notice.author.name}
+      createdAt={notice.createdAt}
+      viewCount={notice.viewCount}
+    />
   </Link>
 )
 
-export const NoticeListTable = ({ pinned, items }: NoticeListTableProps) => {
+const RegularRow = ({
+  notice,
+  displayNumber
+}: {
+  notice: Notice
+  displayNumber: number
+}) => (
+  <Link
+    href={`/notice/${notice.id}`}
+    className="relative block h-11 w-full overflow-hidden border-b border-gray-500 bg-black transition-colors hover:bg-white/5"
+  >
+    <p className="absolute left-4 top-[calc(50%-9px)] w-[30px] typo-c1 text-white">
+      {padNumber(displayNumber)}
+    </p>
+    <div className="absolute left-[70px] top-1/2 flex -translate-y-1/2 items-center gap-2">
+      <NoticeCategoryBadge category={notice.category} />
+      <p className="w-[623px] truncate typo-b3 text-white">{notice.title}</p>
+    </div>
+    <RowDetails
+      authorName={notice.author.name}
+      createdAt={notice.createdAt}
+      viewCount={notice.viewCount}
+    />
+  </Link>
+)
+
+export const NoticeListTable = ({
+  pinned,
+  items,
+  totalRegular,
+  page,
+  pageSize = NOTICE_PAGE_SIZE
+}: NoticeListTableProps) => {
   const empty = pinned.length + items.length === 0
+  const pageStartNumber = totalRegular - (page - 1) * pageSize
 
   return (
-    <div className="overflow-hidden rounded-lg border border-white/10">
-      <div
-        className={cn(
-          'grid gap-4 border-b border-white/10 bg-white/[0.04] px-4 py-3 text-xs text-gray-400',
-          COLS
-        )}
-      >
-        <div>구분</div>
-        <div>분류</div>
-        <div>제목</div>
-        <div>작성자</div>
-        <div>작성일</div>
-        <div>조회</div>
+    <div className="w-full">
+      {/* 헤더 — 1120px 기준 절대 위치 */}
+      <div className="relative h-9 w-full overflow-hidden rounded-t-lg bg-gray-200 typo-b3 text-white">
+        <p className="absolute left-[15px] top-2">번호</p>
+        <p className="absolute left-[436px] top-2">제목</p>
+        <p className="absolute left-[826px] top-2">작성자</p>
+        <p className="absolute left-[942px] top-2">작성일</p>
+        <p className="absolute right-[15px] top-2">조회</p>
       </div>
+
+      {/* 핀(상단 고정) */}
       {pinned.map((n) => (
-        <NoticeRow key={n.id} notice={n} pinned />
+        <PinnedRow key={n.id} notice={n} />
       ))}
-      {items.map((n) => (
-        <NoticeRow key={n.id} notice={n} pinned={false} />
+
+      {/* 일반 게시글 — 번호 내림차순 */}
+      {items.map((n, i) => (
+        <RegularRow key={n.id} notice={n} displayNumber={pageStartNumber - i} />
       ))}
-      {empty && <p className="py-12 text-center text-sm text-gray-400">공지사항이 없습니다.</p>}
+
+      {empty && (
+        <p className="border-b border-gray-500 bg-black py-12 text-center typo-b3 text-gray-700">
+          공지사항이 없습니다.
+        </p>
+      )}
     </div>
   )
 }

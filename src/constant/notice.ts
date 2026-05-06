@@ -12,11 +12,12 @@ export const NOTICE_CATEGORY_LABEL: Record<NoticeCategory, string> = {
   ETC: '기타'
 }
 
+// Figma 디자인의 카테고리 식별 컬러 — 빨강은 카테고리가 아니라 "전체/액션" 강조색이라 제외.
 export const NOTICE_CATEGORY_COLOR: Record<NoticeCategory, string> = {
-  OPERATION: '#EA4335',
-  SCHEDULE: '#4285F4',
-  RECRUITMENT: '#34A853',
-  ETC: '#F9AB00'
+  OPERATION: '#4285F4',
+  SCHEDULE: '#34A853',
+  RECRUITMENT: '#F9AB00',
+  ETC: '#CCCCCC'
 }
 
 export const NOTICE_STATUS_LABEL: Record<NoticeStatus, string> = {

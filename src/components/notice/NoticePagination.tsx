@@ -12,8 +12,8 @@ export interface NoticePaginationProps {
 
 const VISIBLE_PAGE_COUNT = 10
 
-const buttonClass =
-  'inline-flex h-8 w-8 items-center justify-center rounded text-sm transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent'
+const buttonBase =
+  'inline-flex size-12 items-center justify-center rounded-lg font-google-sans-flex text-[14px] leading-[22px] transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent'
 
 export const NoticePagination = ({
   currentPage,
@@ -31,53 +31,59 @@ export const NoticePagination = ({
   const isLast = currentPage === totalPages
 
   return (
-    <nav className="flex items-center gap-1" aria-label="페이지네이션">
+    <nav className="flex items-center justify-center" aria-label="페이지네이션">
       <button
         type="button"
         onClick={() => onPageChange(1)}
         disabled={isFirst}
-        className={buttonClass}
+        className={cn(buttonBase, 'text-gray-500')}
         aria-label="첫 페이지"
       >
-        <ChevronsLeft size={16} />
+        <ChevronsLeft size={14} strokeWidth={2.4} />
       </button>
       <button
         type="button"
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         disabled={isFirst}
-        className={buttonClass}
+        className={cn(buttonBase, 'text-gray-500')}
         aria-label="이전 페이지"
       >
-        <ChevronLeft size={16} />
+        <ChevronLeft size={14} strokeWidth={2.4} />
       </button>
-      {pages.map((p) => (
-        <button
-          key={p}
-          type="button"
-          onClick={() => onPageChange(p)}
-          aria-current={currentPage === p ? 'page' : undefined}
-          className={cn(buttonClass, currentPage === p && 'bg-red font-bold text-white')}
-        >
-          {p}
-        </button>
-      ))}
+      {pages.map((p) => {
+        const active = currentPage === p
+        return (
+          <button
+            key={p}
+            type="button"
+            onClick={() => onPageChange(p)}
+            aria-current={active ? 'page' : undefined}
+            className={cn(
+              buttonBase,
+              active ? 'font-bold text-white' : 'font-normal text-gray-500'
+            )}
+          >
+            {p}
+          </button>
+        )
+      })}
       <button
         type="button"
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         disabled={isLast}
-        className={buttonClass}
+        className={cn(buttonBase, 'text-gray-500')}
         aria-label="다음 페이지"
       >
-        <ChevronRight size={16} />
+        <ChevronRight size={14} strokeWidth={2.4} />
       </button>
       <button
         type="button"
         onClick={() => onPageChange(totalPages)}
         disabled={isLast}
-        className={buttonClass}
+        className={cn(buttonBase, 'text-gray-500')}
         aria-label="마지막 페이지"
       >
-        <ChevronsRight size={16} />
+        <ChevronsRight size={14} strokeWidth={2.4} />
       </button>
     </nav>
   )
