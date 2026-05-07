@@ -214,7 +214,17 @@ export const mockNeighbors = async (id: string): Promise<NoticeNeighbors> => {
   })
 }
 
-const generateId = () => `n-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`
+// 정적 라우트(`generateStaticParams`)의 `n-NNNN` 패턴과 호환되도록 순차 ID 생성.
+// 기존 store의 가장 큰 번호 + 1 을 4자리 0패딩으로 사용.
+const generateId = () => {
+  const maxNum = store.notices.reduce((max, n) => {
+    const m = /^n-(\d+)$/.exec(n.id)
+    if (!m) return max
+    const num = parseInt(m[1], 10)
+    return num > max ? num : max
+  }, 0)
+  return `n-${String(maxNum + 1).padStart(4, '0')}`
+}
 
 const reorderPins = () => {
   const pinned = store.notices.filter((n) => n.isPinned).sort(sortNewestFirst)

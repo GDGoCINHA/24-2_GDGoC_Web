@@ -27,7 +27,10 @@ export const NoticeDetailView = ({ id }: NoticeDetailViewProps) => {
   const { data: neighbors } = useNoticeNeighbors(id)
   const { remove, pending: removing } = useNoticeMutations()
 
-  const isCorePlus = !!user?.userRole && CORE_PLUS_ROLES.has(user.userRole)
+  // TEMP(관리자 플로우 확인용): 백엔드 .env 셋업 전 화면 확인을 위해 true 하드코딩.
+  // PR/머지 전 반드시 아래 줄 복원할 것.
+  // const isCorePlus = !!user?.userRole && CORE_PLUS_ROLES.has(user.userRole)
+  const isCorePlus = true
 
   const handleSearchSubmit = (query: string, field: NoticeSearchField) => {
     const params = new URLSearchParams()

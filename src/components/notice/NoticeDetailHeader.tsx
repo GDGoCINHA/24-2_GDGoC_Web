@@ -33,19 +33,19 @@ export const NoticeDetailHeader = ({
   adminActions
 }: NoticeDetailHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false)
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const menuRootRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!menuOpen) return
     const onDocClick = (e: MouseEvent) => {
-      if (!wrapperRef.current?.contains(e.target as Node)) setMenuOpen(false)
+      if (!menuRootRef.current?.contains(e.target as Node)) setMenuOpen(false)
     }
     document.addEventListener('mousedown', onDocClick)
     return () => document.removeEventListener('mousedown', onDocClick)
   }, [menuOpen])
 
   return (
-    <div className="relative flex w-full flex-col items-end gap-2">
+    <div ref={menuRootRef} className="relative flex w-full flex-col items-end gap-2">
       {/* 제목 알약 바 */}
       <div className="relative h-12 w-full rounded-full border border-gray-800">
         <button
@@ -61,7 +61,6 @@ export const NoticeDetailHeader = ({
           <p className="typo-b1 text-white">{notice.title}</p>
         </div>
         <div
-          ref={wrapperRef}
           className="absolute right-[17px] top-[14px] flex items-center gap-2"
         >
           <button
