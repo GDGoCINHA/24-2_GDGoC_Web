@@ -8,22 +8,26 @@ import { NoticeContent } from '@/components/notice/NoticeContent'
 import { NoticeDetailHeader } from '@/components/notice/NoticeDetailHeader'
 import { NoticeNeighborNav } from '@/components/notice/NoticeNeighborNav'
 import { NoticeSearchBar } from '@/components/notice/NoticeSearchBar'
+import { useAuth } from '@/hooks/useAuth'
 import type { NoticeSearchField } from '@/services/notice/noticeApi'
 import { useNoticeDetail } from '@/services/notice/useNoticeDetail'
 import { useNoticeMutations } from '@/services/notice/useNoticeMutations'
 import { useNoticeNeighbors } from '@/services/notice/useNoticeNeighbors'
 
+const CORE_PLUS_ROLES = new Set(['CORE', 'LEAD', 'ORGANIZER', 'ADMIN'])
+
 export interface NoticeDetailViewProps {
   id: string
-  /** 관리자 모드: 제목 바에 더보기 메뉴(수정/삭제) 노출 */
-  adminMode?: boolean
 }
 
-export const NoticeDetailView = ({ id, adminMode = false }: NoticeDetailViewProps) => {
+export const NoticeDetailView = ({ id }: NoticeDetailViewProps) => {
   const router = useRouter()
+  const { user } = useAuth()
   const { data: notice, loading, error } = useNoticeDetail(id)
   const { data: neighbors } = useNoticeNeighbors(id)
   const { remove, pending: removing } = useNoticeMutations()
+
+  const isCorePlus = !!user?.userRole && CORE_PLUS_ROLES.has(user.userRole)
 
   const handleSearchSubmit = (query: string, field: NoticeSearchField) => {
     const params = new URLSearchParams()
@@ -33,7 +37,7 @@ export const NoticeDetailView = ({ id, adminMode = false }: NoticeDetailViewProp
     router.push(`/notice${qs ? `?${qs}` : ''}`)
   }
 
-  const adminActions = adminMode
+  const adminActions = isCorePlus
     ? {
         onEdit: () => router.push(`/notice/${id}/edit`),
         onDelete: async () => {
@@ -66,7 +70,7 @@ export const NoticeDetailView = ({ id, adminMode = false }: NoticeDetailViewProp
             <div className="mt-6">
               <NoticeDetailHeader
                 notice={notice}
-                onBack={() => router.push('/notice')}
+                onBack={() => router.back()}
                 adminActions={adminActions}
               />
             </div>
