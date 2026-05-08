@@ -19,7 +19,7 @@ export interface NoticeCategoryBadgeProps {
 export const NoticeCategoryBadge = ({ category, className }: NoticeCategoryBadgeProps) => (
   <span
     className={cn(
-      'inline-flex items-center justify-center rounded-[800px] px-3 py-1 typo-c2',
+      'inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-[800px] px-3 py-1 typo-c2',
       CATEGORY_STYLE[category],
       className
     )}

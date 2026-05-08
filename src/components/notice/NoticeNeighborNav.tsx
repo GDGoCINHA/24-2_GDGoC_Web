@@ -22,28 +22,48 @@ interface NeighborRowProps {
   hasBorder: boolean
 }
 
-const NeighborRow = ({ type, item, hasBorder }: NeighborRowProps) => (
-  <Link
-    href={`/notice/${item.id}`}
-    className={cn(
-      'relative block h-11 w-full overflow-hidden bg-black transition-colors hover:bg-white/5',
-      hasBorder && 'border-b border-gray-500'
-    )}
-  >
-    <p className="absolute left-4 top-[calc(50%-9px)] whitespace-nowrap typo-c1 text-white">
-      {type === 'next' ? '다음글' : '이전글'}
-    </p>
-    <div className="absolute left-[70px] top-1/2 flex -translate-y-1/2 items-center gap-2">
-      <NoticeCategoryBadge category={item.category} />
-      <p className="typo-b3 text-white">{item.title}</p>
-    </div>
-    <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-20 whitespace-nowrap typo-b3 text-white">
-      <span>{item.author.name}</span>
-      <span>{formatShortDate(item.createdAt)}</span>
-      <span>{padNumber(item.viewCount)}</span>
-    </div>
-  </Link>
-)
+const NeighborRow = ({ type, item, hasBorder }: NeighborRowProps) => {
+  const label = type === 'next' ? '다음글' : '이전글'
+  return (
+    <Link
+      href={`/notice/${item.id}`}
+      className={cn(
+        'relative block h-16 w-full overflow-hidden bg-black transition-colors hover:bg-white/5 pc:h-11',
+        hasBorder && 'border-b border-gray-500'
+      )}
+    >
+      {/* PC 레이아웃 — single row */}
+      <p className="absolute left-4 top-[calc(50%-9px)] hidden whitespace-nowrap typo-c1 text-white pc:block">
+        {label}
+      </p>
+      <div className="absolute left-[70px] top-1/2 hidden -translate-y-1/2 items-center gap-2 pc:flex">
+        <NoticeCategoryBadge category={item.category} />
+        <p className="typo-b3 text-white">{item.title}</p>
+      </div>
+      <div className="absolute right-4 top-1/2 hidden -translate-y-1/2 items-center gap-20 whitespace-nowrap typo-b3 text-white pc:flex">
+        <span>{item.author.name}</span>
+        <span>{formatShortDate(item.createdAt)}</span>
+        <span>{padNumber(item.viewCount)}</span>
+      </div>
+
+      {/* 모바일 레이아웃 — 2-line: 상단(label + tag + title), 하단(author + date), 우측(viewcount) */}
+      <p className="absolute left-2 top-[calc(50%-9px)] whitespace-nowrap typo-c1 text-white pc:hidden">
+        {label}
+      </p>
+      <div className="absolute left-[48px] top-3 flex w-[248px] items-center gap-2 pc:hidden">
+        <NoticeCategoryBadge category={item.category} />
+        <p className="flex-1 truncate typo-b3 text-white">{item.title}</p>
+      </div>
+      <div className="absolute left-[100px] top-[34px] flex items-center gap-4 whitespace-nowrap typo-c1 text-gray-700 pc:hidden">
+        <span>{item.author.name}</span>
+        <span>{formatShortDate(item.createdAt)}</span>
+      </div>
+      <div className="absolute right-4 top-[23px] -translate-y-1/2 typo-c1 text-white pc:hidden">
+        {padNumber(item.viewCount)}
+      </div>
+    </Link>
+  )
+}
 
 export interface NoticeNeighborNavProps {
   prev: NoticeNeighborItem | null

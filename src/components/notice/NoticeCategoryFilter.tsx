@@ -25,13 +25,13 @@ const INACTIVE_STYLE: Record<NoticeCategory, string> = {
 }
 
 const PILL_BASE =
-  'inline-flex items-center justify-center rounded-full border-[1.5px] px-[14px] py-1 typo-b3 cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40'
+  'inline-flex min-w-0 items-center justify-center rounded-full border-[1.5px] px-[14px] py-1 typo-b3 cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 mobile:flex-1 mobile:px-2'
 
 export const NoticeCategoryFilter = ({ value, onChange }: NoticeCategoryFilterProps) => {
   const allActive = value === undefined
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 mobile:w-full mobile:gap-2">
       <button
         type="button"
         onClick={() => onChange(undefined)}

@@ -78,19 +78,22 @@ function NoticeListContent() {
     updateQuery({ query: q || undefined, field: f, page: undefined })
   }
 
+  const handlePageChange = (p: number) =>
+    updateQuery({ page: p === 1 ? undefined : String(p) })
+
   return (
-    <main className="bg-black text-white">
-      <div className="mx-auto flex w-[1280px] flex-col items-center gap-16 px-[80px] pt-[56px] pb-[120px]">
-        <div className="flex w-full flex-col gap-6">
+    <main className="overflow-x-clip bg-black text-white">
+      <div className="mx-auto flex w-full flex-col items-center gap-8 px-4 pt-6 pb-6 pc:w-[1280px] pc:gap-16 pc:px-[80px] pc:pt-[56px] pc:pb-[120px]">
+        <div className="flex w-full flex-col gap-4 pc:gap-6">
           {/* 타이틀 */}
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2 text-white">
-              <h1 className="typo-h4">공지사항</h1>
+          <div className="flex flex-col gap-2 pc:gap-4">
+            <div className="flex flex-col gap-1 text-white pc:gap-2">
+              <h1 className="typo-pc-h4 mobile:typo-m-h2">공지사항</h1>
               <p className="typo-b3">GDGoC INHA의 소식을 빠르게 확인하세요.</p>
             </div>
 
-            {/* 카테고리 필터 + 글쓰기 버튼 */}
-            <div className="flex w-full items-center justify-between">
+            {/* 카테고리 필터 + 글쓰기 버튼 — 글쓰기는 PC에서만 노출 (모바일은 햄버거에 통합 예정) */}
+            <div className="flex w-full items-center justify-between gap-4">
               <NoticeCategoryFilter
                 value={category}
                 onChange={(c) => updateQuery({ category: c, page: undefined })}
@@ -98,7 +101,7 @@ function NoticeListContent() {
               {isCorePlus && (
                 <Link
                   href="/notice/new"
-                  className="inline-flex items-center gap-1 rounded-full bg-red px-4 py-2 typo-b3 text-white transition-opacity hover:opacity-90"
+                  className="hidden items-center gap-1 rounded-full bg-red px-4 py-2 typo-b3 text-white transition-opacity hover:opacity-90 pc:inline-flex"
                 >
                   <Pencil size={14} strokeWidth={2.4} />
                   글쓰기
@@ -109,9 +112,9 @@ function NoticeListContent() {
 
           {/* 본문 */}
           <div className="flex w-full flex-col gap-4">
-            {/* 총 N개 + 상단 검색 */}
+            {/* 상단 검색 — PC는 "총 N개" 표시 + 검색바, 모바일은 검색바만 풀폭 */}
             <div className="flex w-full items-end justify-between">
-              <p className="whitespace-nowrap typo-b3 text-white">
+              <p className="hidden whitespace-nowrap typo-b3 text-white pc:block">
                 총 <span className="font-bold">{totalCount}개</span>
               </p>
               <NoticeSearchBar
@@ -141,14 +144,26 @@ function NoticeListContent() {
         </div>
 
         {/* 하단 영역: 페이지네이션 + 검색 */}
-        <div className="flex w-[550px] flex-col items-center gap-4">
-          <NoticePagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={(p) =>
-              updateQuery({ page: p === 1 ? undefined : String(p) })
-            }
-          />
+        <div className="flex w-full flex-col items-center gap-4 pc:w-[550px]">
+          {/* 페이지네이션 — PC는 10개 표시, 모바일은 5개 표시 (듀얼 렌더, CSS로 visibility 제어) */}
+          <div className="hidden pc:block">
+            <NoticePagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              visiblePageCount={10}
+              device="pc"
+            />
+          </div>
+          <div className="block w-full pc:hidden">
+            <NoticePagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              visiblePageCount={5}
+              device="mobile"
+            />
+          </div>
           <NoticeSearchBar
             initialQuery={query}
             initialField={searchField}

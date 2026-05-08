@@ -48,11 +48,11 @@ const inferKind = (fileName: string, explicit?: NoticeFileCardKind): NoticeFileC
 }
 
 const Icon = ({ kind }: { kind: NoticeFileCardKind }) => {
-  const className = 'shrink-0 text-white'
-  if (kind === 'link') return <Link2 size={16} strokeWidth={2} className={className} />
-  if (kind === 'image')
-    return <ImageIcon size={16} strokeWidth={2} className={className} />
-  return <FileText size={16} strokeWidth={2} className={className} />
+  // size-4(16px) PC / size-3.5(14px) 모바일
+  const className = 'size-4 shrink-0 text-white mobile:size-3.5'
+  if (kind === 'link') return <Link2 strokeWidth={2} className={className} />
+  if (kind === 'image') return <ImageIcon strokeWidth={2} className={className} />
+  return <FileText strokeWidth={2} className={className} />
 }
 
 export const NoticeFileCard = ({
@@ -74,10 +74,10 @@ export const NoticeFileCard = ({
     <>
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <Icon kind={kind} />
-        <p className="flex-1 truncate typo-b2 text-white">{fileName}</p>
+        <p className="flex-1 truncate typo-pc-b2 text-white mobile:typo-m-b3">{fileName}</p>
       </div>
       {showSize && (
-        <p className="whitespace-nowrap text-right typo-b2 text-gray-700">
+        <p className="whitespace-nowrap text-right typo-pc-b2 text-gray-700 mobile:typo-m-b3">
           {formatFileSize(sizeBytes)}
         </p>
       )}

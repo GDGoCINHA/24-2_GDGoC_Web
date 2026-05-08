@@ -21,7 +21,11 @@ export interface NoticeDropdownProps {
   value?: string
   onChange?: (value: string) => void
   placeholder?: string
-  /** 트리거 버튼 폭 (Tailwind 클래스). 기본 122px */
+  /**
+   * 트리거 버튼 폭 (Tailwind 클래스).
+   * 미지정 시 콘텐츠 크기에 맞춰 자동 사이징 (`w-fit` 트리거 / `w-max` 패널).
+   * 명시적 폭이 필요하면 'w-[122px]' 또는 'w-full' 같은 클래스 전달.
+   */
   width?: string
   disabled?: boolean
   className?: string
@@ -44,10 +48,14 @@ export const NoticeDropdown = ({
   value,
   onChange,
   placeholder = '선택하세요',
-  width = 'w-[122px]',
+  width,
   disabled,
   className
 }: NoticeDropdownProps) => {
+  // width 미지정 시: 트리거는 콘텐츠 크기에 맞추고(w-fit), 패널은 가장 긴 항목에 맞춤(w-max)
+  // → 좁은 화면에서도 줄바꿈 없이 안전하게 표시됨
+  const triggerWidth = width ?? 'w-fit'
+  const panelWidth = width ?? 'w-max'
   const [open, setOpen] = useState(false)
   const [focusedIndex, setFocusedIndex] = useState<number>(-1)
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -159,14 +167,19 @@ export const NoticeDropdown = ({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          'flex h-11 items-center justify-between rounded-full border bg-black px-4 py-2 typo-b3 text-white outline-none transition-colors duration-150',
+          'flex h-11 shrink-0 items-center justify-between rounded-full border bg-black px-4 py-2 typo-b3 text-white outline-none transition-colors duration-150',
           'hover:border-gray-700 focus-visible:ring-2 focus-visible:ring-white/40',
           open ? 'border-white' : 'border-gray-800',
           'disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-100 disabled:text-white/40 disabled:hover:border-gray-100',
-          width
+          triggerWidth
         )}
       >
-        <span className={cn(selectedOption ? 'text-white' : 'text-gray-700')}>
+        <span
+          className={cn(
+            'whitespace-nowrap',
+            selectedOption ? 'text-white' : 'text-gray-700'
+          )}
+        >
           {selectedOption?.label ?? placeholder}
         </span>
         {/* 열림 ↔ 닫힘 시 화살표 180도 회전 */}
@@ -199,7 +212,7 @@ export const NoticeDropdown = ({
             }}
             className={cn(
               'absolute left-0 top-[52px] z-10 flex origin-top flex-col gap-1 rounded-xl border border-white/10 bg-gray-100 p-3 shadow-[0_20px_120px_rgba(0,0,0,0.75)] outline-none',
-              width
+              panelWidth
             )}
           >
             {options.map((opt, idx) => {
@@ -213,7 +226,7 @@ export const NoticeDropdown = ({
                     onClick={() => handleSelect(opt.id)}
                     onMouseEnter={() => setFocusedIndex(idx)}
                     className={cn(
-                      'flex h-9 w-full items-center justify-between rounded-lg px-2 typo-b2 outline-none transition-colors',
+                      'flex h-9 w-full items-center justify-between gap-2 whitespace-nowrap rounded-lg px-2 typo-b2 outline-none transition-colors',
                       // 포커스(키보드/호버) 상태 — GdgDropdown과 동일하게 흰 배경 + 검정 텍스트
                       focused ? 'bg-white text-black' : 'text-white'
                     )}

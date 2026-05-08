@@ -24,7 +24,7 @@ export const NoticeAttachmentList = ({ attachments }: NoticeAttachmentListProps)
   })
   return (
     <section className="flex w-full flex-col gap-2">
-      <h2 className="typo-h5 text-white">첨부자료</h2>
+      <h2 className="typo-pc-h5 text-white mobile:typo-m-h3">첨부자료</h2>
       {sorted.map((att) => (
         <NoticeFileCard
           key={att.id}

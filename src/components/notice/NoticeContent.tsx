@@ -48,7 +48,7 @@ export const NoticeContent = ({ notice }: NoticeContentProps) => {
   const cover = findCoverImage(notice.attachments)
 
   return (
-    <div className="flex w-full flex-col gap-6 overflow-hidden rounded-2xl bg-black">
+    <div className="flex w-full flex-col gap-4 overflow-hidden rounded-2xl bg-black pc:gap-6">
       <div className="relative aspect-[1088/440] w-full overflow-hidden rounded-lg bg-gray-100">
         {cover && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -59,7 +59,7 @@ export const NoticeContent = ({ notice }: NoticeContentProps) => {
           />
         )}
       </div>
-      <div className="whitespace-pre-wrap break-words typo-b2 text-white">
+      <div className="whitespace-pre-wrap break-words typo-pc-b2 text-white mobile:typo-m-b3">
         {linkify(notice.content)}
       </div>
     </div>

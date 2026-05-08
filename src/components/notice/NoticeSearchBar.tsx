@@ -52,14 +52,14 @@ export const NoticeSearchBar = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className={cn('flex w-[550px] items-center gap-4', className)}
+      className={cn('flex w-full items-center gap-2 pc:w-[550px] pc:gap-4', className)}
     >
       <NoticeDropdown
         options={fieldOptions}
         value={field}
         onChange={(val) => setField(val as NoticeSearchField)}
       />
-      <div className="flex h-11 flex-1 items-center justify-between rounded-full border border-gray-800 bg-black px-4 py-2.5 focus-within:ring-2 focus-within:ring-white/30">
+      <div className="flex h-11 flex-1 items-center justify-between rounded-full border border-gray-800 bg-black px-3 py-2.5 focus-within:ring-2 focus-within:ring-white/30 pc:px-4">
         <input
           type="text"
           value={query}

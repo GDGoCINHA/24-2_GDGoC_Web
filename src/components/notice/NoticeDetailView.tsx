@@ -57,9 +57,9 @@ export const NoticeDetailView = ({ id }: NoticeDetailViewProps) => {
     : undefined
 
   return (
-    <main className="bg-black text-white">
-      <div className="mx-auto w-[1280px] px-[80px] pt-14 pb-[120px]">
-        <h1 className="typo-h4 text-white">공지사항</h1>
+    <main className="overflow-x-clip bg-black text-white">
+      <div className="mx-auto w-full px-4 pt-8 pb-8 pc:w-[1280px] pc:px-[80px] pc:pt-14 pc:pb-[120px]">
+        <h1 className="typo-pc-h4 text-white mobile:typo-m-h2">공지사항</h1>
 
         {loading && (
           <p className="mt-12 py-12 text-center typo-b3 text-gray-700">불러오는 중...</p>
@@ -70,7 +70,7 @@ export const NoticeDetailView = ({ id }: NoticeDetailViewProps) => {
 
         {notice && !loading && (
           <>
-            <div className="mt-6">
+            <div className="mt-4 pc:mt-6">
               <NoticeDetailHeader
                 notice={notice}
                 onBack={() => router.back()}
@@ -78,24 +78,26 @@ export const NoticeDetailView = ({ id }: NoticeDetailViewProps) => {
               />
             </div>
 
-            <div className="mt-8 flex flex-col gap-16">
+            <div className="mt-6 flex flex-col gap-6 pc:mt-8 pc:gap-16">
               <NoticeContent notice={notice} />
               <NoticeAttachmentList attachments={notice.attachments} />
 
-              <div className="flex w-full flex-col items-end gap-6">
+              {/* 하단: 목록 / 이전다음 / 검색바 — flat 구조, 검색바만 PC에서 self-center */}
+              <div className="flex w-full flex-col items-end gap-4 pc:gap-6">
                 <Link
                   href="/notice"
-                  className="inline-flex items-center rounded-full bg-red px-6 py-2 typo-b3 text-white transition-opacity hover:opacity-90"
+                  className="inline-flex items-center rounded-full bg-red px-4 py-1.5 typo-b3 text-white transition-opacity hover:opacity-90 pc:px-6 pc:py-2"
                 >
                   목록
                 </Link>
-                <div className="flex w-full flex-col items-center gap-6">
-                  <NoticeNeighborNav
-                    prev={neighbors?.prev ?? null}
-                    next={neighbors?.next ?? null}
-                  />
-                  <NoticeSearchBar onSubmit={handleSearchSubmit} />
-                </div>
+                <NoticeNeighborNav
+                  prev={neighbors?.prev ?? null}
+                  next={neighbors?.next ?? null}
+                />
+                <NoticeSearchBar
+                  onSubmit={handleSearchSubmit}
+                  className="pc:self-center"
+                />
               </div>
             </div>
           </>
