@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 import ApiCodeGuard from '@/components/auth/ApiCodeGuard'
+import { NoticeFooter } from '@/components/notice/NoticeFooter'
 import { NoticeHeader } from '@/components/notice/NoticeHeader'
 
 // ============================================================
@@ -21,6 +22,7 @@ export default function NoticeLayout({ children }: { children: ReactNode }) {
       ) : (
         <ApiCodeGuard requiredRole="MEMBER" nextOverride="/notice">{children}</ApiCodeGuard>
       )}
+      <NoticeFooter />
     </>
   )
 }
