@@ -1,28 +1,22 @@
 'use client'
 
 import {
-  useEffect,
   useRef,
   useState,
   type ChangeEvent,
   type KeyboardEvent
 } from 'react'
-import {
-  Check,
-  ChevronDown,
-  FileText,
-  Image as ImageIcon,
-  Link2,
-  Trash2
-} from 'lucide-react'
+import { Link2, Trash2 } from 'lucide-react'
 
+import { NoticeDropdown } from '@/components/notice/NoticeDropdown'
+import { NoticeFileCard } from '@/components/notice/NoticeFileCard'
+import { NoticeUploadButton } from '@/components/notice/NoticeUploadButton'
 import { NOTICE_CATEGORY_LABEL } from '@/constant/notice'
 import {
   NOTICE_CATEGORIES,
   type NoticeAttachmentInput,
   type NoticeCategory
 } from '@/services/notice/noticeApi'
-import { cn } from '@/utils/cn'
 
 const IMAGE_EXT_RE = /\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i
 
@@ -45,38 +39,22 @@ const fileToAttachment = (f: File): NoticeAttachmentInput => ({
   sizeBytes: f.size
 })
 
-const formatFileSize = (bytes?: number): string => {
-  if (!bytes) return '0.00mb'
-  const mb = bytes / 1024 / 1024
-  return `${mb.toFixed(2)}mb`
-}
-
 const isImageAttachment = (att: NoticeAttachmentInput): boolean =>
   att.kind === 'file' && IMAGE_EXT_RE.test(att.name)
 
-const AttachmentIcon = ({ att }: { att: NoticeAttachmentInput }) => {
-  if (att.kind === 'link')
-    return <Link2 size={16} strokeWidth={2} className="shrink-0 text-white" />
-  if (isImageAttachment(att))
-    return <ImageIcon size={16} strokeWidth={2} className="shrink-0 text-white" />
-  return <FileText size={16} strokeWidth={2} className="shrink-0 text-white" />
+const attachmentKind = (att: NoticeAttachmentInput): 'file' | 'image' | 'link' => {
+  if (att.kind === 'link') return 'link'
+  return isImageAttachment(att) ? 'image' : 'file'
 }
+
+const categoryOptions = NOTICE_CATEGORIES.map((c) => ({
+  id: c,
+  label: NOTICE_CATEGORY_LABEL[c]
+}))
 
 export const NoticeForm = ({ value, onChange }: NoticeFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const categoryRef = useRef<HTMLDivElement>(null)
-  const [categoryOpen, setCategoryOpen] = useState(false)
   const [linkDraft, setLinkDraft] = useState('')
-
-  // 외부 클릭 시 카테고리 드롭다운 닫기
-  useEffect(() => {
-    if (!categoryOpen) return
-    const onDocClick = (e: MouseEvent) => {
-      if (!categoryRef.current?.contains(e.target as Node)) setCategoryOpen(false)
-    }
-    document.addEventListener('mousedown', onDocClick)
-    return () => document.removeEventListener('mousedown', onDocClick)
-  }, [categoryOpen])
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange({ ...value, title: e.target.value })
@@ -94,15 +72,22 @@ export const NoticeForm = ({ value, onChange }: NoticeFormProps) => {
     e.target.value = ''
   }
 
-  const handleCategorySelect = (c: NoticeCategory) => {
-    onChange({ ...value, category: c })
-    setCategoryOpen(false)
-  }
-
   const handleRemoveAttachment = (idx: number) => {
     onChange({
       ...value,
       attachments: value.attachments.filter((_, i) => i !== idx)
+    })
+  }
+
+  // 등록된 link 첨부의 URL을 인라인으로 수정
+  const updateLinkUrl = (idx: number, nextUrl: string) => {
+    onChange({
+      ...value,
+      attachments: value.attachments.map((att, i) =>
+        i === idx && att.kind === 'link'
+          ? { ...att, url: nextUrl, name: nextUrl }
+          : att
+      )
     })
   }
 
@@ -129,44 +114,13 @@ export const NoticeForm = ({ value, onChange }: NoticeFormProps) => {
       {/* 본문 영역 — 카테고리 / 제목 / 에디터 / 내용 */}
       <div className="flex w-full flex-col gap-4">
         {/* 카테고리 선택 드롭다운 */}
-        <div ref={categoryRef} className="relative w-full">
-          <button
-            type="button"
-            onClick={() => setCategoryOpen((v) => !v)}
-            aria-haspopup="listbox"
-            aria-expanded={categoryOpen}
-            className="flex h-11 w-full items-center justify-between rounded-full border border-gray-800 bg-black px-4 py-2 typo-b2 outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-          >
-            <span className={cn(value.category ? 'text-white' : 'text-gray-700')}>
-              {value.category ? NOTICE_CATEGORY_LABEL[value.category] : '카테고리 선택'}
-            </span>
-            <ChevronDown size={12} className="text-white" />
-          </button>
-          {categoryOpen && (
-            <ul
-              role="listbox"
-              className="absolute left-0 top-[52px] z-10 flex w-full flex-col rounded-[12px] bg-gray-100 py-2 shadow-lg"
-            >
-              {NOTICE_CATEGORIES.map((c) => {
-                const selected = value.category === c
-                return (
-                  <li key={c} role="option" aria-selected={selected}>
-                    <button
-                      type="button"
-                      onClick={() => handleCategorySelect(c)}
-                      className="group flex w-full items-center px-2"
-                    >
-                      <span className="flex h-9 w-full items-center justify-between rounded-lg px-3 typo-b2 text-white transition-colors group-hover:bg-white group-hover:text-black">
-                        <span>{NOTICE_CATEGORY_LABEL[c]}</span>
-                        {selected && <Check size={16} strokeWidth={2.4} />}
-                      </span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-        </div>
+        <NoticeDropdown
+          options={categoryOptions}
+          value={value.category}
+          onChange={(c) => onChange({ ...value, category: c as NoticeCategory })}
+          placeholder="카테고리 선택"
+          width="w-full"
+        />
 
         {/* 제목 / 에디터 / 내용 3단 */}
         <div className="flex w-full flex-col">
@@ -200,33 +154,55 @@ export const NoticeForm = ({ value, onChange }: NoticeFormProps) => {
           <p className="typo-c1 text-gray-700">다중 파일 업로드 가능</p>
         </div>
 
-        {/* 추가된 첨부 카드들 */}
-        {value.attachments.map((att, idx) => (
-          <div key={idx} className="flex w-full items-center gap-2">
-            <div className="flex flex-1 items-center gap-4 rounded-lg bg-gray-100 px-4 py-2.5">
-              <div className="flex min-w-0 flex-1 items-center gap-2">
-                <AttachmentIcon att={att} />
-                <p className="flex-1 truncate typo-b2 text-white">{att.name}</p>
-              </div>
-              {att.kind === 'file' && (
-                <p className="whitespace-nowrap text-right typo-b2 text-gray-700">
-                  {formatFileSize(att.sizeBytes)}
-                </p>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => handleRemoveAttachment(idx)}
-              aria-label={`${att.name} 삭제`}
-              className="text-white transition-opacity hover:opacity-70"
-            >
-              <Trash2 size={20} strokeWidth={2} />
-            </button>
-          </div>
-        ))}
+        {/* 추가된 첨부 카드들 — link는 항상 하단에 위치하도록 정렬 (원본 인덱스 추적해서 핸들러 동작 유지) */}
+        {value.attachments
+          .map((att, originalIdx) => ({ att, originalIdx }))
+          .sort((a, b) => {
+            if (a.att.kind === 'link' && b.att.kind !== 'link') return 1
+            if (a.att.kind !== 'link' && b.att.kind === 'link') return -1
+            return 0
+          })
+          .map(({ att, originalIdx }) => {
+            // 링크 첨부는 인라인 편집 가능한 input 카드로 렌더 — 클릭/타이핑 즉시 반영
+            if (att.kind === 'link') {
+              return (
+                <div key={originalIdx} className="flex w-full items-center gap-2">
+                  <div className="flex flex-1 items-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5">
+                    <Link2 size={16} strokeWidth={2} className="shrink-0 text-white" />
+                    <input
+                      type="text"
+                      value={att.url}
+                      onChange={(e) => updateLinkUrl(originalIdx, e.target.value)}
+                      placeholder="http://"
+                      className="flex-1 bg-transparent typo-b2 text-white outline-none placeholder:text-gray-700"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment(originalIdx)}
+                    aria-label={`${att.name} 삭제`}
+                    className="text-white transition-opacity hover:opacity-70"
+                  >
+                    <Trash2 size={20} strokeWidth={2} />
+                  </button>
+                </div>
+              )
+            }
+            // 파일/이미지 첨부는 그대로 NoticeFileCard 사용
+            return (
+              <NoticeFileCard
+                key={originalIdx}
+                kind={attachmentKind(att)}
+                fileName={att.name}
+                sizeBytes={att.kind === 'file' ? att.sizeBytes : undefined}
+                action="remove"
+                onRemove={() => handleRemoveAttachment(originalIdx)}
+              />
+            )
+          })}
 
         {/* 항상 보이는 링크 input — Enter 또는 blur 시 첨부 리스트에 추가됨 */}
-        <div className="flex flex-1 items-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5">
+        <div className="flex w-full items-center gap-2 rounded-lg bg-gray-100 px-4 py-2.5">
           <Link2 size={16} strokeWidth={2} className="shrink-0 text-white" />
           <input
             type="text"
@@ -240,13 +216,7 @@ export const NoticeForm = ({ value, onChange }: NoticeFormProps) => {
         </div>
 
         {/* 파일 선택 버튼 */}
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="w-full rounded-lg bg-red px-4 py-2.5 typo-b2 text-white transition-opacity hover:opacity-90"
-        >
-          + 파일 선택
-        </button>
+        <NoticeUploadButton onClick={() => fileInputRef.current?.click()} />
         <input
           ref={fileInputRef}
           type="file"

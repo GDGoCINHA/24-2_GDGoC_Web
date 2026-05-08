@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Check } from 'lucide-react'
 
 import { NoticeCategoryBadge } from '@/components/notice/NoticeCategoryBadge'
+import { GdgCheckbox } from '@/components/ui/design-system'
 import type { Notice, NoticeCategory } from '@/services/notice/noticeApi'
 import { cn } from '@/utils/cn'
 
@@ -16,25 +16,6 @@ const formatShortDate = (iso: string): string => {
 }
 
 const padNumber = (n: number): string => String(n).padStart(3, '0')
-
-interface CheckboxProps {
-  checked: boolean
-  onClick: () => void
-}
-
-const Checkbox = ({ checked, onClick }: CheckboxProps) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-pressed={checked}
-    className={cn(
-      'absolute right-4 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded-[4px] transition-colors',
-      checked ? 'bg-red' : 'border border-white'
-    )}
-  >
-    {checked && <Check size={14} strokeWidth={3} className="text-white" />}
-  </button>
-)
 
 interface PinCardData {
   category: NoticeCategory
@@ -61,7 +42,11 @@ const PinCard = ({ data, checked, onToggle }: PinCardProps) => (
       <span>{formatShortDate(data.createdAt)}</span>
       <span>{padNumber(data.viewCount)}</span>
     </div>
-    <Checkbox checked={checked} onClick={onToggle} />
+    <GdgCheckbox
+      checked={checked}
+      onCheckedChange={() => onToggle()}
+      className="absolute right-4 top-1/2 -translate-y-1/2"
+    />
   </div>
 )
 

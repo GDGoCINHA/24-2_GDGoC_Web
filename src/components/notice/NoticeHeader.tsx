@@ -37,7 +37,11 @@ export const NoticeHeader = () => {
   return (
     <header className="w-full bg-[#1e1e1e] text-white">
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-8">
-        <Link href="/" aria-label="홈으로">
+        <Link
+          href="/"
+          aria-label="홈으로"
+          className="inline-flex cursor-pointer items-center transition-opacity hover:opacity-80"
+        >
           <GdgLogo mode="pc" variant="long" />
         </Link>
 

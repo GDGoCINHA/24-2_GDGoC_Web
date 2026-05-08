@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Check } from 'lucide-react'
 
 import { NoticeForm, type NoticeFormState } from '@/components/notice/NoticeForm'
 import { NoticePinLimitModal } from '@/components/notice/NoticePinLimitModal'
+import { GdgCheckbox, GdgRadio } from '@/components/ui/design-system'
 import {
   isNoticePinLimitError,
   noticeApi,
@@ -14,7 +14,6 @@ import {
 } from '@/services/notice/noticeApi'
 import { useNoticeDetail } from '@/services/notice/useNoticeDetail'
 import { useNoticeMutations } from '@/services/notice/useNoticeMutations'
-import { cn } from '@/utils/cn'
 
 export type NoticeFormMode = 'create' | 'edit'
 
@@ -31,22 +30,15 @@ const EMPTY_STATE: NoticeFormState = {
 
 interface RadioOptionProps {
   checked: boolean
-  onClick: () => void
+  onSelect: () => void
   label: string
 }
 
-const RadioOption = ({ checked, onClick, label }: RadioOptionProps) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-pressed={checked}
-    className="flex items-center gap-2"
-  >
-    <span className="relative flex size-4 items-center justify-center rounded-full border border-white">
-      {checked && <span className="size-2 rounded-full bg-red" />}
-    </span>
+const RadioOption = ({ checked, onSelect, label }: RadioOptionProps) => (
+  <label className="flex cursor-pointer items-center gap-2">
+    <GdgRadio checked={checked} onCheckedChange={(c) => c && onSelect()} />
     <span className="typo-b3 text-white">{label}</span>
-  </button>
+  </label>
 )
 
 export const NoticeFormView = ({ mode, id }: NoticeFormViewProps) => {
@@ -233,12 +225,12 @@ export const NoticeFormView = ({ mode, id }: NoticeFormViewProps) => {
                     <div className="flex h-5 items-center gap-8">
                       <RadioOption
                         checked={visibility === 'PUBLIC'}
-                        onClick={() => setVisibility('PUBLIC')}
+                        onSelect={() => setVisibility('PUBLIC')}
                         label="공개"
                       />
                       <RadioOption
                         checked={visibility === 'PRIVATE'}
-                        onClick={() => setVisibility('PRIVATE')}
+                        onSelect={() => setVisibility('PRIVATE')}
                         label="비공개"
                       />
                     </div>
@@ -248,19 +240,7 @@ export const NoticeFormView = ({ mode, id }: NoticeFormViewProps) => {
                   <div className="mt-4 flex flex-col gap-2">
                     <div className="flex items-center justify-between">
                       <p className="typo-s3 text-white">상단 고정</p>
-                      <button
-                        type="button"
-                        onClick={() => setIsPinned((v) => !v)}
-                        aria-pressed={isPinned}
-                        className={cn(
-                          'flex size-5 items-center justify-center rounded-[4px] transition-colors',
-                          isPinned ? 'bg-red' : 'border border-white'
-                        )}
-                      >
-                        {isPinned && (
-                          <Check size={14} strokeWidth={3} className="text-white" />
-                        )}
-                      </button>
+                      <GdgCheckbox checked={isPinned} onCheckedChange={setIsPinned} />
                     </div>
                     <p className="typo-c2 text-white">
                       * 최대 3개까지 고정할 수 있습니다.
