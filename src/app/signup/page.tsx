@@ -35,7 +35,7 @@ const getSafeNextUrl = (raw: string | null): string => {
 
   try {
     const decoded = decodeURIComponent(raw)
-    return decoded.startsWith('/') ? decoded : DEFAULT_FALLBACK_ROUTE
+    return decoded.startsWith('/') && !decoded.startsWith('//') ? decoded : DEFAULT_FALLBACK_ROUTE
   } catch {
     return DEFAULT_FALLBACK_ROUTE
   }
@@ -134,7 +134,7 @@ export default function SignupPage() {
     (value: string) => {
       const nextValue = value.replace(/\D/g, '').slice(0, 8)
       setStudentId(nextValue)
-      
+
       if (studentCheckState.verifiedValue === nextValue && nextValue !== '') {
         setStudentCheckState((prev) => ({
           ...prev,
@@ -143,9 +143,9 @@ export default function SignupPage() {
           checkedValue: nextValue
         }))
       } else {
-        setStudentCheckState((prev) => ({ 
-          status: 'idle', 
-          verifiedValue: prev.verifiedValue 
+        setStudentCheckState((prev) => ({
+          status: 'idle',
+          verifiedValue: prev.verifiedValue
         }))
       }
     },
@@ -165,9 +165,9 @@ export default function SignupPage() {
           checkedValue: nextValue
         }))
       } else {
-        setPhoneCheckState((prev) => ({ 
-          status: 'idle', 
-          verifiedValue: prev.verifiedValue 
+        setPhoneCheckState((prev) => ({
+          status: 'idle',
+          verifiedValue: prev.verifiedValue
         }))
       }
     },
@@ -263,10 +263,10 @@ export default function SignupPage() {
         console.log('[SignupPage] Signup success, saving to storage')
         setUser(data.user, data.accessToken, data.refreshToken)
       } else {
-        console.warn('[SignupPage] Signup success but missing data', { 
-          hasUser: !!data?.user, 
-          hasAt: !!data?.accessToken, 
-          hasRt: !!data?.refreshToken 
+        console.warn('[SignupPage] Signup success but missing data', {
+          hasUser: !!data?.user,
+          hasAt: !!data?.accessToken,
+          hasRt: !!data?.refreshToken
         })
       }
       sessionStorage.removeItem(PENDING_SIGNUP_STORAGE_KEY)
@@ -278,16 +278,16 @@ export default function SignupPage() {
     }
   }
 
-  const isStudentCheckDisabled = 
-    !studentId.trim() || 
-    !STUDENT_ID_PATTERN.test(studentId.trim()) || 
-    studentCheckState.status === 'checking' || 
+  const isStudentCheckDisabled =
+    !studentId.trim() ||
+    !STUDENT_ID_PATTERN.test(studentId.trim()) ||
+    studentCheckState.status === 'checking' ||
     studentId.trim() === studentCheckState.verifiedValue
 
-  const isPhoneCheckDisabled = 
-    !phoneNumber.trim() || 
-    !isValidFormat(phoneNumber) || 
-    phoneCheckState.status === 'checking' || 
+  const isPhoneCheckDisabled =
+    !phoneNumber.trim() ||
+    !isValidFormat(phoneNumber) ||
+    phoneCheckState.status === 'checking' ||
     phoneNumber.trim() === phoneCheckState.verifiedValue
 
   const isSignupReady =
@@ -297,24 +297,37 @@ export default function SignupPage() {
     phoneNumber.trim() === phoneCheckState.verifiedValue &&
     isPrivacyAgreed
 
-  const studentStatusMessage = studentId === studentCheckState.verifiedValue ? '※ 가입 가능한 학번입니다.' : studentCheckState.message
+  const studentStatusMessage =
+    studentId === studentCheckState.verifiedValue
+      ? '※ 가입 가능한 학번입니다.'
+      : studentCheckState.message
   const studentStatus: GdgFieldStatus | undefined =
     studentId === studentCheckState.verifiedValue
       ? 'success'
-      : (studentCheckState.status === 'error' || studentCheckState.status === 'duplicate' ? 'error' : undefined)
+      : studentCheckState.status === 'error' || studentCheckState.status === 'duplicate'
+        ? 'error'
+        : undefined
 
-  const phoneStatusMessage = phoneNumber === phoneCheckState.verifiedValue ? '※ 가입 가능한 전화번호입니다.' : phoneCheckState.message
+  const phoneStatusMessage =
+    phoneNumber === phoneCheckState.verifiedValue
+      ? '※ 가입 가능한 전화번호입니다.'
+      : phoneCheckState.message
   const phoneStatus: GdgFieldStatus | undefined =
     phoneNumber === phoneCheckState.verifiedValue
       ? 'success'
-      : (phoneCheckState.status === 'error' || phoneCheckState.status === 'duplicate' ? 'error' : undefined)
+      : phoneCheckState.status === 'error' || phoneCheckState.status === 'duplicate'
+        ? 'error'
+        : undefined
 
   return (
     <>
       <Loader isLoading={loading} />
       <div className="relative min-h-screen bg-black text-white overflow-x-hidden">
         {initializing ? null : pendingInfo ? (
-          <form onSubmit={handleSubmit} className="relative z-10 pt-18 pb-30 mobile:pt-12 mobile:pb-36">
+          <form
+            onSubmit={handleSubmit}
+            className="relative z-10 pt-18 pb-30 mobile:pt-12 mobile:pb-36"
+          >
             <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
               <div className="col-span-4 flex items-center gap-3 pb-8 mobile:gap-2 mobile:pb-2">
                 <GdgLogo mode="auto" />
@@ -325,41 +338,89 @@ export default function SignupPage() {
               <div className="pc:contents hidden">
                 <div className="col-span-4">
                   <GdgFieldContainer label="이름" required>
-                    <GdgInputField device="pc" aria-label="이름" placeholder="이름을 입력해 주세요." value={name} onChange={(e) => setName(e.target.value)} state={fieldErrors.name ? 'error' : 'available'} width="full" />
+                    <GdgInputField
+                      device="pc"
+                      aria-label="이름"
+                      placeholder="이름을 입력해 주세요."
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      state={fieldErrors.name ? 'error' : 'available'}
+                      width="full"
+                    />
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
-                  <GdgFieldContainer label="학과" required caption="검색 또는 스크롤하여 지정하세요." status={fieldErrors.major ? 'error' : undefined} statusMessage={fieldErrors.major ? '※ 필수 선택 사항입니다.' : undefined}>
+                  <GdgFieldContainer
+                    label="학과"
+                    required
+                    caption="검색 또는 스크롤하여 지정하세요."
+                    status={fieldErrors.major ? 'error' : undefined}
+                    statusMessage={fieldErrors.major ? '※ 필수 선택 사항입니다.' : undefined}
+                  >
                     <GdgMajorDropdown device="pc" value={major} onChangeAction={setMajor} />
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
-                  <GdgFieldContainer 
-                    label="학번" 
-                    required 
-                    status={studentStatus} 
+                  <GdgFieldContainer
+                    label="학번"
+                    required
+                    status={studentStatus}
                     statusMessage={studentStatusMessage}
                     action={
-                      <GdgButton device="pc" type="button" onClick={handleStudentCheck} disabled={isStudentCheckDisabled} size="small" variant={!isStudentCheckDisabled ? 'active' : 'default'}>중복 확인</GdgButton>
+                      <GdgButton
+                        device="pc"
+                        type="button"
+                        onClick={handleStudentCheck}
+                        disabled={isStudentCheckDisabled}
+                        size="small"
+                        variant={!isStudentCheckDisabled ? 'active' : 'default'}
+                      >
+                        중복 확인
+                      </GdgButton>
                     }
                   >
                     <>
-                      <GdgInputField device="pc" aria-label="학번" placeholder="학번을 입력해 주세요." value={studentId} onChange={(e) => handleStudentIdChange(e.target.value)} state={studentStatus === 'error' ? 'error' : 'available'} width="twoThirds" />
+                      <GdgInputField
+                        device="pc"
+                        aria-label="학번"
+                        placeholder="학번을 입력해 주세요."
+                        value={studentId}
+                        onChange={(e) => handleStudentIdChange(e.target.value)}
+                        state={studentStatus === 'error' ? 'error' : 'available'}
+                        width="twoThirds"
+                      />
                     </>
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
-                  <GdgFieldContainer 
-                    label="전화번호" 
-                    required 
-                    status={phoneStatus} 
+                  <GdgFieldContainer
+                    label="전화번호"
+                    required
+                    status={phoneStatus}
                     statusMessage={phoneStatusMessage}
                     action={
-                      <GdgButton device="pc" type="button" onClick={handlePhoneCheck} disabled={isPhoneCheckDisabled} size="small" variant={!isPhoneCheckDisabled ? 'active' : 'default'}>중복 확인</GdgButton>
+                      <GdgButton
+                        device="pc"
+                        type="button"
+                        onClick={handlePhoneCheck}
+                        disabled={isPhoneCheckDisabled}
+                        size="small"
+                        variant={!isPhoneCheckDisabled ? 'active' : 'default'}
+                      >
+                        중복 확인
+                      </GdgButton>
                     }
                   >
                     <>
-                      <GdgInputField device="pc" aria-label="전화번호" placeholder="전화번호를 입력해 주세요." value={phoneNumber} onChange={(e) => handlePhoneNumberChange(e.target.value)} state={phoneStatus === 'error' ? 'error' : 'available'} width="twoThirds" />
+                      <GdgInputField
+                        device="pc"
+                        aria-label="전화번호"
+                        placeholder="전화번호를 입력해 주세요."
+                        value={phoneNumber}
+                        onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                        state={phoneStatus === 'error' ? 'error' : 'available'}
+                        width="twoThirds"
+                      />
                     </>
                   </GdgFieldContainer>
                 </div>
@@ -369,41 +430,89 @@ export default function SignupPage() {
               <div className="pc:hidden contents">
                 <div className="col-span-4">
                   <GdgFieldContainer label="이름" required>
-                    <GdgInputField device="mobile" aria-label="이름" placeholder="이름을 입력해 주세요." value={name} onChange={(e) => setName(e.target.value)} state={fieldErrors.name ? 'error' : 'available'} width="full" />
+                    <GdgInputField
+                      device="mobile"
+                      aria-label="이름"
+                      placeholder="이름을 입력해 주세요."
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      state={fieldErrors.name ? 'error' : 'available'}
+                      width="full"
+                    />
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
-                  <GdgFieldContainer label="학과" required caption="검색 혹은 스크롤하여 지정하세요." status={fieldErrors.major ? 'error' : undefined} statusMessage={fieldErrors.major ? '※ 필수 선택 사항입니다.' : undefined}>
+                  <GdgFieldContainer
+                    label="학과"
+                    required
+                    caption="검색 혹은 스크롤하여 지정하세요."
+                    status={fieldErrors.major ? 'error' : undefined}
+                    statusMessage={fieldErrors.major ? '※ 필수 선택 사항입니다.' : undefined}
+                  >
                     <GdgMajorDropdown device="mobile" value={major} onChangeAction={setMajor} />
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
-                  <GdgFieldContainer 
-                    label="학번" 
-                    required 
-                    status={studentStatus} 
+                  <GdgFieldContainer
+                    label="학번"
+                    required
+                    status={studentStatus}
                     statusMessage={studentStatusMessage}
                     action={
-                      <GdgButton device="mobile" type="button" onClick={handleStudentCheck} disabled={isStudentCheckDisabled} size="small" variant={!isStudentCheckDisabled ? 'active' : 'default'}>중복 확인</GdgButton>
+                      <GdgButton
+                        device="mobile"
+                        type="button"
+                        onClick={handleStudentCheck}
+                        disabled={isStudentCheckDisabled}
+                        size="small"
+                        variant={!isStudentCheckDisabled ? 'active' : 'default'}
+                      >
+                        중복 확인
+                      </GdgButton>
                     }
                   >
                     <>
-                      <GdgInputField device="mobile" aria-label="학번" placeholder="학번을 입력해 주세요." value={studentId} onChange={(e) => handleStudentIdChange(e.target.value)} state={studentStatus === 'error' ? 'error' : 'available'} width="twoThirds" />
+                      <GdgInputField
+                        device="mobile"
+                        aria-label="학번"
+                        placeholder="학번을 입력해 주세요."
+                        value={studentId}
+                        onChange={(e) => handleStudentIdChange(e.target.value)}
+                        state={studentStatus === 'error' ? 'error' : 'available'}
+                        width="twoThirds"
+                      />
                     </>
                   </GdgFieldContainer>
                 </div>
                 <div className="col-span-4">
-                  <GdgFieldContainer 
-                    label="전화번호" 
-                    required 
-                    status={phoneStatus} 
+                  <GdgFieldContainer
+                    label="전화번호"
+                    required
+                    status={phoneStatus}
                     statusMessage={phoneStatusMessage}
                     action={
-                      <GdgButton device="mobile" type="button" onClick={handlePhoneCheck} disabled={isPhoneCheckDisabled} size="small" variant={!isPhoneCheckDisabled ? 'active' : 'default'}>중복 확인</GdgButton>
+                      <GdgButton
+                        device="mobile"
+                        type="button"
+                        onClick={handlePhoneCheck}
+                        disabled={isPhoneCheckDisabled}
+                        size="small"
+                        variant={!isPhoneCheckDisabled ? 'active' : 'default'}
+                      >
+                        중복 확인
+                      </GdgButton>
                     }
                   >
                     <>
-                      <GdgInputField device="mobile" aria-label="전화번호" placeholder="전화번호를 입력해 주세요." value={phoneNumber} onChange={(e) => handlePhoneNumberChange(e.target.value)} state={phoneStatus === 'error' ? 'error' : 'available'} width="twoThirds" />
+                      <GdgInputField
+                        device="mobile"
+                        aria-label="전화번호"
+                        placeholder="전화번호를 입력해 주세요."
+                        value={phoneNumber}
+                        onChange={(e) => handlePhoneNumberChange(e.target.value)}
+                        state={phoneStatus === 'error' ? 'error' : 'available'}
+                        width="twoThirds"
+                      />
                     </>
                   </GdgFieldContainer>
                 </div>
@@ -413,7 +522,8 @@ export default function SignupPage() {
                 <PrivacyPolicyNotice target="signup" compact />
                 <div className="flex items-center justify-end gap-2">
                   <p className="typo-pc-b3 mobile:typo-m-c1 text-white text-right">
-                    <span className="text-red typo-pc-b3 mobile:typo-m-c1">* </span>개인정보 처리방침에 동의합니다.
+                    <span className="text-red typo-pc-b3 mobile:typo-m-c1">* </span>개인정보
+                    처리방침에 동의합니다.
                   </p>
                   <GdgCheckbox
                     size="mobile"
@@ -423,17 +533,57 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              {globalError && <p className="typo-pc-c1 mobile:typo-m-c1 col-span-4 text-center text-red">{globalError}</p>}
+              {globalError && (
+                <p className="typo-pc-c1 mobile:typo-m-c1 col-span-4 text-center text-red">
+                  {globalError}
+                </p>
+              )}
 
               <div className="col-span-4 flex justify-end gap-5 pt-12 mobile:grid mobile:grid-cols-3 mobile:gap-2 mobile:pt-8">
                 <div className="hidden mobile:block" aria-hidden />
                 <div className="pc:contents hidden">
-                  <GdgButton device="pc" type="button" onClick={() => router.replace(`/login?next=${encodeURIComponent(nextUrl)}`)} size="small" variant="default">이전</GdgButton>
-                  <GdgButton device="pc" type="submit" loading={loading} disabled={!isSignupReady || loading} size="small" variant={isSignupReady ? 'active' : 'disabled'}>회원가입</GdgButton>
+                  <GdgButton
+                    device="pc"
+                    type="button"
+                    onClick={() => router.replace(`/login?next=${encodeURIComponent(nextUrl)}`)}
+                    size="small"
+                    variant="default"
+                  >
+                    이전
+                  </GdgButton>
+                  <GdgButton
+                    device="pc"
+                    type="submit"
+                    loading={loading}
+                    disabled={!isSignupReady || loading}
+                    size="small"
+                    variant={isSignupReady ? 'active' : 'disabled'}
+                  >
+                    회원가입
+                  </GdgButton>
                 </div>
                 <div className="pc:hidden contents">
-                  <GdgButton device="mobile" type="button" onClick={() => router.replace(`/login?next=${encodeURIComponent(nextUrl)}`)} size="small" variant="default" fullWidth>이전</GdgButton>
-                  <GdgButton device="mobile" type="submit" loading={loading} disabled={!isSignupReady || loading} size="small" variant={isSignupReady ? 'active' : 'disabled'} fullWidth>회원가입</GdgButton>
+                  <GdgButton
+                    device="mobile"
+                    type="button"
+                    onClick={() => router.replace(`/login?next=${encodeURIComponent(nextUrl)}`)}
+                    size="small"
+                    variant="default"
+                    fullWidth
+                  >
+                    이전
+                  </GdgButton>
+                  <GdgButton
+                    device="mobile"
+                    type="submit"
+                    loading={loading}
+                    disabled={!isSignupReady || loading}
+                    size="small"
+                    variant={isSignupReady ? 'active' : 'disabled'}
+                    fullWidth
+                  >
+                    회원가입
+                  </GdgButton>
                 </div>
               </div>
             </div>
