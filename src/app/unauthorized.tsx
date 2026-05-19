@@ -13,7 +13,7 @@ export default function Unauthorized() {
 
   const nextTarget = useMemo(() => {
     const raw = searchParams?.get('next')
-    if (raw && raw.startsWith('/')) {
+    if (raw && raw.startsWith('/') && !raw.startsWith('//')) {
       return raw
     }
     return '/'
