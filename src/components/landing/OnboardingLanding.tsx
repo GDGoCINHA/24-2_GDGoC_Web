@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -254,6 +255,12 @@ const pageIds = [
 ] as const
 
 const CTA_PAGE_INDEX = pageIds.indexOf('join')
+
+type IntroLogoOverlayAnimation = {
+  x: number
+  y: number
+  scale: number
+}
 
 function SectionShell({
   id,
@@ -1120,6 +1127,7 @@ export default function OnboardingLanding() {
   const introLogoRef = useRef<HTMLDivElement | null>(null)
   const introLogoOverlayRef = useRef<HTMLDivElement | null>(null)
   const headerLogoMeasureRef = useRef<HTMLDivElement | null>(null)
+  const pendingIntroLogoAnimationRef = useRef<IntroLogoOverlayAnimation | null>(null)
   const incomingDirectionRef = useRef(1)
   const reduceMotionRef = useRef(false)
   const transitionLockRef = useRef(false)
@@ -1174,7 +1182,13 @@ export default function OnboardingLanding() {
     const targetLeft = targetRect?.left ?? fallbackTargetLeft
     const targetTop = targetRect?.top ?? 21
     const baseLogoWidth = startRect.width / introLogoScale
-    const targetScale = targetRect ? targetRect.width / baseLogoWidth : 1
+    const targetScale = targetRect && baseLogoWidth > 0 ? targetRect.width / baseLogoWidth : 1
+
+    pendingIntroLogoAnimationRef.current = {
+      x: targetLeft - startRect.left,
+      y: targetTop - startRect.top,
+      scale: targetScale
+    }
 
     setIsIntroLogoHidden(true)
     setIntroLogoOverlayStyle({
@@ -1182,29 +1196,6 @@ export default function OnboardingLanding() {
       top: startRect.top,
       transform: `translate3d(0, 0, 0) scale(${introLogoScale})`,
       transformOrigin: 'top left'
-    })
-
-    window.requestAnimationFrame(() => {
-      if (!introLogoOverlayRef.current) {
-        setActiveIndex(1)
-        setIntroLogoOverlayStyle(null)
-        transitionLockRef.current = false
-        return
-      }
-
-      gsap.to(introLogoOverlayRef.current, {
-        x: targetLeft - startRect.left,
-        y: targetTop - startRect.top,
-        scale: targetScale,
-        duration: 1,
-        ease: 'power3.inOut',
-        overwrite: true,
-        onComplete: () => {
-          setActiveIndex(1)
-          setIntroLogoOverlayStyle(null)
-          transitionLockRef.current = false
-        }
-      })
     })
   }, [])
 
@@ -1327,6 +1318,39 @@ export default function OnboardingLanding() {
 
     return () => window.clearTimeout(introTimer)
   }, [activeIndex, runIntroLogoTransition])
+
+  useLayoutEffect(() => {
+    if (!introLogoOverlayStyle) return
+
+    const overlayElement = introLogoOverlayRef.current
+    const animation = pendingIntroLogoAnimationRef.current
+
+    if (!overlayElement || !animation) {
+      setActiveIndex(1)
+      setIntroLogoOverlayStyle(null)
+      transitionLockRef.current = false
+      return
+    }
+
+    const tween = gsap.to(overlayElement, {
+      x: animation.x,
+      y: animation.y,
+      scale: animation.scale,
+      duration: 1,
+      ease: 'power3.inOut',
+      overwrite: true,
+      onComplete: () => {
+        pendingIntroLogoAnimationRef.current = null
+        setActiveIndex(1)
+        setIntroLogoOverlayStyle(null)
+        transitionLockRef.current = false
+      }
+    })
+
+    return () => {
+      tween.kill()
+    }
+  }, [introLogoOverlayStyle])
 
   useEffect(() => {
     if (!stageRef.current) return
