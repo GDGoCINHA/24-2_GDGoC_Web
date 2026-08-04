@@ -1,5 +1,5 @@
 import { Bullet } from '@/components/ui/common/Bullet'
-import { CORE_SCHEDULE, formatKoreanDate } from '@/constant/recruitSchedule'
+import { CORE_SCHEDULE, formatKoreanPeriod } from '@/constant/recruitSchedule'
 
 type Props = {
   /** 서버가 내려준 실제 모집 기간. 있으면 이 값으로 렌더해 게이팅과 어긋나지 않게 한다. */
@@ -7,9 +7,11 @@ type Props = {
 }
 
 export function RecruitScheduleCard({ applicationPeriod }: Props) {
-  const applicationText = applicationPeriod
-    ? `${formatKoreanDate(applicationPeriod.openAt)} - ${formatKoreanDate(applicationPeriod.closeAt)} 23:59:59`
-    : CORE_SCHEDULE.application
+  const period = applicationPeriod ?? {
+    openAt: CORE_SCHEDULE.fallbackOpenAt,
+    closeAt: CORE_SCHEDULE.fallbackCloseAt
+  }
+  const applicationText = `${formatKoreanPeriod(period.openAt, period.closeAt)} 23:59:59`
 
   return (
     <>
