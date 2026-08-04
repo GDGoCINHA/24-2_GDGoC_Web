@@ -3,7 +3,12 @@
 import { GdgLogo } from '@/components/ui/design-system'
 import { RecruitTypeCard } from '@/components/recruit/RecruitTypeCard'
 import { useRecruitCorePeriod } from '@/hooks/useRecruitCorePeriod'
-import { CORE_SCHEDULE, MEMBER_SCHEDULE, formatKoreanDate } from '@/constant/recruitSchedule'
+import {
+  CORE_SCHEDULE,
+  MEMBER_SCHEDULE,
+  formatKoreanDateShort,
+  formatKoreanPeriodShort
+} from '@/constant/recruitSchedule'
 
 export default function RecruitSelect() {
   const { period, failed } = useRecruitCorePeriod()
@@ -16,11 +21,11 @@ export default function RecruitSelect() {
     : period.status === 'OPEN'
       ? '모집중'
       : period.status === 'BEFORE_OPEN'
-        ? `${formatKoreanDate(period.openAt)} 오픈`
+        ? `${formatKoreanDateShort(period.openAt)} 오픈`
         : '모집 마감'
   const corePeriodText = period
-    ? `${formatKoreanDate(period.openAt)} - ${formatKoreanDate(period.closeAt)}`
-    : CORE_SCHEDULE.application
+    ? formatKoreanPeriodShort(period.openAt, period.closeAt)
+    : formatKoreanPeriodShort(CORE_SCHEDULE.fallbackOpenAt, CORE_SCHEDULE.fallbackCloseAt)
 
   return (
     <main className="min-h-screen bg-black overflow-x-hidden">
@@ -33,7 +38,7 @@ export default function RecruitSelect() {
           <p className="typo-pc-b2 text-gray-700 mobile:typo-m-b3">지원 종류를 선택해 주세요.</p>
         </div>
 
-        <div className="col-span-4 grid grid-cols-2 gap-5 mobile:grid-cols-1 mobile:gap-4">
+        <div className="col-span-4 grid grid-cols-2 items-stretch gap-5 mobile:grid-cols-1 mobile:gap-4">
           <RecruitTypeCard
             title="Core"
             subtitle="운영진"
@@ -46,7 +51,7 @@ export default function RecruitSelect() {
           <RecruitTypeCard
             title="Member"
             subtitle="부원"
-            period={MEMBER_SCHEDULE.intensive}
+            period={formatKoreanPeriodShort(MEMBER_SCHEDULE.openAt, MEMBER_SCHEDULE.closeAt)}
             href="/recruit/member"
             statusLabel="모집중"
             isOpen
