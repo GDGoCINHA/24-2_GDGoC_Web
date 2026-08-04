@@ -517,7 +517,7 @@ function RecruitButton({ className }: { className?: string }) {
         'h-[52px] max-w-[550px] border-red bg-red typo-pc-s3 mobile:h-12 mobile:max-w-[166px] mobile:px-8 mobile:typo-m-s3',
         className
       )}
-      onClick={() => router.push('/recruit/member')}
+      onClick={() => router.push('/recruit')}
     >
       지원하기
     </GdgButton>

@@ -15,6 +15,7 @@ import {
   GdgInputField
 } from '@/components/ui/design-system'
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
+import { RecruitScheduleCard } from '@/components/recruit/RecruitScheduleCard'
 import { normalizeMajorCode } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
@@ -63,7 +64,6 @@ const TEAM_OPTIONS = [
   { id: 'TECH', label: 'TECH' },
   { id: 'PR_DESIGN', label: 'PR·DESIGN' }
 ] as const
-const CORE_RECRUIT_DEADLINE = '2026-03-14T23:59:59+09:00'
 
 const unwrapPrefill = (raw: unknown): PrefillPayload | null => {
   if (!raw || typeof raw !== 'object') return null
@@ -182,17 +182,6 @@ function TextareaField({
   )
 }
 
-function Bullet({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start w-full">
-      <span className="w-5 shrink-0 text-center text-[18px] mobile:text-[16px] leading-none font-bold mt-[1px]">
-        •
-      </span>
-      <div className="typo-pc-b2 mobile:typo-m-b3 flex-1">{children}</div>
-    </div>
-  )
-}
-
 export default function RecruitCore() {
   const router = useRouter()
   const { apiClient } = useAuthenticatedApi()
@@ -205,7 +194,6 @@ export default function RecruitCore() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [scheduleChecked, setScheduleChecked] = useState(false)
   const [agreementChecked, setAgreementChecked] = useState(false)
-  const isRecruitClosed = Date.now() > new Date(CORE_RECRUIT_DEADLINE).getTime()
 
   const [formData, setFormData] = useState<RecruitFormData>({
     name: '',
@@ -246,19 +234,6 @@ export default function RecruitCore() {
   }, [currentStep, formData, scheduleChecked, agreementChecked])
 
   useEffect(() => {
-    if (!isRecruitClosed) {
-      return
-    }
-
-    alert('코어 지원 기간이 종료되었습니다.')
-    router.replace('/recruit/core/completed?status=closed')
-  }, [isRecruitClosed, router])
-
-  useEffect(() => {
-    if (isRecruitClosed) {
-      return
-    }
-
     let active = true
 
     const fetchPrefill = async () => {
@@ -295,7 +270,7 @@ export default function RecruitCore() {
     return () => {
       active = false
     }
-  }, [apiClient, isRecruitClosed, router])
+  }, [apiClient, router])
 
   const validateStep = (step: RecruitStep) => {
     const nextErrors: Record<string, boolean> = {}
@@ -427,12 +402,6 @@ export default function RecruitCore() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
-    if (isRecruitClosed) {
-      alert('코어 지원 기간이 종료되었습니다.')
-      router.replace('/recruit/core/completed?status=closed')
-      return
-    }
 
     if (!validateStep(currentStep)) return
 
@@ -827,51 +796,9 @@ export default function RecruitCore() {
 
           {currentStep === 2 ? (
             <>
-              <div className="col-span-4 space-y-2">
-                <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">모집 일정</p>
-                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white">
-                  <div className="space-y-4 typo-pc-b2 mobile:space-y-3 mobile:typo-m-b3">
-                    <div className="space-y-1">
-                      <Bullet>서류 지원 기간</Bullet>
-                      <p>2026. 2. 12.(목) - 2026. 3. 14.(토) 23:59:59</p>
-                    </div>
-                    <div className="space-y-1">
-                      <Bullet>서류 결과 발표</Bullet>
-                      <p>~ 2026. 3. 15.(일)</p>
-                    </div>
-                    <div className="space-y-1">
-                      <Bullet>면접 진행 기간</Bullet>
-                      <p>2026. 3. 16.(월) - 2026. 3. 20.(금)</p>
-                      <p className="typo-c2 text-gray-700">
-                        ※ 지원자 및 면접관 일정에 따라 마감 전 면접이 가능할 수 있습니다.
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <Bullet>최종 결과 발표</Bullet>
-                      <p>~ 2026. 3. 21.(토)</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div className="col-span-4 space-y-8 mobile:space-y-6">
+                <RecruitScheduleCard />
 
-              <div className="col-span-4 space-y-2">
-                <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">면접 안내</p>
-                <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-pc-b2 mobile:typo-m-b3">
-                  <Bullet>원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.</Bullet>
-                  <div className="mt-2">
-                    <Bullet>면접은 인하대학교 내부 장소에서 진행됩니다.</Bullet>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-span-4 space-y-4">
-                <div className="space-y-2">
-                  <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">활동 안내</p>
-                  <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-pc-b2 mobile:typo-m-b3">
-                    <Bullet>운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다.</Bullet>
-                    <p className="mt-1 typo-c2 text-gray-700">※ 일정은 3월 내로 공지 드립니다.</p>
-                  </div>
-                </div>
                 <div className="flex items-center justify-end gap-2">
                   <span className="typo-pc-b3 mobile:typo-m-c1 text-red">*</span>
                   <p className="typo-pc-b3 mobile:typo-m-c1 text-white">전체 일정을 확인하였습니다.</p>

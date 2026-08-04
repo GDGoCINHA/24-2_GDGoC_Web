@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { GdgLogo } from '@/components/ui/design-system'
+import { MEMBER_SCHEDULE, formatKoreanPeriod } from '@/constant/recruitSchedule'
 import { cn } from '@/utils/cn'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -120,7 +121,7 @@ export default function RecruitSubmit() {
             <Card className="flex-col items-start gap-2">
               <Bullet>
                 <span className="font-bold mr-2">집중 모집 기간</span>
-                <span>2/12 ~ 3/15</span>
+                <span>{formatKoreanPeriod(MEMBER_SCHEDULE.openAt, MEMBER_SCHEDULE.closeAt)}</span>
               </Bullet>
             </Card>
 
