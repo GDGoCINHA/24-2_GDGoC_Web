@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/session-start.mjs" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/guard.mjs" },
+          { "type": "command", "command": "node .claude/hooks/lifecycle.mjs promote" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "node .claude/hooks/verify.mjs" },
+          { "type": "command", "command": "node .claude/hooks/lifecycle.mjs retire" }
+        ]
+      }
+    ]
+  }
+}
