@@ -39,5 +39,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# claude code (개인 설정만 제외)
+.claude/settings.local.json
+
 # ide files
 .idea
