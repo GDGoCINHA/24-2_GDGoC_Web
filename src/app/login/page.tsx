@@ -24,13 +24,15 @@ const getSafeNextUrl = (raw: string | null): string => {
 
   try {
     const decoded = decodeURIComponent(raw)
-    if (decoded.startsWith('/')) return decoded
+    if (decoded.startsWith('/') && !decoded.startsWith('//')) return decoded
 
     if (typeof window !== 'undefined') {
       const parsed = new URL(decoded, window.location.origin)
       if (parsed.origin === window.location.origin) {
         const nextPath = `${parsed.pathname}${parsed.search}${parsed.hash}`
-        return nextPath.startsWith('/') ? nextPath : DEFAULT_FALLBACK_ROUTE
+        return nextPath.startsWith('/') && !nextPath.startsWith('//')
+          ? nextPath
+          : DEFAULT_FALLBACK_ROUTE
       }
     }
 
@@ -426,12 +428,8 @@ export default function LoginPage() {
     <>
       <Loader isLoading={loading} />
       <div className="min-h-screen bg-[#1e1e1e] text-white">
-        <div className="hidden pc:block">
-          {renderPcView()}
-        </div>
-        <div className="block pc:hidden">
-          {renderMobileView()}
-        </div>
+        <div className="hidden pc:block">{renderPcView()}</div>
+        <div className="block pc:hidden">{renderMobileView()}</div>
       </div>
     </>
   )

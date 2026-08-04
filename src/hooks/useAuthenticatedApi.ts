@@ -2,11 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  AxiosHeaders,
-  type AxiosHeaderValue,
-  type InternalAxiosRequestConfig
-} from 'axios'
+import { AxiosHeaders, type AxiosHeaderValue, type InternalAxiosRequestConfig } from 'axios'
 
 import { createAuthorizedClient, type AuthorizedRequestConfig } from '@/lib/api/authorizedClient'
 import { createAuthorizedFetch } from '@/lib/api/authorizedFetch'
@@ -52,6 +48,31 @@ type UnauthorizedContext =
   | { init?: RequestInit }
   | undefined
 
+const resolveInternalPath = (raw?: string | null): string | null => {
+  if (!raw) return null
+
+  try {
+    const decoded = decodeURIComponent(raw)
+    if (decoded.startsWith('/') && !decoded.startsWith('//')) return decoded
+
+    if (typeof window !== 'undefined') {
+      const parsed = new URL(decoded, window.location.origin)
+      if (parsed.origin === window.location.origin) {
+        return `${parsed.pathname}${parsed.search}${parsed.hash}`
+      }
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+const getCurrentInternalPath = (): string | null => {
+  if (typeof window === 'undefined') return null
+  return `${window.location.pathname}${window.location.search}${window.location.hash}`
+}
+
 const resolveNextUrl = (ctx?: UnauthorizedContext): string => {
   let headerNext: string | undefined
   if (ctx && 'originalRequest' in ctx) {
@@ -62,8 +83,12 @@ const resolveNextUrl = (ctx?: UnauthorizedContext): string => {
 
   const sessionNext =
     typeof window !== 'undefined' ? sessionStorage.getItem('NEXT_URL_OVERRIDE') : null
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : null
-  return headerNext || sessionNext || currentUrl || '/'
+  return (
+    resolveInternalPath(headerNext) ||
+    resolveInternalPath(sessionNext) ||
+    getCurrentInternalPath() ||
+    '/'
+  )
 }
 
 export const useAuthenticatedApi = () => {
@@ -96,14 +121,17 @@ export const useAuthenticatedApi = () => {
     await refreshPromiseRef.current
   }, [refreshAccessToken, setUser])
 
-  const handleForbidden = useCallback((_payload?: unknown, _ctx?: unknown) => {
-    try {
-      alert('권한이 부족합니다.')
-    } catch {
-      // ignore
-    }
-    router.replace('/')
-  }, [router])
+  const handleForbidden = useCallback(
+    (_payload?: unknown, _ctx?: unknown) => {
+      try {
+        alert('권한이 부족합니다.')
+      } catch {
+        // ignore
+      }
+      router.replace('/')
+    },
+    [router]
+  )
 
   const handleUnauthorized = useCallback(
     (_payload?: unknown, ctx?: UnauthorizedContext) => {
