@@ -34,7 +34,13 @@ const PRODUCTION = [
   // 두 이름을 모두 막는 이유: Server 의 운영 브랜치는 main, Web 은 master 다.
   // 둘 다 막으면 이 파일이 리포에 무관해져 사본이 어느 쪽이든 판정이 같고,
   // 부모 폴더 배선에서 가드를 한 번만 호출하면 된다.
-  [/\bgit\s+push\b.*\b(main|master)(\s|$)/, "main·master 푸시는 운영 자동 배포를 트리거한다"],
+  //
+  // 닫는 따옴표를 허용하는 이유: `git push origin "master"` 는 정상적인 셸 표현인데
+  // 예전 패턴은 뒤에 공백이나 끝만 봐서 `master"` 로 **그대로 새어나갔다.**
+  [
+    /\bgit\s+push\b.*\b(main|master)["']?(\s|$)/,
+    "main·master 푸시는 운영 자동 배포를 트리거한다",
+  ],
 ];
 
 /**

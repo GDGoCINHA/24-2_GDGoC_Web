@@ -38,6 +38,11 @@ test("운영 배포 경로를 막는다", () => {
     "git push origin master",
     "git push origin HEAD:master",
     "git push -u origin master",
+    // ref 를 따옴표로 감싸도 막아야 한다. 셸에서 정상적으로 쓰이는 형태이고,
+    // 예전 패턴은 `master` 뒤에 공백이나 끝만 봤기 때문에 `master"` 로 새어나갔다.
+    'git push origin "master"',
+    "git push origin 'main'",
+    'git push origin "main"',
   ];
   for (const c of blocked) {
     assert.ok(judge(bash(c)), `막아야 한다: ${c}`);
