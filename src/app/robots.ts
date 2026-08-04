@@ -8,6 +8,8 @@ export default function robots() {
                 userAgent: '*',
                 allow: [
                     '/',
+                    '/recruit',
+                    '/recruit/core',
                     '/images/',
                     '/fonts/',
                     '/static/',
