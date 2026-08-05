@@ -65,3 +65,8 @@ git log --oneline origin/develop..origin/master
 ---
 
 나머지 함정은 해당 파일을 건드릴 때 자동으로 로드된다 — `.claude/rules/` 참조.
+
+## 관련 문서
+
+- `.claude/README.md` — 훅이 안 뜨거나 이상하게 동작할 때
+- `.claude/HACKING.md` — 훅을 고치거나 부모 폴더에 설치할 때
