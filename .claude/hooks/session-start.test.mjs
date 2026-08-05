@@ -1,7 +1,7 @@
 // 세션 시작 한 줄. **이 줄이 없으면 훅이 안 붙은 것이다.**
 //
-// 2026-08-04 세션에서 훅이 안 붙은 줄 모르고 작업할 뻔했다. 프로브를 쏴서야 알았고,
-// 프로브를 쏠 생각을 안 했으면 죽은 가드를 믿고 위험한 작업을 했을 것이다.
+// 2026-08-04, 훅이 배선되지 않은 채로 세션이 진행된 적이 있다. 프로브를 쏘기 전까지
+// 드러나지 않았다 — 죽은 가드와 조용한 가드는 출력이 같기 때문이다.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { parseRepos, formatStatus } from "./session-start.mjs";
