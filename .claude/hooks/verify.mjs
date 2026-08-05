@@ -11,6 +11,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { tellAgent } from "./agent-message.mjs";
 
 // --- 이 리포의 검증 방법. **리포마다 다른 유일한 부분이다.** -----------------
 //
@@ -47,9 +48,13 @@ export function decide({ dirty, toolReady }) {
 
 // --- CLI ------------------------------------------------------------------
 
-// **안내는 stdout 으로 낸다.** stderr 는 훅 레코드에 보관만 되고, 화면에 쓰이는 `content`
-// 필드로 올라오지 않는다 — 훅은 도는데 아무도 못 보는 상태가 된다. 2026-08-05 실측했다.
-// 근거와 레코드 원문은 Server 리포의 `.claude/work/harness-multirepo/verification.md` 3절.
+// **안내는 `tellAgent` 로만 낸다.** stdout 에 평문을 쓰면 훅 레코드의 `content` 까지는
+// 가지만 에이전트 컨텍스트에는 들어오지 않는다 — 훅은 도는데 아무도 못 듣는 상태가 된다.
+// 2026-08-05 프로브로 확정했다. 근거는 Server 리포의
+// `.claude/work/harness-multirepo/verification.md`.
+//
+// **exit 0 을 지킨다.** 훅 JSON 은 exit 0 일 때만 파싱된다. 0 이 아니면 stdout 이 통째로
+// 버려지므로, 실패를 알리려고 exit 1 을 내면 오히려 알림이 사라진다.
 
 const isMain =
   process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"));
@@ -63,7 +68,7 @@ if (isMain) {
   });
   if (status.status !== 0) {
     // 리포를 못 읽으면 조용히 넘어가지 않는다. 검증이 죽은 것과 통과가 구별되어야 한다.
-    console.log(`[검증] ${repo} 의 git 상태를 읽지 못해 검증을 건너뛴다.`);
+    tellAgent("Stop", `[검증] ${repo} 의 git 상태를 읽지 못해 검증을 건너뛴다.`);
     process.exit(0);
   }
 
@@ -74,14 +79,17 @@ if (isMain) {
 
   if (action === "skip") process.exit(0);
   if (action === "tool-missing") {
-    console.log(`[검증] ${repo}: ${VERIFY.toolMissingHint}`);
+    tellAgent("Stop", `[검증] ${repo}: ${VERIFY.toolMissingHint}`);
     process.exit(0);
   }
 
+  // 빌드 출력은 사용자 화면용이라 stdio: "inherit" 로 그대로 흘린다. 판정은 아래에서
+  // 따로 알린다 — 흘려보낸 출력은 에이전트에게 닿지 않기 때문이다.
   const res = spawnSync(VERIFY.command(repo), { cwd: repo, stdio: "inherit", shell: true });
   if (res.status !== 0) {
-    console.log(`[검증] ${repo}: ${VERIFY.label} 실패 — 위 에러를 확인하라.`);
-    process.exit(1);
+    // **exit 0 으로 끝낸다.** exit 1 이면 이 JSON 이 파싱되지 않아 실패가 조용해진다.
+    tellAgent("Stop", `[검증] ${repo}: ${VERIFY.label} 실패. 고치기 전에는 완료라고 하지 마라.`);
+    process.exit(0);
   }
   process.exit(0);
 }

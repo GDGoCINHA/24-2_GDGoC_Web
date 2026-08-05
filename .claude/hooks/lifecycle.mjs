@@ -11,6 +11,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { tellAgent } from "./agent-message.mjs";
 
 // master 는 Web 리포의 운영 브랜치다. 두 리포가 사본을 공유하므로 함께 보호한다.
 const PROTECTED = new Set(["develop", "main", "master", "HEAD", ""]);
@@ -138,8 +139,8 @@ if (isMain) {
       repo,
       targets: retirementTargets({ workDirs: workDirs(repo), mergedTasks: mergedTasks(repo) }),
     });
-    // Stop 훅이므로 stdout 으로 낸다 — stderr 는 표시되지 않는다 (verify.mjs 주석 참조).
-    if (notice) console.log(notice);
+    // 평문 stdout 은 에이전트에 닿지 않는다 — `agent-message.mjs` 주석 참조.
+    if (notice) tellAgent("Stop", notice);
     process.exit(0);
   }
 
@@ -164,7 +165,9 @@ if (isMain) {
         task,
         workFileCount: task ? countFiles(join(repo, ".claude/work", task)) : 0,
       });
-      if (notice) console.error(notice);
+      // PreToolUse 는 stdout 이 JSON 제어 채널이다. 평문을 흘리면 파싱과 섞이므로
+      // 안내도 반드시 JSON 으로 싣는다. 이 훅은 차단하지 않으므로 결정 필드는 없다.
+      if (notice) tellAgent("PreToolUse", notice);
       process.exit(0);
     });
   } else if (mode !== "retire") {
