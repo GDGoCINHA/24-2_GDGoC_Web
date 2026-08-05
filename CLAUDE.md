@@ -45,14 +45,6 @@ yarn format:check   # 포맷 검사만
 
 코드만 읽어서는 드러나지 않는 것들. **작업 전에 반드시 인지할 것.**
 
-### `src/app/api/`는 죽은 코드다
-
-`route.ts` 4개가 있지만 전부 `POST` 핸들러다. **static export는 POST Route Handler를 지원하지 않으며**, 실제로 이들을 호출하는 코드도 리포에 없다.
-
-인증 흐름은 이 라우트가 아니라 `src/lib/api/`의 axios 클라이언트가 백엔드를 **직접 호출**하는 방식이다. 액세스 토큰은 localStorage에 저장하고 `Authorization: Bearer`로 보낸다.
-
-새 API 연동을 만들 때 이 디렉터리를 참고하지 마라. 동작하지 않는 패턴이다.
-
 ### 운영 브랜치가 `master`다
 
 백엔드 리포는 `main`인데 **이 리포는 `master`**다. 헷갈리기 쉽다.
@@ -70,25 +62,6 @@ yarn format:check   # 포맷 검사만
 git log --oneline origin/develop..origin/master
 ```
 
-### 패키지 매니저가 섞여 있다
+---
 
-- `.github/workflows/deploy.yml` → **`yarn install --frozen-lockfile`** (실제 배포 경로)
-- `Dockerfile`, `buildspec.yml` → `npm install`
-
-`yarn.lock`과 `package-lock.json`이 **둘 다 존재**한다. 의존성을 추가할 때 yarn을 쓰면 `package-lock.json`이 뒤처지고, npm을 쓰면 배포 빌드와 어긋난다. **배포 기준인 yarn을 따르라.**
-
-### Docker 관련 파일은 과거 배포 방식의 잔재다
-
-`Dockerfile`, `docker-compose.yml`, `appspec.yml`, `buildspec.yml`은 2026-01 이후 방치돼 있고 **현재 배포 경로에서 쓰이지 않는다.** 실제 배포는 GitHub Actions → S3 → CloudFront다.
-
-배포 문제를 디버깅할 때 이 파일들을 보면 엉뚱한 곳을 파게 된다. `.github/workflows/deploy.yml`을 보라.
-
-### 백엔드 응답 형식
-
-모든 API는 다음 형태로 감싸여 온다. `data`를 바로 쓰지 말고 이 래퍼를 벗겨야 한다.
-
-```ts
-{ code: number, message: string, data: T, meta?: M }
-```
-
-`meta`에는 페이징 정보가 들어온다. `null` 필드는 응답에서 생략된다.
+나머지 함정은 해당 파일을 건드릴 때 자동으로 로드된다 — `.claude/rules/` 참조.
