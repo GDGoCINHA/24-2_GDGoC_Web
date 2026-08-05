@@ -3,8 +3,8 @@
 //
 // **평문으로 쓰면 사라진다.** `console.error` 는 훅 레코드의 `stderr` 에만 남고,
 // `console.log` 는 `content` 까지 가지만 에이전트 컨텍스트에는 들어오지 않는다.
-// 2026-08-05 에 프로브로 확정했다. 근거는 Server 리포에 있다 —
-// `24-2_GDGoC_Server/.claude/work/harness-multirepo/verification.md`.
+// 2026-08-05 에 프로브로 확정했다. 근거는 Server 리포의
+// `.claude/work/harness-multirepo/verification.md` 에 있다.
 //
 // 이 하네스의 실패 이력이 전부 "훅은 도는데 아무도 못 듣는" 형태였다. 조언을 낼 때는
 // **반드시 이 함수를 쓴다.**
