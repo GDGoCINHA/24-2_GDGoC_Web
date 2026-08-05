@@ -12,6 +12,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { tellAgent } from "./agent-message.mjs";
+import { isMainModule } from "./is-main.mjs";
 
 // --- 이 리포의 검증 방법. **리포마다 다른 유일한 부분이다.** -----------------
 //
@@ -56,8 +57,7 @@ export function decide({ dirty, toolReady }) {
 // **exit 0 을 지킨다.** 훅 JSON 은 exit 0 일 때만 파싱된다. 0 이 아니면 stdout 이 통째로
 // 버려지므로, 실패를 알리려고 exit 1 을 내면 오히려 알림이 사라진다.
 
-const isMain =
-  process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"));
+const isMain = isMainModule(import.meta.url, process.argv[1]);
 
 if (isMain) {
   const repo = parseRepo(process.argv);

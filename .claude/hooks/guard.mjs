@@ -7,6 +7,8 @@
 //
 // 판정은 `judge()` 하나에 모아 두고 CLI 는 입출력만 한다 — 그래야 테스트가 붙는다.
 
+import { isMainModule } from "./is-main.mjs";
+
 // 셸 툴 — 이 툴들은 command 를 못 읽으면 판정 불가로 보고 차단한다.
 const SHELL_TOOLS = new Set(["Bash", "PowerShell"]);
 
@@ -72,7 +74,7 @@ export function judge(input) {
 
 // --- CLI ------------------------------------------------------------------
 // 이 파일이 직접 실행될 때만 stdin 을 읽는다. import 하는 테스트는 여기 오지 않는다.
-if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"))) {
+if (isMainModule(import.meta.url, process.argv[1])) {
   let raw = "";
   process.stdin.setEncoding("utf8");
   process.stdin.on("data", (d) => (raw += d));

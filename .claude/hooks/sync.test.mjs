@@ -31,6 +31,8 @@ const SHARED = [
   ".claude/hooks/session-start.test.mjs",
   ".claude/hooks/agent-message.mjs",
   ".claude/hooks/agent-message.test.mjs",
+  ".claude/hooks/is-main.mjs",
+  ".claude/hooks/is-main.test.mjs",
   ".claude/hooks/sync.test.mjs",
   ".claude/rules/artifact-lifecycle.md",
 ];

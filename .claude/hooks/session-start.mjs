@@ -14,6 +14,7 @@
 
 import { spawnSync } from "node:child_process";
 import { basename, resolve } from "node:path";
+import { isMainModule } from "./is-main.mjs";
 
 /** `--repo` 를 여러 번 받는다. 없으면 현재 디렉터리 하나. */
 export function parseRepos(argv) {
@@ -38,8 +39,7 @@ export function formatStatus(repos) {
 
 // --- CLI ------------------------------------------------------------------
 
-const isMain =
-  process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"));
+const isMain = isMainModule(import.meta.url, process.argv[1]);
 
 if (isMain) {
   const git = (repo, args) => {

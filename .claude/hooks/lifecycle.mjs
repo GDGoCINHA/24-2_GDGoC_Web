@@ -12,6 +12,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { tellAgent } from "./agent-message.mjs";
+import { isMainModule } from "./is-main.mjs";
 
 // master 는 Web 리포의 운영 브랜치다. 두 리포가 사본을 공유하므로 함께 보호한다.
 const PROTECTED = new Set(["develop", "main", "master", "HEAD", ""]);
@@ -127,8 +128,7 @@ function mergedTasks(repo) {
 // `--repo` 기본값은 `.` 이다. 부모 폴더에서 띄운 세션은 cwd 가 리포 밖이므로
 // 대상 리포를 명시해야 한다 — 없으면 조용히 아무것도 찾지 못한다.
 
-const isMain =
-  process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"));
+const isMain = isMainModule(import.meta.url, process.argv[1]);
 
 if (isMain) {
   const mode = process.argv[2];
