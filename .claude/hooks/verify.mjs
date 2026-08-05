@@ -47,6 +47,10 @@ export function decide({ dirty, toolReady }) {
 
 // --- CLI ------------------------------------------------------------------
 
+// **안내는 stdout 으로 낸다.** stderr 는 훅 레코드에 보관만 되고, 화면에 쓰이는 `content`
+// 필드로 올라오지 않는다 — 훅은 도는데 아무도 못 보는 상태가 된다. 2026-08-05 실측했다.
+// 근거와 레코드 원문은 Server 리포의 `.claude/work/harness-multirepo/verification.md` 3절.
+
 const isMain =
   process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, "/"));
 
@@ -59,7 +63,7 @@ if (isMain) {
   });
   if (status.status !== 0) {
     // 리포를 못 읽으면 조용히 넘어가지 않는다. 검증이 죽은 것과 통과가 구별되어야 한다.
-    console.error(`[검증] ${repo} 의 git 상태를 읽지 못해 검증을 건너뛴다.`);
+    console.log(`[검증] ${repo} 의 git 상태를 읽지 못해 검증을 건너뛴다.`);
     process.exit(0);
   }
 
@@ -70,13 +74,13 @@ if (isMain) {
 
   if (action === "skip") process.exit(0);
   if (action === "tool-missing") {
-    console.error(`[검증] ${repo}: ${VERIFY.toolMissingHint}`);
+    console.log(`[검증] ${repo}: ${VERIFY.toolMissingHint}`);
     process.exit(0);
   }
 
   const res = spawnSync(VERIFY.command(repo), { cwd: repo, stdio: "inherit", shell: true });
   if (res.status !== 0) {
-    console.error(`[검증] ${repo}: ${VERIFY.label} 실패 — 위 에러를 확인하라.`);
+    console.log(`[검증] ${repo}: ${VERIFY.label} 실패 — 위 에러를 확인하라.`);
     process.exit(1);
   }
   process.exit(0);

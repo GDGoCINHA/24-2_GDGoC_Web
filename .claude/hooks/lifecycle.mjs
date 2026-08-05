@@ -138,7 +138,8 @@ if (isMain) {
       repo,
       targets: retirementTargets({ workDirs: workDirs(repo), mergedTasks: mergedTasks(repo) }),
     });
-    if (notice) console.error(notice);
+    // Stop 훅이므로 stdout 으로 낸다 — stderr 는 표시되지 않는다 (verify.mjs 주석 참조).
+    if (notice) console.log(notice);
     process.exit(0);
   }
 
