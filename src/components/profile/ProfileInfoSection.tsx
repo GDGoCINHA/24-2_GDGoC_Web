@@ -7,6 +7,11 @@ import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import type { UpdateProfilePayload, UserProfile } from '@/types/profile'
 import { formatPhoneNumberInput } from '@/utils/phoneNumber'
 
+// 서버의 PATCH /api/v1/users/me 검증(^01[0-9]\d{7,8}$)과 같은 범위를 쓴다.
+// 공유 유틸 isPhoneNumberFormatValid는 010 11자리만 허용해, DB에 남아 있는
+// 011·016 번호를 가진 사용자가 이름만 고쳐도 저장할 수 없게 만든다.
+const PROFILE_PHONE_PATTERN = /^01[0-9]\d{7,8}$/
+
 interface ProfileInfoSectionProps {
   profile: UserProfile
   onSave: (payload: UpdateProfilePayload) => Promise<void>
@@ -20,7 +25,7 @@ export default function ProfileInfoSection({
   saving = false,
   error = null
 }: ProfileInfoSectionProps) {
-  const { formatInput, toDigits, isValidFormat } = usePhoneNumber()
+  const { formatInput, toDigits } = usePhoneNumber()
 
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(profile.name)
@@ -36,16 +41,21 @@ export default function ProfileInfoSection({
 
   const cancelEditing = () => setEditing(false)
 
-  const canSave = name.trim().length > 0 && major.length > 0 && isValidFormat(phoneNumber)
+  const isPhoneValid = PROFILE_PHONE_PATTERN.test(toDigits(phoneNumber))
+  const canSave = name.trim().length > 0 && major.length > 0 && isPhoneValid
 
   const handleSave = async () => {
     if (!canSave) return
-    await onSave({
-      name: name.trim(),
-      major,
-      phoneNumber: toDigits(phoneNumber)
-    })
-    setEditing(false)
+    try {
+      await onSave({
+        name: name.trim(),
+        major,
+        phoneNumber: toDigits(phoneNumber)
+      })
+      setEditing(false)
+    } catch {
+      // 부모가 에러 메시지를 렌더링한다. 편집 모드를 유지해 사용자가 재시도할 수 있다.
+    }
   }
 
   return (
@@ -77,10 +87,10 @@ export default function ProfileInfoSection({
         type="tel"
         value={editing ? phoneNumber : formatPhoneNumberInput(profile.phoneNumber)}
         state={
-          editing && !isValidFormat(phoneNumber) ? 'error' : editing ? 'available' : 'disabled'
+          editing && !isPhoneValid ? 'error' : editing ? 'available' : 'disabled'
         }
         errorText={
-          editing && !isValidFormat(phoneNumber) ? '전화번호 형식을 확인해 주세요.' : undefined
+          editing && !isPhoneValid ? '전화번호 형식을 확인해 주세요.' : undefined
         }
         disabled={!editing}
         onChange={(event) => setPhoneNumber(formatInput(event.target.value))}
@@ -97,12 +107,12 @@ export default function ProfileInfoSection({
             <GdgButton type="button" onClick={cancelEditing} disabled={saving}>
               취소
             </GdgButton>
-            <GdgButton type="button" onClick={handleSave} disabled={!canSave || saving}>
+            <GdgButton type="button" variant="active" onClick={handleSave} disabled={!canSave || saving}>
               {saving ? '저장 중…' : '저장하기'}
             </GdgButton>
           </>
         ) : (
-          <GdgButton type="button" onClick={startEditing}>
+          <GdgButton type="button" variant="active" onClick={startEditing}>
             수정하기
           </GdgButton>
         )}
