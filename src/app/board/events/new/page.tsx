@@ -14,6 +14,7 @@ import {
   GdgTextarea,
   type GdgDropdownOption
 } from '@/components/ui/design-system'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { createEvent } from '@/services/board/boardClient'
@@ -135,7 +136,7 @@ export default function EventBoardNewPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <GdgSiteHeader
-        menus={[{ label: '게시판', url: '/board/events/' }]}
+        menus={BOARD_MENUS}
         actionMenu={{ label: '내 정보', url: '/profile/' }}
       />
       <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 py-10">

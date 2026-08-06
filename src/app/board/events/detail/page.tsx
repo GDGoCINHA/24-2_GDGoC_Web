@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { deleteEvent, fetchEventDetail } from '@/services/board/boardClient'
@@ -115,7 +116,7 @@ export default function EventBoardDetailPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <GdgSiteHeader
-        menus={[{ label: '게시판', url: '/board/events/' }]}
+        menus={BOARD_MENUS}
         actionMenu={{
           label: user ? '내 정보' : '로그인',
           url: user ? '/profile/' : '/login?next=%2Fboard%2Fevents%2F'

@@ -8,6 +8,7 @@ import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
 import { BoardPagination } from '@/components/board/BoardPagination'
 import { BoardSearchBar } from '@/components/board/BoardSearchBar'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { fetchEventList } from '@/services/board/boardClient'
 import type { EventBoardSummary, EventSearchType } from '@/types/board'
@@ -85,7 +86,7 @@ export default function EventBoardListPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <GdgSiteHeader
-        menus={[{ label: '게시판', url: '/board/events/' }]}
+        menus={BOARD_MENUS}
         actionMenu={{
           label: user ? '내 정보' : '로그인',
           url: user ? '/profile/' : '/login?next=%2Fboard%2Fevents%2F'
