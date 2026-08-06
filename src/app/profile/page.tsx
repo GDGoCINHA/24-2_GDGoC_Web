@@ -133,8 +133,9 @@ export default function ProfilePage() {
           <div className="space-y-2">
             <Link
               href="/"
-              className="inline-flex w-fit typo-pc-c2 text-gray-700 transition hover:text-white"
+              className="inline-flex w-fit items-center gap-1 typo-pc-b3 text-gray-800 transition hover:text-white mobile:typo-m-b3"
             >
+              <span aria-hidden>←</span>
               메인으로
             </Link>
             <p className="typo-pc-c1 text-red">{loadError}</p>
@@ -151,8 +152,9 @@ export default function ProfilePage() {
         <div className="space-y-2">
           <Link
             href="/"
-            className="inline-flex w-fit typo-pc-c2 text-gray-700 transition hover:text-white"
+            className="inline-flex w-fit items-center gap-1 typo-pc-b3 text-gray-800 transition hover:text-white mobile:typo-m-b3"
           >
+            <span aria-hidden>←</span>
             메인으로
           </Link>
           <h1 className="typo-h3 mobile:typo-m-h2">내 정보 페이지</h1>

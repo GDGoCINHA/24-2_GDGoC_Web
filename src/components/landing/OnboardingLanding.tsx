@@ -364,7 +364,11 @@ function SiteHeader({
             aria-hidden
           />
         </nav>
-        <div className="flex items-center gap-4 justify-self-end mobile:hidden">
+        {/* mobile:hidden 을 두면 모바일에 진입 수단이 아예 없다. 같은 파일의
+            MobileMenuDrawer 는 정의만 있고 렌더되지 않는 죽은 코드라, 드로어의
+            마이페이지 항목은 화면에 나오지 않는다. 게시판 링크도 같은 이유로
+            여기 둔다 — 드로어의 게시판 항목만으로는 모바일에서 도달할 수 없다. */}
+        <div className="flex items-center gap-4 justify-self-end">
           <a
             href="/board/events/"
             className="typo-pc-b2 text-gray-500 transition-colors hover:text-white"
