@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 
 import ApplicationStatus from '@/components/profile/ApplicationStatus'
 import ProfileCard from '@/components/profile/ProfileCard'
@@ -129,7 +130,15 @@ export default function ProfilePage() {
     return (
       <main className="min-h-screen bg-black px-6 py-10 text-white pc:px-10">
         <div className="mx-auto w-full max-w-[880px] space-y-10">
-          <p className="typo-pc-c1 text-red">{loadError}</p>
+          <div className="space-y-2">
+            <Link
+              href="/"
+              className="inline-flex w-fit typo-pc-c2 text-gray-700 transition hover:text-white"
+            >
+              메인으로
+            </Link>
+            <p className="typo-pc-c1 text-red">{loadError}</p>
+          </div>
         </div>
       </main>
     )
@@ -139,7 +148,15 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white pc:px-10">
       <div className="mx-auto w-full max-w-[880px] space-y-10">
-        <h1 className="typo-h3 mobile:typo-m-h2">내 정보 페이지</h1>
+        <div className="space-y-2">
+          <Link
+            href="/"
+            className="inline-flex w-fit typo-pc-c2 text-gray-700 transition hover:text-white"
+          >
+            메인으로
+          </Link>
+          <h1 className="typo-h3 mobile:typo-m-h2">내 정보 페이지</h1>
+        </div>
 
         <div className="space-y-4">
           <h2 className="typo-pc-h4 text-white">사용자 프로필</h2>
