@@ -1,11 +1,11 @@
-import type { AttachmentEntry, AttachmentResponse, EventSearchType } from '@/types/board'
+import type { AttachmentEntry, AttachmentResponse, BoardSearchType } from '@/types/board'
 
 /**
  * 백엔드는 board/common/enums/SearchType 하나를 행사·공지가 공유한다(값이 동일).
- * 별도 선언 대신 별칭을 둔다 — feature/board-ui가 소유한 types/board.ts를 건드리지
- * 않으면서 공지 코드에서 이름이 읽히게 하려는 것이다.
+ * 별도 선언 대신 공용 타입에 도메인 이름을 붙인다. 행사도 EventSearchType 으로
+ * 같은 방식을 쓴다 — 별칭끼리 엮지 말고 각자 BoardSearchType 을 직접 가리킨다.
  */
-export type NoticeSearchType = EventSearchType
+export type NoticeSearchType = BoardSearchType
 
 export type NoticeCategory = 'OPERATION' | 'SCHEDULE' | 'RECRUIT' | 'ETC'
 
