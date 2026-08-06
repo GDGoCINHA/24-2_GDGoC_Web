@@ -2,7 +2,12 @@
 
 import { useState } from 'react'
 
-import { GdgButton, GdgInputField, GdgMajorDropdown } from '@/components/ui/design-system'
+import {
+  GdgButton,
+  GdgFieldContainer,
+  GdgInputField,
+  GdgMajorDropdown
+} from '@/components/ui/design-system'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import type { UpdateProfilePayload, UserProfile } from '@/types/profile'
 import { formatPhoneNumberInput } from '@/utils/phoneNumber'
@@ -69,6 +74,8 @@ export default function ProfileInfoSection({
           state={editing ? 'available' : 'disabled'}
           disabled={!editing}
           onChange={(event) => setName(event.target.value)}
+          // 서버의 @Size(max = 30)과 같은 범위를 쓴다.
+          maxLength={30}
           fullWidth
         />
         <GdgInputField label="학번" value={profile.studentId} state="disabled" disabled fullWidth />
@@ -76,7 +83,9 @@ export default function ProfileInfoSection({
 
       <div>
         {editing ? (
-          <GdgMajorDropdown value={major} onChangeAction={setMajor} />
+          <GdgFieldContainer label="학과">
+            <GdgMajorDropdown value={major} onChangeAction={setMajor} />
+          </GdgFieldContainer>
         ) : (
           <GdgInputField label="학과" value={profile.major} state="disabled" disabled fullWidth />
         )}
