@@ -1,13 +1,14 @@
 import type { AxiosInstance } from 'axios'
 
 import type {
+  DeletedNoticeSummary,
   NoticeCreatePayload,
   NoticeDetail,
   NoticeSearchType,
   NoticeSummary,
   NoticeUpdatePayload
 } from '@/types/notice'
-import type { PageMeta } from '@/utils/api/unwrapPaged'
+import { unwrapPaged, type PagedResult, type PageMeta } from '@/utils/api/unwrapPaged'
 
 export interface FetchNoticeListParams {
   page?: number
@@ -91,6 +92,21 @@ export const updateNotice = async (
 
 export const deleteNotice = async (apiClient: AxiosInstance, id: number): Promise<void> => {
   await apiClient.delete(`/board/notices/${id}`)
+}
+
+/** 휴지통. CORE 이상 전용이고, ORGANIZER 미만에게는 서버가 자기 글만 걸러서 준다. */
+export const fetchDeletedNotices = async (
+  params: { page?: number; size?: number },
+  client: AxiosInstance
+): Promise<PagedResult<DeletedNoticeSummary>> => {
+  const response = await client.get('/board/notices/deleted', {
+    params: { page: params.page ?? 0, size: params.size ?? 15 }
+  })
+  return unwrapPaged<DeletedNoticeSummary>(response.data)
+}
+
+export const restoreNotice = async (apiClient: AxiosInstance, id: number): Promise<void> => {
+  await apiClient.post(`/board/notices/${id}/restore`)
 }
 
 /** GET /pinned는 ORGANIZER+ 전용이라 apiClient가 필수다. */

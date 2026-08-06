@@ -59,6 +59,16 @@ export interface EventBoardDetail {
   updatedAt: string
 }
 
+/** 휴지통 한 행. deletedAt 이 정렬 기준이라 목록에도 보여준다. */
+export interface DeletedEventBoardSummary {
+  id: number
+  title: string
+  eventStartDate: string
+  eventEndDate: string
+  organizingTeam: TeamValue
+  deletedAt: string
+}
+
 export interface EventBoardCreatePayload {
   title: string
   eventStartDate: string

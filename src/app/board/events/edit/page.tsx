@@ -58,6 +58,8 @@ export default function EventBoardEditPage() {
 
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  // 다른 팀 행사면 서버가 403 을 줄 것을 미리 알아내 폼 대신 안내를 띄운다.
+  const [forbidden, setForbidden] = useState(false)
 
   const [title, setTitle] = useState('')
   const [eventStartDate, setEventStartDate] = useState('')
@@ -88,6 +90,17 @@ export default function EventBoardEditPage() {
     fetchEventDetail(id)
       .then((detail) => {
         if (!alive) return
+
+        // 서버 규칙(EventBoardService.requireTeamAccess)과 같은 조건이다.
+        // CORE 라고 다른 팀 행사를 고칠 수 있는 것이 아니다.
+        const allowed =
+          hasAtLeast(user?.userRole, 'ORGANIZER') ||
+          (user?.team != null && user.team === detail.organizingTeam)
+        if (!allowed) {
+          setForbidden(true)
+          return
+        }
+
         setTitle(detail.title)
         setEventStartDate(detail.eventStartDate)
         setEventEndDate(detail.eventEndDate)
@@ -116,7 +129,7 @@ export default function EventBoardEditPage() {
     return () => {
       alive = false
     }
-  }, [id])
+  }, [id, user?.team, user?.userRole])
 
   const handleThumbnailSelect = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
@@ -194,6 +207,14 @@ export default function EventBoardEditPage() {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
         <p className="typo-pc-b2 mobile:typo-m-b2">수정 권한이 없습니다.</p>
+      </main>
+    )
+  }
+
+  if (forbidden) {
+    return (
+      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
+        <p className="typo-pc-b2 mobile:typo-m-b2">주최 팀만 수정할 수 있습니다.</p>
       </main>
     )
   }

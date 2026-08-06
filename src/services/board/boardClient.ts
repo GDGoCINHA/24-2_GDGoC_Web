@@ -3,6 +3,7 @@ import type { AxiosInstance } from 'axios'
 import { publicClient } from '@/lib/api/publicClient'
 import { unwrapPaged, type PagedResult } from '@/utils/api/unwrapPaged'
 import type {
+  DeletedEventBoardSummary,
   EventBoardCreatePayload,
   EventBoardDetail,
   EventBoardSummary,
@@ -61,4 +62,22 @@ export const updateEvent = async (
 
 export const deleteEvent = async (apiClient: AxiosInstance, id: number): Promise<void> => {
   await apiClient.delete(`/board/events/${id}`)
+}
+
+/**
+ * 휴지통. 목록·상세와 달리 publicClient 를 쓰지 않는다 — CORE 이상 전용이라
+ * 토큰이 없으면 401 이다. 서버는 ORGANIZER 미만에게 자기 팀 것만 걸러서 준다.
+ */
+export const fetchDeletedEvents = async (
+  params: { page?: number; size?: number },
+  apiClient: AxiosInstance
+): Promise<PagedResult<DeletedEventBoardSummary>> => {
+  const response = await apiClient.get('/board/events/deleted', {
+    params: { page: params.page ?? 0, size: params.size ?? 12 }
+  })
+  return unwrapPaged<DeletedEventBoardSummary>(response.data)
+}
+
+export const restoreEvent = async (apiClient: AxiosInstance, id: number): Promise<void> => {
+  await apiClient.post(`/board/events/${id}/restore`)
 }

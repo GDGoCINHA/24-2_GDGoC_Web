@@ -32,12 +32,26 @@ export interface NoticeDetail {
   category: NoticeCategory
   title: string
   content: string
+  /** 수정·삭제가 '본인 또는 ORGANIZER+'라 화면이 본인 여부를 판정하려면 필요하다. */
+  authorId: number
   authorName: string
   viewCount: number
   isPublished: boolean
   attachments: AttachmentResponse[]
   createdAt: string
   updatedAt: string
+}
+
+/** 휴지통 한 행. deletedAt 이 정렬 기준이라 목록에도 보여준다. */
+export interface DeletedNoticeSummary {
+  id: number
+  category: NoticeCategory
+  title: string
+  authorName: string
+  viewCount: number
+  isPublished: boolean
+  createdAt: string
+  deletedAt: string
 }
 
 export interface NoticeCreatePayload {

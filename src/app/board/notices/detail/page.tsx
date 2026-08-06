@@ -31,7 +31,15 @@ export default function NoticeBoardDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
 
-  const canManage = hasAtLeast(user?.userRole, 'CORE')
+  /**
+   * 서버 규칙(NoticeBoardService.requireAuthorOrOrganizer)과 같은 조건이다.
+   * 전에는 CORE 이상 전원에게 버튼을 띄우고 거부는 403 에 맡겼다 — 상세 응답에
+   * authorId 가 없어 본인 여부를 판정할 수 없었기 때문이다. 이제 서버가 준다.
+   */
+  const canManage =
+    detail !== null &&
+    (hasAtLeast(user?.userRole, 'ORGANIZER') ||
+      (user?.id !== undefined && user.id === detail.authorId))
   // 공지는 회원 전용이다. 목록과 같은 게이트를 상세에도 건다 — 링크로 직접 들어올 수 있다.
   const isLoggedIn = Boolean(user)
 
