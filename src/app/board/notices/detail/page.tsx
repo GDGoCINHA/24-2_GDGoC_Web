@@ -109,8 +109,8 @@ export default function NoticeBoardDetailPage() {
   if (notFound) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2">삭제되었거나 존재하지 않는 공지입니다.</p>
-        <Link href="/board/notices/" className="mt-4 inline-block underline typo-pc-b3">
+        <p className="typo-pc-b2 mobile:typo-m-b2">삭제되었거나 존재하지 않는 공지입니다.</p>
+        <Link href="/board/notices/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
           목록으로
         </Link>
       </main>
@@ -120,8 +120,8 @@ export default function NoticeBoardDetailPage() {
   if (error || !detail) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="text-red typo-pc-b2">{error ?? '글을 불러오지 못했습니다.'}</p>
-        <Link href="/board/notices/" className="mt-4 inline-block underline typo-pc-b3">
+        <p className="text-red typo-pc-b2 mobile:typo-m-b2">{error ?? '글을 불러오지 못했습니다.'}</p>
+        <Link href="/board/notices/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
           목록으로
         </Link>
       </main>
@@ -131,18 +131,18 @@ export default function NoticeBoardDetailPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
-      <div className="mx-auto w-full max-w-[880px] space-y-6 px-6 py-10">
-        <Link href="/board/notices/" className="text-gray-700 typo-pc-c2 hover:text-white">
+      <div className="mx-auto w-full max-w-[880px] space-y-6 px-6 mobile:px-4 py-10">
+        <Link href="/board/notices/" className="text-gray-700 typo-pc-c2 mobile:typo-m-c2 hover:text-white">
           목록으로
         </Link>
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <NoticeCategoryTag category={detail.category} />
-            {!detail.isPublished && <span className="text-gray-700 typo-pc-c2">임시저장</span>}
+            {!detail.isPublished && <span className="text-gray-700 typo-pc-c2 mobile:typo-m-c2">임시저장</span>}
           </div>
           <h1 className="typo-pc-h3 mobile:typo-m-h2">{detail.title}</h1>
-          <div className="flex flex-wrap gap-4 text-gray-500 typo-pc-c1">
+          <div className="flex flex-wrap gap-4 text-gray-500 typo-pc-c1 mobile:typo-m-c1">
             <span>{detail.authorName}</span>
             <span>{formatDate(detail.createdAt)}</span>
             {/* 조회수는 서버가 상세 조회마다 +1 한다. 이 값은 이번 조회가 반영된 뒤의 수치다. */}
@@ -150,7 +150,7 @@ export default function NoticeBoardDetailPage() {
           </div>
         </div>
 
-        <p className="whitespace-pre-wrap typo-pc-b2">{detail.content}</p>
+        <p className="whitespace-pre-wrap typo-pc-b2 mobile:typo-m-b2">{detail.content}</p>
 
         <AttachmentList attachments={detail.attachments} />
 
@@ -162,7 +162,7 @@ export default function NoticeBoardDetailPage() {
           <div className="flex gap-3 border-t border-gray-800 pt-6">
             <Link
               href={`/board/notices/edit?id=${detail.id}`}
-              className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3"
+              className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
             >
               수정
             </Link>
@@ -170,7 +170,7 @@ export default function NoticeBoardDetailPage() {
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="rounded-full border border-red px-6 py-2 text-red typo-pc-b3 disabled:opacity-50"
+              className="rounded-full border border-red px-6 py-2 text-red typo-pc-b3 mobile:typo-m-b3 disabled:opacity-50"
             >
               삭제
             </button>

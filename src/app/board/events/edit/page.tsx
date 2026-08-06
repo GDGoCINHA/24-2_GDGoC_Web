@@ -193,19 +193,19 @@ export default function EventBoardEditPage() {
   if (!hasAtLeast(user?.userRole, 'CORE')) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2">수정 권한이 없습니다.</p>
+        <p className="typo-pc-b2 mobile:typo-m-b2">수정 권한이 없습니다.</p>
       </main>
     )
   }
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2">불러오는 중...</p>
+    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
   }
 
   if (loadError) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 text-red">{loadError}</p>
+        <p className="typo-pc-b2 mobile:typo-m-b2 text-red">{loadError}</p>
       </main>
     )
   }
@@ -216,7 +216,7 @@ export default function EventBoardEditPage() {
         menus={BOARD_MENUS}
         actionMenu={{ label: '내 정보', url: '/profile/' }}
       />
-      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 py-10">
+      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 mobile:px-4 py-10">
         <h1 className="typo-pc-h3 mobile:typo-m-h2">행사 게시글 수정</h1>
 
         <GdgInputField
@@ -228,7 +228,7 @@ export default function EventBoardEditPage() {
 
         <div className="flex gap-4">
           <label className="flex flex-1 flex-col gap-2">
-            <span className="typo-pc-s3 uppercase tracking-[0.2em] text-white/80">시작일</span>
+            <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">시작일</span>
             <input
               type="date"
               value={eventStartDate}
@@ -237,7 +237,7 @@ export default function EventBoardEditPage() {
             />
           </label>
           <label className="flex flex-1 flex-col gap-2">
-            <span className="typo-pc-s3 uppercase tracking-[0.2em] text-white/80">종료일</span>
+            <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">종료일</span>
             <input
               type="date"
               value={eventEndDate}
@@ -255,7 +255,7 @@ export default function EventBoardEditPage() {
         />
 
         <div className="flex flex-col gap-2">
-          <span className="typo-pc-s3 uppercase tracking-[0.2em] text-white/80">썸네일</span>
+          <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">썸네일</span>
           <input
             ref={thumbnailInputRef}
             type="file"
@@ -285,7 +285,7 @@ export default function EventBoardEditPage() {
           onChange={(event) => setContent(event.target.value)}
         />
 
-        <label className="flex items-center gap-2 typo-pc-b3">
+        <label className="flex items-center gap-2 typo-pc-b3 mobile:typo-m-b3">
           <input
             type="checkbox"
             checked={isPublished}
@@ -295,7 +295,7 @@ export default function EventBoardEditPage() {
         </label>
 
         <div className="flex flex-col gap-2">
-          <span className="typo-pc-s3 uppercase tracking-[0.2em] text-white/80">첨부</span>
+          <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</span>
           <AttachmentUploader
             attachments={attachments}
             onChange={setAttachments}
@@ -304,7 +304,7 @@ export default function EventBoardEditPage() {
           />
         </div>
 
-        {errorMessage && <p className="typo-pc-b3 text-red">{errorMessage}</p>}
+        {errorMessage && <p className="typo-pc-b3 mobile:typo-m-b3 text-red">{errorMessage}</p>}
 
         <GdgButton variant="active" fullWidth onClick={handleSubmit} loading={submitting}>
           저장

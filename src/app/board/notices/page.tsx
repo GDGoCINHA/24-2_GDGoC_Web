@@ -105,7 +105,7 @@ export default function NoticeBoardListPage() {
           {item.title}
           {/* 서버가 CORE 미만에게는 미공개 글을 아예 주지 않으므로, 이 배지가 보인다는 건
               보는 사람이 CORE 이상이라는 뜻이다. */}
-          {!item.isPublished && <span className="shrink-0 text-gray-700 typo-pc-c2">임시저장</span>}
+          {!item.isPublished && <span className="shrink-0 text-gray-700 typo-pc-c2 mobile:typo-m-c2">임시저장</span>}
         </span>
       )
     },
@@ -135,15 +135,15 @@ export default function NoticeBoardListPage() {
         menus={BOARD_MENUS}
         actionMenu={{ label: '내 정보', url: '/profile/' }}
       />
-      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 py-10">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항</h1>
           <div className="flex items-center gap-3">
             {canPin && (
               <button
                 type="button"
                 onClick={() => setPinnedModalOpen(true)}
-                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3"
+                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
               >
                 상단 고정 관리
               </button>
@@ -151,7 +151,7 @@ export default function NoticeBoardListPage() {
             {canWrite && (
               <Link
                 href="/board/notices/new/"
-                className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3"
+                className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3 mobile:typo-m-b3"
               >
                 글쓰기
               </Link>
@@ -171,7 +171,7 @@ export default function NoticeBoardListPage() {
           onSubmit={handleSubmitSearch}
         />
 
-        {error && <p className="text-red typo-pc-b3">{error}</p>}
+        {error && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{error}</p>}
 
         {/* 고정 공지는 size=15와 별개 필드이며, 아래 일반 목록에도 같은 글이 나올 수 있다.
             구형 게시판의 통상적 동작이고 백엔드 설계 §7.1이 의도한 것이다. */}
@@ -181,19 +181,19 @@ export default function NoticeBoardListPage() {
               <li key={notice.id}>
                 <Link
                   href={`/board/notices/detail?id=${notice.id}`}
-                  className="flex items-center gap-3 py-1 typo-pc-b3 hover:underline"
+                  className="flex items-center gap-3 py-1 typo-pc-b3 mobile:typo-m-b3 hover:underline"
                 >
                   <span aria-hidden>📌</span>
                   <NoticeCategoryTag category={notice.category} />
                   <span className="flex-1 truncate">{notice.title}</span>
-                  <span className="shrink-0 text-gray-500 typo-pc-c1">{notice.authorName}</span>
+                  <span className="shrink-0 text-gray-500 typo-pc-c1 mobile:typo-m-c1">{notice.authorName}</span>
                 </Link>
               </li>
             ))}
           </ul>
         )}
 
-        {loading && <p className="py-16 text-center text-gray-500 typo-pc-b2">불러오는 중...</p>}
+        {loading && <p className="py-16 text-center text-gray-500 typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>}
         {/* 실패했을 때는 목록을 그리지 않는다. 빈 배열을 넘기면 "등록된 공지가 없습니다."가
             에러 메시지와 나란히 떠서, 못 불러온 것인지 정말 없는 것인지 구분이 안 된다. */}
         {!loading && !error && (

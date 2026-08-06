@@ -124,7 +124,7 @@ export function AttachmentUploader({
         {attachments.map((draft) => (
           <Reorder.Item key={draft.id} value={draft}>
             {draft.status === 'error' ? (
-              <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-red typo-pc-b3">
+              <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-red typo-pc-b3 mobile:typo-m-b3">
                 <span className="flex-1 truncate">
                   {draft.fileName ?? draft.url} — {draft.errorMessage}
                 </span>
@@ -173,13 +173,13 @@ export function AttachmentUploader({
           type="button"
           onClick={handleAddLink}
           disabled={isFull}
-          className="whitespace-nowrap typo-pc-b3 text-white underline"
+          className="whitespace-nowrap typo-pc-b3 mobile:typo-m-b3 text-white underline"
         >
           링크 추가
         </button>
       </div>
       {isFull && (
-        <p className="typo-pc-c1 text-gray-500">첨부는 최대 {maxCount}개까지 등록할 수 있습니다.</p>
+        <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">첨부는 최대 {maxCount}개까지 등록할 수 있습니다.</p>
       )}
     </div>
   )

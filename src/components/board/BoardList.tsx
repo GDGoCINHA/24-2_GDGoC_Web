@@ -45,7 +45,7 @@ export function BoardList<T>({
       <div className="hidden w-full overflow-x-auto pc:block">
         <table className="w-full min-w-[640px] border-collapse text-left text-white">
           <thead>
-            <tr className="border-b border-gray-800 typo-pc-s3">
+            <tr className="border-b border-gray-800 typo-pc-s3 mobile:typo-m-s3">
               {columns.map((column) => (
                 <th key={column.key} className={cn('px-4 py-3', column.className)}>
                   {column.header}
@@ -59,7 +59,7 @@ export function BoardList<T>({
                 key={getRowKey(item)}
                 onClick={() => onRowClick?.(item)}
                 className={cn(
-                  'border-b border-gray-100 typo-pc-b3',
+                  'border-b border-gray-100 typo-pc-b3 mobile:typo-m-b3',
                   onRowClick && 'cursor-pointer hover:bg-gray-100'
                 )}
               >

@@ -92,13 +92,13 @@ export default function EventBoardListPage() {
           url: user ? '/profile/' : '/login?next=%2Fboard%2Fevents%2F'
         }}
       />
-      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 py-10">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="typo-pc-h3 mobile:typo-m-h2">행사 게시판</h1>
           {canWrite && (
             <Link
               href="/board/events/new/"
-              className="rounded-full bg-red px-6 py-2 typo-pc-b3 text-white"
+              className="rounded-full bg-red px-6 py-2 typo-pc-b3 mobile:typo-m-b3 text-white"
             >
               글쓰기
             </Link>
@@ -117,9 +117,9 @@ export default function EventBoardListPage() {
           onSubmit={handleSubmitSearch}
         />
 
-        {error && <p className="typo-pc-b3 text-red">{error}</p>}
+        {error && <p className="typo-pc-b3 mobile:typo-m-b3 text-red">{error}</p>}
         {loading ? (
-          <p className="py-16 text-center text-gray-500 typo-pc-b2">불러오는 중...</p>
+          <p className="py-16 text-center text-gray-500 typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
         ) : (
           <BoardList
             items={items}

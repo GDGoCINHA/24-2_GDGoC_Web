@@ -79,7 +79,7 @@ export default function NoticeBoardNewPage() {
   if (!hasAtLeast(user?.userRole, 'CORE')) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2">글쓰기 권한이 없습니다.</p>
+        <p className="typo-pc-b2 mobile:typo-m-b2">글쓰기 권한이 없습니다.</p>
       </main>
     )
   }
@@ -90,7 +90,7 @@ export default function NoticeBoardNewPage() {
         menus={BOARD_MENUS}
         actionMenu={{ label: '내 정보', url: '/profile/' }}
       />
-      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 py-10">
+      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 mobile:px-4 py-10">
         <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항 작성</h1>
 
         <GdgInputField
@@ -117,7 +117,7 @@ export default function NoticeBoardNewPage() {
         />
 
         {/* 임시저장은 별도 status가 아니라 isPublished=false 하나로 표현된다 (백엔드 설계 §3). */}
-        <label className="flex items-center gap-2 typo-pc-b3">
+        <label className="flex items-center gap-2 typo-pc-b3 mobile:typo-m-b3">
           <input
             type="checkbox"
             checked={isPublished}
@@ -127,7 +127,7 @@ export default function NoticeBoardNewPage() {
         </label>
 
         <div className="flex flex-col gap-2">
-          <span className="tracking-[0.2em] text-white/80 typo-pc-s3 uppercase">첨부</span>
+          <span className="tracking-[0.2em] text-white/80 typo-pc-s3 mobile:typo-m-s3 uppercase">첨부</span>
           <AttachmentUploader
             attachments={attachments}
             onChange={setAttachments}
@@ -136,7 +136,7 @@ export default function NoticeBoardNewPage() {
           />
         </div>
 
-        {errorMessage && <p className="text-red typo-pc-b3">{errorMessage}</p>}
+        {errorMessage && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>}
 
         <GdgButton variant="active" fullWidth onClick={handleSubmit} loading={submitting}>
           등록
