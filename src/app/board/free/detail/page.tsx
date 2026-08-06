@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
+import { FreeBoardComments } from '@/components/board/FreeBoardComments'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
@@ -162,6 +163,8 @@ export default function FreeBoardDetailPage() {
         <p className="whitespace-pre-wrap typo-pc-b2 mobile:typo-m-b2">{detail.content}</p>
 
         <AttachmentList attachments={detail.attachments} />
+
+        <FreeBoardComments postId={detail.id} apiClient={apiClient} />
 
         {canManage && (
           <div className="flex gap-3 border-t border-gray-800 pt-6">

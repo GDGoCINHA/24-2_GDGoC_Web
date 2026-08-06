@@ -138,7 +138,15 @@ export default function NoticeBoardListPage() {
       <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항</h1>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            {canWrite && (
+              <Link
+                href="/board/notices/trash/"
+                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
+              >
+                휴지통
+              </Link>
+            )}
             {canPin && (
               <button
                 type="button"

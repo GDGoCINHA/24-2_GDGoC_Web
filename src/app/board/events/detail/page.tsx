@@ -85,7 +85,20 @@ export default function EventBoardDetailPage() {
     }
   }, [apiClient, id, router])
 
-  const canManage = hasAtLeast(user?.userRole, 'CORE')
+  /**
+   * 서버 규칙(EventBoardService.requireTeamAccess)과 같은 조건이다.
+   * ORGANIZER 이상이거나, 그 아래는 주최 팀이 자기 팀과 같아야 한다.
+   *
+   * 전에는 CORE 이상 전원에게 버튼을 띄우고 거부는 403 에 맡겼다. 팀이 다르면
+   * 눌러야 막히는 걸 알 수 있었다. organizingTeam 은 상세 응답에 원래 있던 값이다.
+   *
+   * 팀이 없는 회원(user.team == null)에게 버튼이 뜨지 않는 것도 서버와 같다 —
+   * requireTeamAccess 가 userTeam == null 을 403 으로 본다.
+   */
+  const canManage =
+    detail !== null &&
+    (hasAtLeast(user?.userRole, 'ORGANIZER') ||
+      (user?.team != null && user.team === detail.organizingTeam))
 
   if (loading) {
     return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>

@@ -52,6 +52,8 @@ export default function NoticeBoardEditPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const canManage = hasAtLeast(user?.userRole, 'CORE')
+  // 남의 글이면 서버가 403 을 줄 것을 미리 알아내 폼 대신 안내를 띄운다.
+  const [forbidden, setForbidden] = useState(false)
 
   useEffect(() => {
     if (!canManage) return
@@ -66,6 +68,17 @@ export default function NoticeBoardEditPage() {
     fetchNoticeDetail(id, apiClient)
       .then((detail) => {
         if (!alive) return
+
+        // 서버 규칙(NoticeBoardService.requireAuthorOrOrganizer)과 같은 조건이다.
+        // CORE 라고 남의 공지를 고칠 수 있는 것이 아니다.
+        const allowed =
+          hasAtLeast(user?.userRole, 'ORGANIZER') ||
+          (user?.id !== undefined && user.id === detail.authorId)
+        if (!allowed) {
+          setForbidden(true)
+          return
+        }
+
         setTitle(detail.title)
         setCategory(detail.category)
         setContent(detail.content)
@@ -91,7 +104,7 @@ export default function NoticeBoardEditPage() {
     return () => {
       alive = false
     }
-  }, [apiClient, canManage, id])
+  }, [apiClient, canManage, id, user?.id, user?.userRole])
 
   const handleSubmit = useCallback(async () => {
     if (!Number.isFinite(id)) return
@@ -141,6 +154,14 @@ export default function NoticeBoardEditPage() {
 
   if (loading) {
     return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+  }
+
+  if (forbidden) {
+    return (
+      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
+        <p className="typo-pc-b2 mobile:typo-m-b2">본인이 쓴 공지만 수정할 수 있습니다.</p>
+      </main>
+    )
   }
 
   if (loadError) {

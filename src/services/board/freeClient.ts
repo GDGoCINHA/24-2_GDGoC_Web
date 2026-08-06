@@ -1,6 +1,8 @@
 import type { AxiosInstance } from 'axios'
 
 import type {
+  DeletedFreeBoardSummary,
+  FreeBoardComment,
   FreeBoardCreatePayload,
   FreeBoardDetail,
   FreeBoardSummary,
@@ -71,4 +73,62 @@ export const updateFreePost = async (
 
 export const deleteFreePost = async (apiClient: AxiosInstance, id: number): Promise<void> => {
   await apiClient.delete(`/board/free/${id}`)
+}
+
+/**
+ * 휴지통. 공지·행사가 CORE 이상인 것과 달리 MEMBER 이상이면 부를 수 있다 —
+ * 자유게시판은 MEMBER 도 글을 쓰므로 자기가 지운 글을 본인이 되살릴 수 있어야 한다.
+ * ORGANIZER 미만에게는 서버가 자기 글만 걸러서 준다.
+ */
+export const fetchDeletedFreePosts = async (
+  params: { page?: number; size?: number },
+  client: AxiosInstance
+): Promise<PagedResult<DeletedFreeBoardSummary>> => {
+  const response = await client.get('/board/free/deleted', {
+    params: { page: params.page ?? 0, size: params.size ?? 15 }
+  })
+  return unwrapPaged<DeletedFreeBoardSummary>(response.data)
+}
+
+export const restoreFreePost = async (apiClient: AxiosInstance, id: number): Promise<void> => {
+  await apiClient.post(`/board/free/${id}/restore`)
+}
+
+/**
+ * 댓글 목록. 페이지네이션이 없어 트리 전체가 한 번에 온다.
+ *
+ * 여기서도 unwrapApiResponse 를 쓰지 않는다 — 댓글에 'content' 필드가 있어
+ * WRAPPER_KEYS 의 'content' 와 부딪힌다.
+ */
+export const fetchFreeComments = async (
+  postId: number,
+  client: AxiosInstance
+): Promise<FreeBoardComment[]> => {
+  const response = await client.get(`/board/free/${postId}/comments`)
+  return unwrapOnce<FreeBoardComment[]>(response.data)
+}
+
+export const createFreeComment = async (
+  apiClient: AxiosInstance,
+  postId: number,
+  payload: { content: string; parentId?: number }
+): Promise<number> => {
+  const response = await apiClient.post(`/board/free/${postId}/comments`, payload)
+  return unwrapOnce<number>(response.data)
+}
+
+/** 수정·삭제는 글 id 없이 댓글 id 만으로 부른다. */
+export const updateFreeComment = async (
+  apiClient: AxiosInstance,
+  commentId: number,
+  content: string
+): Promise<void> => {
+  await apiClient.patch(`/board/free/comments/${commentId}`, { content })
+}
+
+export const deleteFreeComment = async (
+  apiClient: AxiosInstance,
+  commentId: number
+): Promise<void> => {
+  await apiClient.delete(`/board/free/comments/${commentId}`)
 }

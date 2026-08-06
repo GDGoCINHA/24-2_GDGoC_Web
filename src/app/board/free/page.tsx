@@ -107,14 +107,25 @@ export default function FreeBoardListPage() {
       <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="typo-pc-h3 mobile:typo-m-h2">자유게시판</h1>
-          {canWrite && (
-            <Link
-              href="/board/free/new/"
-              className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3 mobile:typo-m-b3"
-            >
-              글쓰기
-            </Link>
-          )}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* 휴지통은 MEMBER 이상이면 열린다 — 자기가 지운 글만 보인다. */}
+            {canWrite && (
+              <Link
+                href="/board/free/trash/"
+                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
+              >
+                휴지통
+              </Link>
+            )}
+            {canWrite && (
+              <Link
+                href="/board/free/new/"
+                className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3 mobile:typo-m-b3"
+              >
+                글쓰기
+              </Link>
+            )}
+          </div>
         </div>
 
         <BoardSearchBar

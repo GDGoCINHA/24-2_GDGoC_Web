@@ -94,15 +94,25 @@ export default function EventBoardListPage() {
       />
       <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="typo-pc-h3 mobile:typo-m-h2">행사 게시판</h1>
-          {canWrite && (
-            <Link
-              href="/board/events/new/"
-              className="rounded-full bg-red px-6 py-2 typo-pc-b3 mobile:typo-m-b3 text-white"
-            >
-              글쓰기
-            </Link>
-          )}
+          <h1 className="typo-pc-h3 mobile:typo-m-h2">행사게시판</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            {canWrite && (
+              <Link
+                href="/board/events/trash/"
+                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
+              >
+                휴지통
+              </Link>
+            )}
+            {canWrite && (
+              <Link
+                href="/board/events/new/"
+                className="rounded-full bg-red px-6 py-2 typo-pc-b3 mobile:typo-m-b3 text-white"
+              >
+                글쓰기
+              </Link>
+            )}
+          </div>
         </div>
 
         <BoardSearchBar
