@@ -67,6 +67,15 @@ const values: Array<{ title: string; body: string; accent: Accent }> = [
   { title: '존중', body: '서로의 관점과 속도를\n존중해요.', accent: 'yellow' }
 ]
 
+const ROLE_RANK: Record<string, number> = {
+  GUEST: 0,
+  MEMBER: 1,
+  CORE: 2,
+  LEAD: 3,
+  ORGANIZER: 4,
+  ADMIN: 5
+}
+
 function SeminarIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -387,11 +396,14 @@ function MobileMenuDrawer({
   const studentId = user?.email || '계정으로 로그인해 주세요'
   const role = user?.userRole || 'GUEST'
   const isLoggedIn = Boolean(user)
+  const canSeeDashboard = (ROLE_RANK[role] ?? 0) >= ROLE_RANK.CORE
+
   const menuItems = [
     { label: '소개', action: () => onNavigate('about') },
     { label: '활동', action: () => onNavigate('activities') },
     { label: 'FAQ', action: () => onNavigate('faq') },
-    { label: '마이페이지', href: '/dashboard' }
+    { label: '마이페이지', href: '/profile' },
+    ...(canSeeDashboard ? [{ label: '대시보드', href: '/dashboard' }] : [])
   ]
 
   return (
@@ -490,7 +502,7 @@ function MobileMenuDrawer({
         {isLoggedIn ? (
           <button
             type="button"
-            className="absolute left-6 top-[526px] flex items-center gap-2 text-white typo-m-b2"
+            className="absolute left-6 top-[550px] flex items-center gap-2 text-white typo-m-b2"
             onClick={() => {
               onClose()
               onLogout()
