@@ -48,6 +48,7 @@ export function AttachmentUploader({
   const [linkInput, setLinkInput] = useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const isFull = attachments.length >= maxCount
+  const hasPendingLink = linkInput.trim().length > 0
 
   const updateDraft = useCallback(
     (id: string, patch: Partial<AttachmentDraft>) => {
@@ -124,7 +125,7 @@ export function AttachmentUploader({
         {attachments.map((draft) => (
           <Reorder.Item key={draft.id} value={draft}>
             {draft.status === 'error' ? (
-              <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-red typo-pc-b3">
+              <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-red typo-pc-b3 mobile:typo-m-b3">
                 <span className="flex-1 truncate">
                   {draft.fileName ?? draft.url} — {draft.errorMessage}
                 </span>
@@ -150,15 +151,21 @@ export function AttachmentUploader({
         ))}
       </Reorder.Group>
 
-      <div className="flex items-center gap-2">
-        <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileSelect} />
-        <GdgUploadButton
-          label="+ 파일 선택"
-          disabled={isFull}
-          onClick={() => fileInputRef.current?.click()}
-        />
+      <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileSelect} />
+
+      {/* GdgUploadButton 은 전폭 CTA 라 폭 옵션이 device 밖에 없다(pc 550px / mobile 343px).
+          입력칸과 같은 flex 행에 두면 눌려서 54px 까지 줄고 '+ 파일 선택' 이 세로로 쪼개져
+          잘린다. 설계대로 자체 행에 둔다. */}
+      <GdgUploadButton
+        label="+ 파일 선택"
+        disabled={isFull}
+        onClick={() => fileInputRef.current?.click()}
+      />
+
+      <div className="flex w-full items-center gap-2">
         <GdgInputField
-          placeholder="https://... 링크 추가"
+          fullWidth
+          placeholder="https://"
           value={linkInput}
           onChange={(event) => setLinkInput(event.target.value)}
           onKeyDown={(event) => {
@@ -173,13 +180,24 @@ export function AttachmentUploader({
           type="button"
           onClick={handleAddLink}
           disabled={isFull}
-          className="whitespace-nowrap typo-pc-b3 text-white underline"
+          className="shrink-0 whitespace-nowrap text-white underline typo-pc-b3 mobile:typo-m-b3"
         >
           링크 추가
         </button>
       </div>
+
+      {/* 입력만 하고 등록하면 그 URL 은 아무 데도 저장되지 않는다. 조용히 사라지는 대신
+          알려준다 — 실제로 이걸 모르고 첨부가 안 됐다는 보고가 있었다. */}
+      {hasPendingLink && (
+        <p className="text-red typo-pc-c1 mobile:typo-m-c1">
+          입력한 링크는 아직 첨부되지 않았습니다. &lsquo;링크 추가&rsquo;를 눌러 주세요.
+        </p>
+      )}
+
       {isFull && (
-        <p className="typo-pc-c1 text-gray-500">첨부는 최대 {maxCount}개까지 등록할 수 있습니다.</p>
+        <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+          첨부는 최대 {maxCount}개까지 등록할 수 있습니다.
+        </p>
       )}
     </div>
   )

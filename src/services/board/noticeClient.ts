@@ -1,6 +1,5 @@
 import type { AxiosInstance } from 'axios'
 
-import { publicClient } from '@/lib/api/publicClient'
 import type {
   NoticeCreatePayload,
   NoticeDetail,
@@ -43,13 +42,16 @@ interface NoticeListBody {
 }
 
 /**
- * client 기본값이 publicClient인 이유: 비로그인 방문자가 apiClient의 401 인터셉터에
- * 걸려 /login으로 튕기는 것을 막는다. 반대로 CORE 이상은 apiClient를 넘겨야
- * 자기 임시저장(isPublished=false)이 목록에 보인다 — 서버가 역할로 거른다.
+ * 공지는 로그인한 사용자만 볼 수 있다. 그래서 client를 필수로 받는다 —
+ * 기본값을 publicClient로 두면 토큰 없이 조회가 나가고, 서버가 permitAll을
+ * 걷어내는 순간 조용히 401이 된다. 호출 전에 로그인 여부를 가르는 건 화면의 몫이다.
+ *
+ * CORE 이상이 자기 임시저장(isPublished=false)까지 보려면 토큰이 실려야 한다 —
+ * 서버가 역할로 거른다.
  */
 export const fetchNoticeList = async (
-  params: FetchNoticeListParams = {},
-  client: AxiosInstance = publicClient
+  params: FetchNoticeListParams,
+  client: AxiosInstance
 ): Promise<NoticeListResult> => {
   const response = await client.get('/board/notices', {
     params: {
@@ -65,7 +67,7 @@ export const fetchNoticeList = async (
 
 export const fetchNoticeDetail = async (
   id: number,
-  client: AxiosInstance = publicClient
+  client: AxiosInstance
 ): Promise<NoticeDetail> => {
   const response = await client.get(`/board/notices/${id}`)
   return unwrapOnce<NoticeDetail>(response.data)

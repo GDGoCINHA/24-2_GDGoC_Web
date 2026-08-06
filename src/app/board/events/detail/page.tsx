@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { deleteEvent, fetchEventDetail } from '@/services/board/boardClient'
@@ -87,14 +88,14 @@ export default function EventBoardDetailPage() {
   const canManage = hasAtLeast(user?.userRole, 'CORE')
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2">불러오는 중...</p>
+    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
   }
 
   if (notFound) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2">삭제되었거나 존재하지 않는 글입니다.</p>
-        <Link href="/board/events/" className="mt-4 inline-block underline typo-pc-b3">
+        <p className="typo-pc-b2 mobile:typo-m-b2">삭제되었거나 존재하지 않는 글입니다.</p>
+        <Link href="/board/events/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
           목록으로
         </Link>
       </main>
@@ -104,8 +105,8 @@ export default function EventBoardDetailPage() {
   if (error || !detail) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 text-red">{error ?? '글을 불러오지 못했습니다.'}</p>
-        <Link href="/board/events/" className="mt-4 inline-block underline typo-pc-b3">
+        <p className="typo-pc-b2 mobile:typo-m-b2 text-red">{error ?? '글을 불러오지 못했습니다.'}</p>
+        <Link href="/board/events/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
           목록으로
         </Link>
       </main>
@@ -115,20 +116,20 @@ export default function EventBoardDetailPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <GdgSiteHeader
-        menus={[{ label: '게시판', url: '/board/events/' }]}
+        menus={BOARD_MENUS}
         actionMenu={{
           label: user ? '내 정보' : '로그인',
           url: user ? '/profile/' : '/login?next=%2Fboard%2Fevents%2F'
         }}
       />
-      <div className="mx-auto w-full max-w-[880px] space-y-6 px-6 py-10">
-        <Link href="/board/events/" className="typo-pc-c2 text-gray-700 hover:text-white">
+      <div className="mx-auto w-full max-w-[880px] space-y-6 px-6 mobile:px-4 py-10">
+        <Link href="/board/events/" className="typo-pc-c2 mobile:typo-m-c2 text-gray-700 hover:text-white">
           목록으로
         </Link>
 
         <div className="space-y-2">
           <h1 className="typo-pc-h3 mobile:typo-m-h2">{detail.title}</h1>
-          <div className="flex flex-wrap gap-4 text-gray-500 typo-pc-c1">
+          <div className="flex flex-wrap gap-4 text-gray-500 typo-pc-c1 mobile:typo-m-c1">
             <span>
               {formatDate(detail.eventStartDate)} ~ {formatDate(detail.eventEndDate)}
             </span>
@@ -144,7 +145,7 @@ export default function EventBoardDetailPage() {
           </div>
         )}
 
-        <p className="whitespace-pre-wrap typo-pc-b2">{detail.content}</p>
+        <p className="whitespace-pre-wrap typo-pc-b2 mobile:typo-m-b2">{detail.content}</p>
 
         <AttachmentList attachments={detail.attachments} />
 
@@ -152,7 +153,7 @@ export default function EventBoardDetailPage() {
           <div className="flex gap-3 border-t border-gray-800 pt-6">
             <Link
               href={`/board/events/edit?id=${detail.id}`}
-              className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3"
+              className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
             >
               수정
             </Link>
@@ -160,7 +161,7 @@ export default function EventBoardDetailPage() {
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="rounded-full border border-red px-6 py-2 text-red typo-pc-b3 disabled:opacity-50"
+              className="rounded-full border border-red px-6 py-2 text-red typo-pc-b3 mobile:typo-m-b3 disabled:opacity-50"
             >
               삭제
             </button>

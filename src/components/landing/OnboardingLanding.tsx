@@ -369,10 +369,11 @@ function SiteHeader({
             마이페이지 항목은 화면에 나오지 않는다. 게시판 링크도 같은 이유로
             여기 둔다 — 드로어의 게시판 항목만으로는 모바일에서 도달할 수 없다. */}
         <div className="flex items-center gap-4 justify-self-end">
-          {/* 게시판이 둘(행사·공지)이지만 헤더 링크는 하나로 두고 공지를 가리킨다.
-              행사 게시판(/board/events/)은 헤더에서 도달할 수 없다 — 의도된 선택이다. */}
+          {/* 랜딩은 비로그인 방문자가 보는 화면이라 공개 게시판인 행사로 보낸다.
+              공지는 로그인이 필요해서 여기서 링크하면 바로 로그인으로 튕긴다.
+              게시판끼리의 이동은 게시판 헤더의 BOARD_MENUS 가 담당한다. */}
           <a
-            href="/board/notices/"
+            href="/board/events/"
             className="typo-pc-b2 text-gray-500 transition-colors hover:text-white"
           >
             게시판
@@ -418,7 +419,7 @@ function MobileMenuDrawer({
     { label: '소개', action: () => onNavigate('about') },
     { label: '활동', action: () => onNavigate('activities') },
     { label: 'FAQ', action: () => onNavigate('faq') },
-    { label: '게시판', href: '/board/notices/' },
+    { label: '게시판', href: '/board/events/' },
     { label: '마이페이지', href: '/profile' },
     ...(canSeeDashboard ? [{ label: '대시보드', href: '/dashboard' }] : [])
   ]

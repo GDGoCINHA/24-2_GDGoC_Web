@@ -13,6 +13,7 @@ import {
   GdgTextarea,
   type GdgDropdownOption
 } from '@/components/ui/design-system'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { fetchNoticeDetail, updateNotice } from '@/services/board/noticeClient'
@@ -133,19 +134,19 @@ export default function NoticeBoardEditPage() {
   if (!canManage) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2">수정 권한이 없습니다.</p>
+        <p className="typo-pc-b2 mobile:typo-m-b2">수정 권한이 없습니다.</p>
       </main>
     )
   }
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2">불러오는 중...</p>
+    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
   }
 
   if (loadError) {
     return (
       <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="text-red typo-pc-b2">{loadError}</p>
+        <p className="text-red typo-pc-b2 mobile:typo-m-b2">{loadError}</p>
       </main>
     )
   }
@@ -153,10 +154,10 @@ export default function NoticeBoardEditPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <GdgSiteHeader
-        menus={[{ label: '게시판', url: '/board/notices/' }]}
+        menus={BOARD_MENUS}
         actionMenu={{ label: '내 정보', url: '/profile/' }}
       />
-      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 py-10">
+      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 mobile:px-4 py-10">
         <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항 수정</h1>
 
         <GdgInputField
@@ -167,6 +168,8 @@ export default function NoticeBoardEditPage() {
         />
 
         <GdgDropdown
+          // 기본 size=small(122px) 은 플레이스홀더를 담지 못하고 잘린다.
+          size="medium"
           label="분류"
           placeholder="분류를 선택하세요"
           options={CATEGORY_OPTIONS}
@@ -186,7 +189,7 @@ export default function NoticeBoardEditPage() {
             백엔드는 고정 '저장 시점'에만 미공개를 거부하고(PinnedNoticeService.replacePinned),
             이미 고정된 글이 나중에 미공개로 바뀌는 경로는 막지 않는다. 프론트가 할 수 있는
             일이 없어 관측한 사실로만 남긴다. */}
-        <label className="flex items-center gap-2 typo-pc-b3">
+        <label className="flex items-center gap-2 typo-pc-b3 mobile:typo-m-b3">
           <input
             type="checkbox"
             checked={isPublished}
@@ -196,7 +199,7 @@ export default function NoticeBoardEditPage() {
         </label>
 
         <div className="flex flex-col gap-2">
-          <span className="tracking-[0.2em] text-white/80 typo-pc-s3 uppercase">첨부</span>
+          <span className="tracking-[0.2em] text-white/80 typo-pc-s3 mobile:typo-m-s3 uppercase">첨부</span>
           <AttachmentUploader
             attachments={attachments}
             onChange={setAttachments}
@@ -205,7 +208,7 @@ export default function NoticeBoardEditPage() {
           />
         </div>
 
-        {errorMessage && <p className="text-red typo-pc-b3">{errorMessage}</p>}
+        {errorMessage && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>}
 
         <GdgButton variant="active" fullWidth onClick={handleSubmit} loading={submitting}>
           저장

@@ -31,7 +31,7 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
               href={attachment.fileUrl ?? '#'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-white typo-pc-b3 transition-colors hover:bg-gray-400"
+              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-white typo-pc-b3 mobile:typo-m-b3 transition-colors hover:bg-gray-400"
             >
               <span className="flex-1 truncate">{attachment.fileName}</span>
               {attachment.fileSize !== null && attachment.fileSize !== undefined && (
@@ -45,7 +45,7 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
               href={attachment.url ?? '#'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-blue underline typo-pc-b3 transition-colors hover:bg-gray-400"
+              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-blue underline typo-pc-b3 mobile:typo-m-b3 transition-colors hover:bg-gray-400"
             >
               {attachment.url}
             </a>
