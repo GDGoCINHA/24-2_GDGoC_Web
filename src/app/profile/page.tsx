@@ -23,6 +23,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [application, setApplication] = useState<MyCoreApplication | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [applicationLoading, setApplicationLoading] = useState(true)
   const [applicationError, setApplicationError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -37,6 +38,8 @@ export default function ProfilePage() {
       try {
         const data = await fetchMyProfile(apiClient)
         if (alive) setProfile(data)
+      } catch {
+        if (alive) setLoadError('내 정보를 불러오지 못했습니다.')
       } finally {
         if (alive) setLoading(false)
       }
@@ -122,6 +125,15 @@ export default function ProfilePage() {
   )
 
   if (loading) return <Loader isLoading />
+  if (loadError) {
+    return (
+      <main className="min-h-screen bg-black px-6 py-10 text-white pc:px-10">
+        <div className="mx-auto w-full max-w-[880px] space-y-10">
+          <p className="typo-pc-c1 text-red">{loadError}</p>
+        </div>
+      </main>
+    )
+  }
   if (!profile) return null
 
   return (
