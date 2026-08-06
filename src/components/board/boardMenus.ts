@@ -9,5 +9,6 @@ import type { GdgMenuLink } from '@/components/ui/design-system'
  */
 export const BOARD_MENUS: GdgMenuLink[] = [
   { label: '행사', url: '/board/events/' },
-  { label: '공지사항', url: '/board/notices/' }
+  { label: '공지사항', url: '/board/notices/' },
+  { label: '자유게시판', url: '/board/free/' }
 ]
