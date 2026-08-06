@@ -364,7 +364,16 @@ function SiteHeader({
             aria-hidden
           />
         </nav>
-        <div className="justify-self-end mobile:hidden">
+        <div className="flex items-center gap-8 justify-self-end mobile:hidden">
+          {/* 라벨은 '게시판'으로 통일한다. feature/board-ui 도 같은 라벨로 /board/events/ 를
+              가리키므로, 병합 시 이 hunk가 충돌하고 해소는 "링크 하나만 남긴다"가 된다.
+              어느 경로를 남길지(또는 게시판 인덱스를 새로 둘지)는 통합 시점의 결정이다. */}
+          <a
+            href="/board/notices/"
+            className="typo-pc-b2 text-gray-500 transition-colors hover:text-white"
+          >
+            게시판
+          </a>
           {/* 로그인 상태에서도 /login?next=%2F 로 보내면 로그인 후 / 가 /onboarding 으로
               리다이렉트돼 제자리로 돌아온다. 로그인했으면 내 정보로 보낸다. */}
           <a
@@ -406,6 +415,7 @@ function MobileMenuDrawer({
     { label: '소개', action: () => onNavigate('about') },
     { label: '활동', action: () => onNavigate('activities') },
     { label: 'FAQ', action: () => onNavigate('faq') },
+    { label: '게시판', href: '/board/notices/' },
     { label: '마이페이지', href: '/profile' },
     ...(canSeeDashboard ? [{ label: '대시보드', href: '/dashboard' }] : [])
   ]
