@@ -502,7 +502,7 @@ function MobileMenuDrawer({
         {isLoggedIn ? (
           <button
             type="button"
-            className="absolute left-6 top-[526px] flex items-center gap-2 text-white typo-m-b2"
+            className="absolute left-6 top-[550px] flex items-center gap-2 text-white typo-m-b2"
             onClick={() => {
               onClose()
               onLogout()
