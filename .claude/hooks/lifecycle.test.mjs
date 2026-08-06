@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import {
   taskFromBranch,
   retirementTargets,
+  tasksFromMergeCommits,
   promotionNotice,
   retirementNotice,
   isPrCreate,
@@ -130,4 +131,57 @@ test("retirementNotice: 실행할 mv 명령을 리포 경로로 담는다", () =
 test("promotionNotice: 리포 경로가 안내에 반영된다", () => {
   const notice = promotionNotice({ repo: "24-2_GDGoC_Web", task: "eventboard", workFileCount: 2 });
   assert.match(notice, /24-2_GDGoC_Web\/\.claude\/work\/eventboard/);
+});
+
+// --- 머지 판정 -------------------------------------------------------------
+//
+// `git branch --merged origin/develop` 만으로는 판정할 수 없다. 그 목록에는
+// **develop 에서 분기한 뒤 아직 커밋이 없는 브랜치**도 들어온다 — 머지된 브랜치와
+// 마찬가지로 develop 의 조상이기 때문이다. 실제로 구현을 시작하지도 않은
+// `feature/board-ui` 의 작업 공간을 회수하라고 네 번 연달아 안내한 사고가 있었다.
+//
+// 그래서 조상 관계 대신 **develop 히스토리에 그 브랜치의 머지 커밋이 있는지**를 본다.
+
+test("로컬 머지 커밋에서 과제 이름을 뽑는다", () => {
+  assert.deepEqual(
+    tasksFromMergeCommits(["Merge branch 'feature/user-profile' into develop"]),
+    ["user-profile"]
+  );
+});
+
+test("PR 머지 커밋에서 과제 이름을 뽑는다", () => {
+  assert.deepEqual(
+    tasksFromMergeCommits(["Merge pull request #338 from GDGoCINHA/fix/recruit-card-period-format"]),
+    ["recruit-card-period-format"]
+  );
+});
+
+test("develop 을 작업 브랜치로 가져온 역방향 머지는 회수 신호가 아니다", () => {
+  // 따옴표 안이 소스다. 이 커밋은 eventboard 가 develop 에 들어갔다는 뜻이 아니라
+  // 그 반대다. `into` 뒤를 보지 않으면 진행 중인 과제를 회수하게 된다.
+  assert.deepEqual(
+    tasksFromMergeCommits([
+      "Merge remote-tracking branch 'origin/develop' into feature/eventboard",
+    ]),
+    []
+  );
+});
+
+test("develop 끼리의 머지는 과제가 아니다", () => {
+  // 포크 간 동기화 PR 이다. 소스 브랜치가 develop 이므로 과제 이름이 나오면 안 된다.
+  assert.deepEqual(tasksFromMergeCommits(["Merge pull request #332 from CSE-Shaco/develop"]), []);
+});
+
+test("머지 커밋이 아닌 제목은 무시한다", () => {
+  assert.deepEqual(tasksFromMergeCommits(["chore: develop에 master 동기화"]), []);
+});
+
+test("분기만 하고 커밋이 없는 브랜치는 회수 대상이 아니다", () => {
+  // feature/board-ui 는 develop 의 조상이라 `--merged` 에 걸리지만 머지된 적이 없다.
+  // 이 테스트가 그 사고를 고정한다.
+  const merged = tasksFromMergeCommits(["Merge branch 'feature/user-profile' into develop"]);
+  assert.deepEqual(
+    retirementTargets({ workDirs: ["board-ui", "user-profile"], mergedTasks: merged }),
+    ["user-profile"]
+  );
 });

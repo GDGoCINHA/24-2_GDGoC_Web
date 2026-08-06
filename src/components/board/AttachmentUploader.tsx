@@ -173,13 +173,13 @@ export function AttachmentUploader({
           type="button"
           onClick={handleAddLink}
           disabled={isFull}
-          className="whitespace-nowrap text-white underline typo-pc-b3"
+          className="whitespace-nowrap typo-pc-b3 text-white underline"
         >
           링크 추가
         </button>
       </div>
       {isFull && (
-        <p className="text-gray-500 typo-pc-c1">첨부는 최대 {maxCount}개까지 등록할 수 있습니다.</p>
+        <p className="typo-pc-c1 text-gray-500">첨부는 최대 {maxCount}개까지 등록할 수 있습니다.</p>
       )}
     </div>
   )

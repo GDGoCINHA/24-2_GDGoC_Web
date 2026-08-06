@@ -364,10 +364,13 @@ function SiteHeader({
             aria-hidden
           />
         </nav>
-        <div className="flex items-center gap-8 justify-self-end mobile:hidden">
-          {/* 라벨은 '게시판'으로 통일한다. feature/board-ui 도 같은 라벨로 /board/events/ 를
-              가리키므로, 병합 시 이 hunk가 충돌하고 해소는 "링크 하나만 남긴다"가 된다.
-              어느 경로를 남길지(또는 게시판 인덱스를 새로 둘지)는 통합 시점의 결정이다. */}
+        {/* mobile:hidden 을 두면 모바일에 진입 수단이 아예 없다. 같은 파일의
+            MobileMenuDrawer 는 정의만 있고 렌더되지 않는 죽은 코드라, 드로어의
+            마이페이지 항목은 화면에 나오지 않는다. 게시판 링크도 같은 이유로
+            여기 둔다 — 드로어의 게시판 항목만으로는 모바일에서 도달할 수 없다. */}
+        <div className="flex items-center gap-4 justify-self-end">
+          {/* 게시판이 둘(행사·공지)이지만 헤더 링크는 하나로 두고 공지를 가리킨다.
+              행사 게시판(/board/events/)은 헤더에서 도달할 수 없다 — 의도된 선택이다. */}
           <a
             href="/board/notices/"
             className="typo-pc-b2 text-gray-500 transition-colors hover:text-white"

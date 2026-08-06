@@ -33,6 +33,37 @@ export function retirementTargets({ workDirs, mergedTasks }) {
   return workDirs.filter((d) => merged.has(d));
 }
 
+/**
+ * develop 히스토리의 머지 커밋 제목 → 실제로 머지된 과제 이름.
+ *
+ * **`git branch --merged` 를 쓰지 않는 이유:** 그 목록에는 develop 에서 분기한 뒤
+ * 아직 커밋이 없는 브랜치도 들어온다. 둘 다 develop 의 조상이라 조상 관계만으로는
+ * "머지됐다"와 "아직 시작 안 했다"가 구별되지 않는다. 실제로 구현 전인
+ * `feature/board-ui` 의 작업 공간을 회수하라고 안내한 사고가 있었다.
+ *
+ * 놓치는 경우(squash·fast-forward 머지)는 있어도 **진행 중인 과제를 회수 대상으로
+ * 올리지는 않는다.** 안내를 한 번 거르는 쪽이 남의 작업을 치우는 쪽보다 싸다.
+ */
+export function tasksFromMergeCommits(subjects) {
+  const branches = [];
+  for (const s of subjects ?? []) {
+    // `Merge branch 'X' into develop` — 따옴표 안이 소스 브랜치다.
+    // `into develop` 까지 요구한다. develop 을 작업 브랜치로 가져온 역방향 머지
+    // (`Merge remote-tracking branch 'origin/develop' into feature/eventboard`)는
+    // 그 과제가 끝났다는 뜻이 아니므로 여기서 걸러진다.
+    const local = /^Merge branch '([^']+)' into develop$/.exec(s);
+    if (local) {
+      branches.push(local[1]);
+      continue;
+    }
+    // `Merge pull request #N from <owner>/<브랜치>`
+    const pr = /^Merge pull request #\d+ from [^/]+\/(.+)$/.exec(s);
+    if (pr) branches.push(pr[1]);
+  }
+  // 포크 간 동기화 PR 은 소스가 develop 이므로 taskFromBranch 가 null 로 거른다.
+  return branches.map((b) => taskFromBranch(b)).filter(Boolean);
+}
+
 /** 이 명령이 PR 생성인가. `gh pr view`·`merge`·`list` 는 아니다. */
 export function isPrCreate(command) {
   return typeof command === "string" && /\bgh\s+pr\s+create\b/.test(command);
@@ -110,14 +141,11 @@ function countFiles(dir) {
   return n;
 }
 
-/** develop 에 이미 들어간 브랜치들의 과제 이름. */
+/** develop 에 이미 들어간 과제 이름. 판정 근거는 `tasksFromMergeCommits` 주석 참조. */
 function mergedTasks(repo) {
-  const out = git(repo, "branch", "--merged", "origin/develop", "--format=%(refname:short)");
+  const out = git(repo, "log", "origin/develop", "--merges", "--format=%s");
   if (!out) return [];
-  return out
-    .split("\n")
-    .map((b) => taskFromBranch(b.trim()))
-    .filter(Boolean);
+  return tasksFromMergeCommits(out.split("\n"));
 }
 
 // --- CLI -------------------------------------------------------------------

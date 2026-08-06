@@ -20,7 +20,15 @@ export interface AttachmentEntry {
 
 export type EventBoardStatus = 'UPCOMING' | 'IN_PROGRESS' | 'ENDED'
 
-export type EventSearchType = 'TITLE_AND_CONTENT' | 'TITLE' | 'CONTENT' | 'AUTHOR'
+/**
+ * 세 게시판이 공유하는 검색 조건. 백엔드도 SearchType 을 board/common 으로 올린다
+ * (게시판 공통 스키마 설계 §8.1) — 공지·자유가 BoardSearchBar 를 그대로 쓰려면
+ * 이 이름이 행사 전용이 아니어야 한다.
+ */
+export type BoardSearchType = 'TITLE_AND_CONTENT' | 'TITLE' | 'CONTENT' | 'AUTHOR'
+
+/** 행사게시판 문맥에서 쓰던 이름. BoardSearchType 과 같은 타입이다. */
+export type EventSearchType = BoardSearchType
 
 export type EventOrganizingTeam = Exclude<TeamValue, null>
 
