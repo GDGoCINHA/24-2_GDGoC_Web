@@ -364,7 +364,10 @@ function SiteHeader({
             aria-hidden
           />
         </nav>
-        <div className="justify-self-end mobile:hidden">
+        {/* mobile:hidden 을 두면 모바일에 진입 수단이 아예 없다. 같은 파일의
+            MobileMenuDrawer 는 정의만 있고 렌더되지 않는 죽은 코드라, 드로어의
+            마이페이지 항목은 화면에 나오지 않는다. */}
+        <div className="justify-self-end">
           {/* 로그인 상태에서도 /login?next=%2F 로 보내면 로그인 후 / 가 /onboarding 으로
               리다이렉트돼 제자리로 돌아온다. 로그인했으면 내 정보로 보낸다. */}
           <a
