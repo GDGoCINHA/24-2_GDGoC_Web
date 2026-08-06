@@ -1,4 +1,4 @@
-import type { AxiosInstance } from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 
 import type { MyCoreApplication, UpdateProfilePayload, UserProfile } from '@/types/profile'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
@@ -30,7 +30,7 @@ export const updateMyProfileImage = async (
 /**
  * 운영진 지원서 조회.
  * 이 엔드포인트만 ApiResponse 래퍼 없이 DTO를 직접 반환하므로 unwrap을 타지 않는다.
- * 지원 이력이 없으면 null을 돌려준다 — 정상 상태이며 에러가 아니다.
+ * 404(지원 이력 없음)면 null을 반환하고, 그 외 에러는 호출자에게 던진다.
  */
 export const fetchMyCoreApplication = async (
   apiClient: AxiosInstance
@@ -38,7 +38,10 @@ export const fetchMyCoreApplication = async (
   try {
     const response = await apiClient.get<MyCoreApplication>('/recruit/core/applications/me')
     return response.data ?? null
-  } catch {
-    return null
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null
+    }
+    throw error
   }
 }
