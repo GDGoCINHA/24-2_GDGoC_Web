@@ -376,7 +376,7 @@ function SiteHeader({
             href="/board/events/"
             className="typo-pc-b2 text-gray-500 transition-colors hover:text-white"
           >
-            게시판
+            행사게시판
           </a>
           {/* 로그인 상태에서도 /login?next=%2F 로 보내면 로그인 후 / 가 /onboarding 으로
               리다이렉트돼 제자리로 돌아온다. 로그인했으면 내 정보로 보낸다. */}
@@ -419,7 +419,7 @@ function MobileMenuDrawer({
     { label: '소개', action: () => onNavigate('about') },
     { label: '활동', action: () => onNavigate('activities') },
     { label: 'FAQ', action: () => onNavigate('faq') },
-    { label: '게시판', href: '/board/events/' },
+    { label: '행사게시판', href: '/board/events/' },
     { label: '마이페이지', href: '/profile' },
     ...(canSeeDashboard ? [{ label: '대시보드', href: '/dashboard' }] : [])
   ]
