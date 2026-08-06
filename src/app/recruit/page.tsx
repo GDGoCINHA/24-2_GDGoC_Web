@@ -3,6 +3,7 @@
 import { GdgLogo } from '@/components/ui/design-system'
 import { RecruitTypeCard } from '@/components/recruit/RecruitTypeCard'
 import { useRecruitCorePeriod } from '@/hooks/useRecruitCorePeriod'
+import { useRecruitMemberPeriod } from '@/hooks/useRecruitMemberPeriod'
 import {
   CORE_SCHEDULE,
   MEMBER_SCHEDULE,
@@ -12,6 +13,7 @@ import {
 
 export default function RecruitSelect() {
   const { period, failed } = useRecruitCorePeriod()
+  const { period: memberPeriod, failed: memberFailed } = useRecruitMemberPeriod()
 
   // 조회에 실패하면 열어둔다. 제출은 서버가 최종 판정하므로 안전하다.
   const coreUnknown = failed || !period
@@ -26,6 +28,20 @@ export default function RecruitSelect() {
   const corePeriodText = period
     ? formatKoreanPeriodShort(period.openAt, period.closeAt)
     : formatKoreanPeriodShort(CORE_SCHEDULE.fallbackOpenAt, CORE_SCHEDULE.fallbackCloseAt)
+
+  // 부원도 코어와 같은 규칙이다. 전에는 서버에 기간이 없어 항상 열어뒀다.
+  const memberUnknown = memberFailed || !memberPeriod
+  const memberOpen = memberUnknown || memberPeriod.status === 'OPEN'
+  const memberStatusLabel = memberUnknown
+    ? '모집중'
+    : memberPeriod.status === 'OPEN'
+      ? '모집중'
+      : memberPeriod.status === 'BEFORE_OPEN'
+        ? `${formatKoreanDateShort(memberPeriod.openAt)} 오픈`
+        : '모집 마감'
+  const memberPeriodText = memberPeriod
+    ? formatKoreanPeriodShort(memberPeriod.openAt, memberPeriod.closeAt)
+    : formatKoreanPeriodShort(MEMBER_SCHEDULE.openAt, MEMBER_SCHEDULE.closeAt)
 
   return (
     <main className="min-h-screen bg-black overflow-x-hidden">
@@ -47,14 +63,13 @@ export default function RecruitSelect() {
             statusLabel={coreStatusLabel}
             isOpen={coreOpen}
           />
-          {/* 부원 모집은 서버에 기간 차단 로직이 없어 상시 지원 가능하다. 항상 열어둔다. */}
           <RecruitTypeCard
             title="Member"
             subtitle="부원"
-            period={formatKoreanPeriodShort(MEMBER_SCHEDULE.openAt, MEMBER_SCHEDULE.closeAt)}
+            period={memberPeriodText}
             href="/recruit/member"
-            statusLabel="모집중"
-            isOpen
+            statusLabel={memberStatusLabel}
+            isOpen={memberOpen}
           />
         </div>
       </div>
