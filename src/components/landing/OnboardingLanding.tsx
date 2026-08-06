@@ -306,6 +306,8 @@ function SiteHeader({
   onNavigate: (sectionId: string) => void
   logoRef?: RefObject<HTMLDivElement>
 }) {
+  const { user } = useAuth()
+  const isLoggedIn = Boolean(user)
   const activeNavIndex = getActiveNavIndex(activeId)
   const loginIcon = (
     <svg
@@ -363,10 +365,12 @@ function SiteHeader({
           />
         </nav>
         <div className="justify-self-end mobile:hidden">
+          {/* 로그인 상태에서도 /login?next=%2F 로 보내면 로그인 후 / 가 /onboarding 으로
+              리다이렉트돼 제자리로 돌아온다. 로그인했으면 내 정보로 보낸다. */}
           <a
-            href="/login?next=%2F"
+            href={isLoggedIn ? '/profile' : '/login?next=%2F'}
             className="flex size-11 items-center justify-center text-gray-500 transition-colors hover:text-white"
-            aria-label="로그인"
+            aria-label={isLoggedIn ? '내 정보' : '로그인'}
           >
             {loginIcon}
           </a>

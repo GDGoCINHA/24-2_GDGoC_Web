@@ -8,6 +8,7 @@ import {
   GdgInputField,
   GdgMajorDropdown
 } from '@/components/ui/design-system'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import type { UpdateProfilePayload, UserProfile } from '@/types/profile'
 import { formatPhoneNumberInput } from '@/utils/phoneNumber'
@@ -84,10 +85,20 @@ export default function ProfileInfoSection({
       <div>
         {editing ? (
           <GdgFieldContainer label="학과">
-            <GdgMajorDropdown value={major} onChangeAction={setMajor} />
+            {/* device를 넘기지 않으면 기본값 'auto'가 GdgDropdown의 Device('pc'|'mobile')에
+                없어 getControlMeta에서 undefined['full']로 터진다. signup 화면도 device를
+                명시한다. */}
+            <GdgMajorDropdown device="pc" value={major} onChangeAction={setMajor} />
           </GdgFieldContainer>
         ) : (
-          <GdgInputField label="학과" value={profile.major} state="disabled" disabled fullWidth />
+          // 서버는 학과를 코드(ME)로 저장한다. 사람이 읽는 이름으로 바꿔 보여준다.
+          <GdgInputField
+            label="학과"
+            value={formatMajorLabel(profile.major)}
+            state="disabled"
+            disabled
+            fullWidth
+          />
         )}
       </div>
 
