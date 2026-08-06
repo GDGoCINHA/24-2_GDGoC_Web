@@ -349,8 +349,11 @@ function SiteHeader({
         </div>
         <nav className="relative flex h-full items-center justify-center typo-pc-b2 mobile:flex-1 mobile:typo-m-s3">
           {navItems.map((item, index) => {
+            // touch-manipulation: 안드로이드 크롬이 더블탭 줌 여부를 기다리느라 탭마다
+            // 300ms 쯤 클릭을 늦춘다. 그 뒤에 전환 애니메이션 0.84초가 이어져 첫 탭이
+            // 먹히지 않은 것처럼 보인다. 이 요소에서 더블탭 줌을 포기해 지연을 없앤다.
             const className = cn(
-              'flex h-6 w-30 items-center justify-center transition-colors hover:text-white mobile:h-full mobile:flex-1 mobile:w-auto',
+              'flex h-6 w-30 touch-manipulation items-center justify-center transition-colors hover:text-white mobile:h-full mobile:flex-1 mobile:w-auto',
               index === activeNavIndex ? 'text-white' : 'text-gray-500'
             )
 
@@ -396,7 +399,7 @@ function SiteHeader({
               리다이렉트돼 제자리로 돌아온다. 로그인했으면 내 정보로 보낸다. */}
           <a
             href={isLoggedIn ? '/profile' : '/login?next=%2F'}
-            className="flex size-11 items-center justify-center text-gray-500 transition-colors hover:text-white"
+            className="flex size-11 touch-manipulation items-center justify-center text-gray-500 transition-colors hover:text-white"
             aria-label={isLoggedIn ? '내 정보' : '로그인'}
           >
             {loginIcon}
