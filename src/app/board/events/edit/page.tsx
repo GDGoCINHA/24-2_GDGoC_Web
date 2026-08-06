@@ -248,6 +248,8 @@ export default function EventBoardEditPage() {
         </div>
 
         <GdgDropdown
+          // 기본 size=small(122px) 은 플레이스홀더를 담지 못하고 잘린다.
+          size="medium"
           label="주최 팀"
           options={TEAM_OPTIONS}
           value={organizingTeam}

@@ -22,15 +22,19 @@ export function BoardSearchBar({
   onSubmit
 }: BoardSearchBarProps) {
   /**
-   * device 는 CSS 가 아니라 prop 으로 갈린다. 기본값 'pc' 를 그대로 두면
-   * GdgSearchField 가 w-280(=1120px) 고정폭이라 좁은 화면을 그대로 넘어간다.
-   * 리포 관례대로 pc/mobile 을 각각 렌더하고 CSS 로 감춘다 (login/page.tsx 참고).
-   * 값과 핸들러가 같으니 두 벌이 떠 있어도 상태는 하나다.
+   * 디자인 시스템 컨트롤의 크기는 CSS 가 아니라 device·size prop 으로 정해진다.
+   * 기본값(device='pc', size='small')을 그대로 두면
+   *   - 검색 필드가 w-280(1120px) 고정이라 컨테이너 가용폭 1072px 를 넘고
+   *   - 드롭다운이 w-30.5(122px) 라 '제목+내용' 이 잘린다.
+   * 그래서 device 와 size 를 명시하고, pc/mobile 을 각각 렌더해 CSS 로 감춘다
+   * (login/page.tsx 의 기존 관례). 값과 핸들러가 같아 두 벌이 떠 있어도 상태는 하나다.
    */
   const controls = (device: 'pc' | 'mobile') => (
     <>
       <GdgDropdown
         device={device}
+        // small(pc 122px / mobile 109px)은 '제목+내용'을 담지 못한다.
+        size="medium"
         options={searchTypeOptions}
         value={searchType}
         onChange={(value) => onSearchTypeChange(value as BoardSearchType)}
@@ -38,11 +42,11 @@ export function BoardSearchBar({
       <GdgSearchField
         device={device}
         /**
-         * 모바일 full 은 w-85.75(343px)로 고정이라 드롭다운(109px)과 한 줄에 못 넣는다.
-         * twoThirds(226px) + 드롭다운 + 간격 = 343px 로, mobile:px-4 컨테이너의
-         * 가용 폭(375px 화면 기준 343px) 안에 정확히 들어간다.
+         * pc: half(412px) + 드롭다운(265px) + 간격 = 685px 로 가용폭 1072px 안에 든다.
+         *     full 은 1120px 고정이라 혼자 한 줄을 쓸 때만 맞는 값이다.
+         * mobile: 아래에서 세로로 쌓으므로 full(343px)이 가용폭 358px 에 들어간다.
          */
-        width={device === 'pc' ? 'full' : 'twoThirds'}
+        width={device === 'pc' ? 'half' : 'full'}
         value={keyword}
         onChange={(event) => onKeywordChange(event.target.value)}
         onKeyDown={(event) => {
@@ -59,7 +63,10 @@ export function BoardSearchBar({
   return (
     <>
       <div className="hidden w-full items-center gap-2 pc:flex">{controls('pc')}</div>
-      <div className="flex w-full min-w-0 items-center gap-2 pc:hidden">{controls('mobile')}</div>
+      {/* 모바일은 한 줄에 못 넣는다. 드롭다운(168px)+검색(343px)이 가용폭 358px 를 넘는다. */}
+      <div className="flex w-full min-w-0 flex-col items-stretch gap-2 pc:hidden">
+        {controls('mobile')}
+      </div>
     </>
   )
 }

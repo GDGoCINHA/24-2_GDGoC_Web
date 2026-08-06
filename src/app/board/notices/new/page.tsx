@@ -101,6 +101,8 @@ export default function NoticeBoardNewPage() {
         />
 
         <GdgDropdown
+          // 기본 size=small(122px) 은 플레이스홀더를 담지 못하고 잘린다.
+          size="medium"
           label="분류"
           placeholder="분류를 선택하세요"
           options={CATEGORY_OPTIONS}
