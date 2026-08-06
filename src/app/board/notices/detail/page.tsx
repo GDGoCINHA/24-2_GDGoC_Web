@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { deleteNotice, fetchNoticeDetail } from '@/services/board/noticeClient'
@@ -31,8 +32,19 @@ export default function NoticeBoardDetailPage() {
   const [deleting, setDeleting] = useState(false)
 
   const canManage = hasAtLeast(user?.userRole, 'CORE')
+  // 공지는 회원 전용이다. 목록과 같은 게이트를 상세에도 건다 — 링크로 직접 들어올 수 있다.
+  const isLoggedIn = Boolean(user)
 
   useEffect(() => {
+    if (isLoggedIn) return
+    router.replace(
+      `/login?next=${encodeURIComponent(idParam ? `/board/notices/detail/?id=${idParam}` : '/board/notices/')}`
+    )
+  }, [idParam, isLoggedIn, router])
+
+  useEffect(() => {
+    if (!isLoggedIn) return
+
     if (!Number.isFinite(id)) {
       setLoading(false)
       setError('잘못된 접근입니다.')
@@ -44,8 +56,8 @@ export default function NoticeBoardDetailPage() {
     setError(null)
     setNotFound(false)
 
-    // 미공개 글은 서버가 CORE 미만에게 404를 준다. CORE 이상은 토큰을 실어야 자기 초안을 연다.
-    fetchNoticeDetail(id, canManage ? apiClient : undefined)
+    // 미공개 글은 서버가 CORE 미만에게 404를 준다. CORE 이상은 자기 초안까지 열린다.
+    fetchNoticeDetail(id, apiClient)
       .then((data) => {
         if (alive) setDetail(data)
       })
@@ -64,7 +76,7 @@ export default function NoticeBoardDetailPage() {
     return () => {
       alive = false
     }
-  }, [apiClient, canManage, id])
+  }, [apiClient, id, isLoggedIn])
 
   const handleDelete = useCallback(async () => {
     if (!Number.isFinite(id)) return
@@ -81,8 +93,17 @@ export default function NoticeBoardDetailPage() {
     }
   }, [apiClient, id, router])
 
+  // 로그인으로 보내는 사이 그려지는 한 프레임. "불러오는 중"으로 두면 실패로 오해한다.
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
+        <p className="typo-pc-b2 mobile:typo-m-b2">로그인이 필요한 게시판입니다.</p>
+      </main>
+    )
+  }
+
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2">불러오는 중...</p>
+    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
   }
 
   if (notFound) {
@@ -109,13 +130,7 @@ export default function NoticeBoardDetailPage() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <GdgSiteHeader
-        menus={[{ label: '게시판', url: '/board/notices/' }]}
-        actionMenu={{
-          label: user ? '내 정보' : '로그인',
-          url: user ? '/profile/' : '/login?next=%2Fboard%2Fnotices%2F'
-        }}
-      />
+      <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
       <div className="mx-auto w-full max-w-[880px] space-y-6 px-6 py-10">
         <Link href="/board/notices/" className="text-gray-700 typo-pc-c2 hover:text-white">
           목록으로

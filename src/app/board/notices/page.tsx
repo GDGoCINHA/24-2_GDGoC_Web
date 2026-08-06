@@ -10,6 +10,7 @@ import { BoardSearchBar } from '@/components/board/BoardSearchBar'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import { PinnedNoticeModal } from '@/components/board/PinnedNoticeModal'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { fetchNoticeList } from '@/services/board/noticeClient'
@@ -46,18 +47,25 @@ export default function NoticeBoardListPage() {
   const canWrite = hasAtLeast(user?.userRole, 'CORE')
   // 글쓰기(CORE)와 고정 관리(ORGANIZER)는 권한 경계가 다르다.
   const canPin = hasAtLeast(user?.userRole, 'ORGANIZER')
+  // 공지는 회원 전용이다. 행사 게시판과 달리 비로그인은 목록조차 볼 수 없다.
+  const isLoggedIn = Boolean(user)
 
   useEffect(() => {
+    if (isLoggedIn) return
+    router.replace(`/login?next=${encodeURIComponent('/board/notices/')}`)
+  }, [isLoggedIn, router])
+
+  useEffect(() => {
+    // 게이트가 로그인으로 보내는 중이다. 여기서 조회하면 토큰 없이 나간다.
+    if (!isLoggedIn) return
+
     let alive = true
     setLoading(true)
     setError(null)
 
-    // CORE 이상만 토큰을 실어 보낸다. 그래야 임시저장(isPublished=false)이 목록에 보인다.
-    // 비로그인 방문자에게 apiClient를 쓰면 401 인터셉터가 /login으로 튕긴다.
-    fetchNoticeList(
-      { page, size: 15, searchType, keyword: submittedKeyword },
-      canWrite ? apiClient : undefined
-    )
+    // 로그인했으면 항상 토큰을 실어 보낸다. CORE 이상이면 서버가 자기
+    // 임시저장(isPublished=false)까지 함께 내려준다.
+    fetchNoticeList({ page, size: 15, searchType, keyword: submittedKeyword }, apiClient)
       .then((result) => {
         if (!alive) return
         setPinned(result.pinned)
@@ -74,7 +82,7 @@ export default function NoticeBoardListPage() {
     return () => {
       alive = false
     }
-  }, [apiClient, canWrite, page, searchType, submittedKeyword, reloadKey])
+  }, [apiClient, isLoggedIn, page, searchType, submittedKeyword, reloadKey])
 
   const handleSubmitSearch = useCallback(() => {
     setPage(0)
@@ -110,14 +118,21 @@ export default function NoticeBoardListPage() {
     }
   ]
 
+  // 위 useEffect가 로그인으로 보내는 사이 한 프레임이 그려진다. 목록 골격 대신
+  // 안내를 띄워야 "빈 게시판"으로 오해하지 않는다.
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
+        <p className="typo-pc-b2 mobile:typo-m-b2">로그인이 필요한 게시판입니다.</p>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-black text-white">
       <GdgSiteHeader
-        menus={[{ label: '공지사항', url: '/board/notices/' }]}
-        actionMenu={{
-          label: user ? '내 정보' : '로그인',
-          url: user ? '/profile/' : '/login?next=%2Fboard%2Fnotices%2F'
-        }}
+        menus={BOARD_MENUS}
+        actionMenu={{ label: '내 정보', url: '/profile/' }}
       />
       <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 py-10">
         <div className="flex items-center justify-between">
