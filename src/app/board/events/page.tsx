@@ -70,7 +70,7 @@ export default function EventBoardListPage() {
   }, [keyword])
 
   const columns: BoardListColumn<EventBoardSummary>[] = [
-    { key: 'title', header: '제목', render: (item) => item.title },
+    { key: 'title', header: '제목', render: (item) => item.title, primary: true },
     {
       key: 'period',
       header: '기간',

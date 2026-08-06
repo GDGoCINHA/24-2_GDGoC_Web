@@ -99,6 +99,7 @@ export default function NoticeBoardListPage() {
     {
       key: 'title',
       header: '제목',
+      primary: true,
       render: (item) => (
         <span className="flex items-center gap-2">
           {item.title}
