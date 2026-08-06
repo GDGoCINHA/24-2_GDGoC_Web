@@ -8,6 +8,7 @@ import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
 import { BoardPagination } from '@/components/board/BoardPagination'
 import { BoardSearchBar } from '@/components/board/BoardSearchBar'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
+import { PinnedNoticeModal } from '@/components/board/PinnedNoticeModal'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
@@ -38,8 +39,13 @@ export default function NoticeBoardListPage() {
   const [meta, setMeta] = useState<PageMeta | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [pinnedModalOpen, setPinnedModalOpen] = useState(false)
+  // 모달이 고정을 저장하면 이 값을 올려 목록을 다시 읽는다.
+  const [reloadKey, setReloadKey] = useState(0)
 
   const canWrite = hasAtLeast(user?.userRole, 'CORE')
+  // 글쓰기(CORE)와 고정 관리(ORGANIZER)는 권한 경계가 다르다.
+  const canPin = hasAtLeast(user?.userRole, 'ORGANIZER')
 
   useEffect(() => {
     let alive = true
@@ -68,7 +74,7 @@ export default function NoticeBoardListPage() {
     return () => {
       alive = false
     }
-  }, [apiClient, canWrite, page, searchType, submittedKeyword])
+  }, [apiClient, canWrite, page, searchType, submittedKeyword, reloadKey])
 
   const handleSubmitSearch = useCallback(() => {
     setPage(0)
@@ -116,14 +122,25 @@ export default function NoticeBoardListPage() {
       <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 py-10">
         <div className="flex items-center justify-between">
           <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항</h1>
-          {canWrite && (
-            <Link
-              href="/board/notices/new/"
-              className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3"
-            >
-              글쓰기
-            </Link>
-          )}
+          <div className="flex items-center gap-3">
+            {canPin && (
+              <button
+                type="button"
+                onClick={() => setPinnedModalOpen(true)}
+                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3"
+              >
+                상단 고정 관리
+              </button>
+            )}
+            {canWrite && (
+              <Link
+                href="/board/notices/new/"
+                className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3"
+              >
+                글쓰기
+              </Link>
+            )}
+          </div>
         </div>
 
         <BoardSearchBar
@@ -175,6 +192,15 @@ export default function NoticeBoardListPage() {
 
         {meta && (
           <BoardPagination page={meta.page} totalPages={meta.totalPages} onPageChange={setPage} />
+        )}
+
+        {canPin && (
+          <PinnedNoticeModal
+            open={pinnedModalOpen}
+            apiClient={apiClient}
+            onClose={() => setPinnedModalOpen(false)}
+            onSaved={() => setReloadKey((key) => key + 1)}
+          />
         )}
       </div>
     </main>
