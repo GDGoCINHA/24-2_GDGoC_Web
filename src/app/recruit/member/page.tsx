@@ -20,6 +20,7 @@ import {
     GdgTextarea,
     GdgUploadButton
 } from '@/components/ui/design-system'
+import RecruitMemberGate from '@/components/recruit/RecruitMemberGate'
 import {interestOptions} from '@/constant/interestOptions'
 import {wishOptions} from '@/constant/wishOptions'
 import {formatDateInput} from '@/utils/date'
@@ -101,7 +102,7 @@ const recruitMultiSelectItemClasses = {
   title: 'font-medium'
 }
 
-export default function Recruit() {
+function RecruitMemberForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { formatInput, isValidFormat, toDigits } = usePhoneNumber()
@@ -955,5 +956,27 @@ export default function Recruit() {
         </form>
       </div>
     </>
+  )
+}
+
+/**
+ * 모집 기간 밖이면 폼 대신 안내를 보여준다. 카드 버튼만 잠그면 주소를 직접 친 사람은
+ * 폼을 다 채운 뒤 제출에서 403 을 만난다.
+ *
+ * 게이트는 이 페이지에만 건다. 같은 layout 아래의 `/recruit/member/memo` 는 **모집 전에**
+ * 연락처를 남겨두는 화면이라 기간으로 막으면 정반대가 된다.
+ *
+ * `?preview=1` 은 통과시킨다. 제출은 이미 막혀 있고(위 handleSubmit), 오픈 전에 폼을
+ * 확인하려는 용도라 게이트가 그걸 가로막으면 쓸모가 없어진다.
+ */
+export default function Recruit() {
+  const searchParams = useSearchParams()
+
+  if (searchParams?.get('preview') === '1') return <RecruitMemberForm />
+
+  return (
+    <RecruitMemberGate>
+      <RecruitMemberForm />
+    </RecruitMemberGate>
   )
 }
