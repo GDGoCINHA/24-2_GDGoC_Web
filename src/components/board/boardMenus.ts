@@ -8,7 +8,7 @@ import type { GdgMenuLink } from '@/components/ui/design-system'
  * 게시판이 늘어날 때 여기 한 곳만 고치면 8개 페이지가 함께 맞는다.
  */
 export const BOARD_MENUS: GdgMenuLink[] = [
-  { label: '행사', url: '/board/events/' },
   { label: '공지사항', url: '/board/notices/' },
+  { label: '행사게시판', url: '/board/events/' },
   { label: '자유게시판', url: '/board/free/' }
 ]
