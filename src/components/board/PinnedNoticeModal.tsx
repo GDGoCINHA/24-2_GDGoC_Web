@@ -246,13 +246,20 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
           <p className="shrink-0 text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>
         )}
 
+        {/* GdgButton 은 기본 클래스에 shrink-0 이 있고 fullWidth 는 w-full 을 준다.
+            둘을 한 행에 나란히 두면 각각 100% 폭을 요구하면서 줄어들지도 못해
+            행이 두 배로 넘치고 "저장"이 카드 밖으로 밀려난다. 감싸는 쪽에서 반씩 나눈다. */}
         <div className="flex shrink-0 gap-3">
-          <GdgButton variant="bordered" fullWidth onClick={onClose}>
-            취소
-          </GdgButton>
-          <GdgButton variant="active" fullWidth onClick={handleSave} loading={saving}>
-            저장
-          </GdgButton>
+          <div className="min-w-0 flex-1">
+            <GdgButton variant="bordered" fullWidth onClick={onClose}>
+              취소
+            </GdgButton>
+          </div>
+          <div className="min-w-0 flex-1">
+            <GdgButton variant="active" fullWidth onClick={handleSave} loading={saving}>
+              저장
+            </GdgButton>
+          </div>
         </div>
       </div>
     </div>
