@@ -130,109 +130,123 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
       aria-modal="true"
       aria-label="상단 고정 관리"
     >
-      <div className="flex max-h-[85vh] w-full max-w-[640px] flex-col gap-4 overflow-y-auto rounded-2xl border border-gray-800 bg-black p-6 text-white">
-        <div className="flex items-center justify-between">
+      {/* 카드 전체를 스크롤시키면 후보 10개에 밀려 아래쪽 "저장"이 화면 밖으로 나간다.
+          그러면 위쪽 "닫기"만 보여서 저장하지 않고 닫게 된다. 가운데만 스크롤한다. */}
+      <div className="flex max-h-[85vh] w-full max-w-[640px] flex-col gap-4 overflow-hidden rounded-2xl border border-gray-800 bg-black p-6 text-white">
+        <div className="flex shrink-0 items-center justify-between">
           <h2 className="typo-pc-s2 mobile:typo-m-s2">상단 고정 관리</h2>
           <button type="button" onClick={onClose} className="text-gray-500 hover:text-white">
             닫기
           </button>
         </div>
 
-        <section className="flex flex-col gap-2">
-          <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
-            현재 고정 {selected.length}/{MAX_PINNED} — 드래그해 순서를 바꿉니다.
-          </p>
-          {loading ? (
-            <p className="py-6 text-center text-gray-500 typo-pc-b3 mobile:typo-m-b3">불러오는 중...</p>
-          ) : selected.length === 0 ? (
-            <p className="py-6 text-center text-gray-500 typo-pc-b3 mobile:typo-m-b3">고정된 공지가 없습니다.</p>
-          ) : (
-            <Reorder.Group
-              axis="y"
-              values={selected}
-              onReorder={setSelected}
-              className="flex flex-col gap-2"
-            >
-              {selected.map((notice, index) => (
-                <Reorder.Item key={notice.id} value={notice}>
-                  <div className="flex cursor-grab items-center gap-3 rounded-lg bg-gray-100 px-4 py-2 typo-pc-b3 mobile:typo-m-b3">
-                    <span className="shrink-0 text-gray-700">{index + 1}</span>
+        {/* min-h-0 이 없으면 flex 아이템의 min-height:auto 때문에 줄어들지 않아 스크롤이 안 생긴다. */}
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+          <section className="flex flex-col gap-2">
+            <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+              현재 고정 {selected.length}/{MAX_PINNED} — 드래그해 순서를 바꿉니다.
+            </p>
+            {loading ? (
+              <p className="py-6 text-center text-gray-500 typo-pc-b3 mobile:typo-m-b3">
+                불러오는 중...
+              </p>
+            ) : selected.length === 0 ? (
+              <p className="py-6 text-center text-gray-500 typo-pc-b3 mobile:typo-m-b3">
+                고정된 공지가 없습니다.
+              </p>
+            ) : (
+              <Reorder.Group
+                axis="y"
+                values={selected}
+                onReorder={setSelected}
+                className="flex flex-col gap-2"
+              >
+                {selected.map((notice, index) => (
+                  <Reorder.Item key={notice.id} value={notice}>
+                    <div className="flex cursor-grab items-center gap-3 rounded-lg bg-gray-100 px-4 py-2 typo-pc-b3 mobile:typo-m-b3">
+                      <span className="shrink-0 text-gray-700">{index + 1}</span>
+                      <NoticeCategoryTag category={notice.category} />
+                      <span className="flex-1 truncate">{notice.title}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemove(notice.id)}
+                        className="shrink-0 underline"
+                      >
+                        빼기
+                      </button>
+                    </div>
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
+            )}
+          </section>
+
+          <section className="flex flex-col gap-2 border-t border-gray-800 pt-4">
+            <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+              고정할 공지 찾기 (공개된 공지만 고정할 수 있습니다)
+            </p>
+            {/* device 기본값 'pc' 는 w-280(=1120px) 고정폭이라 640px 모달을 넘긴다.
+              좁은 화면에서는 더 심하다. pc/mobile 을 각각 렌더하고 CSS 로 감춘다. */}
+            {(['pc', 'mobile'] as const).map((device) => (
+              <GdgSearchField
+                key={device}
+                device={device}
+                // pc 는 half(412px)면 640px 모달에 들어간다. mobile 은 half 가 w-fit 으로
+                // 떨어져 입력칸이 글자 폭만큼 쪼그라들므로 full(343px)을 쓴다.
+                width={device === 'pc' ? 'half' : 'full'}
+                className={device === 'pc' ? 'hidden pc:flex' : 'flex pc:hidden'}
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault()
+                    setSubmittedKeyword(keyword)
+                  }
+                }}
+                placeholder="제목·내용으로 검색"
+              />
+            ))}
+            <ul className="flex flex-col gap-1">
+              {candidates.map((notice) => {
+                const alreadySelected = selected.some((item) => item.id === notice.id)
+                return (
+                  <li
+                    key={notice.id}
+                    className="flex items-center gap-3 border-b border-gray-800 px-1 py-2 typo-pc-b3 mobile:typo-m-b3"
+                  >
                     <NoticeCategoryTag category={notice.category} />
                     <span className="flex-1 truncate">{notice.title}</span>
                     <button
                       type="button"
-                      onClick={() => handleRemove(notice.id)}
-                      className="shrink-0 underline"
+                      onClick={() => handleAdd(notice)}
+                      disabled={alreadySelected || isFull}
+                      className="shrink-0 underline disabled:opacity-30"
                     >
-                      빼기
+                      {alreadySelected ? '고정됨' : '추가'}
                     </button>
-                  </div>
-                </Reorder.Item>
-              ))}
-            </Reorder.Group>
-          )}
-        </section>
-
-        <section className="flex flex-col gap-2 border-t border-gray-800 pt-4">
-          <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
-            고정할 공지 찾기 (공개된 공지만 고정할 수 있습니다)
-          </p>
-          {/* device 기본값 'pc' 는 w-280(=1120px) 고정폭이라 640px 모달을 넘긴다.
-              좁은 화면에서는 더 심하다. pc/mobile 을 각각 렌더하고 CSS 로 감춘다. */}
-          {(['pc', 'mobile'] as const).map((device) => (
-            <GdgSearchField
-              key={device}
-              device={device}
-              // pc 는 half(412px)면 640px 모달에 들어간다. mobile 은 half 가 w-fit 으로
-              // 떨어져 입력칸이 글자 폭만큼 쪼그라들므로 full(343px)을 쓴다.
-              width={device === 'pc' ? 'half' : 'full'}
-              className={device === 'pc' ? 'hidden pc:flex' : 'flex pc:hidden'}
-              value={keyword}
-              onChange={(event) => setKeyword(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault()
-                  setSubmittedKeyword(keyword)
-                }
-              }}
-              placeholder="제목·내용으로 검색"
-            />
-          ))}
-          <ul className="flex flex-col gap-1">
-            {candidates.map((notice) => {
-              const alreadySelected = selected.some((item) => item.id === notice.id)
-              return (
-                <li
-                  key={notice.id}
-                  className="flex items-center gap-3 border-b border-gray-800 px-1 py-2 typo-pc-b3 mobile:typo-m-b3"
-                >
-                  <NoticeCategoryTag category={notice.category} />
-                  <span className="flex-1 truncate">{notice.title}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleAdd(notice)}
-                    disabled={alreadySelected || isFull}
-                    className="shrink-0 underline disabled:opacity-30"
-                  >
-                    {alreadySelected ? '고정됨' : '추가'}
-                  </button>
+                  </li>
+                )
+              })}
+              {candidates.length === 0 && (
+                <li className="py-4 text-center text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+                  검색 결과가 없습니다.
                 </li>
-              )
-            })}
-            {candidates.length === 0 && (
-              <li className="py-4 text-center text-gray-500 typo-pc-c1 mobile:typo-m-c1">검색 결과가 없습니다.</li>
+              )}
+            </ul>
+            {isFull && (
+              <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+                슬롯이 가득 찼습니다. 추가하려면 먼저 하나를 빼세요.
+              </p>
             )}
-          </ul>
-          {isFull && (
-            <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
-              슬롯이 가득 찼습니다. 추가하려면 먼저 하나를 빼세요.
-            </p>
-          )}
-        </section>
+          </section>
+        </div>
 
-        {errorMessage && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>}
+        {/* 저장 실패 문구는 스크롤 밖에 둔다 — 안에 있으면 스크롤 위치에 따라 안 보인다. */}
+        {errorMessage && (
+          <p className="shrink-0 text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>
+        )}
 
-        <div className="flex gap-3">
+        <div className="flex shrink-0 gap-3">
           <GdgButton variant="bordered" fullWidth onClick={onClose}>
             취소
           </GdgButton>
