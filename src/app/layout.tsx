@@ -62,10 +62,17 @@ const dunggeunmo = localFont({
   fallback: ['Pretendard', 'sans-serif']
 })
 
+/**
+ * maximumScale 을 두지 않는다. userScalable: true 와 함께 쓰면 "확대를 허용하되
+ * 확대 배율은 1배까지"라는 모순이 되고, 브라우저마다 다르게 해석한다. 확대를 실제로
+ * 막으면 접근성 문제이기도 하다.
+ *
+ * 탭 지연이 걱정되는 요소는 각자 touch-manipulation 을 쓴다 — 페이지 전체의 확대를
+ * 막는 방식으로 해결하지 않는다.
+ */
 export const viewport = {
   width: 'device-width',
   initialScale: 1.0,
-  maximumScale: 1.0,
   minimumScale: 1.0,
   userScalable: true,
   themeColor: '#000000',

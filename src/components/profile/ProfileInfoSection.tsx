@@ -1,0 +1,142 @@
+'use client'
+
+import { useState } from 'react'
+
+import {
+  GdgButton,
+  GdgFieldContainer,
+  GdgInputField,
+  GdgMajorDropdown
+} from '@/components/ui/design-system'
+import { formatMajorLabel } from '@/constant/majorOptions'
+import { usePhoneNumber } from '@/hooks/usePhoneNumber'
+import type { UpdateProfilePayload, UserProfile } from '@/types/profile'
+import { formatPhoneNumberInput } from '@/utils/phoneNumber'
+
+// 서버의 PATCH /api/v1/users/me 검증(^01[0-9]\d{7,8}$)과 같은 범위를 쓴다.
+// 공유 유틸 isPhoneNumberFormatValid는 010 11자리만 허용해, DB에 남아 있는
+// 011·016 번호를 가진 사용자가 이름만 고쳐도 저장할 수 없게 만든다.
+const PROFILE_PHONE_PATTERN = /^01[0-9]\d{7,8}$/
+
+interface ProfileInfoSectionProps {
+  profile: UserProfile
+  onSave: (payload: UpdateProfilePayload) => Promise<void>
+  saving?: boolean
+  error?: string | null
+}
+
+export default function ProfileInfoSection({
+  profile,
+  onSave,
+  saving = false,
+  error = null
+}: ProfileInfoSectionProps) {
+  const { formatInput, toDigits } = usePhoneNumber()
+
+  const [editing, setEditing] = useState(false)
+  const [name, setName] = useState(profile.name)
+  const [major, setMajor] = useState(profile.major)
+  const [phoneNumber, setPhoneNumber] = useState(formatPhoneNumberInput(profile.phoneNumber))
+
+  const startEditing = () => {
+    setName(profile.name)
+    setMajor(profile.major)
+    setPhoneNumber(formatPhoneNumberInput(profile.phoneNumber))
+    setEditing(true)
+  }
+
+  const cancelEditing = () => setEditing(false)
+
+  const isPhoneValid = PROFILE_PHONE_PATTERN.test(toDigits(phoneNumber))
+  const canSave = name.trim().length > 0 && major.length > 0 && isPhoneValid
+
+  const handleSave = async () => {
+    if (!canSave) return
+    try {
+      await onSave({
+        name: name.trim(),
+        major,
+        phoneNumber: toDigits(phoneNumber)
+      })
+      setEditing(false)
+    } catch {
+      // 부모가 에러 메시지를 렌더링한다. 편집 모드를 유지해 사용자가 재시도할 수 있다.
+    }
+  }
+
+  return (
+    <section className="space-y-4">
+      <h2 className="typo-pc-h4 text-white">사용자 개인정보</h2>
+
+      <div className="grid gap-4 pc:grid-cols-2">
+        <GdgInputField
+          label="이름"
+          value={editing ? name : profile.name}
+          state={editing ? 'available' : 'disabled'}
+          disabled={!editing}
+          onChange={(event) => setName(event.target.value)}
+          // 서버의 @Size(max = 30)과 같은 범위를 쓴다.
+          maxLength={30}
+          fullWidth
+        />
+        <GdgInputField label="학번" value={profile.studentId} state="disabled" disabled fullWidth />
+      </div>
+
+      <div>
+        {editing ? (
+          <GdgFieldContainer label="학과">
+            {/* device를 넘기지 않으면 기본값 'auto'가 GdgDropdown의 Device('pc'|'mobile')에
+                없어 getControlMeta에서 undefined['full']로 터진다. signup 화면도 device를
+                명시한다. */}
+            <GdgMajorDropdown device="pc" value={major} onChangeAction={setMajor} />
+          </GdgFieldContainer>
+        ) : (
+          // 서버는 학과를 코드(ME)로 저장한다. 사람이 읽는 이름으로 바꿔 보여준다.
+          <GdgInputField
+            label="학과"
+            value={formatMajorLabel(profile.major)}
+            state="disabled"
+            disabled
+            fullWidth
+          />
+        )}
+      </div>
+
+      <GdgInputField
+        label="전화번호"
+        type="tel"
+        value={editing ? phoneNumber : formatPhoneNumberInput(profile.phoneNumber)}
+        state={
+          editing && !isPhoneValid ? 'error' : editing ? 'available' : 'disabled'
+        }
+        errorText={
+          editing && !isPhoneValid ? '전화번호 형식을 확인해 주세요.' : undefined
+        }
+        disabled={!editing}
+        onChange={(event) => setPhoneNumber(formatInput(event.target.value))}
+        fullWidth
+      />
+
+      <GdgInputField label="이메일" value={profile.email} state="disabled" disabled fullWidth />
+
+      {error && <p className="typo-pc-c1 text-red">{error}</p>}
+
+      <div className="flex justify-end gap-2">
+        {editing ? (
+          <>
+            <GdgButton type="button" onClick={cancelEditing} disabled={saving}>
+              취소
+            </GdgButton>
+            <GdgButton type="button" variant="active" onClick={handleSave} disabled={!canSave || saving}>
+              {saving ? '저장 중…' : '저장하기'}
+            </GdgButton>
+          </>
+        ) : (
+          <GdgButton type="button" variant="active" onClick={startEditing}>
+            수정하기
+          </GdgButton>
+        )}
+      </div>
+    </section>
+  )
+}

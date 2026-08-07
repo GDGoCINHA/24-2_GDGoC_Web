@@ -41,14 +41,25 @@ const valueTagStateClass: Record<Accent, { active: string; inactive: string }> =
   yellow: { active: 'bg-yellow', inactive: 'bg-yellow-400' }
 }
 
+/**
+ * 게시판만 성격이 다르다. 나머지 셋은 같은 페이지의 섹션으로 스크롤하는 앵커라
+ * 활성 표시(빨간 밑줄)가 따라붙지만, 게시판은 다른 페이지로 나가므로 활성이 되지 않는다.
+ * 그래도 나란히 두는 편이 사용자에게 자연스러워 같은 줄에 놓는다.
+ *
+ * 게시판 셋 중 행사로 보낸다. 랜딩은 비로그인 방문자가 보는 화면인데 공지·자유는
+ * 로그인이 필요해서 여기서 링크하면 바로 로그인으로 튕긴다. 게시판끼리의 이동은
+ * 게시판 헤더의 BOARD_MENUS 가 담당하므로 여기서는 입구 하나만 연다.
+ */
 const navItems = [
   { label: '소개', id: 'about' },
   { label: '활동', id: 'activities' },
+  { label: '게시판', href: '/board/events/' },
   { label: 'FAQ', id: 'faq' }
 ]
 
+/** 게시판이 2번이라 FAQ 가 3번이다. 밑줄 위치가 이 값으로 계산되므로 navItems 순서와 같이 움직인다. */
 const getActiveNavIndex = (activeId: string) => {
-  if (activeId === 'faq') return 2
+  if (activeId === 'faq') return 3
   if (activeId === 'activities' || activeId === 'join') return 1
   return 0
 }
@@ -66,6 +77,15 @@ const values: Array<{ title: string; body: string; accent: Accent }> = [
   { title: '성장', body: '도전하며\n한 단계씩 성장해요.', accent: 'blue' },
   { title: '존중', body: '서로의 관점과 속도를\n존중해요.', accent: 'yellow' }
 ]
+
+const ROLE_RANK: Record<string, number> = {
+  GUEST: 0,
+  MEMBER: 1,
+  CORE: 2,
+  LEAD: 3,
+  ORGANIZER: 4,
+  ADMIN: 5
+}
 
 function SeminarIcon({ className }: { className?: string }) {
   return (
@@ -297,6 +317,8 @@ function SiteHeader({
   onNavigate: (sectionId: string) => void
   logoRef?: RefObject<HTMLDivElement>
 }) {
+  const { user } = useAuth()
+  const isLoggedIn = Boolean(user)
   const activeNavIndex = getActiveNavIndex(activeId)
   const loginIcon = (
     <svg
@@ -326,25 +348,41 @@ function SiteHeader({
           <GdgLogo mode="pc" variant="long" priority />
         </div>
         <nav className="relative flex h-full items-center justify-center typo-pc-b2 mobile:flex-1 mobile:typo-m-s3">
-          {navItems.map((item, index) => (
-            <a
-              key={item.label}
-              href={`#${item.id}`}
-              aria-current={index === activeNavIndex ? 'page' : undefined}
-              onClick={(event) => {
-                event.preventDefault()
-                onNavigate(item.id)
-              }}
-              className={cn(
-                'flex h-6 w-30 items-center justify-center transition-colors hover:text-white mobile:h-full mobile:flex-1 mobile:w-auto',
-                index === activeNavIndex ? 'text-white' : 'text-gray-500'
-              )}
-            >
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item, index) => {
+            // touch-manipulation: 안드로이드 크롬이 더블탭 줌 여부를 기다리느라 탭마다
+            // 300ms 쯤 클릭을 늦춘다. 그 뒤에 전환 애니메이션 0.84초가 이어져 첫 탭이
+            // 먹히지 않은 것처럼 보인다. 이 요소에서 더블탭 줌을 포기해 지연을 없앤다.
+            const className = cn(
+              'flex h-6 w-30 touch-manipulation items-center justify-center transition-colors hover:text-white mobile:h-full mobile:flex-1 mobile:w-auto',
+              index === activeNavIndex ? 'text-white' : 'text-gray-500'
+            )
+
+            // 게시판은 페이지 이동이라 preventDefault 를 걸지 않는다. 활성도 되지 않는다.
+            if (item.href) {
+              return (
+                <a key={item.label} href={item.href} className={className}>
+                  {item.label}
+                </a>
+              )
+            }
+
+            return (
+              <a
+                key={item.label}
+                href={`#${item.id}`}
+                aria-current={index === activeNavIndex ? 'page' : undefined}
+                onClick={(event) => {
+                  event.preventDefault()
+                  onNavigate(item.id)
+                }}
+                className={className}
+              >
+                {item.label}
+              </a>
+            )
+          })}
           <span
-            className="absolute bottom-0 left-[calc(var(--active-nav-index)*120px)] h-0.5 w-30 bg-red transition-[left] duration-300 ease-out mobile:left-[calc(var(--active-nav-index)*100%/3)] mobile:w-[calc(100%/3)]"
+            className="absolute bottom-0 left-[calc(var(--active-nav-index)*120px)] h-0.5 w-30 bg-red transition-[left] duration-300 ease-out mobile:left-[calc(var(--active-nav-index)*100%/4)] mobile:w-[calc(100%/4)]"
             style={
               {
                 '--active-nav-index': activeNavIndex
@@ -353,11 +391,16 @@ function SiteHeader({
             aria-hidden
           />
         </nav>
-        <div className="justify-self-end mobile:hidden">
+        {/* mobile:hidden 을 두면 모바일에 진입 수단이 아예 없다. 같은 파일의
+            MobileMenuDrawer 는 정의만 있고 렌더되지 않는 죽은 코드라, 드로어의
+            마이페이지 항목은 화면에 나오지 않는다. */}
+        <div className="flex items-center gap-4 justify-self-end">
+          {/* 로그인 상태에서도 /login?next=%2F 로 보내면 로그인 후 / 가 /onboarding 으로
+              리다이렉트돼 제자리로 돌아온다. 로그인했으면 내 정보로 보낸다. */}
           <a
-            href="/login?next=%2F"
-            className="flex size-11 items-center justify-center text-gray-500 transition-colors hover:text-white"
-            aria-label="로그인"
+            href={isLoggedIn ? '/profile' : '/login?next=%2F'}
+            className="flex size-11 touch-manipulation items-center justify-center text-gray-500 transition-colors hover:text-white"
+            aria-label={isLoggedIn ? '내 정보' : '로그인'}
           >
             {loginIcon}
           </a>
@@ -387,11 +430,15 @@ function MobileMenuDrawer({
   const studentId = user?.email || '계정으로 로그인해 주세요'
   const role = user?.userRole || 'GUEST'
   const isLoggedIn = Boolean(user)
+  const canSeeDashboard = (ROLE_RANK[role] ?? 0) >= ROLE_RANK.CORE
+
   const menuItems = [
     { label: '소개', action: () => onNavigate('about') },
     { label: '활동', action: () => onNavigate('activities') },
+    { label: '게시판', href: '/board/events/' },
     { label: 'FAQ', action: () => onNavigate('faq') },
-    { label: '마이페이지', href: '/dashboard' }
+    { label: '마이페이지', href: '/profile' },
+    ...(canSeeDashboard ? [{ label: '대시보드', href: '/dashboard' }] : [])
   ]
 
   return (
@@ -490,7 +537,7 @@ function MobileMenuDrawer({
         {isLoggedIn ? (
           <button
             type="button"
-            className="absolute left-6 top-[526px] flex items-center gap-2 text-white typo-m-b2"
+            className="absolute left-6 top-[550px] flex items-center gap-2 text-white typo-m-b2"
             onClick={() => {
               onClose()
               onLogout()
