@@ -41,11 +41,11 @@ export function formatKoreanPeriodShort(openAt: string, closeAt: string): string
 export const CORE_SCHEDULE = {
   /** 서버 응답을 못 받았을 때만 쓰는 대체값. 서버 설정(app.recruit.core.*)과 함께 고친다. */
   fallbackOpenAt: '2026-08-10T00:00:00+09:00',
-  fallbackCloseAt: '2026-08-30T23:59:59+09:00',
-  documentResult: '~ 2026. 8. 31.(월)',
-  interview: '2026. 9. 1.(화) - 2026. 9. 5.(토)',
+  fallbackCloseAt: '2026-08-23T23:59:59+09:00',
+  documentResult: '2026. 8. 23.(일)',
+  interview: '2026. 8. 24.(월) - 2026. 8. 30.(일)',
   interviewNote: '※ 지원자 및 면접관 일정에 따라 마감 전 면접이 가능할 수 있습니다.',
-  finalResult: '~ 2026. 9. 6.(일)',
+  finalResult: '2026. 8. 31.(월)',
   meetingNote: '※ 일정은 9월 내로 공지 드립니다.'
 } as const
 
