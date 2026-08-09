@@ -70,6 +70,32 @@ const PAY_SEGMENTS = [
   { label: '입금 완료', value: true }
 ] as const
 
+// 서버 AdmissionSemester enum 과 값을 맞춘다. 목록에 없는 값을 보내면 400 이 난다.
+const SEMESTER_OPTIONS = [
+  'Y29_2', 'Y29_1', 'Y28_2', 'Y28_1', 'Y27_2', 'Y27_1',
+  'Y26_2', 'Y26_1', 'Y25_2', 'Y25_1', 'Y24_2', 'Y24_1',
+  'Y23_2', 'Y23_1', 'Y22_2', 'Y22_1', 'Y21_2'
+] as const
+
+const ALL_SEMESTERS = 'ALL'
+
+/** 서버 SemesterCalculator 와 같은 규칙 — 1월은 직전 해 2학기, 2~7월 1학기, 8~12월 2학기. */
+function currentAdmissionSemester(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth() + 1
+  const yy = month === 1 ? (year - 1) % 100 : year % 100
+  const term = month === 1 ? 2 : month <= 7 ? 1 : 2
+  return `Y${String(yy).padStart(2, '0')}_${term}`
+}
+
+/** 'Y26_2' → '2026-2학기' */
+function formatSemesterLabel(value?: string | null): string {
+  if (!value) return '-'
+  const matched = /^Y(\d{2})_(\d)$/.exec(value)
+  return matched ? `20${matched[1]}-${matched[2]}학기` : value
+}
+
 const SEGMENT_WIDTH_PX = Math.max(...PAY_SEGMENTS.map((item) => item.label.length * 16 + 26))
 
 export default function DashboardMembersPage() {
@@ -81,6 +107,8 @@ export default function DashboardMembersPage() {
 
   const [searchInput, setSearchInput] = useState('')
   const [question, setQuestion] = useState('')
+  // 모집 기간에는 이번 학기 지원자만 보는 게 기본이다. 과거 기수는 드롭다운으로 전환한다.
+  const [semester, setSemester] = useState<string>(currentAdmissionSemester())
   const [page, setPage] = useState(1)
   const [size] = useState(20)
   const [totalPages, setTotalPages] = useState(1)
@@ -100,7 +128,8 @@ export default function DashboardMembersPage() {
           size,
           sort: 'createdAt',
           dir: 'DESC',
-          ...(question.trim() ? { question: question.trim() } : {})
+          ...(question.trim() ? { question: question.trim() } : {}),
+          ...(semester !== ALL_SEMESTERS ? { admissionSemester: semester } : {})
         }
       })
 
@@ -118,7 +147,7 @@ export default function DashboardMembersPage() {
     } finally {
       setLoading(false)
     }
-  }, [apiClient, page, question, size])
+  }, [apiClient, page, question, semester, size])
 
   useEffect(() => {
     void fetchMembers()
@@ -161,6 +190,13 @@ export default function DashboardMembersPage() {
       setLoading(false)
     }
   }
+
+  // 아직 오지 않은 학기는 고를 이유가 없다. 현재 학기부터 과거만 남긴다.
+  const semesterOptions = useMemo(() => {
+    const current = currentAdmissionSemester()
+    const index = SEMESTER_OPTIONS.indexOf(current as (typeof SEMESTER_OPTIONS)[number])
+    return index >= 0 ? SEMESTER_OPTIONS.slice(index) : SEMESTER_OPTIONS
+  }, [])
 
   const pageNumbers = useMemo(() => {
     const maxVisible = 7
@@ -211,6 +247,21 @@ export default function DashboardMembersPage() {
             </Link>
           </div>
           <div className="flex w-full gap-2 pc:w-auto">
+            <select
+              value={semester}
+              onChange={(e) => {
+                setPage(1)
+                setSemester(e.target.value)
+              }}
+              className="h-11 rounded-lg border border-gray-300 bg-gray-100 px-3 text-white outline-none focus:border-white"
+            >
+              <option value={ALL_SEMESTERS}>전체 학기</option>
+              {semesterOptions.map((option) => (
+                <option key={option} value={option}>
+                  {formatSemesterLabel(option)}
+                </option>
+              ))}
+            </select>
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
@@ -249,6 +300,7 @@ export default function DashboardMembersPage() {
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">이름</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">학과</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">학번</th>
+                <th className="px-4 py-3 typo-pc-b3 text-gray-700">지원 학기</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">전화번호</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">회비</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">상세</th>
@@ -257,7 +309,7 @@ export default function DashboardMembersPage() {
             <tbody>
               {members.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center typo-pc-b3 text-gray-700">
+                  <td colSpan={7} className="px-4 py-8 text-center typo-pc-b3 text-gray-700">
                     조회된 지원자가 없습니다.
                   </td>
                 </tr>
@@ -267,6 +319,9 @@ export default function DashboardMembersPage() {
                     <td className="px-4 py-3 typo-pc-b3">{member.name}</td>
                     <td className="px-4 py-3 typo-pc-b3">{formatMajorLabel(member.major)}</td>
                     <td className="px-4 py-3 typo-pc-b3">{member.studentId}</td>
+                    <td className="px-4 py-3 typo-pc-b3">
+                      {formatSemesterLabel(member.admissionSemester)}
+                    </td>
                     <td className="px-4 py-3 typo-pc-b3">
                       {formatPhoneNumberDisplay(member.phoneNumber)}
                     </td>
