@@ -253,14 +253,14 @@ const faqs: Array<{ question: string; answer: string[]; accent: Accent }> = [
   {
     question: '문의는 어디로 하면 되나요?',
     answer: [
-      '문의는 공식메일(gdsc.inha@gmail.com) 또는 카카오톡(링크: https://open.kakao.com/o/s3fxV67h)으로 해주시면 답변드리겠습니다.'
+      '문의는 공식메일(gdsc.inha@gmail.com) 또는 카카오톡(링크: https://open.kakao.com/o/s2OqrcIi)으로 해주시면 답변드리겠습니다.'
     ],
     accent: 'blue'
   }
 ]
 
 const pageSectionClass = 'h-svh min-h-[640px] shrink-0'
-const kakaoOpenChatUrl = 'https://open.kakao.com/o/s3fxV67h'
+const kakaoOpenChatUrl = 'https://open.kakao.com/o/s2OqrcIi'
 
 const pageIds = [
   'intro',

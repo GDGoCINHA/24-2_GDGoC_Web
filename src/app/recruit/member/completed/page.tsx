@@ -170,12 +170,12 @@ export default function RecruitSubmit() {
                 <span className="font-bold mr-2">카카오톡 오픈채팅</span>
                 <br />
                 <Link
-                  href="https://open.kakao.com/o/s3fxV67h"
+                  href="https://open.kakao.com/o/s2OqrcIi"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="typo-pc-b3 mobile:typo-m-c1 text-[#9EC0FF] underline break-all"
                 >
-                  https://open.kakao.com/o/s3fxV67h
+                  https://open.kakao.com/o/s2OqrcIi
                 </Link>
               </Bullet>
               <Bullet>
