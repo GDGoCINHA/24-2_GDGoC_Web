@@ -1,12 +1,12 @@
 'use client'
 
 import axios from 'axios'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
+import { BoardContent } from '@/components/board/BoardContent'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
@@ -152,15 +152,16 @@ export default function EventBoardDetailPage() {
           </div>
         </div>
 
-        {detail.thumbnailUrl && (
-          <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-gray-100">
-            <Image src={detail.thumbnailUrl} alt="" fill className="object-cover" />
+        {/* 썸네일은 목록에서 글을 고를 때 쓰는 그림이다. 상세에서 또 띄우면 본문에 같은
+            이미지를 넣었을 때 두 번 보인다 — 본문에 넣을 그림은 본문이 갖는다. */}
+        <BoardContent content={detail.content} />
+
+        {detail.attachments.length > 0 && (
+          <div className="space-y-2 border-t border-gray-800 pt-6">
+            <p className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</p>
+            <AttachmentList attachments={detail.attachments} />
           </div>
         )}
-
-        <p className="whitespace-pre-wrap typo-pc-b2 mobile:typo-m-b2">{detail.content}</p>
-
-        <AttachmentList attachments={detail.attachments} />
 
         {canManage && (
           <div className="flex gap-3 border-t border-gray-800 pt-6">

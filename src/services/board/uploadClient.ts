@@ -1,6 +1,28 @@
-import type { AxiosInstance } from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 
 const unwrapOnce = <T>(payload: unknown): T => (payload as { data: T }).data
+
+/** 서버 ResourceService.MAX_FILE_SIZE 와 같은 값. 넘으면 presigned 요청이 413 이다. */
+export const MAX_UPLOAD_SIZE = 10 * 1024 * 1024
+
+/** 업로드 가능한 크기면 null, 아니면 사용자에게 보여줄 사유. 서버 왕복 전에 거른다. */
+export const validateUploadSize = (file: File): string | null =>
+  file.size > MAX_UPLOAD_SIZE
+    ? `파일 크기는 10MB를 넘을 수 없습니다. (선택한 파일: ${(file.size / 1024 / 1024).toFixed(1)}MB)`
+    : null
+
+/**
+ * 업로드 실패 사유를 화면에 띄울 문구로 바꾼다. 서버는 413에 "파일 크기는 10Mb를 넘을 수
+ * 없습니다" 처럼 원인을 담아 주는데, 호출부가 이를 버리고 "업로드에 실패했습니다" 만 띄우면
+ * 사용자는 무엇을 고쳐야 할지 알 수 없다.
+ */
+export const describeUploadError = (err: unknown): string => {
+  if (axios.isAxiosError(err) && typeof err.response?.data?.message === 'string') {
+    return err.response.data.message
+  }
+  if (err instanceof Error && err.message) return err.message
+  return '업로드에 실패했습니다.'
+}
 
 export interface PresignedUpload {
   key: string
@@ -19,6 +41,15 @@ export const requestPresignedUpload = async (
     s3key
   })
   return unwrapOnce<PresignedUpload>(response.data)
+}
+
+/**
+ * 업로드한 객체를 읽을 때 쓸 주소. presigned URL 은 5분이면 만료되는 서명 쿼리를 달고
+ * 있으므로, 본문에 박아 두려면 쿼리를 떼야 한다. 버킷 객체는 무인증 GET 이 된다.
+ */
+export const toPublicUrl = (uploadUrl: string): string => {
+  const url = new URL(uploadUrl)
+  return url.origin + url.pathname
 }
 
 /**

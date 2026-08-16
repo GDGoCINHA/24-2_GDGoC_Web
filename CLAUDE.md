@@ -27,7 +27,11 @@
 
 - 커밋 메시지는 conventional commits를 따른다 (`feat:`, `fix:`, `refactor:`, `chore:`).
 - 브랜치는 `feature/{기능}` → `develop` → `master` 순으로 올린다.
-- 코드 스타일은 Prettier가 강제한다. 수정 후 `yarn format`을 실행한다.
+- 코드 스타일은 Prettier가 강제한다. 단 **`yarn format`은 쓰지 마라** — 아래 함정 참고. 만진 파일만 지정해 돌린다.
+
+```bash
+npx --yes yarn@1.22.22 prettier --write src/app/board/events/new/page.tsx
+```
 
 ## 명령어
 
@@ -35,8 +39,8 @@
 yarn dev            # 개발 서버
 yarn build          # 정적 빌드 (out/ 생성)
 yarn lint           # ESLint
-yarn format         # Prettier 적용
-yarn format:check   # 포맷 검사만
+yarn format         # ⚠️ 리포 전체 재포맷 — 쓰지 마라 (아래 함정)
+yarn format:check   # 포맷 검사만 (읽기 전용이라 안전)
 ```
 
 **테스트 스크립트는 없다.** 테스트 인프라가 구성돼 있지 않으므로 검증은 `yarn build`와 수동 확인에 의존한다.
@@ -61,6 +65,21 @@ yarn format:check   # 포맷 검사만
 ```bash
 git log --oneline origin/develop..origin/master
 ```
+
+### `yarn format`은 리포 전체를 재포맷한다
+
+이 리포는 Prettier 기준으로 정리된 적이 **없다.** 그래서 `yarn format`을 한 번 돌리면 변경 파일이 아니라 **260여 개 파일이 수정되고** diff가 통째로 오염된다. 만진 파일만 지정해 돌려라.
+
+이미 돌려버렸다면 — **`git status`가 거짓말을 한다.** `core.autocrlf=true`인데 Prettier가 LF로 다시 쓰므로, `git checkout -- .`로 내용을 복원해도 워킹트리는 LF로 남아 100개 넘는 파일이 `M`으로 보인다. 판정은 **`git diff --stat`으로 한다** — EOL만 다른 파일은 blob이 같아 커밋에 들어가지 않는다. 커밋을 마친 뒤 `git checkout -- .`을 한 번 더 돌리면 EOL까지 정리된다.
+
+되돌릴 때 내 변경만 남기는 필터:
+
+```bash
+KEEP="src/a.ts|src/b.tsx"
+git diff --name-only -z | grep -zvE "^($KEEP)$" | xargs -0 --no-run-if-empty git checkout --
+```
+
+이 필터는 **파일 단위**라, 만진 파일 *안에* 섞인 무관한 재배치(JSX 줄바꿈 등)는 안 지워진다. 커밋 전에 `git diff --cached`를 눈으로 읽는 수밖에 없다.
 
 ---
 

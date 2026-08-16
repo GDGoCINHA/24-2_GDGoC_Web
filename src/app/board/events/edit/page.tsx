@@ -3,7 +3,14 @@
 import axios from 'axios'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ClipboardEvent
+} from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
 import {
@@ -18,9 +25,16 @@ import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { fetchEventDetail, updateEvent } from '@/services/board/boardClient'
-import { requestPresignedUpload, uploadFileToS3 } from '@/services/board/uploadClient'
+import {
+  describeUploadError,
+  requestPresignedUpload,
+  toPublicUrl,
+  uploadFileToS3,
+  validateUploadSize
+} from '@/services/board/uploadClient'
 import type { AttachmentResponse, EventOrganizingTeam } from '@/types/board'
 import { hasAtLeast } from '@/utils/auth/role'
+import { insertAtCursor } from '@/utils/insertAtCursor'
 
 const TEAM_OPTIONS: GdgDropdownOption[] = [
   { id: 'HQ', label: 'HQ' },
@@ -30,7 +44,7 @@ const TEAM_OPTIONS: GdgDropdownOption[] = [
   { id: 'BD', label: 'BD' }
 ]
 
-// TODO: 백엔드 S3KeyType에 boardEvent가 추가되면 그 값과 일치하는지 재확인한다.
+// 백엔드 S3KeyType.boardEvent("board/event") 와 같은 값. develop·main 양쪽에 배포돼 있다.
 const THUMBNAIL_S3_KEY = 'boardEvent'
 
 const createDraftId = (): string =>
@@ -66,7 +80,6 @@ export default function EventBoardEditPage() {
   const [eventEndDate, setEventEndDate] = useState('')
   const [organizingTeam, setOrganizingTeam] = useState<EventOrganizingTeam | ''>('')
   const [content, setContent] = useState('')
-  const [isPublished, setIsPublished] = useState(true)
   const [attachments, setAttachments] = useState<AttachmentDraft[]>([])
   // 새 썸네일을 올리지 않으면 undefined로 보낸다 — 서버는 thumbnailKey가 null이면
   // 기존 값을 유지한다 (EventBoard.update(): "if (thumbnailKey != null) this.thumbnailKey = ...").
@@ -76,8 +89,45 @@ export default function EventBoardEditPage() {
   const [thumbnailUploading, setThumbnailUploading] = useState(false)
   const thumbnailInputRef = useRef<HTMLInputElement | null>(null)
 
+  const [contentImageUploading, setContentImageUploading] = useState(false)
+
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const handleContentPaste = useCallback(
+    async (event: ClipboardEvent<HTMLTextAreaElement>) => {
+      const file = Array.from(event.clipboardData.files).find((item) =>
+        item.type.startsWith('image/')
+      )
+      // 이미지가 아니면 손대지 않는다 — 평범한 텍스트 붙여넣기가 그대로 동작해야 한다.
+      if (!file) return
+
+      // 붙여넣은 시점의 자리를 잡아 둔다. 업로드를 기다리는 사이 커서가 움직일 수 있다.
+      const { selectionStart, selectionEnd } = event.currentTarget
+      event.preventDefault()
+
+      const sizeError = validateUploadSize(file)
+      if (sizeError) {
+        setErrorMessage(sizeError)
+        return
+      }
+
+      setErrorMessage(null)
+      setContentImageUploading(true)
+      try {
+        const { uploadUrl } = await requestPresignedUpload(apiClient, file, THUMBNAIL_S3_KEY)
+        await uploadFileToS3(uploadUrl, file)
+        // 본문에는 서명이 붙지 않은 주소를 남긴다. presigned URL 은 5분이면 만료된다.
+        const markup = `![](${toPublicUrl(uploadUrl)})`
+        setContent((prev) => insertAtCursor(prev, selectionStart, selectionEnd, markup))
+      } catch (err) {
+        setErrorMessage(describeUploadError(err))
+      } finally {
+        setContentImageUploading(false)
+      }
+    },
+    [apiClient]
+  )
 
   useEffect(() => {
     if (!Number.isFinite(id)) {
@@ -106,7 +156,6 @@ export default function EventBoardEditPage() {
         setEventEndDate(detail.eventEndDate)
         setOrganizingTeam((detail.organizingTeam ?? '') as EventOrganizingTeam | '')
         setContent(detail.content)
-        setIsPublished(detail.isPublished)
         setThumbnailPreview(detail.thumbnailUrl)
         setAttachments(
           detail.attachments.map((attachment) => ({
@@ -137,14 +186,21 @@ export default function EventBoardEditPage() {
       event.target.value = ''
       if (!file) return
 
+      const sizeError = validateUploadSize(file)
+      if (sizeError) {
+        setErrorMessage(sizeError)
+        return
+      }
+
+      setErrorMessage(null)
       setThumbnailPreview(URL.createObjectURL(file))
       setThumbnailUploading(true)
       try {
         const { key, uploadUrl } = await requestPresignedUpload(apiClient, file, THUMBNAIL_S3_KEY)
         await uploadFileToS3(uploadUrl, file)
         setThumbnailKey(key)
-      } catch {
-        setErrorMessage('썸네일 업로드에 실패했습니다.')
+      } catch (err) {
+        setErrorMessage(describeUploadError(err))
       } finally {
         setThumbnailUploading(false)
       }
@@ -170,7 +226,9 @@ export default function EventBoardEditPage() {
         organizingTeam,
         thumbnailKey: thumbnailKey ?? undefined,
         content,
-        isPublished,
+        // 작성 화면과 같은 이유로 공개 선택지를 두지 않는다. true 로 보내므로 예전에 비공개로
+        // 저장돼 목록에서 사라진 글도 한 번 저장하면 다시 드러난다.
+        isPublished: true,
         attachments: attachments
           .filter((item) => item.status === 'done')
           .map((item) =>
@@ -196,7 +254,6 @@ export default function EventBoardEditPage() {
     eventEndDate,
     eventStartDate,
     id,
-    isPublished,
     organizingTeam,
     router,
     thumbnailKey,
@@ -220,7 +277,9 @@ export default function EventBoardEditPage() {
   }
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+    return (
+      <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+    )
   }
 
   if (loadError) {
@@ -300,22 +359,21 @@ export default function EventBoardEditPage() {
           )}
         </div>
 
-        <GdgTextarea
-          label="내용"
-          fullWidth
-          rows={10}
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-        />
-
-        <label className="flex items-center gap-2 typo-pc-b3 mobile:typo-m-b3">
-          <input
-            type="checkbox"
-            checked={isPublished}
-            onChange={(event) => setIsPublished(event.target.checked)}
+        <div className="flex flex-col gap-2">
+          <GdgTextarea
+            label="내용"
+            fullWidth
+            rows={10}
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            onPaste={handleContentPaste}
           />
-          공개
-        </label>
+          <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
+            {contentImageUploading
+              ? '이미지 올리는 중...'
+              : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'}
+          </p>
+        </div>
 
         <div className="flex flex-col gap-2">
           <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</span>

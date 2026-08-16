@@ -69,16 +69,33 @@ export default function EventBoardListPage() {
     setSubmittedKeyword(keyword)
   }, [keyword])
 
+  // 제목만 너비를 비워 남은 폭을 전부 가져가게 한다 (BoardList 는 table-fixed).
   const columns: BoardListColumn<EventBoardSummary>[] = [
-    { key: 'title', header: '제목', render: (item) => item.title, primary: true },
+    {
+      key: 'title',
+      header: '제목',
+      render: (item) => <span className="block truncate">{item.title}</span>,
+      primary: true
+    },
     {
       key: 'period',
       header: '기간',
-      render: (item) => `${formatDate(item.eventStartDate)} ~ ${formatDate(item.eventEndDate)}`
+      render: (item) => `${formatDate(item.eventStartDate)} ~ ${formatDate(item.eventEndDate)}`,
+      className: 'w-52'
     },
-    { key: 'team', header: '팀', render: (item) => item.organizingTeam ?? '-' },
-    { key: 'author', header: '작성자', render: (item) => item.authorName },
-    { key: 'status', header: '상태', render: (item) => STATUS_LABEL[item.status] ?? item.status }
+    {
+      key: 'team',
+      header: '팀',
+      render: (item) => item.organizingTeam ?? '-',
+      className: 'w-28'
+    },
+    { key: 'author', header: '작성자', render: (item) => item.authorName, className: 'w-28' },
+    {
+      key: 'status',
+      header: '상태',
+      render: (item) => STATUS_LABEL[item.status] ?? item.status,
+      className: 'w-20'
+    }
   ]
 
   const canWrite = hasAtLeast(user?.userRole, 'CORE')
@@ -136,6 +153,20 @@ export default function EventBoardListPage() {
             columns={columns}
             getRowKey={(item) => item.id}
             onRowClick={(item) => router.push(`/board/events/detail?id=${item.id}`)}
+            thumbnail={(item) => (
+              <div className="h-12 w-20 overflow-hidden rounded bg-gray-100">
+                {item.thumbnailUrl && (
+                  // next/image 는 못 쓴다 — S3 호스트를 remotePatterns 에 적을 수 없다.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.thumbnailUrl}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                )}
+              </div>
+            )}
           />
         )}
 
