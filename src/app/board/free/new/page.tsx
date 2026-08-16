@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { useContentImagePaste } from '@/hooks/useContentImagePaste'
 import { createFreePost } from '@/services/board/freeClient'
 import { hasAtLeast } from '@/utils/auth/role'
 
@@ -31,6 +32,9 @@ export default function FreeBoardNewPage() {
   const [attachments, setAttachments] = useState<AttachmentDraft[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const { uploading: contentImageUploading, handlePaste: handleContentPaste } =
+    useContentImagePaste({ apiClient, s3key: FREE_S3_KEY, setContent, setErrorMessage })
 
   const handleSubmit = useCallback(async () => {
     if (!title.trim() || !content.trim()) {
@@ -87,13 +91,21 @@ export default function FreeBoardNewPage() {
           onChange={(event) => setTitle(event.target.value)}
         />
 
-        <GdgTextarea
-          label="내용"
-          fullWidth
-          rows={12}
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-        />
+        <div className="flex flex-col gap-2">
+          <GdgTextarea
+            label="내용"
+            fullWidth
+            rows={12}
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            onPaste={handleContentPaste}
+          />
+          <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
+            {contentImageUploading
+              ? '이미지 올리는 중...'
+              : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'}
+          </p>
+        </div>
 
         <div className="flex flex-col gap-2">
           <span className="tracking-[0.2em] text-white/80 typo-pc-s3 mobile:typo-m-s3 uppercase">

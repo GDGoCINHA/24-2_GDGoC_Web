@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
+import { BoardContent } from '@/components/board/BoardContent'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
@@ -158,7 +159,7 @@ export default function NoticeBoardDetailPage() {
           </div>
         </div>
 
-        <p className="whitespace-pre-wrap typo-pc-b2 mobile:typo-m-b2">{detail.content}</p>
+        <BoardContent content={detail.content} />
 
         <AttachmentList attachments={detail.attachments} />
 

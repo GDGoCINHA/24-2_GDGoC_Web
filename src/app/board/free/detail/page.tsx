@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
+import { BoardContent } from '@/components/board/BoardContent'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { FreeBoardComments } from '@/components/board/FreeBoardComments'
 import { GdgSiteHeader } from '@/components/ui/design-system'
@@ -160,7 +161,7 @@ export default function FreeBoardDetailPage() {
           </div>
         </div>
 
-        <p className="whitespace-pre-wrap typo-pc-b2 mobile:typo-m-b2">{detail.content}</p>
+        <BoardContent content={detail.content} />
 
         <AttachmentList attachments={detail.attachments} />
 

@@ -16,6 +16,7 @@ import {
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { useContentImagePaste } from '@/hooks/useContentImagePaste'
 import { fetchNoticeDetail, updateNotice } from '@/services/board/noticeClient'
 import { NOTICE_CATEGORY_LABEL, type NoticeCategory } from '@/types/notice'
 import { hasAtLeast } from '@/utils/auth/role'
@@ -50,6 +51,9 @@ export default function NoticeBoardEditPage() {
   const [attachments, setAttachments] = useState<AttachmentDraft[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const { uploading: contentImageUploading, handlePaste: handleContentPaste } =
+    useContentImagePaste({ apiClient, s3key: NOTICE_S3_KEY, setContent, setErrorMessage })
 
   const canManage = hasAtLeast(user?.userRole, 'CORE')
   // 남의 글이면 서버가 403 을 줄 것을 미리 알아내 폼 대신 안내를 띄운다.
@@ -198,13 +202,21 @@ export default function NoticeBoardEditPage() {
           onChange={(value) => setCategory(value as NoticeCategory)}
         />
 
-        <GdgTextarea
-          label="내용"
-          fullWidth
-          rows={12}
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-        />
+        <div className="flex flex-col gap-2">
+          <GdgTextarea
+            label="내용"
+            fullWidth
+            rows={12}
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+            onPaste={handleContentPaste}
+          />
+          <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
+            {contentImageUploading
+              ? '이미지 올리는 중...'
+              : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'}
+          </p>
+        </div>
 
         {/* 공개 중인 공지를 임시저장으로 되돌려도 상단 고정은 자동으로 풀리지 않는다.
             백엔드는 고정 '저장 시점'에만 미공개를 거부하고(PinnedNoticeService.replacePinned),

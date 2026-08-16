@@ -102,7 +102,8 @@ export default function NoticeBoardListPage() {
       primary: true,
       render: (item) => (
         <span className="flex items-center gap-2">
-          {item.title}
+          {/* flex 자식은 기본 min-width:auto 라 min-w-0 없이는 줄어들지 않아 말줄임이 안 걸린다. */}
+          <span className="min-w-0 truncate">{item.title}</span>
           {/* 서버가 CORE 미만에게는 미공개 글을 아예 주지 않으므로, 이 배지가 보인다는 건
               보는 사람이 CORE 이상이라는 뜻이다. */}
           {!item.isPublished && <span className="shrink-0 text-gray-700 typo-pc-c2 mobile:typo-m-c2">임시저장</span>}

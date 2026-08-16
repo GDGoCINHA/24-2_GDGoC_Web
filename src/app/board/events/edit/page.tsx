@@ -3,14 +3,7 @@
 import axios from 'axios'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type ClipboardEvent
-} from 'react'
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
 import {
@@ -28,13 +21,12 @@ import { fetchEventDetail, updateEvent } from '@/services/board/boardClient'
 import {
   describeUploadError,
   requestPresignedUpload,
-  toPublicUrl,
   uploadFileToS3,
   validateUploadSize
 } from '@/services/board/uploadClient'
+import { useContentImagePaste } from '@/hooks/useContentImagePaste'
 import type { AttachmentResponse, EventOrganizingTeam } from '@/types/board'
 import { hasAtLeast } from '@/utils/auth/role'
-import { insertAtCursor } from '@/utils/insertAtCursor'
 
 const TEAM_OPTIONS: GdgDropdownOption[] = [
   { id: 'HQ', label: 'HQ' },
@@ -89,45 +81,16 @@ export default function EventBoardEditPage() {
   const [thumbnailUploading, setThumbnailUploading] = useState(false)
   const thumbnailInputRef = useRef<HTMLInputElement | null>(null)
 
-  const [contentImageUploading, setContentImageUploading] = useState(false)
-
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const handleContentPaste = useCallback(
-    async (event: ClipboardEvent<HTMLTextAreaElement>) => {
-      const file = Array.from(event.clipboardData.files).find((item) =>
-        item.type.startsWith('image/')
-      )
-      // 이미지가 아니면 손대지 않는다 — 평범한 텍스트 붙여넣기가 그대로 동작해야 한다.
-      if (!file) return
-
-      // 붙여넣은 시점의 자리를 잡아 둔다. 업로드를 기다리는 사이 커서가 움직일 수 있다.
-      const { selectionStart, selectionEnd } = event.currentTarget
-      event.preventDefault()
-
-      const sizeError = validateUploadSize(file)
-      if (sizeError) {
-        setErrorMessage(sizeError)
-        return
-      }
-
-      setErrorMessage(null)
-      setContentImageUploading(true)
-      try {
-        const { uploadUrl } = await requestPresignedUpload(apiClient, file, THUMBNAIL_S3_KEY)
-        await uploadFileToS3(uploadUrl, file)
-        // 본문에는 서명이 붙지 않은 주소를 남긴다. presigned URL 은 5분이면 만료된다.
-        const markup = `![](${toPublicUrl(uploadUrl)})`
-        setContent((prev) => insertAtCursor(prev, selectionStart, selectionEnd, markup))
-      } catch (err) {
-        setErrorMessage(describeUploadError(err))
-      } finally {
-        setContentImageUploading(false)
-      }
-    },
-    [apiClient]
-  )
+  const { uploading: contentImageUploading, handlePaste: handleContentPaste } =
+    useContentImagePaste({
+      apiClient,
+      s3key: THUMBNAIL_S3_KEY,
+      setContent,
+      setErrorMessage
+    })
 
   useEffect(() => {
     if (!Number.isFinite(id)) {

@@ -80,7 +80,12 @@ export default function FreeBoardListPage() {
   }, [keyword])
 
   const columns: BoardListColumn<FreeBoardSummary>[] = [
-    { key: 'title', header: '제목', primary: true, render: (item) => item.title },
+    {
+      key: 'title',
+      header: '제목',
+      primary: true,
+      render: (item) => <span className="block truncate">{item.title}</span>
+    },
     { key: 'author', header: '작성자', render: (item) => item.authorName, className: 'w-32' },
     { key: 'view', header: '조회', render: (item) => item.viewCount, className: 'w-20' },
     {
