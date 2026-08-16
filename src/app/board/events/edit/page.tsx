@@ -3,7 +3,14 @@
 import axios from 'axios'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ClipboardEvent
+} from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
 import {
@@ -83,17 +90,21 @@ export default function EventBoardEditPage() {
   const thumbnailInputRef = useRef<HTMLInputElement | null>(null)
 
   const [contentImageUploading, setContentImageUploading] = useState(false)
-  const contentImageInputRef = useRef<HTMLInputElement | null>(null)
-  const contentRef = useRef<HTMLTextAreaElement | null>(null)
 
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const handleContentImageSelect = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0]
-      event.target.value = ''
+  const handleContentPaste = useCallback(
+    async (event: ClipboardEvent<HTMLTextAreaElement>) => {
+      const file = Array.from(event.clipboardData.files).find((item) =>
+        item.type.startsWith('image/')
+      )
+      // 이미지가 아니면 손대지 않는다 — 평범한 텍스트 붙여넣기가 그대로 동작해야 한다.
       if (!file) return
+
+      // 붙여넣은 시점의 자리를 잡아 둔다. 업로드를 기다리는 사이 커서가 움직일 수 있다.
+      const { selectionStart, selectionEnd } = event.currentTarget
+      event.preventDefault()
 
       const sizeError = validateUploadSize(file)
       if (sizeError) {
@@ -108,7 +119,7 @@ export default function EventBoardEditPage() {
         await uploadFileToS3(uploadUrl, file)
         // 본문에는 서명이 붙지 않은 주소를 남긴다. presigned URL 은 5분이면 만료된다.
         const markup = `![](${toPublicUrl(uploadUrl)})`
-        setContent((prev) => insertAtCursor(contentRef.current, prev, markup))
+        setContent((prev) => insertAtCursor(prev, selectionStart, selectionEnd, markup))
       } catch (err) {
         setErrorMessage(describeUploadError(err))
       } finally {
@@ -350,29 +361,17 @@ export default function EventBoardEditPage() {
 
         <div className="flex flex-col gap-2">
           <GdgTextarea
-            ref={contentRef}
             label="내용"
             fullWidth
             rows={10}
             value={content}
             onChange={(event) => setContent(event.target.value)}
+            onPaste={handleContentPaste}
           />
-          <input
-            ref={contentImageInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleContentImageSelect}
-          />
-          <GdgButton
-            variant="bordered"
-            onClick={() => contentImageInputRef.current?.click()}
-            disabled={contentImageUploading}
-          >
-            {contentImageUploading ? '업로드 중...' : '본문에 이미지 삽입'}
-          </GdgButton>
           <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
-            커서 자리에 <code>![](주소)</code> 가 들어갑니다. 그 자리에 이미지가 표시됩니다.
+            {contentImageUploading
+              ? '이미지 올리는 중...'
+              : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'}
           </p>
         </div>
 
