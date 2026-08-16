@@ -18,7 +18,12 @@ import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { createEvent } from '@/services/board/boardClient'
-import { requestPresignedUpload, uploadFileToS3 } from '@/services/board/uploadClient'
+import {
+  describeUploadError,
+  requestPresignedUpload,
+  uploadFileToS3,
+  validateUploadSize
+} from '@/services/board/uploadClient'
 import type { EventOrganizingTeam } from '@/types/board'
 import { hasAtLeast } from '@/utils/auth/role'
 
@@ -30,8 +35,7 @@ const TEAM_OPTIONS: GdgDropdownOption[] = [
   { id: 'BD', label: 'BD' }
 ]
 
-// TODO: 백엔드 S3KeyType에 boardEvent가 추가되면 그 값과 일치하는지 재확인한다.
-// 설계 문서 §7 / 이 계획 상단 "백엔드 계약 출처" 참고 — 아직 develop에 없다.
+// 백엔드 S3KeyType.boardEvent("board/event") 와 같은 값. develop·main 양쪽에 배포돼 있다.
 const THUMBNAIL_S3_KEY = 'boardEvent'
 
 export default function EventBoardNewPage() {
@@ -44,7 +48,6 @@ export default function EventBoardNewPage() {
   const [eventEndDate, setEventEndDate] = useState('')
   const [organizingTeam, setOrganizingTeam] = useState<EventOrganizingTeam | ''>('')
   const [content, setContent] = useState('')
-  const [isPublished, setIsPublished] = useState(true)
   const [attachments, setAttachments] = useState<AttachmentDraft[]>([])
   const [thumbnailKey, setThumbnailKey] = useState<string | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
@@ -60,14 +63,21 @@ export default function EventBoardNewPage() {
       event.target.value = ''
       if (!file) return
 
+      const sizeError = validateUploadSize(file)
+      if (sizeError) {
+        setErrorMessage(sizeError)
+        return
+      }
+
+      setErrorMessage(null)
       setThumbnailPreview(URL.createObjectURL(file))
       setThumbnailUploading(true)
       try {
         const { key, uploadUrl } = await requestPresignedUpload(apiClient, file, THUMBNAIL_S3_KEY)
         await uploadFileToS3(uploadUrl, file)
         setThumbnailKey(key)
-      } catch {
-        setErrorMessage('썸네일 업로드에 실패했습니다.')
+      } catch (err) {
+        setErrorMessage(describeUploadError(err))
         setThumbnailPreview(null)
       } finally {
         setThumbnailUploading(false)
@@ -93,7 +103,9 @@ export default function EventBoardNewPage() {
         organizingTeam,
         thumbnailKey: thumbnailKey ?? undefined,
         content,
-        isPublished,
+        // 행사 목록 응답에 isPublished 가 없어 임시저장 뱃지를 띄울 수 없다. 비공개로 저장하면
+        // 작성자도 목록에서 글을 찾지 못하므로 선택지를 없애고 항상 공개로 등록한다.
+        isPublished: true,
         attachments: attachments
           .filter((item) => item.status === 'done')
           .map((item) =>
@@ -118,7 +130,6 @@ export default function EventBoardNewPage() {
     content,
     eventEndDate,
     eventStartDate,
-    isPublished,
     organizingTeam,
     router,
     thumbnailKey,
@@ -209,15 +220,6 @@ export default function EventBoardNewPage() {
           value={content}
           onChange={(event) => setContent(event.target.value)}
         />
-
-        <label className="flex items-center gap-2 typo-pc-b3 mobile:typo-m-b3">
-          <input
-            type="checkbox"
-            checked={isPublished}
-            onChange={(event) => setIsPublished(event.target.checked)}
-          />
-          즉시 공개
-        </label>
 
         <div className="flex flex-col gap-2">
           <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</span>

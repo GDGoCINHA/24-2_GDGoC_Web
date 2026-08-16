@@ -5,7 +5,12 @@ import { Reorder } from 'framer-motion'
 import { useCallback, useRef, useState, type ChangeEvent } from 'react'
 
 import { GdgFileCard, GdgInputField, GdgUploadButton } from '@/components/ui/design-system'
-import { requestPresignedUpload, uploadFileToS3 } from '@/services/board/uploadClient'
+import {
+  describeUploadError,
+  requestPresignedUpload,
+  uploadFileToS3,
+  validateUploadSize
+} from '@/services/board/uploadClient'
 import type { AttachmentKind } from '@/types/board'
 
 export type AttachmentDraftStatus = 'uploading' | 'done' | 'error'
@@ -63,11 +68,8 @@ export function AttachmentUploader({
         const { key, uploadUrl } = await requestPresignedUpload(apiClient, file, s3key)
         await uploadFileToS3(uploadUrl, file)
         updateDraft(id, { status: 'done', fileKey: key, fileName: file.name })
-      } catch {
-        updateDraft(id, {
-          status: 'error',
-          errorMessage: '업로드에 실패했습니다. 다시 시도해 주세요.'
-        })
+      } catch (err) {
+        updateDraft(id, { status: 'error', errorMessage: describeUploadError(err) })
       }
     },
     [apiClient, s3key, updateDraft]
@@ -80,6 +82,17 @@ export function AttachmentUploader({
       if (!file || isFull) return
 
       const id = createDraftId()
+
+      // 크기 초과는 재시도해도 결과가 같으므로 file 을 들려 보내지 않는다 — 재시도 버튼이 뜨지 않는다.
+      const sizeError = validateUploadSize(file)
+      if (sizeError) {
+        onChange([
+          ...attachments,
+          { id, kind: 'FILE', fileName: file.name, status: 'error', errorMessage: sizeError }
+        ])
+        return
+      }
+
       onChange([
         ...attachments,
         { id, kind: 'FILE', fileName: file.name, status: 'uploading', file }

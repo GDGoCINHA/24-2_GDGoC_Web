@@ -18,7 +18,12 @@ import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { fetchEventDetail, updateEvent } from '@/services/board/boardClient'
-import { requestPresignedUpload, uploadFileToS3 } from '@/services/board/uploadClient'
+import {
+  describeUploadError,
+  requestPresignedUpload,
+  uploadFileToS3,
+  validateUploadSize
+} from '@/services/board/uploadClient'
 import type { AttachmentResponse, EventOrganizingTeam } from '@/types/board'
 import { hasAtLeast } from '@/utils/auth/role'
 
@@ -30,7 +35,7 @@ const TEAM_OPTIONS: GdgDropdownOption[] = [
   { id: 'BD', label: 'BD' }
 ]
 
-// TODO: 백엔드 S3KeyType에 boardEvent가 추가되면 그 값과 일치하는지 재확인한다.
+// 백엔드 S3KeyType.boardEvent("board/event") 와 같은 값. develop·main 양쪽에 배포돼 있다.
 const THUMBNAIL_S3_KEY = 'boardEvent'
 
 const createDraftId = (): string =>
@@ -66,7 +71,6 @@ export default function EventBoardEditPage() {
   const [eventEndDate, setEventEndDate] = useState('')
   const [organizingTeam, setOrganizingTeam] = useState<EventOrganizingTeam | ''>('')
   const [content, setContent] = useState('')
-  const [isPublished, setIsPublished] = useState(true)
   const [attachments, setAttachments] = useState<AttachmentDraft[]>([])
   // 새 썸네일을 올리지 않으면 undefined로 보낸다 — 서버는 thumbnailKey가 null이면
   // 기존 값을 유지한다 (EventBoard.update(): "if (thumbnailKey != null) this.thumbnailKey = ...").
@@ -106,7 +110,6 @@ export default function EventBoardEditPage() {
         setEventEndDate(detail.eventEndDate)
         setOrganizingTeam((detail.organizingTeam ?? '') as EventOrganizingTeam | '')
         setContent(detail.content)
-        setIsPublished(detail.isPublished)
         setThumbnailPreview(detail.thumbnailUrl)
         setAttachments(
           detail.attachments.map((attachment) => ({
@@ -137,14 +140,21 @@ export default function EventBoardEditPage() {
       event.target.value = ''
       if (!file) return
 
+      const sizeError = validateUploadSize(file)
+      if (sizeError) {
+        setErrorMessage(sizeError)
+        return
+      }
+
+      setErrorMessage(null)
       setThumbnailPreview(URL.createObjectURL(file))
       setThumbnailUploading(true)
       try {
         const { key, uploadUrl } = await requestPresignedUpload(apiClient, file, THUMBNAIL_S3_KEY)
         await uploadFileToS3(uploadUrl, file)
         setThumbnailKey(key)
-      } catch {
-        setErrorMessage('썸네일 업로드에 실패했습니다.')
+      } catch (err) {
+        setErrorMessage(describeUploadError(err))
       } finally {
         setThumbnailUploading(false)
       }
@@ -170,7 +180,9 @@ export default function EventBoardEditPage() {
         organizingTeam,
         thumbnailKey: thumbnailKey ?? undefined,
         content,
-        isPublished,
+        // 작성 화면과 같은 이유로 공개 선택지를 두지 않는다. true 로 보내므로 예전에 비공개로
+        // 저장돼 목록에서 사라진 글도 한 번 저장하면 다시 드러난다.
+        isPublished: true,
         attachments: attachments
           .filter((item) => item.status === 'done')
           .map((item) =>
@@ -196,7 +208,6 @@ export default function EventBoardEditPage() {
     eventEndDate,
     eventStartDate,
     id,
-    isPublished,
     organizingTeam,
     router,
     thumbnailKey,
@@ -220,7 +231,9 @@ export default function EventBoardEditPage() {
   }
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+    return (
+      <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+    )
   }
 
   if (loadError) {
@@ -307,15 +320,6 @@ export default function EventBoardEditPage() {
           value={content}
           onChange={(event) => setContent(event.target.value)}
         />
-
-        <label className="flex items-center gap-2 typo-pc-b3 mobile:typo-m-b3">
-          <input
-            type="checkbox"
-            checked={isPublished}
-            onChange={(event) => setIsPublished(event.target.checked)}
-          />
-          공개
-        </label>
 
         <div className="flex flex-col gap-2">
           <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</span>
