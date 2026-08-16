@@ -50,7 +50,10 @@ export function BoardList<T>({
     <>
       {/* PC: 표 */}
       <div className="hidden w-full overflow-x-auto pc:block">
-        <table className="w-full min-w-[640px] border-collapse text-left text-white">
+        {/* table-fixed 여야 열 너비가 내용에 밀리지 않는다. auto 로 두면 제목이 긴 글 하나
+            때문에 기간·작성자 열까지 통째로 움직여 행마다 칸이 어긋나 보인다.
+            너비를 주지 않은 열(제목)이 남은 폭을 가져간다. */}
+        <table className="w-full min-w-[640px] table-fixed border-collapse text-left text-white">
           <thead>
             <tr className="border-b border-gray-800 typo-pc-s3 mobile:typo-m-s3">
               {thumbnail && <th className="w-24 px-4 py-3" />}

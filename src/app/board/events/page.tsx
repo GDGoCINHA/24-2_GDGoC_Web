@@ -69,16 +69,33 @@ export default function EventBoardListPage() {
     setSubmittedKeyword(keyword)
   }, [keyword])
 
+  // 제목만 너비를 비워 남은 폭을 전부 가져가게 한다 (BoardList 는 table-fixed).
   const columns: BoardListColumn<EventBoardSummary>[] = [
-    { key: 'title', header: '제목', render: (item) => item.title, primary: true },
+    {
+      key: 'title',
+      header: '제목',
+      render: (item) => <span className="block truncate">{item.title}</span>,
+      primary: true
+    },
     {
       key: 'period',
       header: '기간',
-      render: (item) => `${formatDate(item.eventStartDate)} ~ ${formatDate(item.eventEndDate)}`
+      render: (item) => `${formatDate(item.eventStartDate)} ~ ${formatDate(item.eventEndDate)}`,
+      className: 'w-52'
     },
-    { key: 'team', header: '팀', render: (item) => item.organizingTeam ?? '-' },
-    { key: 'author', header: '작성자', render: (item) => item.authorName },
-    { key: 'status', header: '상태', render: (item) => STATUS_LABEL[item.status] ?? item.status }
+    {
+      key: 'team',
+      header: '팀',
+      render: (item) => item.organizingTeam ?? '-',
+      className: 'w-28'
+    },
+    { key: 'author', header: '작성자', render: (item) => item.authorName, className: 'w-28' },
+    {
+      key: 'status',
+      header: '상태',
+      render: (item) => STATUS_LABEL[item.status] ?? item.status,
+      className: 'w-20'
+    }
   ]
 
   const canWrite = hasAtLeast(user?.userRole, 'CORE')
