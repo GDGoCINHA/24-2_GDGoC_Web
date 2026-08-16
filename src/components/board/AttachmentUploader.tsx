@@ -2,7 +2,14 @@
 
 import type { AxiosInstance } from 'axios'
 import { Reorder } from 'framer-motion'
-import { useCallback, useRef, useState, type ChangeEvent } from 'react'
+import {
+  useCallback,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type Dispatch,
+  type SetStateAction
+} from 'react'
 
 import { GdgFileCard, GdgInputField, GdgUploadButton } from '@/components/ui/design-system'
 import {
@@ -30,7 +37,11 @@ export interface AttachmentDraft {
 
 export interface AttachmentUploaderProps {
   attachments: AttachmentDraft[]
-  onChange: (attachments: AttachmentDraft[]) => void
+  /**
+   * 업로드는 비동기라 완료 시점의 목록이 시작 시점과 다를 수 있다. 갱신을 항상 함수형으로
+   * 넘길 수 있어야 진행 중인 업로드가 그 사이 추가된 항목을 지우지 않는다.
+   */
+  onChange: Dispatch<SetStateAction<AttachmentDraft[]>>
   apiClient: AxiosInstance
   s3key: string
   maxCount?: number
@@ -55,11 +66,13 @@ export function AttachmentUploader({
   const isFull = attachments.length >= maxCount
   const hasPendingLink = linkInput.trim().length > 0
 
+  // 렌더 시점의 attachments 를 닫아 두면 업로드가 끝나는 순간 그 사이에 추가된 항목이
+  // 통째로 지워진다. 함수형으로 최신 목록을 받아 갱신한다.
   const updateDraft = useCallback(
     (id: string, patch: Partial<AttachmentDraft>) => {
-      onChange(attachments.map((item) => (item.id === id ? { ...item, ...patch } : item)))
+      onChange((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)))
     },
-    [attachments, onChange]
+    [onChange]
   )
 
   const uploadFile = useCallback(
@@ -86,20 +99,20 @@ export function AttachmentUploader({
       // 크기 초과는 재시도해도 결과가 같으므로 file 을 들려 보내지 않는다 — 재시도 버튼이 뜨지 않는다.
       const sizeError = validateUploadSize(file)
       if (sizeError) {
-        onChange([
-          ...attachments,
+        onChange((prev) => [
+          ...prev,
           { id, kind: 'FILE', fileName: file.name, status: 'error', errorMessage: sizeError }
         ])
         return
       }
 
-      onChange([
-        ...attachments,
+      onChange((prev) => [
+        ...prev,
         { id, kind: 'FILE', fileName: file.name, status: 'uploading', file }
       ])
       void uploadFile(file, id)
     },
-    [attachments, isFull, onChange, uploadFile]
+    [isFull, onChange, uploadFile]
   )
 
   const handleRetry = useCallback(
