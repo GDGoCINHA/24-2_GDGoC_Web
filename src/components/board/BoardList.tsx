@@ -21,6 +21,12 @@ export interface BoardListProps<T> {
   getRowKey: (item: T) => string | number
   onRowClick?: (item: T) => void
   emptyMessage?: string
+  /**
+   * 행 맨 앞에 붙일 그림. 열로 넣으면 모바일 카드에서 "썸네일" 이라는 라벨과 함께
+   * 값처럼 나열되므로 자리를 따로 준다. 넘기지 않으면 그림 칸 자체가 없다 —
+   * 공지·자유게시판은 이 prop 을 쓰지 않는다.
+   */
+  thumbnail?: (item: T) => ReactNode
 }
 
 export function BoardList<T>({
@@ -28,7 +34,8 @@ export function BoardList<T>({
   columns,
   getRowKey,
   onRowClick,
-  emptyMessage = '등록된 글이 없습니다.'
+  emptyMessage = '등록된 글이 없습니다.',
+  thumbnail
 }: BoardListProps<T>) {
   if (items.length === 0) {
     return (
@@ -46,6 +53,7 @@ export function BoardList<T>({
         <table className="w-full min-w-[640px] border-collapse text-left text-white">
           <thead>
             <tr className="border-b border-gray-800 typo-pc-s3 mobile:typo-m-s3">
+              {thumbnail && <th className="w-24 px-4 py-3" />}
               {columns.map((column) => (
                 <th key={column.key} className={cn('px-4 py-3', column.className)}>
                   {column.header}
@@ -63,6 +71,7 @@ export function BoardList<T>({
                   onRowClick && 'cursor-pointer hover:bg-gray-100'
                 )}
               >
+                {thumbnail && <td className="w-24 px-4 py-3">{thumbnail(item)}</td>}
                 {columns.map((column) => (
                   <td key={column.key} className={cn('px-4 py-3', column.className)}>
                     {column.render(item)}
@@ -84,19 +93,22 @@ export function BoardList<T>({
             <div
               onClick={() => onRowClick?.(item)}
               className={cn(
-                'w-full rounded-xl border border-gray-200 px-4 py-3',
+                'flex w-full gap-3 rounded-xl border border-gray-200 px-4 py-3',
                 onRowClick && 'cursor-pointer active:bg-gray-100'
               )}
             >
-              <p className="text-white typo-m-s3">{primaryColumn.render(item)}</p>
-              <dl className="mt-2 flex flex-col gap-1 typo-m-c1">
-                {metaColumns.map((column) => (
-                  <div key={column.key} className="flex items-start gap-2">
-                    <dt className="w-14 shrink-0 text-gray-600">{column.header}</dt>
-                    <dd className="min-w-0 flex-1 text-gray-800">{column.render(item)}</dd>
-                  </div>
-                ))}
-              </dl>
+              {thumbnail && <div className="shrink-0">{thumbnail(item)}</div>}
+              <div className="min-w-0 flex-1">
+                <p className="text-white typo-m-s3">{primaryColumn.render(item)}</p>
+                <dl className="mt-2 flex flex-col gap-1 typo-m-c1">
+                  {metaColumns.map((column) => (
+                    <div key={column.key} className="flex items-start gap-2">
+                      <dt className="w-14 shrink-0 text-gray-600">{column.header}</dt>
+                      <dd className="min-w-0 flex-1 text-gray-800">{column.render(item)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
             </div>
           </li>
         ))}

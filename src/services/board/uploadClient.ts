@@ -44,6 +44,15 @@ export const requestPresignedUpload = async (
 }
 
 /**
+ * 업로드한 객체를 읽을 때 쓸 주소. presigned URL 은 5분이면 만료되는 서명 쿼리를 달고
+ * 있으므로, 본문에 박아 두려면 쿼리를 떼야 한다. 버킷 객체는 무인증 GET 이 된다.
+ */
+export const toPublicUrl = (uploadUrl: string): string => {
+  const url = new URL(uploadUrl)
+  return url.origin + url.pathname
+}
+
+/**
  * presigned URL은 서명에 헤더 집합이 포함돼 있어 Authorization 헤더 등을 더 붙이면
  * 서명이 깨진다. apiClient가 아니라 순수 fetch를 쓴다.
  */

@@ -136,6 +136,20 @@ export default function EventBoardListPage() {
             columns={columns}
             getRowKey={(item) => item.id}
             onRowClick={(item) => router.push(`/board/events/detail?id=${item.id}`)}
+            thumbnail={(item) => (
+              <div className="h-12 w-20 overflow-hidden rounded bg-gray-100">
+                {item.thumbnailUrl && (
+                  // next/image 는 못 쓴다 — S3 호스트를 remotePatterns 에 적을 수 없다.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.thumbnailUrl}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                )}
+              </div>
+            )}
           />
         )}
 

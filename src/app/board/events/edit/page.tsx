@@ -21,11 +21,13 @@ import { fetchEventDetail, updateEvent } from '@/services/board/boardClient'
 import {
   describeUploadError,
   requestPresignedUpload,
+  toPublicUrl,
   uploadFileToS3,
   validateUploadSize
 } from '@/services/board/uploadClient'
 import type { AttachmentResponse, EventOrganizingTeam } from '@/types/board'
 import { hasAtLeast } from '@/utils/auth/role'
+import { insertAtCursor } from '@/utils/insertAtCursor'
 
 const TEAM_OPTIONS: GdgDropdownOption[] = [
   { id: 'HQ', label: 'HQ' },
@@ -80,8 +82,41 @@ export default function EventBoardEditPage() {
   const [thumbnailUploading, setThumbnailUploading] = useState(false)
   const thumbnailInputRef = useRef<HTMLInputElement | null>(null)
 
+  const [contentImageUploading, setContentImageUploading] = useState(false)
+  const contentImageInputRef = useRef<HTMLInputElement | null>(null)
+  const contentRef = useRef<HTMLTextAreaElement | null>(null)
+
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const handleContentImageSelect = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+      event.target.value = ''
+      if (!file) return
+
+      const sizeError = validateUploadSize(file)
+      if (sizeError) {
+        setErrorMessage(sizeError)
+        return
+      }
+
+      setErrorMessage(null)
+      setContentImageUploading(true)
+      try {
+        const { uploadUrl } = await requestPresignedUpload(apiClient, file, THUMBNAIL_S3_KEY)
+        await uploadFileToS3(uploadUrl, file)
+        // 본문에는 서명이 붙지 않은 주소를 남긴다. presigned URL 은 5분이면 만료된다.
+        const markup = `![](${toPublicUrl(uploadUrl)})`
+        setContent((prev) => insertAtCursor(contentRef.current, prev, markup))
+      } catch (err) {
+        setErrorMessage(describeUploadError(err))
+      } finally {
+        setContentImageUploading(false)
+      }
+    },
+    [apiClient]
+  )
 
   useEffect(() => {
     if (!Number.isFinite(id)) {
@@ -313,13 +348,33 @@ export default function EventBoardEditPage() {
           )}
         </div>
 
-        <GdgTextarea
-          label="내용"
-          fullWidth
-          rows={10}
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-        />
+        <div className="flex flex-col gap-2">
+          <GdgTextarea
+            ref={contentRef}
+            label="내용"
+            fullWidth
+            rows={10}
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+          />
+          <input
+            ref={contentImageInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleContentImageSelect}
+          />
+          <GdgButton
+            variant="bordered"
+            onClick={() => contentImageInputRef.current?.click()}
+            disabled={contentImageUploading}
+          >
+            {contentImageUploading ? '업로드 중...' : '본문에 이미지 삽입'}
+          </GdgButton>
+          <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
+            커서 자리에 <code>![](주소)</code> 가 들어갑니다. 그 자리에 이미지가 표시됩니다.
+          </p>
+        </div>
 
         <div className="flex flex-col gap-2">
           <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</span>
