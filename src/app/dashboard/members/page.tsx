@@ -18,6 +18,7 @@ type RecruitMemberSummary = {
   studentId: string
   admissionSemester: string | null
   isPayed: boolean
+  createdAt?: string
 }
 
 type RecruitMemberDetail = {
@@ -87,6 +88,23 @@ function currentAdmissionSemester(): string {
   const yy = month === 1 ? (year - 1) % 100 : year % 100
   const term = month === 1 ? 2 : month <= 7 ? 1 : 2
   return `Y${String(yy).padStart(2, '0')}_${term}`
+}
+
+/**
+ * 제출 시각. 목록의 기본 정렬이 createdAt DESC 이므로 이 칸이 정렬 기준을 눈으로 확인시켜 준다.
+ * 서버는 Instant(UTC)로 내려주고 toLocaleString 이 보는 사람의 시간대로 옮긴다.
+ */
+function formatSubmittedAt(value?: string | null): string {
+  if (!value) return '-'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return date.toLocaleString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 /** 'Y26_2' → '2026-2학기' */
@@ -294,13 +312,14 @@ export default function DashboardMembersPage() {
         ) : null}
 
         <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full min-w-[820px] border-collapse">
+          <table className="w-full min-w-[960px] border-collapse">
             <thead>
               <tr className="bg-gray-100 text-left">
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">이름</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">학과</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">학번</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">지원 학기</th>
+                <th className="px-4 py-3 typo-pc-b3 text-gray-700">제출 시각</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">전화번호</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">회비</th>
                 <th className="px-4 py-3 typo-pc-b3 text-gray-700">상세</th>
@@ -309,7 +328,7 @@ export default function DashboardMembersPage() {
             <tbody>
               {members.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center typo-pc-b3 text-gray-700">
+                  <td colSpan={8} className="px-4 py-8 text-center typo-pc-b3 text-gray-700">
                     조회된 지원자가 없습니다.
                   </td>
                 </tr>
@@ -321,6 +340,9 @@ export default function DashboardMembersPage() {
                     <td className="px-4 py-3 typo-pc-b3">{member.studentId}</td>
                     <td className="px-4 py-3 typo-pc-b3">
                       {formatSemesterLabel(member.admissionSemester)}
+                    </td>
+                    <td className="px-4 py-3 typo-pc-b3 whitespace-nowrap">
+                      {formatSubmittedAt(member.createdAt)}
                     </td>
                     <td className="px-4 py-3 typo-pc-b3">
                       {formatPhoneNumberDisplay(member.phoneNumber)}
