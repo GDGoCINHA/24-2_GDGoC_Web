@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 
+import ApplicationDetailModal from '@/components/profile/ApplicationDetailModal'
 import ApplicationStatus from '@/components/profile/ApplicationStatus'
 import ProfileCard from '@/components/profile/ProfileCard'
 import ProfileInfoSection from '@/components/profile/ProfileInfoSection'
@@ -11,11 +12,19 @@ import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import {
   fetchMyCoreApplication,
+  fetchMyCoreApplicationDetail,
+  fetchMyMemberApplication,
   fetchMyProfile,
   updateMyProfile,
   updateMyProfileImage
 } from '@/services/profile/profileClient'
-import type { MyCoreApplication, UpdateProfilePayload, UserProfile } from '@/types/profile'
+import type {
+  MyCoreApplication,
+  MyCoreApplicationDetail,
+  MyMemberApplication,
+  UpdateProfilePayload,
+  UserProfile
+} from '@/types/profile'
 
 export default function ProfilePage() {
   const { apiClient } = useAuthenticatedApi()
@@ -23,6 +32,7 @@ export default function ProfilePage() {
 
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [application, setApplication] = useState<MyCoreApplication | null>(null)
+  const [memberApplication, setMemberApplication] = useState<MyMemberApplication | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [applicationLoading, setApplicationLoading] = useState(true)
@@ -31,6 +41,10 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [imageError, setImageError] = useState<string | null>(null)
+  const [openedApplication, setOpenedApplication] = useState<'core' | 'member' | null>(null)
+  const [coreDetail, setCoreDetail] = useState<MyCoreApplicationDetail | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [detailError, setDetailError] = useState<string | null>(null)
 
   useEffect(() => {
     let alive = true
@@ -46,10 +60,16 @@ export default function ProfilePage() {
       }
     }
 
-    const loadApplication = async () => {
+    const loadApplications = async () => {
       try {
-        const data = await fetchMyCoreApplication(apiClient)
-        if (alive) setApplication(data)
+        const [core, member] = await Promise.all([
+          fetchMyCoreApplication(apiClient),
+          fetchMyMemberApplication(apiClient)
+        ])
+        if (alive) {
+          setApplication(core)
+          setMemberApplication(member)
+        }
       } catch {
         // 404(미지원)는 클라이언트가 이미 null로 돌려준다. 여기 오는 건 실제 실패다.
         if (alive) setApplicationError('지원 현황을 불러오지 못했습니다.')
@@ -59,7 +79,7 @@ export default function ProfilePage() {
     }
 
     void load()
-    void loadApplication()
+    void loadApplications()
 
     return () => {
       alive = false
@@ -125,6 +145,32 @@ export default function ProfilePage() {
     [apiClient, profile, syncAuthUser]
   )
 
+  // 목록 응답에는 문항 답변이 없어 상세를 따로 받는다. 한 번 받은 뒤에는 다시 부르지 않는다.
+  const openCoreDetail = useCallback(async () => {
+    if (!application) return
+    setDetailError(null)
+    setOpenedApplication('core')
+    if (coreDetail) return
+
+    setDetailLoading(true)
+    try {
+      const detail = await fetchMyCoreApplicationDetail(apiClient, application.applicationId)
+      setCoreDetail(detail)
+    } catch {
+      setDetailError('지원서를 불러오지 못했습니다.')
+    } finally {
+      setDetailLoading(false)
+    }
+  }, [apiClient, application, coreDetail])
+
+  // 부원 지원서는 목록 응답이 곧 상세다. 추가 호출이 필요 없다.
+  const openMemberDetail = useCallback(() => {
+    setDetailError(null)
+    setOpenedApplication('member')
+  }, [])
+
+  const closeDetail = useCallback(() => setOpenedApplication(null), [])
+
   if (loading) return <Loader isLoading />
   if (loadError) {
     return (
@@ -179,10 +225,24 @@ export default function ProfilePage() {
 
         <ApplicationStatus
           application={application}
+          memberApplication={memberApplication}
           loading={applicationLoading}
           error={applicationError}
+          onOpenCore={() => void openCoreDetail()}
+          onOpenMember={openMemberDetail}
         />
       </div>
+
+      {openedApplication !== null ? (
+        <ApplicationDetailModal
+          title={openedApplication === 'core' ? '운영진 지원서' : '부원 지원서'}
+          core={openedApplication === 'core' ? coreDetail : null}
+          member={openedApplication === 'member' ? memberApplication : null}
+          loading={detailLoading}
+          error={detailError}
+          onClose={closeDetail}
+        />
+      ) : null}
     </main>
   )
 }

@@ -121,7 +121,12 @@ export default function RecruitSubmit() {
             <Card className="flex-col items-start gap-2">
               <Bullet>
                 <span className="font-bold mr-2">집중 모집 기간</span>
-                <span>{formatKoreanPeriod(MEMBER_SCHEDULE.openAt, MEMBER_SCHEDULE.closeAt)}</span>
+                <span>
+                  {formatKoreanPeriod(
+                    MEMBER_SCHEDULE.intensiveOpenAt,
+                    MEMBER_SCHEDULE.intensiveCloseAt
+                  )}
+                </span>
               </Bullet>
             </Card>
 

@@ -49,8 +49,15 @@ export const CORE_SCHEDULE = {
   meetingNote: '※ 일정은 9월 내로 공지 드립니다.'
 } as const
 
+/**
+ * 부원 모집은 **상시 모집**이다. 아래 두 값은 화면에 안내하는 **집중 모집 기간**일 뿐,
+ * 지원 가능 여부와는 무관하다 — 게이팅은 서버가 `app.recruit.member.*` 로 판정하고
+ * 그 close-at 은 학기 말까지 열려 있다.
+ *
+ * 그래서 여기 값을 서버 응답의 대체값으로 쓰지 않는다. 서버 기간을 그대로 그리면
+ * 카드에 '8. 17.(월) ~ 1. 31.(일)' 이 뜬다.
+ */
 export const MEMBER_SCHEDULE = {
-  /** 서버 응답을 못 받았을 때만 쓰는 대체값. 서버 설정(app.recruit.member.*)과 함께 고친다. */
-  openAt: '2026-08-17T00:00:00+09:00',
-  closeAt: '2026-09-09T23:59:59+09:00'
+  intensiveOpenAt: '2026-08-17T00:00:00+09:00',
+  intensiveCloseAt: '2026-09-09T23:59:59+09:00'
 } as const

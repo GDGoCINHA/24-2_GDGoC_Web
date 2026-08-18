@@ -1,6 +1,12 @@
 import axios, { type AxiosInstance } from 'axios'
 
-import type { MyCoreApplication, UpdateProfilePayload, UserProfile } from '@/types/profile'
+import type {
+  MyCoreApplication,
+  MyCoreApplicationDetail,
+  MyMemberApplication,
+  UpdateProfilePayload,
+  UserProfile
+} from '@/types/profile'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
 
 export const fetchMyProfile = async (apiClient: AxiosInstance): Promise<UserProfile> => {
@@ -38,6 +44,41 @@ export const fetchMyCoreApplication = async (
   try {
     const response = await apiClient.get<MyCoreApplication>('/recruit/core/applications/me')
     return response.data ?? null
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return null
+    }
+    throw error
+  }
+}
+
+/**
+ * 운영진 지원서 상세. 목록 응답(fetchMyCoreApplication)에는 문항 답변이 없다.
+ *
+ * 본인/운영진만 열 수 있으며 서버가 판정한다. 본인이 볼 때는 검토 메모가 빠져서 온다.
+ * 이 엔드포인트도 ApiResponse 래퍼 없이 DTO 를 직접 반환한다.
+ */
+export const fetchMyCoreApplicationDetail = async (
+  apiClient: AxiosInstance,
+  applicationId: number
+): Promise<MyCoreApplicationDetail> => {
+  const response = await apiClient.get<MyCoreApplicationDetail>(
+    `/recruit/core/applications/${applicationId}`
+  )
+  return response.data
+}
+
+/**
+ * 부원 지원서 조회.
+ * 부원 지원은 비로그인으로 받으므로 서버가 로그인 계정의 이메일로 지원서를 찾는다.
+ * 404(지원 이력 없음)면 null 을 반환하고, 그 외 에러는 호출자에게 던진다.
+ */
+export const fetchMyMemberApplication = async (
+  apiClient: AxiosInstance
+): Promise<MyMemberApplication | null> => {
+  try {
+    const response = await apiClient.get('/recruit/member/applications/me')
+    return unwrapApiResponse<MyMemberApplication>(response.data)
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       return null
