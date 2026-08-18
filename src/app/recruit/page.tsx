@@ -29,19 +29,22 @@ export default function RecruitSelect() {
     ? formatKoreanPeriodShort(period.openAt, period.closeAt)
     : formatKoreanPeriodShort(CORE_SCHEDULE.fallbackOpenAt, CORE_SCHEDULE.fallbackCloseAt)
 
-  // 부원도 코어와 같은 규칙이다. 전에는 서버에 기간이 없어 항상 열어뒀다.
+  // 부원은 코어와 달리 상시 모집이다. 게이팅은 코어와 같은 규칙이지만 서버 close-at 이
+  // 학기 말까지 열려 있어, 카드에 그 값을 그대로 쓰면 '8. 17. ~ 1. 31.' 로 나온다.
+  // 그래서 날짜는 집중 모집 기간(MEMBER_SCHEDULE)을 보여주고 서버 응답은 상태 판정에만 쓴다.
   const memberUnknown = memberFailed || !memberPeriod
   const memberOpen = memberUnknown || memberPeriod.status === 'OPEN'
   const memberStatusLabel = memberUnknown
-    ? '모집중'
+    ? '상시 모집 중'
     : memberPeriod.status === 'OPEN'
-      ? '모집중'
+      ? '상시 모집 중'
       : memberPeriod.status === 'BEFORE_OPEN'
         ? `${formatKoreanDateShort(memberPeriod.openAt)} 오픈`
         : '모집 마감'
-  const memberPeriodText = memberPeriod
-    ? formatKoreanPeriodShort(memberPeriod.openAt, memberPeriod.closeAt)
-    : formatKoreanPeriodShort(MEMBER_SCHEDULE.openAt, MEMBER_SCHEDULE.closeAt)
+  const memberIntensivePeriodText = formatKoreanPeriodShort(
+    MEMBER_SCHEDULE.intensiveOpenAt,
+    MEMBER_SCHEDULE.intensiveCloseAt
+  )
 
   return (
     <main className="min-h-screen bg-black overflow-x-hidden">
@@ -66,7 +69,13 @@ export default function RecruitSelect() {
           <RecruitTypeCard
             title="Member"
             subtitle="부원"
-            period={memberPeriodText}
+            period={
+              <>
+                {memberIntensivePeriodText}{' '}
+                {/* 괄호 문구가 '(집중 모 / 집 기간)' 으로 쪼개지지 않게 통째로 넘긴다. */}
+                <span className="whitespace-nowrap">(집중 모집 기간)</span>
+              </>
+            }
             href="/recruit/member"
             statusLabel={memberStatusLabel}
             isOpen={memberOpen}

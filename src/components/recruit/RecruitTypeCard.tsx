@@ -7,7 +7,8 @@ import { cn } from '@/utils/cn'
 type Props = {
   title: string
   subtitle: string
-  period: string
+  /** 문자열 외에 부가 문구를 붙일 수 있게 노드로 받는다 — 부원 카드가 '(집중 모집 기간)' 을 단다. */
+  period: React.ReactNode
   href: string
   statusLabel: string
   isOpen: boolean
