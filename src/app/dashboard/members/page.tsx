@@ -176,7 +176,29 @@ export default function DashboardMembersPage() {
     setQuestion(searchInput)
   }
 
-  const handleTogglePay = async (memberId: number, nextState: boolean) => {
+  // 입금 체크는 계정 역할까지 바꾼다 — 서버가 GUEST↔MEMBER 를 함께 옮긴다.
+  // 한 번의 오클릭이 권한 변경으로 이어지므로 무엇이 바뀌는지 보여주고 확인을 받는다.
+  const confirmPayChange = (memberName: string, nextState: boolean) => {
+    const message = nextState
+      ? `${memberName} 님을 '입금 완료'로 변경합니다.
+
+` +
+        `가입한 계정이 GUEST 라면 MEMBER 로 승격되어 자유게시판에 글을 쓸 수 있게 됩니다.
+
+계속할까요?`
+      : `${memberName} 님을 '미입금'으로 변경합니다.
+
+` +
+        `가입한 계정이 MEMBER 라면 GUEST 로 내려갑니다. (CORE 이상은 바뀌지 않습니다)
+
+계속할까요?`
+
+    return window.confirm(message)
+  }
+
+  const handleTogglePay = async (memberId: number, memberName: string, nextState: boolean) => {
+    if (!confirmPayChange(memberName, nextState)) return
+
     try {
       setPayUpdatingMemberId(memberId)
       await apiClient.patch(`/recruit/member/${memberId}/payment`, { isPayed: nextState })
@@ -362,7 +384,7 @@ export default function DashboardMembersPage() {
                               className="typo-pc-c2"
                               onClick={() => {
                                 if (!isDisabled && member.isPayed !== segment.value) {
-                                  void handleTogglePay(member.id, segment.value)
+                                  void handleTogglePay(member.id, member.name, segment.value)
                                 }
                               }}
                             >
