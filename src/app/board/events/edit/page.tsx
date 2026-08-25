@@ -2,19 +2,23 @@
 
 import axios from 'axios'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
+import { BoardFormHeader } from '@/components/board/BoardPageHeader'
 import {
-  GdgButton,
-  GdgDropdown,
-  GdgInputField,
-  GdgSiteHeader,
-  GdgTextarea,
-  type GdgDropdownOption
-} from '@/components/ui/design-system'
+  DUSK_CANCEL_BUTTON,
+  DUSK_INPUT,
+  DUSK_OPTION,
+  DUSK_SELECT,
+  DUSK_SUBMIT_BUTTON,
+  DUSK_TEXTAREA,
+  DuskField
+} from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
+import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { fetchEventDetail, updateEvent } from '@/services/board/boardClient'
@@ -28,7 +32,7 @@ import { useContentImagePaste } from '@/hooks/useContentImagePaste'
 import type { AttachmentResponse, EventOrganizingTeam } from '@/types/board'
 import { hasAtLeast } from '@/utils/auth/role'
 
-const TEAM_OPTIONS: GdgDropdownOption[] = [
+const TEAM_OPTIONS = [
   { id: 'HQ', label: 'HQ' },
   { id: 'HR', label: 'HR' },
   { id: 'PR_DESIGN', label: 'PR/DESIGN' },
@@ -225,134 +229,152 @@ export default function EventBoardEditPage() {
 
   if (!hasAtLeast(user?.userRole, 'CORE')) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">수정 권한이 없습니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">수정 권한이 없습니다.</p>
       </main>
     )
   }
 
   if (forbidden) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">주최 팀만 수정할 수 있습니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">주최 팀만 수정할 수 있습니다.</p>
       </main>
     )
   }
 
   if (loading) {
-    return (
-      <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
-    )
+    return <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
   }
 
   if (loadError) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2 text-red">{loadError}</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-signal-err">{loadError}</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <GdgSiteHeader
-        menus={BOARD_MENUS}
-        actionMenu={{ label: '내 정보', url: '/profile/' }}
-      />
-      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 mobile:px-4 py-10">
-        <h1 className="typo-pc-h3 mobile:typo-m-h2">행사 게시글 수정</h1>
+    <main className="min-h-screen">
+      <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
+      <div className="mx-auto w-full max-w-[720px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-11">
+        <BoardFormHeader backHref="/board/events/" title="행사 게시글 수정" />
 
-        <GdgInputField
-          label="제목"
-          fullWidth
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-
-        <div className="flex gap-4">
-          <label className="flex flex-1 flex-col gap-2">
-            <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">시작일</span>
+        <div className="mt-[34px] flex flex-col gap-[22px]">
+          <DuskField label="제목">
             <input
-              type="date"
-              value={eventStartDate}
-              onChange={(event) => setEventStartDate(event.target.value)}
-              className="h-11 rounded-full border border-gray-800 bg-black px-4 text-white"
+              type="text"
+              placeholder="제목을 입력하세요"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className={DUSK_INPUT}
             />
-          </label>
-          <label className="flex flex-1 flex-col gap-2">
-            <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">종료일</span>
+          </DuskField>
+
+          {/* color-scheme 을 어둡게 잡지 않으면 브라우저가 그리는 달력 아이콘이 검정으로
+              나와 배경에 묻힌다. */}
+          <div className="flex flex-wrap gap-4">
+            <DuskField label="시작일" className="min-w-[150px] flex-1">
+              <input
+                type="date"
+                value={eventStartDate}
+                onChange={(event) => setEventStartDate(event.target.value)}
+                className={`${DUSK_INPUT} [color-scheme:dark]`}
+              />
+            </DuskField>
+            <DuskField label="종료일" className="min-w-[150px] flex-1">
+              <input
+                type="date"
+                value={eventEndDate}
+                onChange={(event) => setEventEndDate(event.target.value)}
+                className={`${DUSK_INPUT} [color-scheme:dark]`}
+              />
+            </DuskField>
+          </div>
+
+          <DuskField label="주최 팀" className="max-w-[260px]">
+            <select
+              value={organizingTeam}
+              onChange={(event) => setOrganizingTeam(event.target.value as EventOrganizingTeam)}
+              className={DUSK_SELECT}
+            >
+              {TEAM_OPTIONS.map((option) => (
+                <option key={option.id} value={option.id} className={DUSK_OPTION}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </DuskField>
+
+          <div className="flex flex-col gap-[9px]">
+            <span className="text-[13px] text-dusk-ink-700">썸네일</span>
             <input
-              type="date"
-              value={eventEndDate}
-              onChange={(event) => setEventEndDate(event.target.value)}
-              className="h-11 rounded-full border border-gray-800 bg-black px-4 text-white"
+              ref={thumbnailInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleThumbnailSelect}
             />
-          </label>
-        </div>
+            <button
+              type="button"
+              onClick={() => thumbnailInputRef.current?.click()}
+              disabled={thumbnailUploading}
+              className="w-full rounded-xl border border-[rgba(240,234,228,0.22)] px-6 py-[15px] text-[15px] text-dusk-ink-100 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:bg-[rgba(208,129,85,0.06)] disabled:opacity-50"
+            >
+              {thumbnailUploading ? '업로드 중...' : '이미지 변경'}
+            </button>
+            {thumbnailPreview && (
+              <div className="relative mt-1 h-40 w-full overflow-hidden rounded-xl bg-dusk-slot">
+                <Image src={thumbnailPreview} alt="" fill className="object-cover" />
+              </div>
+            )}
+          </div>
 
-        <GdgDropdown
-          // 기본 size=small(122px) 은 플레이스홀더를 담지 못하고 잘린다.
-          size="medium"
-          label="주최 팀"
-          options={TEAM_OPTIONS}
-          value={organizingTeam}
-          onChange={(value) => setOrganizingTeam(value as EventOrganizingTeam)}
-        />
-
-        <div className="flex flex-col gap-2">
-          <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">썸네일</span>
-          <input
-            ref={thumbnailInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleThumbnailSelect}
-          />
-          <GdgButton
-            variant="bordered"
-            onClick={() => thumbnailInputRef.current?.click()}
-            disabled={thumbnailUploading}
-          >
-            {thumbnailUploading ? '업로드 중...' : '이미지 변경'}
-          </GdgButton>
-          {thumbnailPreview && (
-            <div className="relative mt-2 h-40 w-full overflow-hidden rounded-xl bg-gray-100">
-              <Image src={thumbnailPreview} alt="" fill className="object-cover" />
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <GdgTextarea
+          <DuskField
             label="내용"
-            fullWidth
-            rows={10}
-            value={content}
-            onChange={(event) => setContent(event.target.value)}
-            onPaste={handleContentPaste}
-          />
-          <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
-            {contentImageUploading
-              ? '이미지 올리는 중...'
-              : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'}
-          </p>
+            hint={
+              contentImageUploading
+                ? '이미지 올리는 중...'
+                : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'
+            }
+          >
+            <textarea
+              rows={12}
+              placeholder="내용을 입력하세요"
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              onPaste={handleContentPaste}
+              className={DUSK_TEXTAREA}
+            />
+          </DuskField>
+
+          <div className="flex flex-col gap-3">
+            <span className="text-[13px] tracking-[0.06em] text-dusk-ink-400">첨부</span>
+            <AttachmentUploader
+              attachments={attachments}
+              onChange={setAttachments}
+              apiClient={apiClient}
+              s3key={THUMBNAIL_S3_KEY}
+            />
+          </div>
+
+          {errorMessage && <p className="text-sm text-signal-err">{errorMessage}</p>}
+
+          <div className="mt-1.5 flex gap-2.5">
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className={DUSK_SUBMIT_BUTTON}
+            >
+              {submitting ? '저장 중...' : '저장'}
+            </button>
+            <Link href={`/board/events/detail?id=${id}`} className={DUSK_CANCEL_BUTTON}>
+              취소
+            </Link>
+          </div>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</span>
-          <AttachmentUploader
-            attachments={attachments}
-            onChange={setAttachments}
-            apiClient={apiClient}
-            s3key={THUMBNAIL_S3_KEY}
-          />
-        </div>
-
-        {errorMessage && <p className="typo-pc-b3 mobile:typo-m-b3 text-red">{errorMessage}</p>}
-
-        <GdgButton variant="active" fullWidth onClick={handleSubmit} loading={submitting}>
-          저장
-        </GdgButton>
       </div>
     </main>
   )

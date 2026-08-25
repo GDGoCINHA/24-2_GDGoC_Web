@@ -3,12 +3,15 @@
 import { useState } from 'react'
 
 import {
-  GdgButton,
-  GdgFieldContainer,
-  GdgInputField,
-  GdgMajorDropdown
-} from '@/components/ui/design-system'
-import { formatMajorLabel } from '@/constant/majorOptions'
+  DuskField,
+  DUSK_CANCEL_BUTTON,
+  DUSK_INPUT,
+  DUSK_INPUT_READONLY,
+  DUSK_OPTION,
+  DUSK_PRIMARY_BUTTON,
+  DUSK_SELECT
+} from '@/components/ui/dusk/DuskForm'
+import { formatMajorLabel, majorOptions } from '@/constant/majorOptions'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import type { UpdateProfilePayload, UserProfile } from '@/types/profile'
 import { formatPhoneNumberInput } from '@/utils/phoneNumber'
@@ -65,78 +68,102 @@ export default function ProfileInfoSection({
   }
 
   return (
-    <section className="space-y-4">
-      <h2 className="typo-pc-h4 text-white">사용자 개인정보</h2>
-
-      <div className="grid gap-4 pc:grid-cols-2">
-        <GdgInputField
-          label="이름"
-          value={editing ? name : profile.name}
-          state={editing ? 'available' : 'disabled'}
-          disabled={!editing}
-          onChange={(event) => setName(event.target.value)}
-          // 서버의 @Size(max = 30)과 같은 범위를 쓴다.
-          maxLength={30}
-          fullWidth
-        />
-        <GdgInputField label="학번" value={profile.studentId} state="disabled" disabled fullWidth />
-      </div>
-
-      <div>
-        {editing ? (
-          <GdgFieldContainer label="학과">
-            {/* device를 넘기지 않으면 기본값 'auto'가 GdgDropdown의 Device('pc'|'mobile')에
-                없어 getControlMeta에서 undefined['full']로 터진다. signup 화면도 device를
-                명시한다. */}
-            <GdgMajorDropdown device="pc" value={major} onChangeAction={setMajor} />
-          </GdgFieldContainer>
-        ) : (
-          // 서버는 학과를 코드(ME)로 저장한다. 사람이 읽는 이름으로 바꿔 보여준다.
-          <GdgInputField
-            label="학과"
-            value={formatMajorLabel(profile.major)}
-            state="disabled"
-            disabled
-            fullWidth
-          />
-        )}
-      </div>
-
-      <GdgInputField
-        label="전화번호"
-        type="tel"
-        value={editing ? phoneNumber : formatPhoneNumberInput(profile.phoneNumber)}
-        state={
-          editing && !isPhoneValid ? 'error' : editing ? 'available' : 'disabled'
-        }
-        errorText={
-          editing && !isPhoneValid ? '전화번호 형식을 확인해 주세요.' : undefined
-        }
-        disabled={!editing}
-        onChange={(event) => setPhoneNumber(formatInput(event.target.value))}
-        fullWidth
-      />
-
-      <GdgInputField label="이메일" value={profile.email} state="disabled" disabled fullWidth />
-
-      {error && <p className="typo-pc-c1 text-red">{error}</p>}
-
-      <div className="flex justify-end gap-2">
-        {editing ? (
-          <>
-            <GdgButton type="button" onClick={cancelEditing} disabled={saving}>
-              취소
-            </GdgButton>
-            <GdgButton type="button" variant="active" onClick={handleSave} disabled={!canSave || saving}>
-              {saving ? '저장 중…' : '저장하기'}
-            </GdgButton>
-          </>
-        ) : (
-          <GdgButton type="button" variant="active" onClick={startEditing}>
+    <section>
+      <div className="flex flex-wrap items-baseline justify-between gap-4">
+        <h2 className="text-xl font-semibold tracking-[-0.02em]">사용자 개인정보</h2>
+        {!editing && (
+          <button type="button" onClick={startEditing} className={DUSK_PRIMARY_BUTTON}>
             수정하기
-          </GdgButton>
+          </button>
         )}
       </div>
+
+      <div className="mt-[26px] grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]">
+        <DuskField label="이름">
+          <input
+            type="text"
+            value={editing ? name : profile.name}
+            disabled={!editing}
+            onChange={(event) => setName(event.target.value)}
+            // 서버의 @Size(max = 30)과 같은 범위를 쓴다.
+            maxLength={30}
+            className={editing ? DUSK_INPUT : DUSK_INPUT_READONLY}
+          />
+        </DuskField>
+
+        {/* 학번·이메일은 고칠 수 없다. 편집 중에도 흐린 채로 둔다. */}
+        <DuskField label="학번">
+          <input type="text" value={profile.studentId} disabled className={DUSK_INPUT_READONLY} />
+        </DuskField>
+
+        <DuskField label="학과">
+          {editing ? (
+            <select
+              value={major}
+              onChange={(event) => setMajor(event.target.value)}
+              className={DUSK_SELECT}
+            >
+              {majorOptions.map((group) => (
+                <optgroup key={group.title} label={group.title} className={DUSK_OPTION}>
+                  {group.items.map((item) => (
+                    <option key={item.code} value={item.code} className={DUSK_OPTION}>
+                      {item.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          ) : (
+            // 서버는 학과를 코드(ME)로 저장한다. 사람이 읽는 이름으로 바꿔 보여준다.
+            <input
+              type="text"
+              value={formatMajorLabel(profile.major)}
+              disabled
+              className={DUSK_INPUT_READONLY}
+            />
+          )}
+        </DuskField>
+
+        <DuskField
+          label="전화번호"
+          error={editing && !isPhoneValid ? '전화번호 형식을 확인해 주세요.' : undefined}
+        >
+          <input
+            type="tel"
+            value={editing ? phoneNumber : formatPhoneNumberInput(profile.phoneNumber)}
+            disabled={!editing}
+            onChange={(event) => setPhoneNumber(formatInput(event.target.value))}
+            className={editing ? DUSK_INPUT : DUSK_INPUT_READONLY}
+          />
+        </DuskField>
+      </div>
+
+      <DuskField label="이메일" className="mt-[18px]">
+        <input type="email" value={profile.email} disabled className={DUSK_INPUT_READONLY} />
+      </DuskField>
+
+      {error && <p className="mt-4 text-sm text-signal-err">{error}</p>}
+
+      {editing && (
+        <div className="mt-[22px] flex justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={cancelEditing}
+            disabled={saving}
+            className={DUSK_CANCEL_BUTTON}
+          >
+            취소
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave || saving}
+            className="whitespace-nowrap rounded-full bg-ember px-[26px] py-4 text-[15px] font-medium text-ember-ink transition-colors hover:bg-dusk-ink-100 hover:text-dusk-base disabled:opacity-50"
+          >
+            {saving ? '저장 중…' : '저장하기'}
+          </button>
+        </div>
+      )}
     </section>
   )
 }

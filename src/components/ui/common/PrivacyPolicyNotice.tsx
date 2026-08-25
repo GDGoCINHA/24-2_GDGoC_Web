@@ -51,21 +51,20 @@ const POLICY_ROWS: Record<PolicyTarget, PolicyRow[]> = {
 }
 
 function RowBlock({ row, compact }: { row: PolicyRow; compact?: boolean }) {
-  const rowTitleTypo = compact ? 'typo-pc-b2 mobile:typo-m-b3' : 'typo-pc-s2 mobile:typo-m-s1'
-  const rowBodyTypo = compact ? 'typo-pc-c1 mobile:typo-m-c2' : 'typo-pc-b2 mobile:typo-m-b1'
+  const bodySize = compact ? 'text-[13px]' : 'text-sm'
 
   return (
-    <div className="rounded-lg bg-black/25 px-3 py-2.5">
-      <p className={cn(rowTitleTypo, 'text-white')}>{row.category}</p>
-      <div className="mt-1.5 space-y-1 text-white">
-        <p className={rowBodyTypo}>
-          <span className="text-gray-700">처리 목적</span> {row.purpose.join(' / ')}
+    <div className="rounded-[10px] bg-[rgba(24,20,29,0.55)] px-4 py-3.5">
+      <p className="text-[15px] text-dusk-ink-100">{row.category}</p>
+      <div className={cn('mt-2.5 flex flex-col gap-1.5 leading-[1.7] text-dusk-ink-200', bodySize)}>
+        <p>
+          <span className="text-dusk-ink-700">처리 목적</span> {row.purpose.join(' / ')}
         </p>
-        <p className={rowBodyTypo}>
-          <span className="text-gray-700">수집 항목</span> {row.fields}
+        <p>
+          <span className="text-dusk-ink-700">수집 항목</span> {row.fields}
         </p>
-        <p className={rowBodyTypo}>
-          <span className="text-gray-700">보유 기간</span> {row.retention}
+        <p>
+          <span className="text-dusk-ink-700">보유 기간</span> {row.retention}
         </p>
       </div>
     </div>
@@ -86,27 +85,24 @@ export function PrivacyPolicyNotice({
   className?: string
 }) {
   const rows = POLICY_ROWS[target]
-  const compactMetaTypo = compact ? 'typo-pc-c1 mobile:typo-m-c2' : 'typo-pc-c1 mobile:typo-m-c1'
 
   return (
-    <div className={cn('space-y-2', className)}>
-      {showTitle ? <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">{title}</p> : null}
-      <div className="rounded-xl bg-gray-100 px-4 py-3">
-        <p className={cn(compactMetaTypo, 'text-gray-700')}>
+    <div className={className}>
+      {showTitle ? (
+        <h2 className="mb-3 text-[15px] font-medium text-dusk-ink-200">{title}</h2>
+      ) : null}
+      <div className="rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[18px]">
+        <p className="text-[13px] leading-[1.7] text-dusk-ink-700">
           GDGoC INHA는 「개인정보 보호법」 등 관련 법령에 따라 개인정보를 안전하게 처리합니다.
         </p>
-        <div className="mt-3 space-y-2.5">
+        <div className="mt-3.5 flex flex-col gap-2.5">
           {rows.map((row) => (
             <RowBlock key={row.category} row={row} compact={compact} />
           ))}
         </div>
-        <div className="mt-3 border-t border-white/10 pt-3 space-y-1">
-          <p className={cn(compactMetaTypo, 'text-gray-700')}>
-            보유기간 종료, 탈퇴, 미선발 등의 사유 발생 시 영업일 기준 5일 이내 파기합니다.
-          </p>
-          <p className={cn(compactMetaTypo, 'text-gray-700')}>
-            파기 시 디지털 데이터는 복구 불가능한 방식으로 삭제하고, 문서는 세절 처리합니다.
-          </p>
+        <div className="mt-3.5 flex flex-col gap-1.5 border-t border-t-[rgba(240,234,228,0.10)] pt-3.5 text-[13px] leading-[1.7] text-dusk-ink-700">
+          <p>보유기간 종료, 탈퇴, 미선발 등의 사유 발생 시 영업일 기준 5일 이내 파기합니다.</p>
+          <p>파기 시 디지털 데이터는 복구 불가능한 방식으로 삭제하고, 문서는 세절 처리합니다.</p>
         </div>
       </div>
     </div>

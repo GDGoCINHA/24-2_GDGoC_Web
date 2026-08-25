@@ -46,6 +46,43 @@
   --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
   --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-bounce: bounce 1s infinite;
+
+  /* ----------------------------------------------------------------------
+     Dusk 팔레트 — 2026 리디자인 (온보딩 · 게시판 · 마이페이지 · 지원 · 관리자)
+     핸드오프 문서 "Design Tokens" 기준. 기존 --color-black/white/gray-* 는
+     구 화면들이 계속 쓰므로 건드리지 않고 별도 네임스페이스로 둔다.
+     ---------------------------------------------------------------------- */
+
+  /* 표면 */
+  --color-dusk-base: #1b1622;
+  --color-dusk-raise: #221b28;
+  --color-dusk-slot: #251e2c;
+  --color-dusk-card: #241c22;
+  --color-dusk-field: #282132;
+
+  /* 텍스트 — 밝은 쪽이 낮은 번호. 디자인 파일의 미세 변형(#B3A7AC, #B0A3AB,
+     #E2DADD 등)은 육안 구분이 안 되는 차이라 가장 가까운 단계로 흡수했다. */
+  --color-dusk-ink-100: #f0eae4;
+  --color-dusk-ink-200: #e4dcd8;
+  --color-dusk-ink-300: #d3c8cb;
+  --color-dusk-ink-400: #cbc1c6;
+  --color-dusk-ink-500: #c2b8be;
+  --color-dusk-ink-600: #b1a6ac;
+  --color-dusk-ink-700: #a3989e;
+  --color-dusk-ink-800: #968b91;
+
+  /* 괘선 — 그리드 1px 라인과 입력 보더에 함께 쓴다 */
+  --color-dusk-line: rgba(240, 234, 228, 0.12);
+  --color-dusk-line-soft: rgba(240, 234, 228, 0.08);
+  --color-dusk-line-dashed: rgba(240, 234, 228, 0.24);
+
+  /* 액센트 */
+  --color-ember: #d08155;
+  --color-ember-ink: #241c22;
+  --color-signal-ok: #86c08f;
+  --color-signal-err: #d9756a;
+  --color-tag-info: #a9bbe0;
+  --color-tag-event: #e0a24e;
 }
 
 /* Breakpoints */

@@ -47,41 +47,44 @@ export default function RecruitSelect() {
   )
 
   return (
-    <main className="min-h-screen bg-black overflow-x-hidden">
-      <div className="relative z-10 pt-18 pb-32 mobile:pt-12 mobile:pb-24 layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-10">
-        <div className="col-span-4 flex flex-col gap-3 mobile:gap-2">
-          <div className="flex items-center gap-3 mobile:gap-2">
-            <GdgLogo mode="auto" />
-            <h1 className="typo-pc-h3 text-white mobile:typo-m-h2">GDGoC INHA 2026-2</h1>
-          </div>
-          <p className="typo-pc-b2 text-gray-700 mobile:typo-m-b3">지원 종류를 선택해 주세요.</p>
-        </div>
-
-        <div className="col-span-4 grid grid-cols-2 items-stretch gap-5 mobile:grid-cols-1 mobile:gap-4">
-          <RecruitTypeCard
-            title="Core"
-            subtitle="운영진"
-            period={corePeriodText}
-            href="/recruit/core"
-            statusLabel={coreStatusLabel}
-            isOpen={coreOpen}
-          />
-          <RecruitTypeCard
-            title="Member"
-            subtitle="부원"
-            period={
-              <>
-                {memberIntensivePeriodText}{' '}
-                {/* 괄호 문구가 '(집중 모 / 집 기간)' 으로 쪼개지지 않게 통째로 넘긴다. */}
-                <span className="whitespace-nowrap">(집중 모집 기간)</span>
-              </>
-            }
-            href="/recruit/member"
-            statusLabel={memberStatusLabel}
-            isOpen={memberOpen}
-          />
-        </div>
+    <main className="mx-auto w-full max-w-[760px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
+      <div className="flex items-center gap-3">
+        <GdgLogo mode="auto" />
+        <h1 className="text-[clamp(26px,3vw,38px)] font-semibold leading-[1.24] tracking-[-0.03em]">
+          GDGoC INHA 2026-2
+        </h1>
       </div>
+      <p className="mt-3.5 text-base text-dusk-ink-600">지원 종류를 선택해 주세요.</p>
+
+      <div className="mt-10 grid items-stretch gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+        <RecruitTypeCard
+          title="Core"
+          subtitle="운영진"
+          period={corePeriodText}
+          href="/recruit/core"
+          statusLabel={coreStatusLabel}
+          isOpen={coreOpen}
+        />
+        <RecruitTypeCard
+          title="Member"
+          subtitle="부원"
+          period={
+            <>
+              {memberIntensivePeriodText}{' '}
+              {/* 괄호 문구가 '(집중 모 / 집 기간)' 으로 쪼개지지 않게 통째로 넘긴다. */}
+              <span className="whitespace-nowrap">(집중 모집 기간)</span>
+            </>
+          }
+          href="/recruit/member"
+          statusLabel={memberStatusLabel}
+          isOpen={memberOpen}
+        />
+      </div>
+
+      <p className="mt-7 text-[13px] leading-[1.8] text-dusk-ink-800">
+        ※ 부원 모집은 집중 모집 기간 이후에도 상시 모집으로 전환됩니다. 실제 지원 가능 여부는
+        서버에서 판정합니다.
+      </p>
     </main>
   )
 }

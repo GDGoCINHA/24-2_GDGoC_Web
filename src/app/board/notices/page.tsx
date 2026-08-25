@@ -10,6 +10,8 @@ import { BoardSearchBar } from '@/components/board/BoardSearchBar'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import { PinnedNoticeModal } from '@/components/board/PinnedNoticeModal'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { BoardPageHeader } from '@/components/board/BoardPageHeader'
+import { DUSK_GHOST_BUTTON, DUSK_PRIMARY_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
@@ -103,10 +105,14 @@ export default function NoticeBoardListPage() {
       render: (item) => (
         <span className="flex items-center gap-2">
           {/* flex 자식은 기본 min-width:auto 라 min-w-0 없이는 줄어들지 않아 말줄임이 안 걸린다. */}
-          <span className="min-w-0 truncate">{item.title}</span>
+          <span className="min-w-0 overflow-hidden text-ellipsis pc:whitespace-nowrap mobile:line-clamp-2">
+            {item.title}
+          </span>
           {/* 서버가 CORE 미만에게는 미공개 글을 아예 주지 않으므로, 이 배지가 보인다는 건
               보는 사람이 CORE 이상이라는 뜻이다. */}
-          {!item.isPublished && <span className="shrink-0 text-gray-700 typo-pc-c2 mobile:typo-m-c2">임시저장</span>}
+          {!item.isPublished && (
+            <span className="shrink-0 text-xs text-dusk-ink-800">임시저장</span>
+          )}
         </span>
       )
     },
@@ -124,49 +130,37 @@ export default function NoticeBoardListPage() {
   // 안내를 띄워야 "빈 게시판"으로 오해하지 않는다.
   if (!isLoggedIn) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">로그인이 필요한 게시판입니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">로그인이 필요한 게시판입니다.</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <GdgSiteHeader
-        menus={BOARD_MENUS}
-        actionMenu={{ label: '내 정보', url: '/profile/' }}
-      />
-      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항</h1>
-          <div className="flex flex-wrap items-center gap-3">
-            {canWrite && (
-              <Link
-                href="/board/notices/trash/"
-                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
-              >
-                휴지통
-              </Link>
-            )}
-            {canPin && (
-              <button
-                type="button"
-                onClick={() => setPinnedModalOpen(true)}
-                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
-              >
-                상단 고정 관리
-              </button>
-            )}
-            {canWrite && (
-              <Link
-                href="/board/notices/new/"
-                className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3 mobile:typo-m-b3"
-              >
-                글쓰기
-              </Link>
-            )}
-          </div>
-        </div>
+    <main className="min-h-screen">
+      <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
+      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-14">
+        <BoardPageHeader title="공지사항" totalCount={meta?.totalElements}>
+          {canWrite && (
+            <Link href="/board/notices/trash/" className={DUSK_GHOST_BUTTON}>
+              휴지통
+            </Link>
+          )}
+          {canPin && (
+            <button
+              type="button"
+              onClick={() => setPinnedModalOpen(true)}
+              className={DUSK_GHOST_BUTTON}
+            >
+              상단 고정 관리
+            </button>
+          )}
+          {canWrite && (
+            <Link href="/board/notices/new/" className={DUSK_PRIMARY_BUTTON}>
+              글쓰기
+            </Link>
+          )}
+        </BoardPageHeader>
 
         <BoardSearchBar
           searchType={searchType}
@@ -180,29 +174,35 @@ export default function NoticeBoardListPage() {
           onSubmit={handleSubmitSearch}
         />
 
-        {error && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{error}</p>}
+        {error && <p className="text-sm text-signal-err">{error}</p>}
 
         {/* 고정 공지는 size=15와 별개 필드이며, 아래 일반 목록에도 같은 글이 나올 수 있다.
             구형 게시판의 통상적 동작이고 백엔드 설계 §7.1이 의도한 것이다. */}
         {pinned.length > 0 && (
-          <ul className="flex flex-col gap-2 rounded-2xl border border-gray-800 p-4">
+          <ul className="flex flex-col gap-2 rounded-[14px] border border-dusk-line px-[18px] py-4">
             {pinned.map((notice) => (
               <li key={notice.id}>
                 <Link
                   href={`/board/notices/detail?id=${notice.id}`}
-                  className="flex items-center gap-3 py-1 typo-pc-b3 mobile:typo-m-b3 hover:underline"
+                  className="flex items-center gap-3 py-[5px] text-[15px] text-dusk-ink-100 transition-colors hover:text-ember"
                 >
-                  <span aria-hidden>📌</span>
+                  <span aria-hidden className="shrink-0 text-sm text-ember">
+                    고정
+                  </span>
                   <NoticeCategoryTag category={notice.category} />
-                  <span className="flex-1 truncate">{notice.title}</span>
-                  <span className="shrink-0 text-gray-500 typo-pc-c1 mobile:typo-m-c1">{notice.authorName}</span>
+                  <span className="min-w-0 flex-1 truncate">{notice.title}</span>
+                  <span className="shrink-0 text-[13px] text-dusk-ink-800 mobile:hidden">
+                    {notice.authorName}
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
         )}
 
-        {loading && <p className="py-16 text-center text-gray-500 typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>}
+        {loading && (
+          <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
+        )}
         {/* 실패했을 때는 목록을 그리지 않는다. 빈 배열을 넘기면 "등록된 공지가 없습니다."가
             에러 메시지와 나란히 떠서, 못 불러온 것인지 정말 없는 것인지 구분이 안 된다. */}
         {!loading && !error && (

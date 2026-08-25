@@ -3,20 +3,24 @@
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 
-import {
-  GdgButton,
-  GdgCheckbox,
-  GdgFieldContainer,
-  GdgFileCard,
-  GdgLogo,
-  GdgMajorDropdown,
-  GdgTextarea,
-  GdgUploadButton,
-  GdgInputField
-} from '@/components/ui/design-system'
-import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
+import Link from 'next/link'
+
 import { RecruitScheduleCard } from '@/components/recruit/RecruitScheduleCard'
-import { normalizeMajorCode } from '@/constant/majorOptions'
+import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
+import {
+  DuskField,
+  DUSK_CANCEL_BUTTON,
+  DUSK_CHECKBOX,
+  DUSK_CHIP,
+  DUSK_CHIP_ACTIVE,
+  DUSK_INPUT,
+  DUSK_INPUT_READONLY,
+  DUSK_OPTION,
+  DUSK_SELECT,
+  DUSK_SUBMIT_BUTTON,
+  DUSK_TEXTAREA
+} from '@/components/ui/dusk/DuskForm'
+import { majorOptions, normalizeMajorCode } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
@@ -103,35 +107,31 @@ function StepBar({
   onStepClick: (step: RecruitStep) => void
 }) {
   return (
-    <div className="flex w-full items-center">
+    <div className="flex flex-wrap items-center gap-2">
       {STEPS.map((step, index) => {
         const stepIndex = index as RecruitStep
         const isCurrent = stepIndex === currentStep
-        const isActivated = stepIndex <= maxReachedStep
+        // 지나온 단계만 되돌아갈 수 있다. 앞선 단계는 검증을 건너뛰게 되므로 막는다.
         const isClickable = stepIndex <= maxReachedStep
-        const isLast = index === STEPS.length - 1
 
         return (
-          <div key={step} className={cn('flex items-center', isLast ? '' : 'flex-1')}>
+          <div key={step} className="flex items-center gap-2">
+            {index > 0 && <span className="text-dusk-ink-800">·</span>}
             <button
               type="button"
               onClick={() => onStepClick(stepIndex)}
               disabled={!isClickable}
               className={cn(
-                'rounded-full border bg-black px-3 py-1.5 whitespace-nowrap typo-pc-b3 mobile:typo-m-c1 transition-colors',
-                isCurrent && 'bg-red border-red text-white',
-                !isCurrent && isActivated && 'border-red text-white',
-                !isCurrent && !isActivated && 'border-gray-400 text-gray-400',
-                isClickable ? 'cursor-pointer' : 'cursor-not-allowed'
+                'whitespace-nowrap rounded-full px-4 py-[9px] text-sm transition-colors',
+                isCurrent
+                  ? 'bg-ember text-ember-ink'
+                  : isClickable
+                    ? 'cursor-pointer text-dusk-ink-500 hover:text-dusk-ink-100'
+                    : 'cursor-not-allowed text-dusk-ink-700'
               )}
             >
               {step}
             </button>
-            {!isLast && (
-              <div
-                className={cn('h-px flex-1', index < maxReachedStep ? 'bg-red' : 'bg-gray-400')}
-              />
-            )}
           </div>
         )
       })}
@@ -161,24 +161,25 @@ function TextareaField({
   onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void
 }) {
   return (
-    <GdgFieldContainer
+    <DuskField
       label={label}
       required={required}
-      caption={helper}
-      status={error ? 'error' : undefined}
-      statusMessage={error ? '※ 필수 입력 사항입니다.' : undefined}
+      hint={helper}
+      error={error ? '※ 필수 입력 사항입니다.' : undefined}
     >
-      <GdgTextarea
+      <textarea
         name={name}
         value={value}
         onChange={onChange}
         maxLength={maxLength}
         rows={rows}
-        state={error ? 'error' : 'default'}
         placeholder="내용을 입력해 주세요."
-        fullWidth
+        className={cn(DUSK_TEXTAREA, error && 'border-[rgba(196,88,74,0.6)]')}
       />
-    </GdgFieldContainer>
+      <span className="self-end text-[13px] text-dusk-ink-800">
+        {value.length} / {maxLength}
+      </span>
+    </DuskField>
   )
 }
 
@@ -366,7 +367,9 @@ export default function RecruitCore() {
   }
 
   const uploadAttachedFiles = async (files: FormFile[]) => {
-    const uploadTargets = files.filter((item): item is FormFile & { file: File } => Boolean(item.file))
+    const uploadTargets = files.filter((item): item is FormFile & { file: File } =>
+      Boolean(item.file)
+    )
     if (uploadTargets.length === 0) return []
 
     const uploads = uploadTargets.map(async (target) => {
@@ -449,473 +452,273 @@ export default function RecruitCore() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <form onSubmit={handleSubmit} noValidate className="pb-20 pt-18 mobile:pb-12 mobile:pt-12">
-        <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
-          <div className="col-span-4 flex items-center gap-3 mobile:gap-2">
-            <GdgLogo mode="auto" />
-            <h1 className="typo-pc-h3 text-white mobile:typo-m-h2">Core Member 지원</h1>
-          </div>
+    <main className="mx-auto w-full max-w-[760px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
+      <Link
+        href="/recruit/"
+        className="text-[13px] text-dusk-ink-800 transition-colors hover:text-dusk-ink-100"
+      >
+        ← 지원 종류 선택
+      </Link>
+      <h1 className="mt-6 text-[clamp(24px,2.8vw,34px)] font-semibold leading-[1.26] tracking-[-0.03em]">
+        운영진(Core) 지원서
+      </h1>
+      <p className="mt-3 text-[15px] text-dusk-ink-600">GDGoC INHA 2026-2 운영진 모집</p>
 
-          <div className="col-span-4">
-            <StepBar
-              currentStep={currentStep}
-              maxReachedStep={maxReachedStep}
-              onStepClick={handleStepClick}
-            />
-          </div>
+      <div className="mt-[34px]">
+        <StepBar
+          currentStep={currentStep}
+          maxReachedStep={maxReachedStep}
+          onStepClick={handleStepClick}
+        />
+      </div>
 
-          {currentStep === 0 ? (
-            <>
-              <div className="col-span-4 rounded-xl bg-gray-100 px-4 py-3 mobile:px-3.5 mobile:py-3">
-                <ul className="list-disc space-y-1 pl-5 typo-pc-b3 text-white mobile:typo-m-c1">
-                  <li>
-                    아래 정보는 회원가입 시 입력한 정보를 기반으로 <b>자동 입력</b>됩니다.
-                  </li>
-                  <li>
-                    <b>지원서 제출 시점의 정보를 기준으로 저장</b>됩니다.
-                  </li>
-                  <li>
-                    예상 소요 시간: <b>약 10~15분</b>
-                  </li>
-                </ul>
-              </div>
+      <form onSubmit={handleSubmit} noValidate>
+        {currentStep === 0 ? (
+          <div className="mt-[34px] flex flex-col gap-5">
+            <ul className="flex list-disc flex-col gap-1 rounded-[14px] border border-[rgba(240,234,228,0.12)] py-4 pl-9 pr-5 text-sm leading-[1.7] text-dusk-ink-300">
+              <li>
+                아래 정보는 회원가입 시 입력한 정보를 기반으로 <b>자동 입력</b>됩니다.
+              </li>
+              <li>
+                <b>지원서 제출 시점의 정보를 기준으로 저장</b>됩니다.
+              </li>
+              <li>
+                예상 소요 시간: <b>약 10~15분</b>
+              </li>
+            </ul>
 
-              {prefillError ? (
-                <p className="col-span-4 typo-pc-c1 mobile:typo-m-c2 text-red">{prefillError}</p>
-              ) : null}
+            {prefillError ? <p className="text-[13px] text-signal-err">{prefillError}</p> : null}
 
-              <div className="col-span-4 grid grid-cols-4 gap-5 mobile:grid-cols-2 mobile:gap-2">
-                <div className="col-span-1 mobile:col-span-1">
-                  <GdgFieldContainer
-                    label="이름"
-                    required
-                    status={errors.name ? 'error' : undefined}
-                    statusMessage={errors.name ? '※ 필수 입력 사항입니다.' : undefined}
-                  >
-                    <div className="pc:contents hidden">
-                      <GdgInputField
-                        device="pc"
-                        width="small"
-                        aria-label="이름"
-                        value={formData.name}
-                        onChange={(e) => handleInputValueChange('name', e.target.value)}
-                        placeholder="이름을 입력해 주세요."
-                        disabled
-                      />
-                    </div>
-                    <div className="pc:hidden contents">
-                      <GdgInputField
-                        device="mobile"
-                        width="medium"
-                        aria-label="이름"
-                        value={formData.name}
-                        onChange={(e) => handleInputValueChange('name', e.target.value)}
-                        placeholder="이름을 입력해 주세요."
-                        disabled
-                      />
-                    </div>
-                  </GdgFieldContainer>
-                </div>
-
-                <div className="col-span-1 mobile:col-span-1">
-                  <GdgFieldContainer
-                    label="학번"
-                    required
-                    status={errors.studentId ? 'error' : undefined}
-                    statusMessage={errors.studentId ? '※ 필수 입력 사항입니다.' : undefined}
-                  >
-                    <div className="pc:contents hidden">
-                      <GdgInputField
-                        device="pc"
-                        width="small"
-                        aria-label="학번"
-                        value={formData.studentId}
-                        onChange={(e) => handleInputValueChange('studentId', e.target.value)}
-                        placeholder="학번을 입력해 주세요."
-                        disabled
-                      />
-                    </div>
-                    <div className="pc:hidden contents">
-                      <GdgInputField
-                        device="mobile"
-                        width="medium"
-                        aria-label="학번"
-                        value={formData.studentId}
-                        onChange={(e) => handleInputValueChange('studentId', e.target.value)}
-                        placeholder="학번을 입력해 주세요."
-                        disabled
-                      />
-                    </div>
-                  </GdgFieldContainer>
-                </div>
-
-                <div className="col-span-2 mobile:col-span-2">
-                  <GdgFieldContainer
-                    label="이메일"
-                    required
-                    status={errors.email ? 'error' : undefined}
-                    statusMessage={errors.email ? '※ 필수 입력 사항입니다.' : undefined}
-                  >
-                    <div className="pc:contents hidden">
-                      <GdgInputField
-                        device="pc"
-                        width="medium"
-                        aria-label="이메일"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleInputValueChange('email', e.target.value)}
-                        placeholder="이메일을 입력해 주세요."
-                        disabled
-                      />
-                    </div>
-                    <div className="pc:hidden contents">
-                      <GdgInputField
-                        device="mobile"
-                        fullWidth
-                        aria-label="이메일"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleInputValueChange('email', e.target.value)}
-                        placeholder="이메일을 입력해 주세요."
-                        disabled
-                      />
-                    </div>
-                  </GdgFieldContainer>
-                </div>
-              </div>
-
-              <div className="col-span-4">
-                <GdgFieldContainer
-                  label="주전공"
-                  required
-                  caption="검색 혹은 스크롤하여 지정하세요."
-                  status={errors.major ? 'error' : undefined}
-                  statusMessage={errors.major ? '※ 필수 선택 사항입니다.' : undefined}
-                >
-                  <div className="hidden pc:block">
-                    <GdgMajorDropdown
-                      device="pc"
-                      value={formData.major}
-                      onChangeAction={(nextValue) => {
-                        setFormData((prev) => ({ ...prev, major: nextValue }))
-                      }}
-                      isInvalid={Boolean(errors.major)}
-                    />
-                  </div>
-                  <div className="block pc:hidden">
-                    <GdgMajorDropdown
-                      device="mobile"
-                      value={formData.major}
-                      onChangeAction={(nextValue) => {
-                        setFormData((prev) => ({ ...prev, major: nextValue }))
-                      }}
-                      isInvalid={Boolean(errors.major)}
-                    />
-                  </div>
-                </GdgFieldContainer>
-              </div>
-
-              <div className="col-span-4">
-                <GdgFieldContainer
-                  label="전화번호"
-                  required
-                  status={errors.phone ? 'error' : undefined}
-                  statusMessage={errors.phone ? '※ 필수 입력 사항입니다.' : undefined}
-                >
-                  <div className="pc:contents hidden">
-                    <GdgInputField
-                      device="pc"
-                      fullWidth
-                      aria-label="전화번호"
-                      value={formData.phone}
-                      onChange={(e) => handleInputValueChange('phone', e.target.value)}
-                      placeholder="전화번호를 입력해 주세요."
-                      state={errors.phone ? 'error' : 'available'}
-                    />
-                  </div>
-                  <div className="pc:hidden contents">
-                    <GdgInputField
-                      device="mobile"
-                      fullWidth
-                      aria-label="전화번호"
-                      value={formData.phone}
-                      onChange={(e) => handleInputValueChange('phone', e.target.value)}
-                      placeholder="전화번호를 입력해 주세요."
-                      state={errors.phone ? 'error' : 'available'}
-                    />
-                  </div>
-                </GdgFieldContainer>
-              </div>
-            </>
-          ) : null}
-
-          {currentStep === 1 ? (
-            <>
-              <div className="col-span-4">
-                <GdgFieldContainer
-                  label="희망 팀"
-                  required
-                  status={errors.team ? 'error' : undefined}
-                  statusMessage={errors.team ? '※ 필수 선택 사항입니다.' : undefined}
-                >
-                  <div className="grid grid-cols-4 gap-5 mobile:grid-cols-2 mobile:gap-2">
-                    {TEAM_OPTIONS.map((team) => {
-                      const selected = formData.team === team.id
-
-                      return (
-                        <div key={team.id}>
-                          <div className="pc:contents hidden">
-                            <GdgButton
-                              type="button"
-                              device="pc"
-                              size="small"
-                              variant={selected ? 'pressed' : 'bordered'}
-                              widthToken="small"
-                              onClick={() => handleTeamChange(team.id)}
-                            >
-                              {team.label}
-                            </GdgButton>
-                          </div>
-                          <div className="pc:hidden contents">
-                            <GdgButton
-                              type="button"
-                              device="mobile"
-                              size="small"
-                              variant={selected ? 'pressed' : 'bordered'}
-                              widthToken="medium"
-                              onClick={() => handleTeamChange(team.id)}
-                            >
-                              {team.label}
-                            </GdgButton>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </GdgFieldContainer>
-              </div>
-
-              <div className="col-span-4">
-                <TextareaField
-                  name="motivation"
-                  label="지원 동기"
-                  value={formData.motivation}
-                  required
-                  maxLength={500}
-                  rows={6}
-                  error={errors.motivation}
-                  onChange={handleTextareaChange}
-                />
-              </div>
-
-              <div className="col-span-4">
-                <TextareaField
-                  name="role"
-                  label="희망 역할 및 수행하고 싶은 업무"
-                  value={formData.role}
-                  required
-                  maxLength={500}
-                  rows={6}
-                  error={errors.role}
-                  onChange={handleTextareaChange}
-                />
-              </div>
-
-              <div className="col-span-4">
-                <TextareaField
-                  name="strength"
-                  label="본인의 강점"
-                  value={formData.strength}
-                  required
-                  maxLength={500}
-                  rows={6}
-                  helper="예시: 리더십/꼼꼼함/성실함, 자격증, 스킬, 툴, 수상/대외활동/인턴 등"
-                  error={errors.strength}
-                  onChange={handleTextareaChange}
-                />
-              </div>
-
-              <div className="col-span-4">
-                <TextareaField
-                  name="determination"
-                  label="각오"
-                  value={formData.determination}
-                  required
-                  maxLength={100}
-                  rows={2}
-                  error={errors.determination}
-                  onChange={handleTextareaChange}
-                />
-              </div>
-
-              <div className="col-span-4 space-y-2">
-                <div className="flex items-center gap-3 pl-2 mobile:gap-2">
-                  <p className="typo-pc-s3 text-white mobile:typo-m-s2">파일 첨부</p>
-                  <p className="typo-c2 text-gray-700">다중 파일 업로드 가능</p>
-                </div>
-
-                {formData.files.map((file, index) => (
-                  <>
-                    <div key={`pc-${file.name}-${index}`} className="hidden pc:block">
-                      <GdgFileCard
-                        device="pc"
-                        fileName={file.name}
-                        fileSize={formatFileSize(file.size)}
-                        onAction={() => handleRemoveFile(index)}
-                      />
-                    </div>
-                    <div key={`mobile-${file.name}-${index}`} className="block pc:hidden">
-                      <GdgFileCard
-                        device="mobile"
-                        fileName={file.name}
-                        fileSize={formatFileSize(file.size)}
-                        onAction={() => handleRemoveFile(index)}
-                      />
-                    </div>
-                  </>
-                ))}
-
+            {/* 이름·학번·이메일은 회원 정보를 그대로 쓴다. 여기서 고칠 수 없다. */}
+            <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
+              <DuskField label="이름" required>
+                <input type="text" value={formData.name} disabled className={DUSK_INPUT_READONLY} />
+              </DuskField>
+              <DuskField label="학번" required>
                 <input
-                  id="portfolio"
-                  type="file"
-                  multiple
-                  className="hidden"
-                  onChange={handleFileInput}
-                  accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.zip"
+                  type="text"
+                  value={formData.studentId}
+                  disabled
+                  className={DUSK_INPUT_READONLY}
                 />
+              </DuskField>
+            </div>
 
-                <GdgUploadButton
-                  device="pc"
-                  onClick={() => document.getElementById('portfolio')?.click()}
-                  className="w-full"
-                />
-              </div>
-            </>
-          ) : null}
+            <DuskField label="이메일" required>
+              <input type="email" value={formData.email} disabled className={DUSK_INPUT_READONLY} />
+            </DuskField>
 
-          {currentStep === 2 ? (
-            <>
-              <div className="col-span-4 space-y-8 mobile:space-y-6">
-                <RecruitScheduleCard />
-
-                <div className="flex items-center justify-end gap-2">
-                  <span className="typo-pc-b3 mobile:typo-m-c1 text-red">*</span>
-                  <p className="typo-pc-b3 mobile:typo-m-c1 text-white">전체 일정을 확인하였습니다.</p>
-                  <span className="hidden pc:inline-flex">
-                    <GdgCheckbox
-                      checked={scheduleChecked}
-                      onCheckedChange={setScheduleChecked}
-                      size="pc"
-                    />
-                  </span>
-                  <span className="inline-flex pc:hidden">
-                    <GdgCheckbox
-                      checked={scheduleChecked}
-                      onCheckedChange={setScheduleChecked}
-                      size="mobile"
-                    />
-                  </span>
-                </div>
-              </div>
-
-              {errors.scheduleCheck ? (
-                <p className="col-span-4 text-right typo-c2 text-red">
-                  ※ 미확인 시 지원서 제출이 불가합니다.
-                </p>
-              ) : null}
-            </>
-          ) : null}
-
-          {currentStep === 3 ? (
-            <>
-              <div className="col-span-4 space-y-4">
-                <div className="space-y-2">
-                  <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">개인정보 수집 및 이용 동의</p>
-                  <PrivacyPolicyNotice target="core" showTitle={false} compact />
-                </div>
-                <div className="flex items-center justify-end gap-2">
-                  <span className="typo-pc-b3 mobile:typo-m-c1 text-red">*</span>
-                  <p className="typo-pc-b3 mobile:typo-m-c1 text-white">개인정보 처리방침에 동의합니다.</p>
-                  <span className="hidden pc:inline-flex">
-                    <GdgCheckbox
-                      checked={agreementChecked}
-                      onCheckedChange={setAgreementChecked}
-                      size="pc"
-                    />
-                  </span>
-                  <span className="inline-flex pc:hidden">
-                    <GdgCheckbox
-                      checked={agreementChecked}
-                      onCheckedChange={setAgreementChecked}
-                      size="mobile"
-                    />
-                  </span>
-                </div>
-              </div>
-
-              {errors.agreementCheck ? (
-                <p className="col-span-4 text-right typo-c2 text-red">
-                  ※ 미동의 시 지원서 제출이 불가합니다.
-                </p>
-              ) : null}
-            </>
-          ) : null}
-
-          <div className="col-span-4 hidden justify-end gap-5 pt-2 pc:flex">
-            {currentStep > 0 ? (
-              <GdgButton
-                type="button"
-                device="pc"
-                size="small"
-                variant="default"
-                widthToken="small"
-                onClick={handlePrevious}
+            <DuskField
+              label="주전공"
+              required
+              error={errors.major ? '※ 필수 선택 사항입니다.' : undefined}
+            >
+              <select
+                value={formData.major}
+                onChange={(event) =>
+                  setFormData((prev) => ({ ...prev, major: event.target.value }))
+                }
+                className={cn(DUSK_SELECT, errors.major && 'border-[rgba(196,88,74,0.6)]')}
               >
-                이전
-              </GdgButton>
+                <option value="" className={DUSK_OPTION}>
+                  주전공을 선택해 주세요.
+                </option>
+                {majorOptions.map((group) => (
+                  <optgroup key={group.title} label={group.title} className={DUSK_OPTION}>
+                    {group.items.map((item) => (
+                      <option key={item.code} value={item.code} className={DUSK_OPTION}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </DuskField>
+
+            <DuskField
+              label="전화번호"
+              required
+              error={errors.phone ? '※ 필수 입력 사항입니다.' : undefined}
+            >
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleInputValueChange('phone', e.target.value)}
+                placeholder="전화번호를 입력해 주세요."
+                className={cn(DUSK_INPUT, errors.phone && 'border-[rgba(196,88,74,0.6)]')}
+              />
+            </DuskField>
+          </div>
+        ) : null}
+
+        {currentStep === 1 ? (
+          <div className="mt-[34px] flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
+              <span className="text-[13px] text-dusk-ink-700">
+                희망 팀<span className="text-signal-err"> *</span>
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {TEAM_OPTIONS.map((team) => (
+                  <button
+                    key={team.id}
+                    type="button"
+                    onClick={() => handleTeamChange(team.id)}
+                    className={formData.team === team.id ? DUSK_CHIP_ACTIVE : DUSK_CHIP}
+                  >
+                    {team.label}
+                  </button>
+                ))}
+              </div>
+              {errors.team ? (
+                <span className="text-[13px] text-signal-err">※ 필수 선택 사항입니다.</span>
+              ) : null}
+            </div>
+
+            <TextareaField
+              name="motivation"
+              label="지원 동기"
+              value={formData.motivation}
+              required
+              maxLength={500}
+              rows={6}
+              error={errors.motivation}
+              onChange={handleTextareaChange}
+            />
+            <TextareaField
+              name="role"
+              label="희망 역할 및 수행하고 싶은 업무"
+              value={formData.role}
+              required
+              maxLength={500}
+              rows={5}
+              error={errors.role}
+              onChange={handleTextareaChange}
+            />
+            <TextareaField
+              name="strength"
+              label="본인의 강점"
+              value={formData.strength}
+              required
+              maxLength={500}
+              rows={5}
+              helper="예시: 리더십/꼼꼼함/성실함, 자격증, 스킬, 툴, 수상/대외활동/인턴 등"
+              error={errors.strength}
+              onChange={handleTextareaChange}
+            />
+            <TextareaField
+              name="determination"
+              label="각오"
+              value={formData.determination}
+              required
+              maxLength={100}
+              rows={3}
+              error={errors.determination}
+              onChange={handleTextareaChange}
+            />
+
+            <div className="flex flex-col gap-3">
+              <span className="text-[13px] text-dusk-ink-700">
+                파일 첨부 <span className="text-dusk-ink-800">(다중 업로드 가능)</span>
+              </span>
+
+              {formData.files.map((file, index) => (
+                <div
+                  key={`${file.name}-${index}`}
+                  className="flex items-center gap-3 rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-dusk-ink-100"
+                >
+                  <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                    {file.name}
+                  </span>
+                  <span className="shrink-0 text-sm text-dusk-ink-800">
+                    {formatFileSize(file.size)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveFile(index)}
+                    className="shrink-0 text-sm text-dusk-ink-800 transition-colors hover:text-signal-err"
+                  >
+                    삭제
+                  </button>
+                </div>
+              ))}
+
+              <input
+                id="portfolio"
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleFileInput}
+                accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.zip"
+              />
+              <button
+                type="button"
+                onClick={() => document.getElementById('portfolio')?.click()}
+                className="w-full rounded-xl border border-[rgba(240,234,228,0.22)] px-6 py-[15px] text-[15px] text-dusk-ink-100 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:bg-[rgba(208,129,85,0.06)]"
+              >
+                + 파일 선택
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {currentStep === 2 ? (
+          <div className="mt-[34px] flex flex-col gap-4">
+            <RecruitScheduleCard />
+
+            <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
+              <input
+                type="checkbox"
+                checked={scheduleChecked}
+                onChange={(event) => setScheduleChecked(event.target.checked)}
+                className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
+              />
+              <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
+                전체 일정을 확인하였습니다.<span className="text-signal-err"> *</span>
+              </span>
+            </label>
+
+            {errors.scheduleCheck ? (
+              <p className="text-[13px] text-signal-err">※ 미확인 시 지원서 제출이 불가합니다.</p>
             ) : null}
-
-            <GdgButton
-              type="submit"
-              device="pc"
-              size="small"
-              variant={isCurrentStepValid && !isSubmitting ? 'active' : 'disabled'}
-              widthToken="small"
-              disabled={!isCurrentStepValid || isSubmitting}
-            >
-              {currentStep === 3 ? (isSubmitting ? '제출 중...' : '제출하기') : '다음'}
-            </GdgButton>
           </div>
+        ) : null}
 
-          <div className="col-span-4 grid grid-cols-3 gap-2 pt-0 pc:hidden">
-            <span aria-hidden />
-            {currentStep > 0 ? (
-              <GdgButton
-                type="button"
-                device="mobile"
-                size="small"
-                variant="default"
-                fullWidth
-                onClick={handlePrevious}
-              >
-                이전
-              </GdgButton>
-            ) : (
-              <span aria-hidden />
-            )}
+        {currentStep === 3 ? (
+          <div className="mt-[34px] flex flex-col gap-4">
+            <PrivacyPolicyNotice target="core" showTitle={false} compact />
 
-            <GdgButton
-              type="submit"
-              device="mobile"
-              size="small"
-              variant={isCurrentStepValid && !isSubmitting ? 'active' : 'disabled'}
-              fullWidth
-              disabled={!isCurrentStepValid || isSubmitting}
-            >
-              {currentStep === 3 ? (isSubmitting ? '제출 중...' : '제출하기') : '다음'}
-            </GdgButton>
+            <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
+              <input
+                type="checkbox"
+                checked={agreementChecked}
+                onChange={(event) => setAgreementChecked(event.target.checked)}
+                className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
+              />
+              <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
+                개인정보 수집 및 이용, 개인정보 처리방침에 동의합니다.
+                <span className="text-signal-err"> *</span>
+              </span>
+            </label>
+
+            {errors.agreementCheck ? (
+              <p className="text-[13px] text-signal-err">※ 미동의 시 지원서 제출이 불가합니다.</p>
+            ) : null}
           </div>
+        ) : null}
+
+        <div className="mt-7 flex gap-2.5">
+          {currentStep > 0 ? (
+            <button type="button" onClick={handlePrevious} className={DUSK_CANCEL_BUTTON}>
+              이전
+            </button>
+          ) : null}
+          <button
+            type="submit"
+            disabled={!isCurrentStepValid || isSubmitting}
+            className={DUSK_SUBMIT_BUTTON}
+          >
+            {currentStep === 3 ? (isSubmitting ? '제출 중...' : '제출하기') : '다음'}
+          </button>
         </div>
       </form>
     </main>

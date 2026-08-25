@@ -40,11 +40,11 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
                 href={href ?? '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-white typo-pc-b3 mobile:typo-m-b3 transition-colors hover:bg-gray-400"
+                className="flex items-center gap-2 rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-dusk-ink-100 transition-colors hover:bg-[rgba(240,234,228,0.11)]"
               >
                 <span className="flex-1 truncate">{attachment.fileName}</span>
                 {attachment.fileSize !== null && attachment.fileSize !== undefined && (
-                  <span className="shrink-0 text-gray-700">
+                  <span className="shrink-0 text-sm text-dusk-ink-800">
                     {formatFileSize(attachment.fileSize)}
                   </span>
                 )}
@@ -59,7 +59,7 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
               href={href ?? '#'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-blue underline typo-pc-b3 mobile:typo-m-b3 transition-colors hover:bg-gray-400"
+              className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-tag-info underline transition-colors hover:bg-[rgba(240,234,228,0.11)]"
             >
               {attachment.url}
             </a>
