@@ -47,8 +47,19 @@ export const DUSK_CANCEL_BUTTON =
 export const DUSK_DANGER_BUTTON =
   'whitespace-nowrap rounded-full border border-[rgba(196,88,74,0.6)] px-[22px] py-[11px] text-sm text-signal-err transition-colors hover:bg-[rgba(196,88,74,0.12)] disabled:opacity-50'
 
+export const DUSK_CHECKBOX = 'size-[17px] shrink-0 cursor-pointer accent-ember'
+
+/** 하나만 고르는 알약 버튼. 라디오보다 손가락으로 누르기 쉬워 모바일에서 낫다. */
+export const DUSK_CHIP =
+  'cursor-pointer whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.16)] px-[22px] py-3 text-[15px] text-dusk-ink-400 transition-colors hover:border-[rgba(240,234,228,0.4)] hover:text-dusk-ink-100'
+
+export const DUSK_CHIP_ACTIVE =
+  'cursor-pointer whitespace-nowrap rounded-full border border-ember bg-[rgba(208,129,85,0.14)] px-[22px] py-3 text-[15px] text-ember'
+
 export interface DuskFieldProps {
   label: string
+  /** 라벨 뒤에 붉은 별표를 붙인다. */
+  required?: boolean
   /** 입력칸 아래 회색 안내. 글자 수 제한이나 붙여넣기 안내처럼 상시 보이는 문구를 넣는다. */
   hint?: ReactNode
   /** 붉게 뜨는 검증 문구. 있으면 hint 대신 이쪽이 보인다. */
@@ -57,10 +68,13 @@ export interface DuskFieldProps {
   children: ReactNode
 }
 
-export function DuskField({ label, hint, error, className, children }: DuskFieldProps) {
+export function DuskField({ label, required, hint, error, className, children }: DuskFieldProps) {
   return (
     <label className={cn('flex flex-col gap-[9px]', className)}>
-      <span className={DUSK_LABEL}>{label}</span>
+      <span className={DUSK_LABEL}>
+        {label}
+        {required && <span className="text-signal-err"> *</span>}
+      </span>
       {children}
       {error ? (
         <span className="text-[13px] text-signal-err">{error}</span>

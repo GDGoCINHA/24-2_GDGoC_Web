@@ -1,4 +1,3 @@
-import { Bullet } from '@/components/ui/common/Bullet'
 import { CORE_SCHEDULE, formatKoreanPeriod } from '@/constant/recruitSchedule'
 
 type Props = {
@@ -6,6 +5,21 @@ type Props = {
   applicationPeriod?: { openAt: string; closeAt: string }
 }
 
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-wrap justify-between gap-5 px-5 py-[18px]">
+      <span className="text-sm text-dusk-ink-700">{label}</span>
+      <span className="text-[15px]">{value}</span>
+    </div>
+  )
+}
+
+/**
+ * 모집 일정표.
+ *
+ * 디자인은 1px 틈으로 괘선을 만들지만 여기 바탕은 그라디언트라 행을 불투명하게
+ * 칠해야 그 수법이 먹는다. 같은 그림을 테두리로 낸다.
+ */
 export function RecruitScheduleCard({ applicationPeriod }: Props) {
   const period = applicationPeriod ?? {
     openAt: CORE_SCHEDULE.fallbackOpenAt,
@@ -14,49 +28,35 @@ export function RecruitScheduleCard({ applicationPeriod }: Props) {
   const applicationText = `${formatKoreanPeriod(period.openAt, period.closeAt)} 23:59:59`
 
   return (
-    <>
-      <div className="space-y-2">
-        <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">모집 일정</p>
-        <div className="rounded-xl bg-gray-100 px-4 py-3 text-white">
-          <div className="space-y-4 typo-pc-b2 mobile:space-y-3 mobile:typo-m-b3">
-            <div className="space-y-1">
-              <Bullet>서류 지원 기간</Bullet>
-              <p>{applicationText}</p>
-            </div>
-            <div className="space-y-1">
-              <Bullet>서류 결과 발표</Bullet>
-              <p>{CORE_SCHEDULE.documentResult}</p>
-            </div>
-            <div className="space-y-1">
-              <Bullet>면접 진행 기간</Bullet>
-              <p>{CORE_SCHEDULE.interview}</p>
-              <p className="typo-pc-c2 mobile:typo-m-c2 text-gray-700">{CORE_SCHEDULE.interviewNote}</p>
-            </div>
-            <div className="space-y-1">
-              <Bullet>최종 결과 발표</Bullet>
-              <p>{CORE_SCHEDULE.finalResult}</p>
-            </div>
+    <div className="flex flex-col gap-6">
+      <section>
+        <h2 className="text-[15px] font-medium text-dusk-ink-200">모집 일정</h2>
+        <div className="mt-3 divide-y divide-[rgba(240,234,228,0.12)] overflow-hidden rounded-[14px] border border-[rgba(240,234,228,0.12)]">
+          <Row label="서류 접수" value={applicationText} />
+          <Row label="서류 결과" value={CORE_SCHEDULE.documentResult} />
+          <Row label="면접" value={CORE_SCHEDULE.interview} />
+          <Row label="최종 결과" value={CORE_SCHEDULE.finalResult} />
+          <div className="flex flex-col gap-1.5 px-5 py-[18px] text-[13px] leading-[1.7] text-dusk-ink-800">
+            <span>※ {CORE_SCHEDULE.interviewNote}</span>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">면접 안내</p>
-        <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-pc-b2 mobile:typo-m-b3">
-          <Bullet>원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.</Bullet>
-          <div className="mt-2">
-            <Bullet>면접은 인하대학교 내부 장소에서 진행됩니다.</Bullet>
-          </div>
+      <section>
+        <h2 className="text-[15px] font-medium text-dusk-ink-200">면접 안내</h2>
+        <div className="mt-3 flex flex-col gap-1.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[18px] text-[15px] leading-[1.7] text-dusk-ink-300">
+          <p>원칙적으로 대면 면접을 진행하며, 부득이한 경우 비대면으로 조정될 수 있습니다.</p>
+          <p>면접은 인하대학교 내부 장소에서 진행됩니다.</p>
         </div>
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <p className="pl-2 typo-pc-s2 mobile:typo-m-s1 text-white">활동 안내</p>
-        <div className="rounded-xl bg-gray-100 px-4 py-3 text-white typo-pc-b2 mobile:typo-m-b3">
-          <Bullet>운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다.</Bullet>
-          <p className="mt-1 typo-pc-c2 mobile:typo-m-c2 text-gray-700">{CORE_SCHEDULE.meetingNote}</p>
+      <section>
+        <h2 className="text-[15px] font-medium text-dusk-ink-200">활동 안내</h2>
+        <div className="mt-3 flex flex-col gap-1.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[18px] text-[15px] leading-[1.7] text-dusk-ink-300">
+          <p>운영진으로 활동 시, 매주 1회 정기 운영진 회의에 필수 참석해야 합니다.</p>
+          <p className="text-[13px] text-dusk-ink-800">※ {CORE_SCHEDULE.meetingNote}</p>
         </div>
-      </div>
-    </>
+      </section>
+    </div>
   )
 }
