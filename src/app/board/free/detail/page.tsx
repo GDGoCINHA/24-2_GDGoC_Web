@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { BoardContent } from '@/components/board/BoardContent'
-import { BOARD_GHOST_BUTTON } from '@/components/board/BoardPageHeader'
+import { DUSK_GHOST_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { FreeBoardComments } from '@/components/board/FreeBoardComments'
 import { GdgSiteHeader } from '@/components/ui/design-system'
@@ -172,7 +172,7 @@ export default function FreeBoardDetailPage() {
 
         {canManage && (
           <div className="flex gap-3 border-t border-t-[rgba(240,234,228,0.10)] pt-7">
-            <Link href={`/board/free/edit?id=${detail.id}`} className={BOARD_GHOST_BUTTON}>
+            <Link href={`/board/free/edit?id=${detail.id}`} className={DUSK_GHOST_BUTTON}>
               수정
             </Link>
             <button

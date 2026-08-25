@@ -1,13 +1,14 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
 
+import { BOARD_MENUS } from '@/components/board/boardMenus'
 import ApplicationDetailModal from '@/components/profile/ApplicationDetailModal'
 import ApplicationStatus from '@/components/profile/ApplicationStatus'
 import ProfileCard from '@/components/profile/ProfileCard'
 import ProfileInfoSection from '@/components/profile/ProfileInfoSection'
 import Loader from '@/components/ui/common/Loader'
+import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import {
@@ -25,6 +26,11 @@ import type {
   UpdateProfilePayload,
   UserProfile
 } from '@/types/profile'
+
+/** 헤더에서 '내 정보'가 밑줄로 켜지려면 actionMenu 가 아니라 menus 에 있어야 한다. */
+const PROFILE_MENUS = [...BOARD_MENUS, { label: '내 정보', url: '/profile/' }]
+
+const MAIN_MENU = { label: '메인으로', url: '/' }
 
 export default function ProfilePage() {
   const { apiClient } = useAuthenticatedApi()
@@ -174,18 +180,10 @@ export default function ProfilePage() {
   if (loading) return <Loader isLoading />
   if (loadError) {
     return (
-      <main className="min-h-screen bg-black px-6 py-10 text-white pc:px-10">
-        <div className="mx-auto w-full max-w-[880px] space-y-10">
-          <div className="space-y-2">
-            <Link
-              href="/"
-              className="inline-flex w-fit items-center gap-1 typo-pc-b3 text-gray-800 transition hover:text-white mobile:typo-m-b3"
-            >
-              <span aria-hidden>←</span>
-              메인으로
-            </Link>
-            <p className="typo-pc-c1 text-red">{loadError}</p>
-          </div>
+      <main className="min-h-screen">
+        <GdgSiteHeader menus={PROFILE_MENUS} actionMenu={MAIN_MENU} />
+        <div className="mx-auto w-full max-w-[880px] px-[clamp(20px,5vw,44px)] pb-24 pt-14">
+          <p className="text-base text-signal-err">{loadError}</p>
         </div>
       </main>
     )
@@ -193,21 +191,14 @@ export default function ProfilePage() {
   if (!profile) return null
 
   return (
-    <main className="min-h-screen bg-black px-6 py-10 text-white pc:px-10">
-      <div className="mx-auto w-full max-w-[880px] space-y-10">
-        <div className="space-y-2">
-          <Link
-            href="/"
-            className="inline-flex w-fit items-center gap-1 typo-pc-b3 text-gray-800 transition hover:text-white mobile:typo-m-b3"
-          >
-            <span aria-hidden>←</span>
-            메인으로
-          </Link>
-          <h1 className="typo-h3 mobile:typo-m-h2">내 정보 페이지</h1>
-        </div>
+    <main className="min-h-screen">
+      <GdgSiteHeader menus={PROFILE_MENUS} actionMenu={MAIN_MENU} />
+      <div className="mx-auto w-full max-w-[880px] px-[clamp(20px,5vw,44px)] pb-24 pt-14">
+        <h1 className="text-[clamp(26px,3vw,38px)] font-semibold leading-[1.26] tracking-[-0.03em]">
+          내 정보
+        </h1>
 
-        <div className="space-y-4">
-          <h2 className="typo-pc-h4 text-white">사용자 프로필</h2>
+        <div className="mt-9">
           <ProfileCard
             profile={profile}
             onImageChange={handleImageChange}
@@ -216,21 +207,25 @@ export default function ProfilePage() {
           />
         </div>
 
-        <ProfileInfoSection
-          profile={profile}
-          onSave={handleSave}
-          saving={saving}
-          error={saveError}
-        />
+        <div className="mt-14">
+          <ProfileInfoSection
+            profile={profile}
+            onSave={handleSave}
+            saving={saving}
+            error={saveError}
+          />
+        </div>
 
-        <ApplicationStatus
-          application={application}
-          memberApplication={memberApplication}
-          loading={applicationLoading}
-          error={applicationError}
-          onOpenCore={() => void openCoreDetail()}
-          onOpenMember={openMemberDetail}
-        />
+        <div className="mt-15">
+          <ApplicationStatus
+            application={application}
+            memberApplication={memberApplication}
+            loading={applicationLoading}
+            error={applicationError}
+            onOpenCore={() => void openCoreDetail()}
+            onOpenMember={openMemberDetail}
+          />
+        </div>
       </div>
 
       {openedApplication !== null ? (

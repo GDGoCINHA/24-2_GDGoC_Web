@@ -6,14 +6,14 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
+import { BoardFormHeader } from '@/components/board/BoardPageHeader'
 import {
-  BoardField,
-  BoardFormHeader,
-  BOARD_CANCEL_BUTTON,
-  BOARD_INPUT,
-  BOARD_SUBMIT_BUTTON,
-  BOARD_TEXTAREA
-} from '@/components/board/BoardForm'
+  DUSK_CANCEL_BUTTON,
+  DUSK_INPUT,
+  DUSK_SUBMIT_BUTTON,
+  DUSK_TEXTAREA,
+  DuskField
+} from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
@@ -173,17 +173,17 @@ export default function FreeBoardEditPage() {
         <BoardFormHeader backHref="/board/free/" title="자유게시판 수정" />
 
         <div className="mt-[34px] flex flex-col gap-[22px]">
-          <BoardField label="제목">
+          <DuskField label="제목">
             <input
               type="text"
               placeholder="제목을 입력하세요"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className={BOARD_INPUT}
+              className={DUSK_INPUT}
             />
-          </BoardField>
+          </DuskField>
 
-          <BoardField
+          <DuskField
             label="내용"
             hint={
               contentImageUploading
@@ -197,9 +197,9 @@ export default function FreeBoardEditPage() {
               value={content}
               onChange={(event) => setContent(event.target.value)}
               onPaste={handleContentPaste}
-              className={BOARD_TEXTAREA}
+              className={DUSK_TEXTAREA}
             />
-          </BoardField>
+          </DuskField>
 
           <div className="flex flex-col gap-3">
             <span className="text-[13px] tracking-[0.06em] text-dusk-ink-400">첨부</span>
@@ -218,11 +218,11 @@ export default function FreeBoardEditPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className={BOARD_SUBMIT_BUTTON}
+              className={DUSK_SUBMIT_BUTTON}
             >
               {submitting ? '저장 중...' : '저장'}
             </button>
-            <Link href={`/board/free/detail?id=${id}`} className={BOARD_CANCEL_BUTTON}>
+            <Link href={`/board/free/detail?id=${id}`} className={DUSK_CANCEL_BUTTON}>
               취소
             </Link>
           </div>

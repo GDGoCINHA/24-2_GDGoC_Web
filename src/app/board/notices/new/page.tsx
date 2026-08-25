@@ -6,16 +6,16 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
+import { BoardFormHeader } from '@/components/board/BoardPageHeader'
 import {
-  BoardField,
-  BoardFormHeader,
-  BOARD_CANCEL_BUTTON,
-  BOARD_INPUT,
-  BOARD_OPTION,
-  BOARD_SELECT,
-  BOARD_SUBMIT_BUTTON,
-  BOARD_TEXTAREA
-} from '@/components/board/BoardForm'
+  DUSK_CANCEL_BUTTON,
+  DUSK_INPUT,
+  DUSK_OPTION,
+  DUSK_SELECT,
+  DUSK_SUBMIT_BUTTON,
+  DUSK_TEXTAREA,
+  DuskField
+} from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
@@ -97,34 +97,34 @@ export default function NoticeBoardNewPage() {
         <BoardFormHeader backHref="/board/notices/" title="공지사항 작성" />
 
         <div className="mt-[34px] flex flex-col gap-[22px]">
-          <BoardField label="제목">
+          <DuskField label="제목">
             <input
               type="text"
               placeholder="제목을 입력하세요"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className={BOARD_INPUT}
+              className={DUSK_INPUT}
             />
-          </BoardField>
+          </DuskField>
 
-          <BoardField label="분류" className="max-w-[260px]">
+          <DuskField label="분류" className="max-w-[260px]">
             <select
               value={category}
               onChange={(event) => setCategory(event.target.value as NoticeCategory)}
-              className={BOARD_SELECT}
+              className={DUSK_SELECT}
             >
-              <option value="" className={BOARD_OPTION}>
+              <option value="" className={DUSK_OPTION}>
                 분류를 선택하세요
               </option>
               {CATEGORY_OPTIONS.map((option) => (
-                <option key={option} value={option} className={BOARD_OPTION}>
+                <option key={option} value={option} className={DUSK_OPTION}>
                   {NOTICE_CATEGORY_LABEL[option]}
                 </option>
               ))}
             </select>
-          </BoardField>
+          </DuskField>
 
-          <BoardField
+          <DuskField
             label="내용"
             hint={
               contentImageUploading
@@ -138,9 +138,9 @@ export default function NoticeBoardNewPage() {
               value={content}
               onChange={(event) => setContent(event.target.value)}
               onPaste={handleContentPaste}
-              className={BOARD_TEXTAREA}
+              className={DUSK_TEXTAREA}
             />
-          </BoardField>
+          </DuskField>
 
           {/* 임시저장은 별도 status가 아니라 isPublished=false 하나로 표현된다 (백엔드 설계 §3). */}
           <label className="flex cursor-pointer items-center gap-2.5 text-[15px] text-dusk-ink-400">
@@ -170,11 +170,11 @@ export default function NoticeBoardNewPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className={BOARD_SUBMIT_BUTTON}
+              className={DUSK_SUBMIT_BUTTON}
             >
               {submitting ? '등록 중...' : '등록'}
             </button>
-            <Link href="/board/notices/" className={BOARD_CANCEL_BUTTON}>
+            <Link href="/board/notices/" className={DUSK_CANCEL_BUTTON}>
               취소
             </Link>
           </div>

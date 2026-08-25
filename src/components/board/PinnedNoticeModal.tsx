@@ -4,7 +4,7 @@ import axios, { type AxiosInstance } from 'axios'
 import { Reorder } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 
-import { BOARD_CANCEL_BUTTON, BOARD_INPUT, BOARD_SUBMIT_BUTTON } from '@/components/board/BoardForm'
+import { DUSK_CANCEL_BUTTON, DUSK_INPUT, DUSK_SUBMIT_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import {
   fetchNoticeList,
@@ -198,7 +198,7 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
                 }
               }}
               placeholder="제목·내용으로 검색"
-              className={BOARD_INPUT}
+              className={DUSK_INPUT}
             />
             <ul className="flex flex-col">
               {candidates.map((notice) => {
@@ -241,14 +241,14 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
         {errorMessage && <p className="shrink-0 text-sm text-signal-err">{errorMessage}</p>}
 
         <div className="flex shrink-0 gap-2.5">
-          <button type="button" onClick={onClose} className={`flex-1 ${BOARD_CANCEL_BUTTON}`}>
+          <button type="button" onClick={onClose} className={`flex-1 ${DUSK_CANCEL_BUTTON}`}>
             취소
           </button>
           <button
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className={BOARD_SUBMIT_BUTTON}
+            className={DUSK_SUBMIT_BUTTON}
           >
             {saving ? '저장 중...' : '저장'}
           </button>

@@ -4,8 +4,9 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
 import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
-import { BoardPageHeader, BOARD_GHOST_BUTTON } from '@/components/board/BoardPageHeader'
 import { BoardPagination } from '@/components/board/BoardPagination'
+import { BoardPageHeader } from '@/components/board/BoardPageHeader'
+import { DUSK_GHOST_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import { GdgSiteHeader } from '@/components/ui/design-system'
@@ -117,7 +118,7 @@ export default function NoticeBoardTrashPage() {
       <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
       <div className="mx-auto w-full max-w-[1120px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-14">
         <BoardPageHeader title="공지사항 휴지통" totalCount={meta?.totalElements}>
-          <Link href="/board/notices/" className={BOARD_GHOST_BUTTON}>
+          <Link href="/board/notices/" className={DUSK_GHOST_BUTTON}>
             목록으로
           </Link>
         </BoardPageHeader>

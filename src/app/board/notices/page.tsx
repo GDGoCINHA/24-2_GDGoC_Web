@@ -5,16 +5,13 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
-import {
-  BoardPageHeader,
-  BOARD_GHOST_BUTTON,
-  BOARD_PRIMARY_BUTTON
-} from '@/components/board/BoardPageHeader'
 import { BoardPagination } from '@/components/board/BoardPagination'
 import { BoardSearchBar } from '@/components/board/BoardSearchBar'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import { PinnedNoticeModal } from '@/components/board/PinnedNoticeModal'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { BoardPageHeader } from '@/components/board/BoardPageHeader'
+import { DUSK_GHOST_BUTTON, DUSK_PRIMARY_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
@@ -143,7 +140,7 @@ export default function NoticeBoardListPage() {
       <div className="mx-auto w-full max-w-[1120px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-14">
         <BoardPageHeader title="공지사항" totalCount={meta?.totalElements}>
           {canWrite && (
-            <Link href="/board/notices/trash/" className={BOARD_GHOST_BUTTON}>
+            <Link href="/board/notices/trash/" className={DUSK_GHOST_BUTTON}>
               휴지통
             </Link>
           )}
@@ -151,13 +148,13 @@ export default function NoticeBoardListPage() {
             <button
               type="button"
               onClick={() => setPinnedModalOpen(true)}
-              className={BOARD_GHOST_BUTTON}
+              className={DUSK_GHOST_BUTTON}
             >
               상단 고정 관리
             </button>
           )}
           {canWrite && (
-            <Link href="/board/notices/new/" className={BOARD_PRIMARY_BUTTON}>
+            <Link href="/board/notices/new/" className={DUSK_PRIMARY_BUTTON}>
               글쓰기
             </Link>
           )}

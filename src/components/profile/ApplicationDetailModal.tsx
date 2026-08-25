@@ -66,16 +66,16 @@ const formatAnswerValue = (value: unknown): string => {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-3">
-      <span className="w-24 shrink-0 typo-pc-b3 text-gray-700 mobile:typo-m-b3">{label}</span>
-      <span className="break-all typo-pc-b3 text-white mobile:typo-m-b3">{value}</span>
+      <span className="w-24 shrink-0 text-[15px] text-dusk-ink-700">{label}</span>
+      <span className="break-all text-[15px] text-dusk-ink-100">{value}</span>
     </div>
   )
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border border-white/10 bg-gray-100/30 p-4">
-      <p className="typo-pc-c2 text-gray-700">{title}</p>
+    <section className="rounded-xl border border-[rgba(240,234,228,0.10)] bg-[rgba(240,234,228,0.05)] p-4">
+      <p className="text-[13px] text-dusk-ink-700">{title}</p>
       <div className="mt-3">{children}</div>
     </section>
   )
@@ -84,7 +84,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function LongAnswer({ label, value }: { label: string; value: string }) {
   return (
     <Section title={label}>
-      <p className="whitespace-pre-wrap typo-pc-b3 text-white mobile:typo-m-b3">{value || '-'}</p>
+      <p className="whitespace-pre-wrap break-keep text-[15px] leading-[1.75] text-dusk-ink-200">
+        {value || '-'}
+      </p>
     </Section>
   )
 }
@@ -134,29 +136,30 @@ export default function ApplicationDetailModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(18,15,22,0.70)] px-4 py-6 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="max-h-full w-full max-w-[720px] overflow-y-auto rounded-2xl border border-white/10 bg-black p-6"
+        className="max-h-full w-full max-w-[720px] overflow-y-auto rounded-[18px] border border-[rgba(240,234,228,0.12)] bg-dusk-field p-7"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4">
-          <h2 className="typo-pc-h4 text-white mobile:typo-m-h3">{title}</h2>
+          <h2 className="text-xl font-semibold tracking-[-0.02em]">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded-lg border border-white/10 px-3 py-2 typo-pc-c2 text-white transition hover:bg-white/5"
+            aria-label="닫기"
+            className="shrink-0 text-xl font-light text-dusk-ink-700 transition-colors hover:text-dusk-ink-100"
           >
-            닫기
+            ×
           </button>
         </div>
 
-        {loading ? <p className="mt-6 typo-pc-b3 text-gray-700">불러오는 중…</p> : null}
-        {error ? <p className="mt-6 typo-pc-b3 text-red">{error}</p> : null}
+        {loading ? <p className="mt-6 text-[15px] text-dusk-ink-800">불러오는 중…</p> : null}
+        {error ? <p className="mt-6 text-[15px] text-signal-err">{error}</p> : null}
 
         {core ? (
           <div className="mt-6 space-y-4">
@@ -186,14 +189,14 @@ export default function ApplicationDetailModal({
                       href={url}
                       target="_blank"
                       rel="noreferrer"
-                      className="block break-all typo-pc-b3 text-[#9EC0FF] underline"
+                      className="block break-all text-[15px] text-tag-info underline"
                     >
                       {url}
                     </a>
                   ))}
                 </div>
               ) : (
-                <p className="typo-pc-b3 text-gray-700">첨부 파일이 없습니다.</p>
+                <p className="text-[15px] text-dusk-ink-800">첨부 파일이 없습니다.</p>
               )}
             </Section>
           </div>
@@ -235,7 +238,7 @@ export default function ApplicationDetailModal({
                       href={value}
                       target="_blank"
                       rel="noreferrer"
-                      className="block break-all typo-pc-b3 text-[#9EC0FF] underline"
+                      className="block break-all text-[15px] text-tag-info underline"
                     >
                       {value}
                     </a>

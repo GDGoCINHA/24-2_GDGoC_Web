@@ -5,13 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
-import {
-  BoardPageHeader,
-  BOARD_GHOST_BUTTON,
-  BOARD_PRIMARY_BUTTON
-} from '@/components/board/BoardPageHeader'
 import { BoardPagination } from '@/components/board/BoardPagination'
 import { BoardSearchBar } from '@/components/board/BoardSearchBar'
+import { BoardPageHeader } from '@/components/board/BoardPageHeader'
+import { DUSK_GHOST_BUTTON, DUSK_PRIMARY_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
@@ -118,12 +115,12 @@ export default function FreeBoardListPage() {
         <BoardPageHeader title="자유게시판" totalCount={meta?.totalElements}>
           {/* 휴지통은 MEMBER 이상이면 열린다 — 자기가 지운 글만 보인다. */}
           {canWrite && (
-            <Link href="/board/free/trash/" className={BOARD_GHOST_BUTTON}>
+            <Link href="/board/free/trash/" className={DUSK_GHOST_BUTTON}>
               휴지통
             </Link>
           )}
           {canWrite && (
-            <Link href="/board/free/new/" className={BOARD_PRIMARY_BUTTON}>
+            <Link href="/board/free/new/" className={DUSK_PRIMARY_BUTTON}>
               글쓰기
             </Link>
           )}

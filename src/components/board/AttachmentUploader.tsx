@@ -11,7 +11,7 @@ import {
   type SetStateAction
 } from 'react'
 
-import { BOARD_INPUT } from '@/components/board/BoardForm'
+import { DUSK_INPUT } from '@/components/ui/dusk/DuskForm'
 import {
   describeUploadError,
   requestPresignedUpload,
@@ -220,7 +220,7 @@ export function AttachmentUploader({
             }
           }}
           disabled={isFull}
-          className={cn('min-w-0 flex-1', BOARD_INPUT)}
+          className={cn('min-w-0 flex-1', DUSK_INPUT)}
         />
         <button
           type="button"

@@ -7,16 +7,16 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
+import { BoardFormHeader } from '@/components/board/BoardPageHeader'
 import {
-  BoardField,
-  BoardFormHeader,
-  BOARD_CANCEL_BUTTON,
-  BOARD_INPUT,
-  BOARD_OPTION,
-  BOARD_SELECT,
-  BOARD_SUBMIT_BUTTON,
-  BOARD_TEXTAREA
-} from '@/components/board/BoardForm'
+  DUSK_CANCEL_BUTTON,
+  DUSK_INPUT,
+  DUSK_OPTION,
+  DUSK_SELECT,
+  DUSK_SUBMIT_BUTTON,
+  DUSK_TEXTAREA,
+  DuskField
+} from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
@@ -262,50 +262,50 @@ export default function EventBoardEditPage() {
         <BoardFormHeader backHref="/board/events/" title="행사 게시글 수정" />
 
         <div className="mt-[34px] flex flex-col gap-[22px]">
-          <BoardField label="제목">
+          <DuskField label="제목">
             <input
               type="text"
               placeholder="제목을 입력하세요"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className={BOARD_INPUT}
+              className={DUSK_INPUT}
             />
-          </BoardField>
+          </DuskField>
 
           {/* color-scheme 을 어둡게 잡지 않으면 브라우저가 그리는 달력 아이콘이 검정으로
               나와 배경에 묻힌다. */}
           <div className="flex flex-wrap gap-4">
-            <BoardField label="시작일" className="min-w-[150px] flex-1">
+            <DuskField label="시작일" className="min-w-[150px] flex-1">
               <input
                 type="date"
                 value={eventStartDate}
                 onChange={(event) => setEventStartDate(event.target.value)}
-                className={`${BOARD_INPUT} [color-scheme:dark]`}
+                className={`${DUSK_INPUT} [color-scheme:dark]`}
               />
-            </BoardField>
-            <BoardField label="종료일" className="min-w-[150px] flex-1">
+            </DuskField>
+            <DuskField label="종료일" className="min-w-[150px] flex-1">
               <input
                 type="date"
                 value={eventEndDate}
                 onChange={(event) => setEventEndDate(event.target.value)}
-                className={`${BOARD_INPUT} [color-scheme:dark]`}
+                className={`${DUSK_INPUT} [color-scheme:dark]`}
               />
-            </BoardField>
+            </DuskField>
           </div>
 
-          <BoardField label="주최 팀" className="max-w-[260px]">
+          <DuskField label="주최 팀" className="max-w-[260px]">
             <select
               value={organizingTeam}
               onChange={(event) => setOrganizingTeam(event.target.value as EventOrganizingTeam)}
-              className={BOARD_SELECT}
+              className={DUSK_SELECT}
             >
               {TEAM_OPTIONS.map((option) => (
-                <option key={option.id} value={option.id} className={BOARD_OPTION}>
+                <option key={option.id} value={option.id} className={DUSK_OPTION}>
                   {option.label}
                 </option>
               ))}
             </select>
-          </BoardField>
+          </DuskField>
 
           <div className="flex flex-col gap-[9px]">
             <span className="text-[13px] text-dusk-ink-700">썸네일</span>
@@ -331,7 +331,7 @@ export default function EventBoardEditPage() {
             )}
           </div>
 
-          <BoardField
+          <DuskField
             label="내용"
             hint={
               contentImageUploading
@@ -345,9 +345,9 @@ export default function EventBoardEditPage() {
               value={content}
               onChange={(event) => setContent(event.target.value)}
               onPaste={handleContentPaste}
-              className={BOARD_TEXTAREA}
+              className={DUSK_TEXTAREA}
             />
-          </BoardField>
+          </DuskField>
 
           <div className="flex flex-col gap-3">
             <span className="text-[13px] tracking-[0.06em] text-dusk-ink-400">첨부</span>
@@ -366,11 +366,11 @@ export default function EventBoardEditPage() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className={BOARD_SUBMIT_BUTTON}
+              className={DUSK_SUBMIT_BUTTON}
             >
               {submitting ? '저장 중...' : '저장'}
             </button>
-            <Link href={`/board/events/detail?id=${id}`} className={BOARD_CANCEL_BUTTON}>
+            <Link href={`/board/events/detail?id=${id}`} className={DUSK_CANCEL_BUTTON}>
               취소
             </Link>
           </div>
