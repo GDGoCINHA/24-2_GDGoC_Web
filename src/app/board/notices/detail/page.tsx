@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { BoardContent } from '@/components/board/BoardContent'
+import { BOARD_GHOST_BUTTON } from '@/components/board/BoardPageHeader'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
@@ -105,21 +106,24 @@ export default function NoticeBoardDetailPage() {
   // 로그인으로 보내는 사이 그려지는 한 프레임. "불러오는 중"으로 두면 실패로 오해한다.
   if (!isLoggedIn) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">로그인이 필요한 게시판입니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">로그인이 필요한 게시판입니다.</p>
       </main>
     )
   }
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+    return <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
   }
 
   if (notFound) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">삭제되었거나 존재하지 않는 공지입니다.</p>
-        <Link href="/board/notices/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">삭제되었거나 존재하지 않는 공지입니다.</p>
+        <Link
+          href="/board/notices/"
+          className="mt-4 inline-block text-sm text-dusk-ink-500 underline transition-colors hover:text-dusk-ink-100"
+        >
           목록으로
         </Link>
       </main>
@@ -128,9 +132,12 @@ export default function NoticeBoardDetailPage() {
 
   if (error || !detail) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="text-red typo-pc-b2 mobile:typo-m-b2">{error ?? '글을 불러오지 못했습니다.'}</p>
-        <Link href="/board/notices/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-signal-err">{error ?? '글을 불러오지 못했습니다.'}</p>
+        <Link
+          href="/board/notices/"
+          className="mt-4 inline-block text-sm text-dusk-ink-500 underline transition-colors hover:text-dusk-ink-100"
+        >
           목록으로
         </Link>
       </main>
@@ -138,20 +145,25 @@ export default function NoticeBoardDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen">
       <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
-      <div className="mx-auto w-full max-w-[880px] space-y-6 px-6 mobile:px-4 py-10">
-        <Link href="/board/notices/" className="text-gray-700 typo-pc-c2 mobile:typo-m-c2 hover:text-white">
-          목록으로
+      <div className="mx-auto w-full max-w-[880px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-11">
+        <Link
+          href="/board/notices/"
+          className="text-[13px] text-dusk-ink-800 transition-colors hover:text-dusk-ink-100"
+        >
+          ← 목록으로
         </Link>
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <NoticeCategoryTag category={detail.category} />
-            {!detail.isPublished && <span className="text-gray-700 typo-pc-c2 mobile:typo-m-c2">임시저장</span>}
+            {!detail.isPublished && <span className="text-xs text-dusk-ink-800">임시저장</span>}
           </div>
-          <h1 className="typo-pc-h3 mobile:typo-m-h2">{detail.title}</h1>
-          <div className="flex flex-wrap gap-4 text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+          <h1 className="break-keep text-[clamp(25px,3vw,38px)] font-semibold leading-[1.3] tracking-[-0.03em]">
+            {detail.title}
+          </h1>
+          <div className="flex flex-wrap gap-[18px] text-[13px] text-dusk-ink-800">
             <span>{detail.authorName}</span>
             <span>{formatDate(detail.createdAt)}</span>
             {/* 조회수는 서버가 상세 조회마다 +1 한다. 이 값은 이번 조회가 반영된 뒤의 수치다. */}
@@ -168,18 +180,15 @@ export default function NoticeBoardDetailPage() {
             않아 프론트가 '본인인가'를 판정할 수 없으므로 넓게 보여주고 거부는 서버 403에
             맡긴다. 이 분기는 방어가 아니라 편의다. */}
         {canManage && (
-          <div className="flex gap-3 border-t border-gray-800 pt-6">
-            <Link
-              href={`/board/notices/edit?id=${detail.id}`}
-              className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
-            >
+          <div className="flex gap-3 border-t border-t-[rgba(240,234,228,0.10)] pt-7">
+            <Link href={`/board/notices/edit?id=${detail.id}`} className={BOARD_GHOST_BUTTON}>
               수정
             </Link>
             <button
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="rounded-full border border-red px-6 py-2 text-red typo-pc-b3 mobile:typo-m-b3 disabled:opacity-50"
+              className="whitespace-nowrap rounded-full border border-[rgba(196,88,74,0.6)] px-[22px] py-[11px] text-sm text-signal-err transition-colors hover:bg-[rgba(196,88,74,0.12)] disabled:opacity-50"
             >
               삭제
             </button>

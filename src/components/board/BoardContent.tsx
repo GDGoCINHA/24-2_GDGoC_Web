@@ -45,7 +45,7 @@ export function BoardContent({ content }: BoardContentProps): ReactNode {
   const segments = toSegments(content)
 
   return (
-    <div className="flex flex-col gap-2 typo-pc-b2 mobile:typo-m-b2">
+    <div className="flex flex-col gap-5 break-keep border-t border-t-[rgba(240,234,228,0.10)] pt-[34px] text-base leading-[1.85] text-dusk-ink-200">
       {segments.map((segment, index) =>
         segment.kind === 'image' ? (
           <a
