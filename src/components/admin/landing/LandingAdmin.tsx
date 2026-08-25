@@ -4,14 +4,16 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { SchedulePanel } from '@/components/admin/landing/SchedulePanel'
 import {
+  AboutPanel,
   ActivitiesPanel,
+  ContactPanel,
   FaqPanel,
   HackathonsPanel,
   HeroPanel,
   PhotoStripPanel
 } from '@/components/admin/landing/panels'
 import { DUSK_GHOST_BUTTON, DUSK_PRIMARY_BUTTON } from '@/components/ui/dusk/DuskForm'
-import { LANDING_CONTENT_FALLBACK } from '@/constant/landingContent'
+import { LANDING_CONTENT_FALLBACK, mergeLandingContent } from '@/constant/landingContent'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import {
   fetchLandingDraft,
@@ -21,15 +23,25 @@ import {
 import type { LandingContentDocument } from '@/types/landing'
 import { cn } from '@/utils/cn'
 
-type TabId = 'hero' | 'strip' | 'activities' | 'hackathons' | 'schedule' | 'faq'
+type TabId =
+  | 'hero'
+  | 'about'
+  | 'strip'
+  | 'activities'
+  | 'hackathons'
+  | 'schedule'
+  | 'faq'
+  | 'contact'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'hero', label: '히어로' },
+  { id: 'about', label: '소개' },
   { id: 'strip', label: '사진 띠' },
   { id: 'activities', label: '활동' },
   { id: 'hackathons', label: '대회 · 해커톤' },
   { id: 'schedule', label: '모집 일정' },
-  { id: 'faq', label: 'FAQ' }
+  { id: 'faq', label: 'FAQ' },
+  { id: 'contact', label: '문의 · 학기' }
 ]
 
 /**
@@ -71,8 +83,11 @@ export default function LandingAdmin() {
     fetchLandingDraft(apiClient)
       .then((draft) => {
         // 서버에 아무것도 없으면 번들 기본값에서 시작한다. 빈 화면을 주면 처음 쓰는
-        // 사람이 여섯 탭을 전부 채워야 한다.
-        if (alive && draft) setDocument(draft)
+        // 사람이 여덟 탭을 전부 채워야 한다.
+        //
+        // 있더라도 통째로 갈아끼우지 않는다 — 소개·문의·학기 라벨이 늘기 전에 저장된
+        // 초안에는 그 칸이 없어서, 그대로 넣으면 편집 화면이 빈 값으로 깨진다.
+        if (alive && draft) setDocument(mergeLandingContent(draft))
       })
       .catch(() => {
         if (alive) setError('초안을 불러오지 못했습니다. 기본값에서 시작합니다.')
@@ -128,11 +143,13 @@ export default function LandingAdmin() {
 
   const counts: Record<TabId, string> = {
     hero: '사진 1',
+    about: `${document.about.values.length}칸`,
     strip: `사진 ${document.photoStrip.length}`,
     activities: `${document.activities.length}개`,
     hackathons: `${document.hackathons.length}개`,
     schedule: '2종',
-    faq: `${document.faqs.length}개`
+    faq: `${document.faqs.length}개`,
+    contact: document.semesterLabel
   }
 
   if (loading) {
@@ -198,7 +215,7 @@ export default function LandingAdmin() {
             ))}
           </nav>
 
-          {/* 탭이 여섯 개라 좁은 화면에서는 끝이 잘린다. 잘린 글자만 보이면 더 있는 줄
+          {/* 탭이 여덟 개라 좁은 화면에서는 끝이 잘린다. 잘린 글자만 보이면 더 있는 줄
               모르고 지나치므로, 오른쪽에 그라데이션을 덮어 옆으로 더 있다고 알린다.
               끝까지 밀면 사라진다 — 남아 있으면 없는 탭이 있다고 거짓말하는 셈이다. */}
           {tabsOverflow && (
@@ -213,6 +230,9 @@ export default function LandingAdmin() {
           {tab === 'hero' && (
             <HeroPanel document={document} onChange={change} apiClient={apiClient} />
           )}
+          {tab === 'about' && (
+            <AboutPanel document={document} onChange={change} apiClient={apiClient} />
+          )}
           {tab === 'strip' && (
             <PhotoStripPanel document={document} onChange={change} apiClient={apiClient} />
           )}
@@ -225,6 +245,9 @@ export default function LandingAdmin() {
           {tab === 'schedule' && <SchedulePanel apiClient={apiClient} />}
           {tab === 'faq' && (
             <FaqPanel document={document} onChange={change} apiClient={apiClient} />
+          )}
+          {tab === 'contact' && (
+            <ContactPanel document={document} onChange={change} apiClient={apiClient} />
           )}
         </div>
       </div>

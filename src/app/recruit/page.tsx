@@ -6,9 +6,9 @@ import { useRecruitCorePeriod } from '@/hooks/useRecruitCorePeriod'
 import { useRecruitMemberPeriod } from '@/hooks/useRecruitMemberPeriod'
 import {
   CORE_SCHEDULE,
-  MEMBER_SCHEDULE,
   formatKoreanDateShort,
-  formatKoreanPeriodShort
+  formatKoreanPeriodShort,
+  resolveMemberSchedule
 } from '@/constant/recruitSchedule'
 
 export default function RecruitSelect() {
@@ -41,9 +41,10 @@ export default function RecruitSelect() {
       : memberPeriod.status === 'BEFORE_OPEN'
         ? `${formatKoreanDateShort(memberPeriod.openAt)} 오픈`
         : '모집 마감'
+  const memberSchedule = resolveMemberSchedule(memberPeriod?.notice)
   const memberIntensivePeriodText = formatKoreanPeriodShort(
-    MEMBER_SCHEDULE.intensiveOpenAt,
-    MEMBER_SCHEDULE.intensiveCloseAt
+    memberSchedule.intensiveOpenAt,
+    memberSchedule.intensiveCloseAt
   )
 
   return (
