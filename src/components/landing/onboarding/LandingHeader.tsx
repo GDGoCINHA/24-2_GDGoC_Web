@@ -3,6 +3,7 @@
 import Image from 'next/image'
 
 import { useAuth } from '@/hooks/useAuth'
+import { hasAtLeast } from '@/utils/auth/role'
 
 import gdgocPcLogo from '@public/icons/gdgocIcon/pc.svg'
 
@@ -22,6 +23,13 @@ const ANCHORS = [
 const LINK_CLASS =
   'whitespace-nowrap text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100'
 
+/**
+ * 운영진만 보는 진입 버튼. 지원하기(ember)와 겹치지 않게 테두리만 준다 —
+ * 방문자에게 가장 중요한 버튼이 두 개로 보이면 안 된다.
+ */
+const ADMIN_LINK_CLASS =
+  'whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 py-1.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
+
 export function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
@@ -29,6 +37,8 @@ export function scrollToSection(id: string) {
 export default function LandingHeader() {
   const { user } = useAuth()
   const isLoggedIn = Boolean(user)
+  // 콘텐츠 관리 화면과 같은 기준이다 (dashboard/landing/layout.tsx).
+  const canEditContent = hasAtLeast(user?.userRole, 'LEAD')
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex h-[68px] items-center justify-between gap-6 border-b border-b-[rgba(240,234,228,0.07)] bg-[rgba(27,22,34,0.62)] px-[clamp(20px,4vw,44px)] backdrop-blur-[18px]">
@@ -57,6 +67,11 @@ export default function LandingHeader() {
       </a>
 
       <nav className="flex items-center gap-[clamp(14px,2.4vw,34px)]">
+        {canEditContent && (
+          <a href="/dashboard/landing/" className={ADMIN_LINK_CLASS}>
+            콘텐츠 관리
+          </a>
+        )}
         {ANCHORS.map((item) => (
           <a
             key={item.id}
