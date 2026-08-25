@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
 import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
+import { BoardPageHeader, BOARD_GHOST_BUTTON } from '@/components/board/BoardPageHeader'
 import { BoardPagination } from '@/components/board/BoardPagination'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
@@ -95,7 +96,7 @@ export default function NoticeBoardTrashPage() {
           type="button"
           onClick={() => handleRestore(item.id)}
           disabled={restoringId === item.id}
-          className="rounded-full border border-gray-800 px-4 py-1 typo-pc-c1 mobile:typo-m-c1 disabled:opacity-50"
+          className="whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.20)] px-4 py-1.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(240,234,228,0.5)] hover:text-dusk-ink-100 disabled:opacity-50"
         >
           {restoringId === item.id ? '복원 중' : '복원'}
         </button>
@@ -105,35 +106,30 @@ export default function NoticeBoardTrashPage() {
 
   if (!canOpen) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">접근 권한이 없습니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">접근 권한이 없습니다.</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen">
       <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
-      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항 휴지통</h1>
-          <Link href="/board/notices/" className="underline typo-pc-b3 mobile:typo-m-b3">
+      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-14">
+        <BoardPageHeader title="공지사항 휴지통" totalCount={meta?.totalElements}>
+          <Link href="/board/notices/" className={BOARD_GHOST_BUTTON}>
             목록으로
           </Link>
-        </div>
+        </BoardPageHeader>
 
         {!hasAtLeast(user?.userRole, 'ORGANIZER') && (
-          <p className="text-gray-600 typo-pc-c1 mobile:typo-m-c1">
-            본인이 삭제한 공지만 보입니다.
-          </p>
+          <p className="text-[13px] text-dusk-ink-700">본인이 삭제한 공지만 보입니다.</p>
         )}
 
-        {error && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{error}</p>}
+        {error && <p className="text-sm text-signal-err">{error}</p>}
 
         {loading && (
-          <p className="py-16 text-center text-gray-500 typo-pc-b2 mobile:typo-m-b2">
-            불러오는 중...
-          </p>
+          <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
         )}
         {!loading && !error && (
           <BoardList

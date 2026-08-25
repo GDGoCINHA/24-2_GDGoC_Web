@@ -1,19 +1,23 @@
 'use client'
 
 import axios from 'axios'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
 import {
-  GdgButton,
-  GdgDropdown,
-  GdgInputField,
-  GdgSiteHeader,
-  GdgTextarea,
-  type GdgDropdownOption
-} from '@/components/ui/design-system'
+  BoardField,
+  BoardFormHeader,
+  BOARD_CANCEL_BUTTON,
+  BOARD_INPUT,
+  BOARD_OPTION,
+  BOARD_SELECT,
+  BOARD_SUBMIT_BUTTON,
+  BOARD_TEXTAREA
+} from '@/components/board/BoardForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
+import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { useContentImagePaste } from '@/hooks/useContentImagePaste'
@@ -21,9 +25,7 @@ import { fetchNoticeDetail, updateNotice } from '@/services/board/noticeClient'
 import { NOTICE_CATEGORY_LABEL, type NoticeCategory } from '@/types/notice'
 import { hasAtLeast } from '@/utils/auth/role'
 
-const CATEGORY_OPTIONS: GdgDropdownOption[] = (
-  Object.keys(NOTICE_CATEGORY_LABEL) as NoticeCategory[]
-).map((category) => ({ id: category, label: NOTICE_CATEGORY_LABEL[category] }))
+const CATEGORY_OPTIONS = Object.keys(NOTICE_CATEGORY_LABEL) as NoticeCategory[]
 
 const NOTICE_S3_KEY = 'boardNotice'
 
@@ -150,102 +152,124 @@ export default function NoticeBoardEditPage() {
 
   if (!canManage) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">수정 권한이 없습니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">수정 권한이 없습니다.</p>
       </main>
     )
   }
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+    return <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
   }
 
   if (forbidden) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">본인이 쓴 공지만 수정할 수 있습니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">본인이 쓴 공지만 수정할 수 있습니다.</p>
       </main>
     )
   }
 
   if (loadError) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="text-red typo-pc-b2 mobile:typo-m-b2">{loadError}</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-signal-err">{loadError}</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <GdgSiteHeader
-        menus={BOARD_MENUS}
-        actionMenu={{ label: '내 정보', url: '/profile/' }}
-      />
-      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 mobile:px-4 py-10">
-        <h1 className="typo-pc-h3 mobile:typo-m-h2">공지사항 수정</h1>
+    <main className="min-h-screen">
+      <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
+      <div className="mx-auto w-full max-w-[720px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-11">
+        <BoardFormHeader backHref="/board/notices/" title="공지사항 수정" />
 
-        <GdgInputField
-          label="제목"
-          fullWidth
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
+        <div className="mt-[34px] flex flex-col gap-[22px]">
+          <BoardField label="제목">
+            <input
+              type="text"
+              placeholder="제목을 입력하세요"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className={BOARD_INPUT}
+            />
+          </BoardField>
 
-        <GdgDropdown
-          // 기본 size=small(122px) 은 플레이스홀더를 담지 못하고 잘린다.
-          size="medium"
-          label="분류"
-          placeholder="분류를 선택하세요"
-          options={CATEGORY_OPTIONS}
-          value={category}
-          onChange={(value) => setCategory(value as NoticeCategory)}
-        />
+          <BoardField label="분류" className="max-w-[260px]">
+            <select
+              value={category}
+              onChange={(event) => setCategory(event.target.value as NoticeCategory)}
+              className={BOARD_SELECT}
+            >
+              <option value="" className={BOARD_OPTION}>
+                분류를 선택하세요
+              </option>
+              {CATEGORY_OPTIONS.map((option) => (
+                <option key={option} value={option} className={BOARD_OPTION}>
+                  {NOTICE_CATEGORY_LABEL[option]}
+                </option>
+              ))}
+            </select>
+          </BoardField>
 
-        <div className="flex flex-col gap-2">
-          <GdgTextarea
+          <BoardField
             label="내용"
-            fullWidth
-            rows={12}
-            value={content}
-            onChange={(event) => setContent(event.target.value)}
-            onPaste={handleContentPaste}
-          />
-          <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
-            {contentImageUploading
-              ? '이미지 올리는 중...'
-              : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'}
-          </p>
+            hint={
+              contentImageUploading
+                ? '이미지 올리는 중...'
+                : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'
+            }
+          >
+            <textarea
+              rows={14}
+              placeholder="내용을 입력하세요"
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              onPaste={handleContentPaste}
+              className={BOARD_TEXTAREA}
+            />
+          </BoardField>
+
+          {/* 공개 중인 공지를 임시저장으로 되돌려도 상단 고정은 자동으로 풀리지 않는다.
+              백엔드는 고정 '저장 시점'에만 미공개를 거부하고(PinnedNoticeService.replacePinned),
+              이미 고정된 글이 나중에 미공개로 바뀌는 경로는 막지 않는다. 프론트가 할 수 있는
+              일이 없어 관측한 사실로만 남긴다. */}
+          <label className="flex cursor-pointer items-center gap-2.5 text-[15px] text-dusk-ink-400">
+            <input
+              type="checkbox"
+              checked={isPublished}
+              onChange={(event) => setIsPublished(event.target.checked)}
+              className="size-[17px] cursor-pointer accent-ember"
+            />
+            공개 (해제하면 임시저장)
+          </label>
+
+          <div className="flex flex-col gap-3">
+            <span className="text-[13px] tracking-[0.06em] text-dusk-ink-400">첨부</span>
+            <AttachmentUploader
+              attachments={attachments}
+              onChange={setAttachments}
+              apiClient={apiClient}
+              s3key={NOTICE_S3_KEY}
+            />
+          </div>
+
+          {errorMessage && <p className="text-sm text-signal-err">{errorMessage}</p>}
+
+          <div className="mt-1.5 flex gap-2.5">
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className={BOARD_SUBMIT_BUTTON}
+            >
+              {submitting ? '저장 중...' : '저장'}
+            </button>
+            <Link href={`/board/notices/detail?id=${id}`} className={BOARD_CANCEL_BUTTON}>
+              취소
+            </Link>
+          </div>
         </div>
-
-        {/* 공개 중인 공지를 임시저장으로 되돌려도 상단 고정은 자동으로 풀리지 않는다.
-            백엔드는 고정 '저장 시점'에만 미공개를 거부하고(PinnedNoticeService.replacePinned),
-            이미 고정된 글이 나중에 미공개로 바뀌는 경로는 막지 않는다. 프론트가 할 수 있는
-            일이 없어 관측한 사실로만 남긴다. */}
-        <label className="flex items-center gap-2 typo-pc-b3 mobile:typo-m-b3">
-          <input
-            type="checkbox"
-            checked={isPublished}
-            onChange={(event) => setIsPublished(event.target.checked)}
-          />
-          공개 (해제하면 임시저장)
-        </label>
-
-        <div className="flex flex-col gap-2">
-          <span className="tracking-[0.2em] text-white/80 typo-pc-s3 mobile:typo-m-s3 uppercase">첨부</span>
-          <AttachmentUploader
-            attachments={attachments}
-            onChange={setAttachments}
-            apiClient={apiClient}
-            s3key={NOTICE_S3_KEY}
-          />
-        </div>
-
-        {errorMessage && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>}
-
-        <GdgButton variant="active" fullWidth onClick={handleSubmit} loading={submitting}>
-          저장
-        </GdgButton>
       </div>
     </main>
   )
