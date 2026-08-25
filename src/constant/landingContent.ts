@@ -123,7 +123,7 @@ export const LANDING_HACKATHONS: LandingHackathon[] = [
     title: 'Build with AI : AINGTHON',
     badge: '연합 주최',
     badgeTone: 'UNION',
-    body: 'AI를 주제로 팀을 이뤄 하나를 만들어 보는 해커톤. 05.09 ~ 05.10, 인하대학교 정석학술정보관 국제회의장에서 GDGoC AJOU와 함께 열었습니다.'
+    body: 'AI를 주제로 팀을 이뤄 하나를 만들어 보는 해커톤. 06.26 ~ 06.27, 인하대학교 정석학술정보관에서 GDGoC AJOU와 함께 열었습니다.'
   },
   {
     year: '2026',
