@@ -11,6 +11,7 @@ import {
   DUSK_SELECT,
   DUSK_TEXTAREA
 } from '@/components/ui/dusk/DuskForm'
+import { LANDING_ABOUT_STYLE, LANDING_CONTENT_FALLBACK } from '@/constant/landingContent'
 import {
   LANDING_BADGE_TONE_LABEL,
   type LandingActivity,
@@ -35,11 +36,60 @@ const BLANK_PHOTO: LandingPhoto = {
   focusY: 50
 }
 
-function PanelHeading({ title, body }: { title: string; body: string }) {
+const RESET_BUTTON =
+  'shrink-0 rounded-full border border-[rgba(240,234,228,0.22)] px-4 py-2 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
+
+/**
+ * 이 탭만 배포에 들어 있는 값으로 되돌린다.
+ *
+ * 사진을 되돌릴 방법이 사실상 이것뿐이다 — 사진 칸은 파일 업로드만 받고 주소를 직접 적을 수
+ * 없어서, 한 번 갈아끼우면 원래 파일을 어디선가 구해 다시 올려야 한다. 기본 사진은 배포 안에
+ * 그대로 들어 있으므로 여기서 되돌리면 아무것도 내려받지 않아도 된다.
+ *
+ * 되돌려도 초안까지다. 방문자에게 나가려면 저장하고 발행해야 한다.
+ */
+function resetSection<K extends keyof LandingContentDocument>(
+  document: LandingContentDocument,
+  onChange: (next: LandingContentDocument) => void,
+  ...keys: K[]
+) {
+  return () => {
+    if (
+      !window.confirm(
+        '이 탭을 배포에 들어 있는 기본값으로 되돌립니다.\n\n여기서 고친 내용은 사라집니다. 계속할까요?'
+      )
+    ) {
+      return
+    }
+
+    const next = { ...document }
+    for (const key of keys) {
+      next[key] = LANDING_CONTENT_FALLBACK[key]
+    }
+    onChange(next)
+  }
+}
+
+function PanelHeading({
+  title,
+  body,
+  onReset
+}: {
+  title: string
+  body: string
+  onReset?: () => void
+}) {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-[-0.02em]">{title}</h1>
-      <p className="mt-2.5 text-[15px] leading-[1.7] text-dusk-ink-600">{body}</p>
+    <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="min-w-0">
+        <h1 className="text-2xl font-semibold tracking-[-0.02em]">{title}</h1>
+        <p className="mt-2.5 text-[15px] leading-[1.7] text-dusk-ink-600">{body}</p>
+      </div>
+      {onReset && (
+        <button type="button" onClick={onReset} className={RESET_BUTTON}>
+          기본값으로 되돌리기
+        </button>
+      )}
     </div>
   )
 }
@@ -57,6 +107,7 @@ export function HeroPanel({ document, onChange, apiClient }: PanelProps) {
       <PanelHeading
         title="히어로"
         body="첫 화면 전면에 깔리는 사진과 문구입니다. 사진은 가로가 긴 단체 사진이 잘 맞습니다."
+        onReset={resetSection(document, onChange, 'hero')}
       />
 
       <PhotoField
@@ -116,6 +167,134 @@ export function HeroPanel({ document, onChange, apiClient }: PanelProps) {
   )
 }
 
+export function AboutPanel({ document, onChange }: PanelProps) {
+  const { about } = document
+  const patch = (next: Partial<typeof about>) =>
+    onChange({ ...document, about: { ...about, ...next } })
+
+  const patchValue = (index: number, next: Partial<(typeof about.values)[number]>) =>
+    patch({ values: about.values.map((item, i) => (i === index ? { ...item, ...next } : item)) })
+
+  return (
+    <div className="flex flex-col gap-7">
+      <PanelHeading
+        title="소개"
+        body="첫 화면 아래 커뮤니티 소개입니다. 네 칸의 번호와 색은 GDG 4색에 묶여 있어 문구만 바꿉니다."
+        onReset={resetSection(document, onChange, 'about')}
+      />
+
+      {/* 제목은 두 줄로 끊어 그린다. 한 줄에 몰아 쓰면 좁은 화면에서 아무 데서나 끊긴다. */}
+      <DuskField label="제목 첫 줄">
+        <input
+          type="text"
+          value={about.heading[0] ?? ''}
+          onChange={(event) => patch({ heading: [event.target.value, about.heading[1] ?? ''] })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+      <DuskField label="제목 둘째 줄">
+        <input
+          type="text"
+          value={about.heading[1] ?? ''}
+          onChange={(event) => patch({ heading: [about.heading[0] ?? '', event.target.value] })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+
+      <DuskField label="소개글">
+        <textarea
+          rows={3}
+          value={about.body}
+          onChange={(event) => patch({ body: event.target.value })}
+          className={DUSK_TEXTAREA}
+        />
+      </DuskField>
+
+      <div className="flex flex-col gap-4">
+        {about.values.map((value, index) => (
+          <div
+            key={index}
+            className="flex flex-col gap-[18px] rounded-[14px] border border-[rgba(240,234,228,0.12)] p-5"
+          >
+            <div className="flex items-baseline gap-2.5">
+              <span className={`text-sm font-medium ${LANDING_ABOUT_STYLE[index]?.colorClass}`}>
+                {LANDING_ABOUT_STYLE[index]?.index}
+              </span>
+              <span className="text-[13px] text-dusk-ink-700">번호와 색은 바꿀 수 없습니다.</span>
+            </div>
+            <DuskField label="제목">
+              <input
+                type="text"
+                value={value.title}
+                onChange={(event) => patchValue(index, { title: event.target.value })}
+                className={DUSK_INPUT}
+              />
+            </DuskField>
+            <DuskField label="설명">
+              <textarea
+                rows={2}
+                value={value.body}
+                onChange={(event) => patchValue(index, { body: event.target.value })}
+                className={DUSK_TEXTAREA}
+              />
+            </DuskField>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function ContactPanel({ document, onChange }: PanelProps) {
+  const { contact } = document
+  const patch = (next: Partial<typeof contact>) =>
+    onChange({ ...document, contact: { ...contact, ...next } })
+
+  return (
+    <div className="flex flex-col gap-7">
+      <PanelHeading
+        title="문의 · 학기"
+        body="바닥글과 FAQ 답변의 연락처, 그리고 첫 화면 배지에 붙는 학기 표기입니다."
+        onReset={resetSection(document, onChange, 'contact', 'semesterLabel')}
+      />
+
+      <DuskField label="공식 메일">
+        <input
+          type="email"
+          value={contact.email}
+          onChange={(event) => patch({ email: event.target.value })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+
+      <DuskField label="카카오톡 오픈채팅 주소" hint="https:// 로 시작해야 저장됩니다.">
+        <input
+          type="url"
+          value={contact.openChatUrl}
+          onChange={(event) => patch({ openChatUrl: event.target.value })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+
+      {/* FAQ 답변에 적힌 메일 주소는 여기 값과 같을 때만 링크가 걸린다. 답변 문구를 직접
+          바꾸지 않고 주소만 고치면 옛 주소가 글자로 남는다. */}
+      <p className="rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-4 text-[13px] leading-[1.7] text-dusk-ink-700">
+        FAQ 답변 안에 메일 주소를 적어 두셨다면 그쪽도 함께 고쳐 주세요. 답변 문구는 FAQ 탭에서
+        바꿉니다.
+      </p>
+
+      <DuskField label="학기 표기" hint="예: 2026-2. 첫 화면 '부원 모집 중' 앞에 붙는다.">
+        <input
+          type="text"
+          value={document.semesterLabel}
+          onChange={(event) => onChange({ ...document, semesterLabel: event.target.value })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+    </div>
+  )
+}
+
 export function PhotoStripPanel({ document, onChange, apiClient }: PanelProps) {
   const { photoStrip } = document
   const set = (next: LandingPhoto[]) => onChange({ ...document, photoStrip: next })
@@ -125,6 +304,7 @@ export function PhotoStripPanel({ document, onChange, apiClient }: PanelProps) {
       <PanelHeading
         title="사진 띠"
         body="소개와 활동 사이에 들어가는 사진입니다. 최근 행사 사진으로 바꾸면 페이지가 가장 최신처럼 보입니다."
+        onReset={resetSection(document, onChange, 'photoStrip')}
       />
 
       <div className="flex flex-col gap-4">
@@ -170,6 +350,7 @@ export function ActivitiesPanel({ document, onChange }: PanelProps) {
       <PanelHeading
         title="활동"
         body="각 활동의 이름과 설명을 관리합니다. 순서를 바꾸면 페이지에도 그대로 반영됩니다."
+        onReset={resetSection(document, onChange, 'activities')}
       />
 
       <div className="flex flex-col gap-4">
@@ -225,6 +406,7 @@ export function HackathonsPanel({ document, onChange, apiClient }: PanelProps) {
       <PanelHeading
         title="대회 · 해커톤"
         body="목록과 그 옆 사진을 관리합니다. 배지 색은 정해진 세 가지 중에서 고릅니다."
+        onReset={resetSection(document, onChange, 'hackathons')}
       />
 
       <div className="flex flex-col gap-4 rounded-[14px] border border-[rgba(240,234,228,0.12)] p-5">
@@ -361,6 +543,7 @@ export function FaqPanel({ document, onChange }: PanelProps) {
       <PanelHeading
         title="FAQ"
         body="자주 묻는 질문과 답을 관리합니다. 답변은 빈 줄로 문단을 나눕니다 — 문단마다 한 줄로 보입니다."
+        onReset={resetSection(document, onChange, 'faqs')}
       />
 
       <div className="flex flex-col gap-4">

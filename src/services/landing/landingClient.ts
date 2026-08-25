@@ -2,7 +2,7 @@ import type { AxiosInstance } from 'axios'
 
 import { publicClient } from '@/lib/api/publicClient'
 import type { LandingContentDocument } from '@/types/landing'
-import type { RecruitType, RecruitPeriodAdmin } from '@/types/landing.admin'
+import type { RecruitPeriodAdmin, RecruitPeriodUpdate, RecruitType } from '@/types/landing.admin'
 
 /**
  * 응답을 한 겹만 벗긴다. 공용 `unwrapApiResponse` 는 쓰지 않는다 — 문서 안에 'content' 나
@@ -51,7 +51,7 @@ export const fetchRecruitPeriod = async (
 export const updateRecruitPeriod = async (
   apiClient: AxiosInstance,
   recruitType: RecruitType,
-  payload: { openAt: string; closeAt: string }
+  payload: RecruitPeriodUpdate
 ): Promise<RecruitPeriodAdmin> => {
   const response = await apiClient.put(`/admin/recruit/${recruitType}/period`, payload)
   return unwrapOnce<RecruitPeriodAdmin>(response.data)

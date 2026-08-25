@@ -33,6 +33,32 @@ export type LandingHero = {
   ctaNote: string
 }
 
+/**
+ * 소개 네 칸 중 한 칸.
+ *
+ * 번호와 색은 여기 없다 — GDG 4색이 자리에 묶여 있어 `LANDING_ABOUT_STYLE` 이 순서로 붙인다.
+ * 배지 색을 이름으로만 주고받는 것과 같은 이유다.
+ */
+export type LandingAboutValue = {
+  title: string
+  body: string
+}
+
+export type LandingAbout = {
+  /** 두 줄로 끊어 쓴다. 화면에서 첫 줄만 흐린 색으로 그린다. */
+  heading: string[]
+  body: string
+  /** 네 칸 고정. 개수가 바뀌면 번호·색과 어긋난다. */
+  values: LandingAboutValue[]
+}
+
+/** 문의 창구. 바닥글과 FAQ 답변이 같이 쓴다. */
+export type LandingContact = {
+  email: string
+  /** `https://` 로 시작하는 주소만 온다. */
+  openChatUrl: string
+}
+
 export type LandingActivity = {
   title: string
   body: string
@@ -62,11 +88,15 @@ export type LandingFaq = {
 
 export type LandingContentDocument = {
   hero: LandingHero
+  about: LandingAbout
   photoStrip: LandingPhoto[]
   activities: LandingActivity[]
   hackathonIntro: LandingHackathonIntro
   hackathons: LandingHackathon[]
   faqs: LandingFaq[]
+  contact: LandingContact
+  /** 히어로 배지에 붙는 학기 표기. 예: `2026-2`. */
+  semesterLabel: string
 }
 
 /**

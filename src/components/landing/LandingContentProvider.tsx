@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
-import { LANDING_CONTENT_FALLBACK } from '@/constant/landingContent'
+import { LANDING_CONTENT_FALLBACK, mergeLandingContent } from '@/constant/landingContent'
 import { fetchLandingContent } from '@/services/landing/landingClient'
 import type { LandingContentDocument } from '@/types/landing'
 
@@ -26,7 +26,8 @@ export function LandingContentProvider({ children }: { children: ReactNode }) {
     fetchLandingContent()
       .then((document) => {
         // 발행된 게 없으면 null 이다. 그때는 기본값을 그대로 둔다.
-        if (alive && document) setContent(document)
+        // 있더라도 통째로 갈아끼우지 않는다 — 나중에 늘어난 칸이 없는 옛 발행본이 있다.
+        if (alive && document) setContent(mergeLandingContent(document))
       })
       .catch(() => {
         // 조용히 넘긴다. 첫 화면에 오류를 띄우는 것보다 예전 내용을 보여주는 편이 낫다.

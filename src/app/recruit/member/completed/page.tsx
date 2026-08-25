@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { GdgLogo } from '@/components/ui/design-system'
-import { MEMBER_SCHEDULE, formatKoreanPeriod } from '@/constant/recruitSchedule'
+import { formatKoreanPeriod } from '@/constant/recruitSchedule'
+import { useMemberSchedule } from '@/hooks/useRecruitSchedule'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -88,6 +89,7 @@ function CoreMemberPromoSection() {
 export default function RecruitSubmit() {
   const searchParams = useSearchParams()
   const isFromRecruit = searchParams.get('from') === 'recruit'
+  const memberSchedule = useMemberSchedule()
 
   return (
     <main className="mx-auto w-full max-w-[760px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
@@ -112,8 +114,8 @@ export default function RecruitSubmit() {
               <span className="mr-2 font-medium text-dusk-ink-100">집중 모집 기간</span>
               <span>
                 {formatKoreanPeriod(
-                  MEMBER_SCHEDULE.intensiveOpenAt,
-                  MEMBER_SCHEDULE.intensiveCloseAt
+                  memberSchedule.intensiveOpenAt,
+                  memberSchedule.intensiveCloseAt
                 )}
               </span>
             </Bullet>
