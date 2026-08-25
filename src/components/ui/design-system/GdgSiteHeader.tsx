@@ -51,65 +51,70 @@ export function GdgSiteHeader({
   const resolvedActionMenus = actionMenus ?? (actionMenu ? [actionMenu] : [])
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-40 w-full border-b border-b-[rgba(240,234,228,0.08)] bg-[rgba(27,22,34,0.72)] backdrop-blur-[18px] mobile:h-16 pc:h-[68px]',
-        className
-      )}
-    >
-      <div className="hidden h-full pc:block">
-        <div className="flex h-full items-center justify-between gap-6 px-[clamp(20px,4vw,44px)]">
-          <DuskBrand href={brandHref} />
+    <>
+      <header
+        className={cn(
+          'sticky top-0 z-40 w-full border-b border-b-[rgba(240,234,228,0.08)] bg-[rgba(27,22,34,0.72)] backdrop-blur-[18px] mobile:h-16 pc:h-[68px]',
+          className
+        )}
+      >
+        <div className="hidden h-full pc:block">
+          <div className="flex h-full items-center justify-between gap-6 px-[clamp(20px,4vw,44px)]">
+            <DuskBrand href={brandHref} />
 
-          <nav className="flex items-center gap-[clamp(12px,2vw,28px)]">
-            {resolvedMenus.map((menu) => {
-              const active = isActive(menu.url)
-              return (
+            <nav className="flex items-center gap-[clamp(12px,2vw,28px)]">
+              {resolvedMenus.map((menu) => {
+                const active = isActive(menu.url)
+                return (
+                  <Link
+                    key={`${menu.label}-${menu.url}`}
+                    href={menu.url}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'whitespace-nowrap border-b-2 pb-[3px] text-[15px] transition-colors',
+                      active
+                        ? 'border-b-ember text-dusk-ink-100'
+                        : 'border-b-transparent text-dusk-ink-500 hover:text-dusk-ink-100'
+                    )}
+                  >
+                    {menu.label}
+                  </Link>
+                )
+              })}
+              {resolvedActionMenus.map((menu) => (
                 <Link
-                  key={`${menu.label}-${menu.url}`}
+                  key={`action-${menu.label}-${menu.url}`}
                   href={menu.url}
-                  aria-current={active ? 'page' : undefined}
-                  className={cn(
-                    'whitespace-nowrap border-b-2 pb-[3px] text-[15px] transition-colors',
-                    active
-                      ? 'border-b-ember text-dusk-ink-100'
-                      : 'border-b-transparent text-dusk-ink-500 hover:text-dusk-ink-100'
-                  )}
+                  className="whitespace-nowrap text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100"
                 >
                   {menu.label}
                 </Link>
-              )
-            })}
-            {resolvedActionMenus.map((menu) => (
-              <Link
-                key={`action-${menu.label}-${menu.url}`}
-                href={menu.url}
-                className="whitespace-nowrap text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100"
-              >
-                {menu.label}
-              </Link>
-            ))}
-          </nav>
+              ))}
+            </nav>
+          </div>
         </div>
-      </div>
 
-      <div className="flex h-full items-center justify-between px-5 pc:hidden">
-        <DuskBrand href={brandHref} />
-        <button
-          type="button"
-          onClick={() => setIsMenuOpen((prev) => !prev)}
-          className="inline-flex size-10 items-center justify-center rounded-full border border-dusk-line text-dusk-ink-200"
-          aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
-        >
-          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
+        <div className="flex h-full items-center justify-between px-5 pc:hidden">
+          <DuskBrand href={brandHref} />
+          <button
+            type="button"
+            onClick={() => setIsMenuOpen((prev) => !prev)}
+            className="inline-flex size-10 items-center justify-center rounded-full border border-dusk-line text-dusk-ink-200"
+            aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
+          >
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </header>
 
       {/*
-        닫힌 서랍은 화면 오른쪽 밖에 서 있다. 그런데 fixed 요소도 문서의 스크롤 영역에
-        들어가서, 그대로 두면 모바일에서 폭이 서랍만큼 늘어나 가로로 스크롤된다.
-        fixed 는 조상의 overflow 로 잘리지 않으므로, 뷰포트를 덮는 fixed 상자를 하나 두고
-        그 안에서 absolute 로 밀어낸다. 바깥 상자는 화면을 넘지 않으니 스크롤이 안 생긴다.
+        서랍은 header 밖에 둔다. header 에 backdrop-blur 가 걸려 있는데
+        backdrop-filter 는 fixed 자손의 컨테이닝 블록이 되어, 안에 두면 이 상자가
+        뷰포트가 아니라 헤더 높이(64px)로 잡힌다 — 서랍이 그만큼만 열린다.
+
+        상자 자체는 화면을 넘지 않고, 서랍은 그 안에서 absolute 로 밀어낸다.
+        닫힌 서랍을 fixed 로 화면 밖에 세우면 문서 폭이 늘어나 가로 스크롤이 생기는데,
+        overflow-hidden 인 이 상자가 그것도 같이 막는다.
       */}
       <div
         className={cn(
@@ -169,6 +174,6 @@ export function GdgSiteHeader({
           </nav>
         </aside>
       </div>
-    </header>
+    </>
   )
 }
