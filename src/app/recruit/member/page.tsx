@@ -40,7 +40,7 @@ type RecruitFormState = {
   gdgInterest: string[]
   gdgWish: string[]
   gdgFeedback: string
-  isPayed: boolean
+  privacyAgreed: boolean
   proofFile: File | null
 }
 
@@ -71,7 +71,7 @@ const initialFormState: RecruitFormState = {
   gdgInterest: [],
   gdgWish: [],
   gdgFeedback: '',
-  isPayed: false,
+  privacyAgreed: false,
   proofFile: null
 }
 
@@ -295,7 +295,7 @@ function RecruitMemberForm() {
       formData.gdgWish.length > 0 &&
       isChecksPassed &&
       isProofPassed &&
-      formData.isPayed
+      formData.privacyAgreed
     )
   }, [formData, phoneCheckState, studentCheckState, emailCheckState])
 
@@ -321,11 +321,14 @@ function RecruitMemberForm() {
           email: `${formData.emailLocal.trim()}@${formData.emailDomain}`
         })
         map.set(5, { major: formData.major })
+        // 회비 입금 여부는 여기서 보내지 않는다. 전에는 개인정보 동의 체크가 그 필드에
+        // 실려 나갔다 — 동의가 곧 입금으로 읽히는 모양이었다. 서버가
+        // RecruitMemberRequest.toEntity() 에서 false 로 못 박고 있어 실제로 입금 처리된
+        // 지원자는 없었지만, 입금 표시는 내역을 보고 운영진이 따로 누른다.
         map.set(6, {
           gdgInterest: formData.gdgInterest,
           gdgWish: formData.gdgWish,
-          gdgFeedback: formData.gdgFeedback,
-          isPayed: formData.isPayed
+          gdgFeedback: formData.gdgFeedback
         })
         return map
       }
@@ -732,8 +735,8 @@ function RecruitMemberForm() {
           <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
             <input
               type="checkbox"
-              checked={formData.isPayed}
-              onChange={(e) => setFormData((p) => ({ ...p, isPayed: e.target.checked }))}
+              checked={formData.privacyAgreed}
+              onChange={(e) => setFormData((p) => ({ ...p, privacyAgreed: e.target.checked }))}
               className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
             />
             <span className="text-[15px] leading-[1.7] text-dusk-ink-400">

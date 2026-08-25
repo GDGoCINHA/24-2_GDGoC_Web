@@ -1,10 +1,22 @@
+import type {
+  LandingActivity,
+  LandingContentDocument,
+  LandingFaq,
+  LandingHackathon,
+  LandingHackathonIntro,
+  LandingHero,
+  LandingPhoto
+} from '@/types/landing'
+
 /**
- * 온보딩(랜딩)에 실리는 콘텐츠.
+ * 온보딩(랜딩)에 실리는 콘텐츠의 **기본값**.
  *
- * 화면 구조가 아니라 **내용**만 담는다. 행사명·사진·문구는 학기마다 바뀌는데
- * 그때마다 배포하지 않으려고 관리자 콘텐츠 관리 화면을 붙일 예정이라,
- * 여기 타입이 그대로 그 화면의 편집 스키마이자 서버 응답 타입이 된다.
- * **필드를 늘리거나 이름을 바꿀 때는 관리자 화면과 함께 고친다.**
+ * 관리자가 서버에 발행한 문서가 있으면 화면은 그것을 쓴다(`LandingContentProvider`).
+ * 여기 값은 **첫 프레임과 조회 실패 때** 쓰이는 바닥이다 — 서버가 비어 있어도 화면이
+ * 그대로 나오게 하려는 것이라, 지우거나 비워 두지 않는다.
+ *
+ * 모양은 `@/types/landing` 이 정하고 서버의 `LandingContentPayload` 와 같다.
+ * **필드를 늘리거나 이름을 바꿀 때는 서버·관리자 화면과 함께 고친다.**
  *
  * 현재 사진과 행사명은 2026-1 학기 기준이다. 학기가 바뀌면 이 파일만 고치면 되도록
  * 슬롯의 개수·비율은 그대로 두고 값만 갈아끼우는 것을 전제로 짰다.
@@ -13,56 +25,23 @@
  * 실제 지원 가능 여부는 서버가 판정한다.
  */
 
-export type LandingPhoto = {
-  src: string
-  /** 스크린리더용. 사진을 교체하면 반드시 함께 고친다. */
-  alt: string
-  caption: string
-  /**
-   * `object-position` 의 세로 초점(%). 얼굴이 잘리는 사진을 배포 없이 맞추기
-   * 위한 값이라, 관리자 화면에서 슬라이더로 조절한다.
-   */
-  focusY: number
-}
-
-export type LandingActivity = {
-  title: string
-  body: string
-}
-
-export type LandingHackathon = {
-  /** 연도. 아직 안 정해졌으면 '—'. */
-  year: string
-  title: string
-  /** 성격 배지 문구와 색. 색은 Tailwind 클래스 리터럴로 둬야 스캐너가 찾는다. */
-  badge: string
-  badgeClass: string
-  body: string
-}
-
-export type LandingFaq = {
-  question: string
-  /** 문단 배열. 줄바꿈이 아니라 문단으로 나눠 답변 안에서 목록처럼 읽히게 한다. */
-  answer: string[]
-}
-
 /** 집중 모집 기간 문구 앞에 붙는 학기 표기. `recruitSchedule.ts` 와 함께 고친다. */
 export const LANDING_SEMESTER_LABEL = '2026-2'
 
-export const LANDING_HERO = {
+export const LANDING_HERO: LandingHero = {
   photo: {
     src: '/images/landing/aingthon-hero-web.jpg',
     alt: 'Build with AI : AINGTHON 시상식에 모인 참가자 단체 사진',
     caption: 'Build with AI : AINGTHON · GDGoC INHA × GDGoC AJOU',
     focusY: 50
-  } satisfies LandingPhoto,
+  },
   /** 제목은 두 조각으로 나눠 뒷부분만 강조 자간을 쓴다. */
   titleLead: 'Google 개발자 커뮤니티에서 함께 성장하는 즐거움,',
   titleAccent: 'GDGoC INHA',
   titleTail: '에서',
   description: '모두가 함께하는 성장을 꿈꿉니다.',
   ctaNote: 'GDGoC INHA와 함께해요.'
-} as const
+}
 
 export const LANDING_ABOUT = {
   heading: ['GDGoC INHA는', '인하대학교의 Google 개발자 커뮤니티예요.'],
@@ -127,7 +106,7 @@ export const LANDING_ACTIVITIES: LandingActivity[] = [
   { title: 'GOAT', body: '한 학기 팀 프로젝트로 기획부터 개발까지 완주해요.' }
 ]
 
-export const LANDING_HACKATHON_INTRO = {
+export const LANDING_HACKATHON_INTRO: LandingHackathonIntro = {
   heading: '해커톤과 대회를 직접 열고, 나갑니다',
   body: '자체 행사부터 다른 챕터·학교와 함께하는 연합 행사, Google 연계 행사까지 이어집니다.',
   photo: {
@@ -135,47 +114,43 @@ export const LANDING_HACKATHON_INTRO = {
     alt: 'AX 창업 프로그램 X Sinsa 를 마치고 무대 앞에 모인 참가자 단체 사진',
     caption: 'AX 창업 프로그램 X Sinsa',
     focusY: 58
-  } satisfies LandingPhoto
-} as const
-
-const BADGE_UNION = 'bg-[rgba(134,192,143,0.18)] text-signal-ok'
-const BADGE_ACADEMIC = 'bg-[rgba(208,129,85,0.18)] text-ember'
-const BADGE_INTERNAL = 'bg-[rgba(126,150,200,0.20)] text-tag-info'
+  }
+}
 
 export const LANDING_HACKATHONS: LandingHackathon[] = [
   {
     year: '2026',
     title: 'Build with AI : AINGTHON',
     badge: '연합 주최',
-    badgeClass: BADGE_UNION,
+    badgeTone: 'UNION',
     body: 'AI를 주제로 팀을 이뤄 하나를 만들어 보는 해커톤. 05.09 ~ 05.10, 인하대학교 정석학술정보관 국제회의장에서 GDGoC AJOU와 함께 열었습니다.'
   },
   {
     year: '2026',
     title: 'Build with AI',
     badge: '학술 행사',
-    badgeClass: BADGE_ACADEMIC,
+    badgeTone: 'ACADEMIC',
     body: 'Google의 Build with AI 프로그램과 연계해 연 학술 행사. AI 기술을 주제로 강연과 실습을 함께 진행했습니다.'
   },
   {
     year: '2026',
     title: 'AX 창업 프로그램 X Sinsa',
     badge: '학술 행사',
-    badgeClass: BADGE_ACADEMIC,
+    badgeTone: 'ACADEMIC',
     body: 'AX를 주제로 Sinsa와 함께 연 창업 프로그램. 아이디어를 다듬어 발표까지 이어갑니다.'
   },
   {
     year: '2026',
     title: 'GOAT 2.0',
     badge: '내부 행사',
-    badgeClass: BADGE_INTERNAL,
+    badgeTone: 'INTERNAL',
     body: 'GDGoC Original Advanced Track. 04.09 ~ 06.22, 한 학기 동안 팀을 이뤄 기획부터 개발까지 완주하고 Final Pitch 에서 결과를 발표합니다.'
   },
   {
     year: '2025',
     title: 'GreenTech Globalthon',
     badge: '연합 주최',
-    badgeClass: BADGE_UNION,
+    badgeTone: 'UNION',
     body: '지속가능성을 주제로 한 글로벌 해커톤. 01.17 ~ 01.18, 인하대학교 60주년기념관에서 AIESEC in INHA와 함께 열었습니다.'
   }
 ]
@@ -225,3 +200,18 @@ export const LANDING_FAQS: LandingFaq[] = [
 
 export const GDGOC_EMAIL = 'gdsc.inha@gmail.com'
 export const GDGOC_OPEN_CHAT_URL = 'https://open.kakao.com/o/s2OqrcIi'
+
+/**
+ * 서버 문서가 없을 때 쓰는 바닥값. 서버 응답과 같은 모양이라 그대로 바꿔 끼울 수 있다.
+ *
+ * `LANDING_ABOUT`·`LANDING_SEMESTER_LABEL` 은 여기 없다 — 관리자 화면에서 고치지 않는
+ * 값이라 서버로 오갈 이유가 없다.
+ */
+export const LANDING_CONTENT_FALLBACK: LandingContentDocument = {
+  hero: LANDING_HERO,
+  photoStrip: LANDING_PHOTO_STRIP,
+  activities: LANDING_ACTIVITIES,
+  hackathonIntro: LANDING_HACKATHON_INTRO,
+  hackathons: LANDING_HACKATHONS,
+  faqs: LANDING_FAQS
+}

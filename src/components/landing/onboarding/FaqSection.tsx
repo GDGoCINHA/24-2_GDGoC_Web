@@ -2,7 +2,8 @@
 
 import { Fragment, useState } from 'react'
 
-import { GDGOC_EMAIL, GDGOC_OPEN_CHAT_URL, LANDING_FAQS } from '@/constant/landingContent'
+import { useLandingContent } from '@/components/landing/LandingContentProvider'
+import { GDGOC_EMAIL, GDGOC_OPEN_CHAT_URL } from '@/constant/landingContent'
 import { CORE_SCHEDULE, formatKoreanPeriodShort, MEMBER_SCHEDULE } from '@/constant/recruitSchedule'
 
 /**
@@ -65,6 +66,7 @@ function getScheduleCards() {
 }
 
 export default function FaqSection() {
+  const { faqs } = useLandingContent()
   const [openIndex, setOpenIndex] = useState(-1)
   const scheduleCards = getScheduleCards()
 
@@ -79,7 +81,7 @@ export default function FaqSection() {
         </h2>
 
         <div className="mt-14 max-w-[860px]">
-          {LANDING_FAQS.map((faq, index) => {
+          {faqs.map((faq, index) => {
             const isOpen = openIndex === index
             return (
               <div

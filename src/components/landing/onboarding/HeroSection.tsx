@@ -3,12 +3,14 @@
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 
-import { LANDING_HERO, LANDING_SEMESTER_LABEL } from '@/constant/landingContent'
+import { useLandingContent } from '@/components/landing/LandingContentProvider'
+import { LANDING_SEMESTER_LABEL } from '@/constant/landingContent'
 import { formatKoreanPeriodShort, MEMBER_SCHEDULE } from '@/constant/recruitSchedule'
 
 import { scrollToSection } from './LandingHeader'
 
 export default function HeroSection() {
+  const { hero } = useLandingContent()
   const contentRef = useRef<HTMLDivElement>(null)
 
   /** 스크롤을 내리는 동안 히어로 문구만 살짝 밀려 올라가며 옅어진다. */
@@ -35,14 +37,14 @@ export default function HeroSection() {
   return (
     <section id="top" className="relative flex min-h-svh items-end">
       <Image
-        src={LANDING_HERO.photo.src}
-        alt={LANDING_HERO.photo.alt}
+        src={hero.photo.src}
+        alt={hero.photo.alt}
         fill
         priority
         sizes="100vw"
         className="object-cover"
         style={{
-          objectPosition: `50% ${LANDING_HERO.photo.focusY}%`,
+          objectPosition: `50% ${hero.photo.focusY}%`,
           filter: 'saturate(0.82) contrast(1.02)'
         }}
       />
@@ -64,13 +66,13 @@ export default function HeroSection() {
         <div className="mx-auto flex max-w-[1120px] flex-wrap items-end justify-between gap-10">
           <div className="min-w-0 flex-[1_1_520px]">
             <h1 className="max-w-[20ch] break-keep text-[clamp(34px,5.2vw,74px)] font-semibold leading-[1.24] tracking-[-0.032em] text-balance">
-              {LANDING_HERO.titleLead}
+              {hero.titleLead}
               <br />
-              <span className="tracking-[-0.02em]">{LANDING_HERO.titleAccent}</span>
-              {LANDING_HERO.titleTail}
+              <span className="tracking-[-0.02em]">{hero.titleAccent}</span>
+              {hero.titleTail}
             </h1>
             <p className="mt-7 text-[clamp(16px,1.5vw,20px)] leading-[1.7] text-dusk-ink-300">
-              {LANDING_HERO.description}
+              {hero.description}
             </p>
           </div>
 
@@ -88,7 +90,7 @@ export default function HeroSection() {
             >
               지원하기
             </a>
-            <p className="text-sm text-dusk-ink-600">{LANDING_HERO.ctaNote}</p>
+            <p className="text-sm text-dusk-ink-600">{hero.ctaNote}</p>
           </div>
         </div>
 
@@ -104,7 +106,7 @@ export default function HeroSection() {
             더 알아보기 ↓
           </a>
           <span aria-hidden className="h-px flex-1 bg-[rgba(240,234,228,0.16)]" />
-          <span className="text-[13px] text-dusk-ink-600">{LANDING_HERO.photo.caption}</span>
+          <span className="text-[13px] text-dusk-ink-600">{hero.photo.caption}</span>
         </div>
       </div>
     </section>

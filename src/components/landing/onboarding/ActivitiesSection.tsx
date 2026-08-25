@@ -1,4 +1,6 @@
-import { LANDING_ACTIVITIES } from '@/constant/landingContent'
+'use client'
+
+import { useLandingContent } from '@/components/landing/LandingContentProvider'
 
 /**
  * 행 호버는 좌측 패딩과 배경 틴트로 표현한다. transition 은 useReveal 이 심는
@@ -8,6 +10,8 @@ export const ROW_CLASS =
   'border-t border-t-dusk-line pb-[22px] pl-1 pr-1 pt-[22px] last:border-b last:border-b-dusk-line hover:bg-[linear-gradient(90deg,rgba(208,129,85,0.10),rgba(208,129,85,0))] hover:pl-[18px]'
 
 export default function ActivitiesSection() {
+  const { activities } = useLandingContent()
+
   return (
     <section id="activities" className="scroll-mt-[68px] border-t border-t-dusk-line-soft">
       <div className="mx-auto max-w-[1120px] px-[clamp(20px,5vw,44px)] py-[118px]">
@@ -19,7 +23,7 @@ export default function ActivitiesSection() {
         </h2>
 
         <div className="mt-15 flex flex-col">
-          {LANDING_ACTIVITIES.map((activity, index) => (
+          {activities.map((activity, index) => (
             <div
               key={activity.title}
               data-reveal

@@ -1,11 +1,15 @@
+'use client'
+
 import Image from 'next/image'
 
-import { LANDING_HACKATHON_INTRO, LANDING_HACKATHONS } from '@/constant/landingContent'
+import { useLandingContent } from '@/components/landing/LandingContentProvider'
+import { LANDING_BADGE_CLASS } from '@/types/landing'
 
 import { ROW_CLASS } from './ActivitiesSection'
 
 export default function HackathonsSection() {
-  const { heading, body, photo } = LANDING_HACKATHON_INTRO
+  const { hackathonIntro, hackathons } = useLandingContent()
+  const { heading, body, photo } = hackathonIntro
 
   return (
     <section id="hackathons" className="scroll-mt-[68px] border-t border-t-dusk-line-soft">
@@ -27,7 +31,7 @@ export default function HackathonsSection() {
 
         <div className="mt-14 flex flex-wrap gap-10">
           <div className="flex min-w-0 flex-[1_1_520px] flex-col">
-            {LANDING_HACKATHONS.map((item) => (
+            {hackathons.map((item) => (
               <div
                 key={item.title}
                 data-reveal
@@ -37,7 +41,9 @@ export default function HackathonsSection() {
                 <h3 className="m-0 flex-[1_1_200px] text-xl font-semibold tracking-[-0.02em]">
                   {item.title}
                 </h3>
-                <span className={`shrink-0 rounded-full px-[11px] py-1 text-xs ${item.badgeClass}`}>
+                <span
+                  className={`shrink-0 rounded-full px-[11px] py-1 text-xs ${LANDING_BADGE_CLASS[item.badgeTone]}`}
+                >
                   {item.badge}
                 </span>
                 <p className="mt-1.5 flex-[1_1_100%] break-keep text-[15px] leading-[1.7] text-dusk-ink-600">

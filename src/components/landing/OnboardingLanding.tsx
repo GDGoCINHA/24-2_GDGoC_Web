@@ -8,6 +8,7 @@ import CursorGlow from '@/components/ui/common/CursorGlow'
 import FaqSection from './onboarding/FaqSection'
 import HackathonsSection from './onboarding/HackathonsSection'
 import HeroSection from './onboarding/HeroSection'
+import { LandingContentProvider } from './LandingContentProvider'
 import LandingFooter from './onboarding/LandingFooter'
 import LandingHeader from './onboarding/LandingHeader'
 import PhotoStrip from './onboarding/PhotoStrip'
@@ -63,16 +64,19 @@ export default function OnboardingLanding() {
       />
       <CursorGlow />
 
-      <div className="relative z-[2]">
-        <LandingHeader />
-        <HeroSection />
-        <AboutSection />
-        <PhotoStrip />
-        <ActivitiesSection />
-        <HackathonsSection />
-        <FaqSection />
-        <LandingFooter />
-      </div>
+      {/* 문구·사진은 관리자가 서버에서 바꾼다. 조회 전까지는 번들 기본값이 보인다. */}
+      <LandingContentProvider>
+        <div className="relative z-[2]">
+          <LandingHeader />
+          <HeroSection />
+          <AboutSection />
+          <PhotoStrip />
+          <ActivitiesSection />
+          <HackathonsSection />
+          <FaqSection />
+          <LandingFooter />
+        </div>
+      </LandingContentProvider>
     </div>
   )
 }
