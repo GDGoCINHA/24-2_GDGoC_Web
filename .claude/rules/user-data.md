@@ -16,9 +16,20 @@ DB 에는 `DTE` 처럼 코드로 저장된다. 서버의 `MajorNormalizer` 에�
 있고 **역변환이 없다.** 그래서 표시용 변환은 프론트가 한다.
 
 - 매핑과 역변환: `src/constant/majorOptions.ts` 의 `{ code, label }` 과 `normalizeMajorCode()`
-- 입력은 `GdgMajorDropdown` 을 쓴다 — 자유 입력이 아니라 정규화 실패가 원천 차단된다
+- **자유 입력을 받지 마라.** 목록에서 고르게 해야 정규화 실패가 원천 차단된다.
 
 그대로 뿌리면 사용자에게 `ME` 가 보인다. 실제로 배포된 적이 있다.
+
+### 어디서 무엇을 쓰나 (2026-08-25)
+
+| 화면 | 입력 수단 |
+|---|---|
+| 회원가입(`/signup`) | `GdgMajorDropdown` — 밝은 배경 |
+| 마이페이지·지원하기 | `optgroup` 을 쓴 native `<select>` — dusk 배경 |
+
+`GdgMajorDropdown` 은 밝은 배경 전제라 dusk 화면에서는 흰 목록이 그대로 뜬다.
+dusk 쪽은 `majorOptions` 를 `<optgroup>` 으로 펼쳐 값을 **코드로** 내보낸다 —
+선택지가 곧 코드라 정규화가 필요 없다. 모바일에서는 네이티브 피커가 떠서 더 낫다.
 
 ## 전화번호 — 저장은 숫자만, 표시는 하이픈
 

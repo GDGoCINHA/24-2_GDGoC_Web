@@ -11,7 +11,7 @@ import {
   type SetStateAction
 } from 'react'
 
-import { GdgFileCard, GdgInputField, GdgUploadButton } from '@/components/ui/design-system'
+import { DUSK_INPUT } from '@/components/ui/dusk/DuskForm'
 import {
   describeUploadError,
   requestPresignedUpload,
@@ -19,6 +19,7 @@ import {
   validateUploadSize
 } from '@/services/board/uploadClient'
 import type { AttachmentKind } from '@/types/board'
+import { cn } from '@/utils/cn'
 
 export type AttachmentDraftStatus = 'uploading' | 'done' | 'error'
 
@@ -151,27 +152,43 @@ export function AttachmentUploader({
         {attachments.map((draft) => (
           <Reorder.Item key={draft.id} value={draft}>
             {draft.status === 'error' ? (
-              <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-red typo-pc-b3 mobile:typo-m-b3">
-                <span className="flex-1 truncate">
+              <div className="flex items-center gap-3 rounded-[10px] border border-[rgba(196,88,74,0.4)] bg-[rgba(196,88,74,0.08)] px-4 py-[9px] text-sm text-signal-err">
+                <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
                   {draft.fileName ?? draft.url} — {draft.errorMessage}
                 </span>
                 {draft.file && (
-                  <button type="button" className="underline" onClick={() => handleRetry(draft)}>
+                  <button
+                    type="button"
+                    className="shrink-0 underline"
+                    onClick={() => handleRetry(draft)}
+                  >
                     재시도
                   </button>
                 )}
-                <button type="button" className="underline" onClick={() => handleRemove(draft.id)}>
+                <button
+                  type="button"
+                  className="shrink-0 underline"
+                  onClick={() => handleRemove(draft.id)}
+                >
                   삭제
                 </button>
               </div>
             ) : (
-              <GdgFileCard
-                fileName={draft.kind === 'FILE' ? (draft.fileName ?? '') : (draft.url ?? '')}
-                fileSize={draft.status === 'uploading' ? '업로드 중...' : undefined}
-                action="remove"
-                onAction={() => handleRemove(draft.id)}
-                fullWidth
-              />
+              <div className="flex cursor-grab items-center gap-3 rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-dusk-ink-100 active:cursor-grabbing">
+                <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {draft.kind === 'FILE' ? (draft.fileName ?? '') : (draft.url ?? '')}
+                </span>
+                {draft.status === 'uploading' && (
+                  <span className="shrink-0 text-sm text-dusk-ink-800">업로드 중...</span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleRemove(draft.id)}
+                  className="shrink-0 text-sm text-dusk-ink-800 transition-colors hover:text-signal-err"
+                >
+                  삭제
+                </button>
+              </div>
             )}
           </Reorder.Item>
         ))}
@@ -179,18 +196,20 @@ export function AttachmentUploader({
 
       <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileSelect} />
 
-      {/* GdgUploadButton 은 전폭 CTA 라 폭 옵션이 device 밖에 없다(pc 550px / mobile 343px).
-          입력칸과 같은 flex 행에 두면 눌려서 54px 까지 줄고 '+ 파일 선택' 이 세로로 쪼개져
-          잘린다. 설계대로 자체 행에 둔다. */}
-      <GdgUploadButton
-        label="+ 파일 선택"
+      {/* 파일 선택은 자체 행에 둔다. 아래 링크 입력칸과 같은 행에 넣으면 좁은 화면에서
+          눌려 '+ 파일 선택' 이 세로로 쪼개진다. */}
+      <button
+        type="button"
         disabled={isFull}
         onClick={() => fileInputRef.current?.click()}
-      />
+        className="w-full rounded-xl border border-[rgba(240,234,228,0.22)] px-6 py-[15px] text-[15px] text-dusk-ink-100 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:bg-[rgba(208,129,85,0.06)] disabled:opacity-50 disabled:hover:border-[rgba(240,234,228,0.22)] disabled:hover:bg-transparent"
+      >
+        + 파일 선택
+      </button>
 
-      <div className="flex w-full items-center gap-2">
-        <GdgInputField
-          fullWidth
+      <div className="flex w-full items-center gap-2.5">
+        <input
+          type="text"
           placeholder="https://"
           value={linkInput}
           onChange={(event) => setLinkInput(event.target.value)}
@@ -201,12 +220,13 @@ export function AttachmentUploader({
             }
           }}
           disabled={isFull}
+          className={cn('min-w-0 flex-1', DUSK_INPUT)}
         />
         <button
           type="button"
           onClick={handleAddLink}
           disabled={isFull}
-          className="shrink-0 whitespace-nowrap text-white underline typo-pc-b3 mobile:typo-m-b3"
+          className="shrink-0 whitespace-nowrap text-[15px] text-dusk-ink-100 underline transition-colors hover:text-ember disabled:opacity-50"
         >
           링크 추가
         </button>
@@ -215,13 +235,13 @@ export function AttachmentUploader({
       {/* 입력만 하고 등록하면 그 URL 은 아무 데도 저장되지 않는다. 조용히 사라지는 대신
           알려준다 — 실제로 이걸 모르고 첨부가 안 됐다는 보고가 있었다. */}
       {hasPendingLink && (
-        <p className="text-red typo-pc-c1 mobile:typo-m-c1">
+        <p className="text-[13px] text-signal-err">
           입력한 링크는 아직 첨부되지 않았습니다. &lsquo;링크 추가&rsquo;를 눌러 주세요.
         </p>
       )}
 
       {isFull && (
-        <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+        <p className="text-[13px] text-dusk-ink-800">
           첨부는 최대 {maxCount}개까지 등록할 수 있습니다.
         </p>
       )}

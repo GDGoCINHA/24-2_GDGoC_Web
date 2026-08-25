@@ -8,10 +8,10 @@ import type {
 import { cn } from '@/utils/cn'
 
 const STATUS_CLASS: Record<ApplicationStatusValue, string> = {
-  SUBMITTED: 'bg-blue text-white',
-  IN_REVIEW: 'bg-yellow text-black',
-  ACCEPTED: 'bg-green text-white',
-  REJECTED: 'bg-red text-white'
+  SUBMITTED: 'bg-[rgba(126,150,200,0.22)] text-[#A9BBE0]',
+  IN_REVIEW: 'bg-[rgba(224,162,78,0.22)] text-[#E9C48A]',
+  ACCEPTED: 'bg-[rgba(134,192,143,0.22)] text-[#A6D0AC]',
+  REJECTED: 'bg-[rgba(217,117,106,0.22)] text-[#E5A79F]'
 }
 
 const STATUS_LABEL: Record<ApplicationStatusValue, string> = {
@@ -37,13 +37,21 @@ function ApplicationRow({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center overflow-hidden rounded-full bg-gray-100/30 text-left transition hover:bg-gray-100/50"
+      className="flex w-full items-center gap-3.5 overflow-hidden rounded-full border border-[rgba(240,234,228,0.09)] bg-[rgba(240,234,228,0.05)] text-left transition-colors hover:bg-[rgba(240,234,228,0.09)]"
     >
-      <span className="flex-1 px-5 py-3 typo-pc-b3 text-gray-700">{label}</span>
-      <span className="px-2 typo-pc-c2 text-gray-700" aria-hidden>
+      <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap px-[22px] py-[15px] text-[15px] text-dusk-ink-400">
+        {label}
+      </span>
+      {/* 좁은 화면에서는 상태 칸에 자리를 내준다. 줄이 두 줄로 접히면 알약 모양이 깨진다. */}
+      <span className="shrink-0 text-xs text-dusk-ink-800 mobile:hidden" aria-hidden>
         내용 보기
       </span>
-      <span className={cn('min-w-[140px] px-5 py-3 text-center typo-pc-b3', statusClass)}>
+      <span
+        className={cn(
+          'shrink-0 px-[22px] py-[15px] text-center text-sm mobile:min-w-[126px] pc:min-w-[140px]',
+          statusClass
+        )}
+      >
         {statusLabel}
       </span>
     </button>
@@ -70,15 +78,15 @@ export default function ApplicationStatus({
   const hasAny = application !== null || memberApplication !== null
 
   return (
-    <section className="space-y-4">
-      <h2 className="typo-pc-h4 text-white">활동 및 신청 현황</h2>
+    <section>
+      <h2 className="text-xl font-semibold tracking-[-0.02em]">활동 및 신청 현황</h2>
 
       {loading ? (
-        <p className="typo-pc-b3 text-gray-700">불러오는 중…</p>
+        <p className="mt-6 text-[15px] text-dusk-ink-800">불러오는 중…</p>
       ) : error ? (
-        <p className="typo-pc-b3 text-red">{error}</p>
+        <p className="mt-6 text-[15px] text-signal-err">{error}</p>
       ) : hasAny ? (
-        <div className="space-y-3">
+        <div className="mt-6 flex flex-col gap-3">
           {application ? (
             <ApplicationRow
               label="운영진 지원서"
@@ -99,7 +107,7 @@ export default function ApplicationStatus({
           ) : null}
         </div>
       ) : (
-        <p className="typo-pc-b3 text-gray-700">제출한 지원서가 없습니다.</p>
+        <p className="mt-6 text-[15px] text-dusk-ink-800">제출한 지원서가 없습니다.</p>
       )}
     </section>
   )

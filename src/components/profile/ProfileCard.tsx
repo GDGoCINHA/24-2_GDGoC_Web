@@ -2,19 +2,18 @@
 
 import { useRef } from 'react'
 
-import { GdgColorTag } from '@/components/ui/design-system'
 import type { UserProfile } from '@/types/profile'
 import { cn } from '@/utils/cn'
 
-import { getRoleBanner, getRoleTagColor, getTeamLabel, getTeamTagColor } from './profileTagMeta'
+import {
+  getRoleBanner,
+  getRoleBannerClass,
+  getRoleTagClass,
+  getTeamLabel,
+  getTeamTagClass
+} from './profileTagMeta'
 
-const BANNER_CLASS: Record<string, string> = {
-  green: 'bg-green text-white',
-  blue: 'bg-blue text-white',
-  yellow: 'bg-yellow text-black',
-  red: 'bg-red text-white',
-  white: ''
-}
+const TAG_BASE = 'shrink-0 rounded-full px-2.5 py-1 text-[11px]'
 
 interface ProfileCardProps {
   profile: UserProfile
@@ -31,37 +30,39 @@ export default function ProfileCard({
 }: ProfileCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const roleColor = getRoleTagColor(profile.userRole)
   const banner = getRoleBanner(profile.userRole)
 
   return (
-    <section className="overflow-hidden rounded-2xl bg-gray-100/30">
-      <div className="flex items-center gap-4 p-5">
+    <section className="overflow-hidden rounded-[18px] border border-[rgba(240,234,228,0.09)] bg-[rgba(240,234,228,0.05)]">
+      <div className="flex flex-wrap items-center gap-5 p-6">
         {profile.image ? (
+          // next/image 는 못 쓴다 — S3 호스트를 remotePatterns 에 적을 수 없다.
           // eslint-disable-next-line @next/next/no-img-element
           <img src={profile.image} alt="" className="size-16 shrink-0 rounded-full object-cover" />
         ) : (
-          <div className="size-16 shrink-0 rounded-full bg-gray-400" aria-hidden />
+          <div className="size-16 shrink-0 rounded-full bg-[rgba(240,234,228,0.14)]" aria-hidden />
         )}
 
-        <div className="min-w-0 flex-1 space-y-2">
+        <div className="flex min-w-0 flex-[1_1_220px] flex-col gap-[9px]">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="typo-pc-h4 text-white">{profile.name}</span>
-            <GdgColorTag color={roleColor} size="mini">
+            <span className="text-[21px] font-semibold tracking-[-0.02em]">{profile.name}</span>
+            <span className={cn(TAG_BASE, getRoleTagClass(profile.userRole))}>
               {profile.userRole}
-            </GdgColorTag>
-            <GdgColorTag color={getTeamTagColor(profile.team)} size="mini">
+            </span>
+            <span className={cn(TAG_BASE, getTeamTagClass(profile.team))}>
               {getTeamLabel(profile.team)}
-            </GdgColorTag>
+            </span>
           </div>
-          <p className="typo-pc-b3 truncate text-gray-700">{profile.email}</p>
+          <p className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-dusk-ink-700">
+            {profile.email}
+          </p>
         </div>
 
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="shrink-0 rounded-full border border-white/10 px-3 py-1 typo-pc-c2 text-gray-700 transition hover:border-white/30 hover:text-white disabled:opacity-50"
+          className="shrink-0 whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.18)] px-4 py-[9px] text-[13px] text-dusk-ink-600 transition-colors hover:border-[rgba(240,234,228,0.45)] hover:text-dusk-ink-100 disabled:opacity-50"
         >
           {uploading ? '변경 중…' : '프로필 이미지 변경'}
         </button>
@@ -79,10 +80,12 @@ export default function ProfileCard({
         />
       </div>
 
-      {imageError && <p className="px-5 pb-3 typo-pc-c1 text-red">{imageError}</p>}
+      {imageError && <p className="px-6 pb-4 text-[13px] text-signal-err">{imageError}</p>}
 
       {banner && (
-        <div className={cn('px-5 py-3 text-center typo-pc-b3', BANNER_CLASS[roleColor])}>
+        <div
+          className={cn('px-6 py-[13px] text-center text-sm', getRoleBannerClass(profile.userRole))}
+        >
           {banner}
         </div>
       )}

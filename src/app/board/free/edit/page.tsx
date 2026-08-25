@@ -1,17 +1,21 @@
 'use client'
 
 import axios from 'axios'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentUploader, type AttachmentDraft } from '@/components/board/AttachmentUploader'
-import { BOARD_MENUS } from '@/components/board/boardMenus'
+import { BoardFormHeader } from '@/components/board/BoardPageHeader'
 import {
-  GdgButton,
-  GdgInputField,
-  GdgSiteHeader,
-  GdgTextarea
-} from '@/components/ui/design-system'
+  DUSK_CANCEL_BUTTON,
+  DUSK_INPUT,
+  DUSK_SUBMIT_BUTTON,
+  DUSK_TEXTAREA,
+  DuskField
+} from '@/components/ui/dusk/DuskForm'
+import { BOARD_MENUS } from '@/components/board/boardMenus'
+import { GdgSiteHeader } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { useContentImagePaste } from '@/hooks/useContentImagePaste'
@@ -136,80 +140,93 @@ export default function FreeBoardEditPage() {
 
   if (!isMember) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">수정 권한이 없습니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">수정 권한이 없습니다.</p>
       </main>
     )
   }
 
   if (loading) {
-    return (
-      <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
-    )
+    return <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
   }
 
   if (forbidden) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">본인이 쓴 글만 수정할 수 있습니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">본인이 쓴 글만 수정할 수 있습니다.</p>
       </main>
     )
   }
 
   if (loadError) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="text-red typo-pc-b2 mobile:typo-m-b2">{loadError}</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-signal-err">{loadError}</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen">
       <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
-      <div className="mx-auto w-full max-w-[720px] space-y-6 px-6 mobile:px-4 py-10">
-        <h1 className="typo-pc-h3 mobile:typo-m-h2">자유게시판 수정</h1>
+      <div className="mx-auto w-full max-w-[720px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-11">
+        <BoardFormHeader backHref="/board/free/" title="자유게시판 수정" />
 
-        <GdgInputField
-          label="제목"
-          fullWidth
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
+        <div className="mt-[34px] flex flex-col gap-[22px]">
+          <DuskField label="제목">
+            <input
+              type="text"
+              placeholder="제목을 입력하세요"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className={DUSK_INPUT}
+            />
+          </DuskField>
 
-        <div className="flex flex-col gap-2">
-          <GdgTextarea
+          <DuskField
             label="내용"
-            fullWidth
-            rows={12}
-            value={content}
-            onChange={(event) => setContent(event.target.value)}
-            onPaste={handleContentPaste}
-          />
-          <p className="typo-pc-c1 mobile:typo-m-c1 text-gray-500">
-            {contentImageUploading
-              ? '이미지 올리는 중...'
-              : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'}
-          </p>
+            hint={
+              contentImageUploading
+                ? '이미지 올리는 중...'
+                : '이미지를 복사해 붙여넣으면 그 자리에 들어갑니다.'
+            }
+          >
+            <textarea
+              rows={14}
+              placeholder="내용을 입력하세요"
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              onPaste={handleContentPaste}
+              className={DUSK_TEXTAREA}
+            />
+          </DuskField>
+
+          <div className="flex flex-col gap-3">
+            <span className="text-[13px] tracking-[0.06em] text-dusk-ink-400">첨부</span>
+            <AttachmentUploader
+              attachments={attachments}
+              onChange={setAttachments}
+              apiClient={apiClient}
+              s3key={FREE_S3_KEY}
+            />
+          </div>
+
+          {errorMessage && <p className="text-sm text-signal-err">{errorMessage}</p>}
+
+          <div className="mt-1.5 flex gap-2.5">
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className={DUSK_SUBMIT_BUTTON}
+            >
+              {submitting ? '저장 중...' : '저장'}
+            </button>
+            <Link href={`/board/free/detail?id=${id}`} className={DUSK_CANCEL_BUTTON}>
+              취소
+            </Link>
+          </div>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <span className="tracking-[0.2em] text-white/80 typo-pc-s3 mobile:typo-m-s3 uppercase">
-            첨부
-          </span>
-          <AttachmentUploader
-            attachments={attachments}
-            onChange={setAttachments}
-            apiClient={apiClient}
-            s3key={FREE_S3_KEY}
-          />
-        </div>
-
-        {errorMessage && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>}
-
-        <GdgButton variant="active" fullWidth onClick={handleSubmit} loading={submitting}>
-          저장
-        </GdgButton>
       </div>
     </main>
   )

@@ -9,8 +9,16 @@ export interface BoardListColumn<T> {
   render: (item: T) => ReactNode
   className?: string
   /**
+   * 좁은 화면의 카드에서 뺀다. 표에는 그대로 나온다.
+   *
+   * 카드는 한 줄에 하나씩 세로로 쌓이므로 열 하나가 곧 화면 한 줄이다. 목록에서
+   * 고를 때 안 쓰는 값(작성자·조회수 등)까지 다 실으면 카드 하나가 화면을 덮는다.
+   */
+  mobileHidden?: boolean
+  /**
    * 모바일 카드에서 제목 자리에 크게 나올 열. 지정하지 않으면 첫 열을 쓴다.
    * 게시판마다 첫 열이 제목이 아니다 — 공지는 첫 열이 분류 태그다.
+   * PC 표에서도 이 열만 글씨가 크고 밝다.
    */
   primary?: boolean
 }
@@ -38,13 +46,12 @@ export function BoardList<T>({
   thumbnail
 }: BoardListProps<T>) {
   if (items.length === 0) {
-    return (
-      <p className="py-16 text-center text-gray-500 typo-pc-b2 mobile:typo-m-b2">{emptyMessage}</p>
-    )
+    return <p className="py-16 text-center text-[15px] text-dusk-ink-800">{emptyMessage}</p>
   }
 
   const primaryColumn = columns.find((column) => column.primary) ?? columns[0]
   const metaColumns = columns.filter((column) => column !== primaryColumn)
+  const mobileMetaColumns = metaColumns.filter((column) => !column.mobileHidden)
 
   return (
     <>
@@ -53,12 +60,12 @@ export function BoardList<T>({
         {/* table-fixed 여야 열 너비가 내용에 밀리지 않는다. auto 로 두면 제목이 긴 글 하나
             때문에 기간·작성자 열까지 통째로 움직여 행마다 칸이 어긋나 보인다.
             너비를 주지 않은 열(제목)이 남은 폭을 가져간다. */}
-        <table className="w-full min-w-[640px] table-fixed border-collapse text-left text-white">
+        <table className="w-full min-w-[640px] table-fixed border-collapse text-left">
           <thead>
-            <tr className="border-b border-gray-800 typo-pc-s3 mobile:typo-m-s3">
-              {thumbnail && <th className="w-24 px-4 py-3" />}
+            <tr className="border-b border-b-dusk-line text-[13px] text-dusk-ink-700">
+              {thumbnail && <th className="w-24 px-4 py-[18px]" />}
               {columns.map((column) => (
-                <th key={column.key} className={cn('px-4 py-3', column.className)}>
+                <th key={column.key} className={cn('px-4 py-[18px] font-normal', column.className)}>
                   {column.header}
                 </th>
               ))}
@@ -70,13 +77,22 @@ export function BoardList<T>({
                 key={getRowKey(item)}
                 onClick={() => onRowClick?.(item)}
                 className={cn(
-                  'border-b border-gray-100 typo-pc-b3 mobile:typo-m-b3',
-                  onRowClick && 'cursor-pointer hover:bg-gray-100'
+                  'border-b border-b-[rgba(240,234,228,0.08)] transition-colors',
+                  onRowClick && 'cursor-pointer hover:bg-[rgba(240,234,228,0.04)]'
                 )}
               >
-                {thumbnail && <td className="w-24 px-4 py-3">{thumbnail(item)}</td>}
+                {thumbnail && <td className="w-24 px-4 py-[18px]">{thumbnail(item)}</td>}
                 {columns.map((column) => (
-                  <td key={column.key} className={cn('px-4 py-3', column.className)}>
+                  <td
+                    key={column.key}
+                    className={cn(
+                      'px-4 py-[18px]',
+                      column === primaryColumn
+                        ? 'text-base text-dusk-ink-100'
+                        : 'text-sm text-dusk-ink-600',
+                      column.className
+                    )}
+                  >
                     {column.render(item)}
                   </td>
                 ))}
@@ -96,18 +112,18 @@ export function BoardList<T>({
             <div
               onClick={() => onRowClick?.(item)}
               className={cn(
-                'flex w-full gap-3 rounded-xl border border-gray-200 px-4 py-3',
-                onRowClick && 'cursor-pointer active:bg-gray-100'
+                'flex w-full gap-3 rounded-lg border border-dusk-line px-4 py-3.5 transition-colors',
+                onRowClick && 'cursor-pointer active:bg-[rgba(240,234,228,0.04)]'
               )}
             >
               {thumbnail && <div className="shrink-0">{thumbnail(item)}</div>}
               <div className="min-w-0 flex-1">
-                <p className="text-white typo-m-s3">{primaryColumn.render(item)}</p>
-                <dl className="mt-2 flex flex-col gap-1 typo-m-c1">
-                  {metaColumns.map((column) => (
+                <p className="text-[15px] text-dusk-ink-100">{primaryColumn.render(item)}</p>
+                <dl className="mt-2 flex flex-col gap-1 text-[13px]">
+                  {mobileMetaColumns.map((column) => (
                     <div key={column.key} className="flex items-start gap-2">
-                      <dt className="w-14 shrink-0 text-gray-600">{column.header}</dt>
-                      <dd className="min-w-0 flex-1 text-gray-800">{column.render(item)}</dd>
+                      <dt className="w-14 shrink-0 text-dusk-ink-800">{column.header}</dt>
+                      <dd className="min-w-0 flex-1 text-dusk-ink-600">{column.render(item)}</dd>
                     </div>
                   ))}
                 </dl>

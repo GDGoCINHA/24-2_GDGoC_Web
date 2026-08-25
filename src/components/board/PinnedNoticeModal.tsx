@@ -4,8 +4,8 @@ import axios, { type AxiosInstance } from 'axios'
 import { Reorder } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
 
+import { DUSK_CANCEL_BUTTON, DUSK_INPUT, DUSK_SUBMIT_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { NoticeCategoryTag } from '@/components/board/NoticeCategoryTag'
-import { GdgButton, GdgSearchField } from '@/components/ui/design-system'
 import {
   fetchNoticeList,
   fetchPinnedNotices,
@@ -125,35 +125,35 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(12,9,15,0.72)] px-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="상단 고정 관리"
     >
       {/* 카드 전체를 스크롤시키면 후보 10개에 밀려 아래쪽 "저장"이 화면 밖으로 나간다.
           그러면 위쪽 "닫기"만 보여서 저장하지 않고 닫게 된다. 가운데만 스크롤한다. */}
-      <div className="flex max-h-[85vh] w-full max-w-[640px] flex-col gap-4 overflow-hidden rounded-2xl border border-gray-800 bg-black p-6 text-white">
+      <div className="flex max-h-[85vh] w-full max-w-[640px] flex-col gap-4 overflow-hidden rounded-2xl border border-dusk-line bg-dusk-raise p-6 text-dusk-ink-100">
         <div className="flex shrink-0 items-center justify-between">
-          <h2 className="typo-pc-s2 mobile:typo-m-s2">상단 고정 관리</h2>
-          <button type="button" onClick={onClose} className="text-gray-500 hover:text-white">
+          <h2 className="text-[19px] font-semibold tracking-[-0.02em]">상단 고정 관리</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-sm text-dusk-ink-800 transition-colors hover:text-dusk-ink-100"
+          >
             닫기
           </button>
         </div>
 
         {/* min-h-0 이 없으면 flex 아이템의 min-height:auto 때문에 줄어들지 않아 스크롤이 안 생긴다. */}
         <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
-          <section className="flex flex-col gap-2">
-            <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+          <section className="flex flex-col gap-2.5">
+            <p className="text-[13px] text-dusk-ink-700">
               현재 고정 {selected.length}/{MAX_PINNED} — 드래그해 순서를 바꿉니다.
             </p>
             {loading ? (
-              <p className="py-6 text-center text-gray-500 typo-pc-b3 mobile:typo-m-b3">
-                불러오는 중...
-              </p>
+              <p className="py-6 text-center text-sm text-dusk-ink-800">불러오는 중...</p>
             ) : selected.length === 0 ? (
-              <p className="py-6 text-center text-gray-500 typo-pc-b3 mobile:typo-m-b3">
-                고정된 공지가 없습니다.
-              </p>
+              <p className="py-6 text-center text-sm text-dusk-ink-800">고정된 공지가 없습니다.</p>
             ) : (
               <Reorder.Group
                 axis="y"
@@ -163,14 +163,16 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
               >
                 {selected.map((notice, index) => (
                   <Reorder.Item key={notice.id} value={notice}>
-                    <div className="flex cursor-grab items-center gap-3 rounded-lg bg-gray-100 px-4 py-2 typo-pc-b3 mobile:typo-m-b3">
-                      <span className="shrink-0 text-gray-700">{index + 1}</span>
+                    <div className="flex cursor-grab items-center gap-3 rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] active:cursor-grabbing">
+                      <span className="shrink-0 text-sm text-ember">{index + 1}</span>
                       <NoticeCategoryTag category={notice.category} />
-                      <span className="flex-1 truncate">{notice.title}</span>
+                      <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                        {notice.title}
+                      </span>
                       <button
                         type="button"
                         onClick={() => handleRemove(notice.id)}
-                        className="shrink-0 underline"
+                        className="shrink-0 text-sm text-dusk-ink-800 transition-colors hover:text-signal-err"
                       >
                         빼기
                       </button>
@@ -181,46 +183,40 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
             )}
           </section>
 
-          <section className="flex flex-col gap-2 border-t border-gray-800 pt-4">
-            <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+          <section className="flex flex-col gap-2.5 border-t border-t-[rgba(240,234,228,0.10)] pt-4">
+            <p className="text-[13px] text-dusk-ink-700">
               고정할 공지 찾기 (공개된 공지만 고정할 수 있습니다)
             </p>
-            {/* device 기본값 'pc' 는 w-280(=1120px) 고정폭이라 640px 모달을 넘긴다.
-              좁은 화면에서는 더 심하다. pc/mobile 을 각각 렌더하고 CSS 로 감춘다. */}
-            {(['pc', 'mobile'] as const).map((device) => (
-              <GdgSearchField
-                key={device}
-                device={device}
-                // pc 는 half(412px)면 640px 모달에 들어간다. mobile 은 half 가 w-fit 으로
-                // 떨어져 입력칸이 글자 폭만큼 쪼그라들므로 full(343px)을 쓴다.
-                width={device === 'pc' ? 'half' : 'full'}
-                className={device === 'pc' ? 'hidden pc:flex' : 'flex pc:hidden'}
-                value={keyword}
-                onChange={(event) => setKeyword(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault()
-                    setSubmittedKeyword(keyword)
-                  }
-                }}
-                placeholder="제목·내용으로 검색"
-              />
-            ))}
-            <ul className="flex flex-col gap-1">
+            <input
+              type="text"
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault()
+                  setSubmittedKeyword(keyword)
+                }
+              }}
+              placeholder="제목·내용으로 검색"
+              className={DUSK_INPUT}
+            />
+            <ul className="flex flex-col">
               {candidates.map((notice) => {
                 const alreadySelected = selected.some((item) => item.id === notice.id)
                 return (
                   <li
                     key={notice.id}
-                    className="flex items-center gap-3 border-b border-gray-800 px-1 py-2 typo-pc-b3 mobile:typo-m-b3"
+                    className="flex items-center gap-3 border-b border-b-[rgba(240,234,228,0.08)] px-1 py-2.5 text-[15px]"
                   >
                     <NoticeCategoryTag category={notice.category} />
-                    <span className="flex-1 truncate">{notice.title}</span>
+                    <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                      {notice.title}
+                    </span>
                     <button
                       type="button"
                       onClick={() => handleAdd(notice)}
                       disabled={alreadySelected || isFull}
-                      className="shrink-0 underline disabled:opacity-30"
+                      className="shrink-0 text-sm text-dusk-ink-400 underline transition-colors hover:text-ember disabled:opacity-30 disabled:hover:text-dusk-ink-400"
                     >
                       {alreadySelected ? '고정됨' : '추가'}
                     </button>
@@ -228,13 +224,13 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
                 )
               })}
               {candidates.length === 0 && (
-                <li className="py-4 text-center text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+                <li className="py-4 text-center text-[13px] text-dusk-ink-800">
                   검색 결과가 없습니다.
                 </li>
               )}
             </ul>
             {isFull && (
-              <p className="text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+              <p className="text-[13px] text-dusk-ink-800">
                 슬롯이 가득 찼습니다. 추가하려면 먼저 하나를 빼세요.
               </p>
             )}
@@ -242,24 +238,20 @@ export function PinnedNoticeModal({ open, apiClient, onClose, onSaved }: PinnedN
         </div>
 
         {/* 저장 실패 문구는 스크롤 밖에 둔다 — 안에 있으면 스크롤 위치에 따라 안 보인다. */}
-        {errorMessage && (
-          <p className="shrink-0 text-red typo-pc-b3 mobile:typo-m-b3">{errorMessage}</p>
-        )}
+        {errorMessage && <p className="shrink-0 text-sm text-signal-err">{errorMessage}</p>}
 
-        {/* GdgButton 은 기본 클래스에 shrink-0 이 있고 fullWidth 는 w-full 을 준다.
-            둘을 한 행에 나란히 두면 각각 100% 폭을 요구하면서 줄어들지도 못해
-            행이 두 배로 넘치고 "저장"이 카드 밖으로 밀려난다. 감싸는 쪽에서 반씩 나눈다. */}
-        <div className="flex shrink-0 gap-3">
-          <div className="min-w-0 flex-1">
-            <GdgButton variant="bordered" fullWidth onClick={onClose}>
-              취소
-            </GdgButton>
-          </div>
-          <div className="min-w-0 flex-1">
-            <GdgButton variant="active" fullWidth onClick={handleSave} loading={saving}>
-              저장
-            </GdgButton>
-          </div>
+        <div className="flex shrink-0 gap-2.5">
+          <button type="button" onClick={onClose} className={`flex-1 ${DUSK_CANCEL_BUTTON}`}>
+            취소
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className={DUSK_SUBMIT_BUTTON}
+          >
+            {saving ? '저장 중...' : '저장'}
+          </button>
         </div>
       </div>
     </div>

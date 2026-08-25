@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { BoardContent } from '@/components/board/BoardContent'
 import { GdgSiteHeader } from '@/components/ui/design-system'
+import { DUSK_GHOST_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
@@ -101,14 +102,17 @@ export default function EventBoardDetailPage() {
       (user?.team != null && user.team === detail.organizingTeam))
 
   if (loading) {
-    return <p className="py-16 text-center text-white typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
+    return <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
   }
 
   if (notFound) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">삭제되었거나 존재하지 않는 글입니다.</p>
-        <Link href="/board/events/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">삭제되었거나 존재하지 않는 글입니다.</p>
+        <Link
+          href="/board/events/"
+          className="mt-4 inline-block text-sm text-dusk-ink-500 underline transition-colors hover:text-dusk-ink-100"
+        >
           목록으로
         </Link>
       </main>
@@ -117,9 +121,12 @@ export default function EventBoardDetailPage() {
 
   if (error || !detail) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2 text-red">{error ?? '글을 불러오지 못했습니다.'}</p>
-        <Link href="/board/events/" className="mt-4 inline-block underline typo-pc-b3 mobile:typo-m-b3">
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-signal-err">{error ?? '글을 불러오지 못했습니다.'}</p>
+        <Link
+          href="/board/events/"
+          className="mt-4 inline-block text-sm text-dusk-ink-500 underline transition-colors hover:text-dusk-ink-100"
+        >
           목록으로
         </Link>
       </main>
@@ -127,7 +134,7 @@ export default function EventBoardDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen">
       <GdgSiteHeader
         menus={BOARD_MENUS}
         actionMenu={{
@@ -135,14 +142,19 @@ export default function EventBoardDetailPage() {
           url: user ? '/profile/' : '/login?next=%2Fboard%2Fevents%2F'
         }}
       />
-      <div className="mx-auto w-full max-w-[880px] space-y-6 px-6 mobile:px-4 py-10">
-        <Link href="/board/events/" className="typo-pc-c2 mobile:typo-m-c2 text-gray-700 hover:text-white">
-          목록으로
+      <div className="mx-auto w-full max-w-[880px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-11">
+        <Link
+          href="/board/events/"
+          className="text-[13px] text-dusk-ink-800 transition-colors hover:text-dusk-ink-100"
+        >
+          ← 목록으로
         </Link>
 
         <div className="space-y-2">
-          <h1 className="typo-pc-h3 mobile:typo-m-h2">{detail.title}</h1>
-          <div className="flex flex-wrap gap-4 text-gray-500 typo-pc-c1 mobile:typo-m-c1">
+          <h1 className="break-keep text-[clamp(25px,3vw,38px)] font-semibold leading-[1.3] tracking-[-0.03em]">
+            {detail.title}
+          </h1>
+          <div className="flex flex-wrap gap-[18px] text-[13px] text-dusk-ink-800">
             <span>
               {formatDate(detail.eventStartDate)} ~ {formatDate(detail.eventEndDate)}
             </span>
@@ -157,25 +169,22 @@ export default function EventBoardDetailPage() {
         <BoardContent content={detail.content} />
 
         {detail.attachments.length > 0 && (
-          <div className="space-y-2 border-t border-gray-800 pt-6">
-            <p className="typo-pc-s3 mobile:typo-m-s3 uppercase tracking-[0.2em] text-white/80">첨부</p>
+          <div className="space-y-3 border-t border-t-[rgba(240,234,228,0.10)] pt-7">
+            <p className="text-sm font-medium text-dusk-ink-500">첨부</p>
             <AttachmentList attachments={detail.attachments} />
           </div>
         )}
 
         {canManage && (
-          <div className="flex gap-3 border-t border-gray-800 pt-6">
-            <Link
-              href={`/board/events/edit?id=${detail.id}`}
-              className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
-            >
+          <div className="flex gap-3 border-t border-t-[rgba(240,234,228,0.10)] pt-7">
+            <Link href={`/board/events/edit?id=${detail.id}`} className={DUSK_GHOST_BUTTON}>
               수정
             </Link>
             <button
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="rounded-full border border-red px-6 py-2 text-red typo-pc-b3 mobile:typo-m-b3 disabled:opacity-50"
+              className="whitespace-nowrap rounded-full border border-[rgba(196,88,74,0.6)] px-[22px] py-[11px] text-sm text-signal-err transition-colors hover:bg-[rgba(196,88,74,0.12)] disabled:opacity-50"
             >
               삭제
             </button>

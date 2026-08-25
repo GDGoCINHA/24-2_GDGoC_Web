@@ -43,6 +43,13 @@ export const CORE_SCHEDULE = {
   fallbackOpenAt: '2026-08-10T00:00:00+09:00',
   fallbackCloseAt: '2026-09-08T23:59:59+09:00',
   documentResult: '2026. 9. 8.(화) 23:59',
+  /**
+   * 면접 기간. `interview` 는 지원 안내처럼 폭이 넉넉한 곳에 쓰는 전체 표기이고,
+   * 아래 ISO 두 값은 랜딩 3칸처럼 좁은 자리에서 축약형을 만들 때 쓴다.
+   * 셋은 같은 날짜를 가리키므로 일정이 바뀌면 함께 고친다.
+   */
+  interviewOpenAt: '2026-09-09T00:00:00+09:00',
+  interviewCloseAt: '2026-09-13T23:59:59+09:00',
   interview: '2026. 9. 9.(수) - 2026. 9. 13.(일)',
   interviewNote: '※ 지원자 및 면접관 일정에 따라 마감 전 면접이 가능할 수 있습니다.',
   finalResult: '2026. 9. 13.(일)',

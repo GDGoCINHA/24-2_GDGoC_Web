@@ -4,9 +4,19 @@ import { type FormEvent, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 
+import Link from 'next/link'
+
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
-import { GdgButton, GdgCheckbox, GdgFieldContainer, GdgInputField, GdgLogo } from '@/components/ui/design-system'
+import { GdgLogo } from '@/components/ui/design-system'
+import {
+  DuskField,
+  DUSK_CANCEL_BUTTON,
+  DUSK_CHECKBOX,
+  DUSK_INPUT,
+  DUSK_SUBMIT_BUTTON
+} from '@/components/ui/dusk/DuskForm'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
+import { cn } from '@/utils/cn'
 
 type MemoFormState = {
   name: string
@@ -40,10 +50,10 @@ export default function RecruitMemberMemoPage() {
     () =>
       Boolean(
         formData.name.trim() &&
-          isPhoneValid &&
-          isEmailValid &&
-          formData.privacyAgreement &&
-          formData.freshmanMemoAgreement
+        isPhoneValid &&
+        isEmailValid &&
+        formData.privacyAgreement &&
+        formData.freshmanMemoAgreement
       ),
     [formData, isEmailValid, isPhoneValid]
   )
@@ -67,9 +77,7 @@ export default function RecruitMemberMemoPage() {
       alert('신입생 지원 알림 신청이 완료되었습니다.')
       router.push('/')
     } catch (error) {
-      const errorMessage = axios.isAxiosError(error)
-        ? error.response?.data?.message
-        : undefined
+      const errorMessage = axios.isAxiosError(error) ? error.response?.data?.message : undefined
 
       if (errorMessage === '이미 지원을 완료하였습니다.') {
         alert('이미 지원을 완료하였습니다.')
@@ -87,222 +95,110 @@ export default function RecruitMemberMemoPage() {
   const emailStatus = isSubmitted && !isEmailValid ? 'error' : undefined
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <form onSubmit={handleSubmit} className="pt-18 pb-28 mobile:pt-12 mobile:pb-12">
-        <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
-          <div className="col-span-4 flex items-center gap-3 mobile:gap-2">
-            <GdgLogo mode="auto" />
-            <h1 className="typo-pc-h3 mobile:typo-m-h2 text-white">신입생 지원 알림 신청</h1>
-          </div>
+    <main className="mx-auto w-full max-w-[760px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
+      <Link
+        href="/recruit/"
+        className="text-[13px] text-dusk-ink-800 transition-colors hover:text-dusk-ink-100"
+      >
+        ← 지원 종류 선택
+      </Link>
 
-          <div className="col-span-4 rounded-xl bg-gray-100 px-4 py-3 mobile:px-3.5 mobile:py-3">
-            <p className="typo-pc-b2 mobile:typo-m-b3 text-white">
-              신입생은 학번 발급 이후 지원이 가능해요. 정보를 남겨주시면 지원 가능 시점에 안내드립니다.
-            </p>
-          </div>
+      <div className="mt-6 flex items-center gap-3">
+        <GdgLogo mode="auto" />
+        <h1 className="text-[clamp(24px,2.8vw,34px)] font-semibold leading-[1.26] tracking-[-0.03em]">
+          신입생 지원 알림 신청
+        </h1>
+      </div>
 
-          <div className="col-span-4 space-y-6">
-            <GdgFieldContainer
-              label="이름"
-              required
-              status={nameStatus}
-              statusMessage={nameStatus ? '※ 필수 입력 사항입니다.' : undefined}
-            >
-              <div className="pc:contents hidden">
-                <GdgInputField
-                  device="pc"
-                  value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                  placeholder="이름을 입력해 주세요."
-                  width="full"
-                  state={nameStatus ? 'error' : 'available'}
-                />
-              </div>
-              <div className="pc:hidden contents">
-                <GdgInputField
-                  device="mobile"
-                  value={formData.name}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                  placeholder="이름을 입력해 주세요."
-                  fullWidth
-                  state={nameStatus ? 'error' : 'available'}
-                />
-              </div>
-            </GdgFieldContainer>
+      <p className="mt-7 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[18px] text-[15px] leading-[1.7] text-dusk-ink-300">
+        신입생은 학번 발급 이후 지원이 가능해요. 정보를 남겨주시면 지원 가능 시점에 안내드립니다.
+      </p>
 
-            <GdgFieldContainer
-              label="전화번호"
-              required
-              status={phoneStatus}
-              statusMessage={phoneStatus ? '※ 010-1234-5678 형식으로 입력해 주세요.' : undefined}
-            >
-              <div className="pc:contents hidden">
-                <GdgInputField
-                  device="pc"
-                  value={formData.phoneNumber}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      phoneNumber: formatInput(e.target.value)
-                    }))
-                  }
-                  placeholder="전화번호를 입력해 주세요. (010-1234-5678)"
-                  width="full"
-                  state={phoneStatus ? 'error' : 'available'}
-                />
-              </div>
-              <div className="pc:hidden contents">
-                <GdgInputField
-                  device="mobile"
-                  value={formData.phoneNumber}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      phoneNumber: formatInput(e.target.value)
-                    }))
-                  }
-                  placeholder="전화번호를 입력해 주세요."
-                  fullWidth
-                  state={phoneStatus ? 'error' : 'available'}
-                />
-              </div>
-            </GdgFieldContainer>
+      <form onSubmit={handleSubmit} className="mt-[34px] flex flex-col gap-[22px]">
+        <DuskField label="이름" required error={nameStatus ? '※ 필수 입력 사항입니다.' : undefined}>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+            placeholder="이름을 입력해 주세요."
+            className={cn(DUSK_INPUT, nameStatus && 'border-[rgba(196,88,74,0.6)]')}
+          />
+        </DuskField>
 
-            <GdgFieldContainer
-              label="이메일"
-              required
-              caption="인하대학교 이메일(@inha.edu)이 아니어도 가능합니다."
-              status={emailStatus}
-              statusMessage={emailStatus ? '※ 이메일 형식을 확인해 주세요.' : undefined}
-            >
-              <div className="pc:contents hidden">
-                <GdgInputField
-                  device="pc"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                  placeholder="이메일을 입력해 주세요."
-                  width="full"
-                  state={emailStatus ? 'error' : 'available'}
-                />
-              </div>
-              <div className="pc:hidden contents">
-                <GdgInputField
-                  device="mobile"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                  placeholder="이메일을 입력해 주세요."
-                  fullWidth
-                  state={emailStatus ? 'error' : 'available'}
-                />
-              </div>
-            </GdgFieldContainer>
-          </div>
+        <DuskField
+          label="전화번호"
+          required
+          error={phoneStatus ? '※ 010-1234-5678 형식으로 입력해 주세요.' : undefined}
+        >
+          <input
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, phoneNumber: formatInput(e.target.value) }))
+            }
+            placeholder="전화번호를 입력해 주세요. (010-1234-5678)"
+            className={cn(DUSK_INPUT, phoneStatus && 'border-[rgba(196,88,74,0.6)]')}
+          />
+        </DuskField>
 
-          <div className="col-span-4 space-y-4 pt-2">
-            <PrivacyPolicyNotice target="memo" compact />
+        <DuskField
+          label="이메일"
+          required
+          hint="인하대학교 이메일(@inha.edu)이 아니어도 가능합니다."
+          error={emailStatus ? '※ 이메일 형식을 확인해 주세요.' : undefined}
+        >
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+            placeholder="이메일을 입력해 주세요."
+            className={cn(DUSK_INPUT, emailStatus && 'border-[rgba(196,88,74,0.6)]')}
+          />
+        </DuskField>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-end gap-2">
-                <span className="typo-pc-b3 mobile:typo-m-c1 text-red">*</span>
-                <p className="typo-pc-b3 mobile:typo-m-c1 text-white text-right">
-                  개인정보 처리방침에 동의합니다.
-                </p>
-                <span className="hidden pc:inline-flex">
-                  <GdgCheckbox
-                    checked={formData.privacyAgreement}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, privacyAgreement: checked }))
-                    }
-                    size="pc"
-                  />
-                </span>
-                <span className="inline-flex pc:hidden">
-                  <GdgCheckbox
-                    checked={formData.privacyAgreement}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, privacyAgreement: checked }))
-                    }
-                    size="mobile"
-                  />
-                </span>
-              </div>
+        <PrivacyPolicyNotice target="memo" showTitle={false} compact />
 
-              <div className="flex items-center justify-end gap-2">
-                <span className="typo-pc-b3 mobile:typo-m-c1 text-red">*</span>
-                <p className="typo-pc-b3 mobile:typo-m-c1 text-white text-right">
-                  신입생 지원 알림 신청에 동의합니다.
-                </p>
-                <span className="hidden pc:inline-flex">
-                  <GdgCheckbox
-                    checked={formData.freshmanMemoAgreement}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, freshmanMemoAgreement: checked }))
-                    }
-                    size="pc"
-                  />
-                </span>
-                <span className="inline-flex pc:hidden">
-                  <GdgCheckbox
-                    checked={formData.freshmanMemoAgreement}
-                    onCheckedChange={(checked) =>
-                      setFormData((prev) => ({ ...prev, freshmanMemoAgreement: checked }))
-                    }
-                    size="mobile"
-                  />
-                </span>
-              </div>
-            </div>
-          </div>
+        <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
+          <input
+            type="checkbox"
+            checked={formData.privacyAgreement}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, privacyAgreement: e.target.checked }))
+            }
+            className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
+          />
+          <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
+            개인정보 수집 및 이용, 개인정보 처리방침에 동의합니다.
+            <span className="text-signal-err"> *</span>
+          </span>
+        </label>
 
-          <div className="col-span-4 hidden justify-end gap-5 pt-2 pc:flex">
-            <GdgButton
-              type="button"
-              device="pc"
-              size="small"
-              variant="default"
-              widthToken="small"
-              onClick={() => router.push('/recruit/member')}
-            >
-              이전
-            </GdgButton>
+        <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
+          <input
+            type="checkbox"
+            checked={formData.freshmanMemoAgreement}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, freshmanMemoAgreement: e.target.checked }))
+            }
+            className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
+          />
+          <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
+            신입생 지원 알림 신청에 동의합니다.
+            <span className="text-signal-err"> *</span>
+          </span>
+        </label>
 
-            <GdgButton
-              type="submit"
-              device="pc"
-              size="small"
-              variant={isFormValid ? 'active' : 'disabled'}
-              widthToken="small"
-              disabled={!isFormValid || isSaving}
-            >
-              신청하기
-            </GdgButton>
-          </div>
-
-          <div className="col-span-4 grid grid-cols-3 gap-2 pt-0 pc:hidden">
-            <span aria-hidden />
-            <GdgButton
-              type="button"
-              device="mobile"
-              size="small"
-              variant="default"
-              fullWidth
-              onClick={() => router.push('/recruit/member')}
-            >
-              이전
-            </GdgButton>
-            <GdgButton
-              type="submit"
-              device="mobile"
-              size="small"
-              variant={isFormValid ? 'active' : 'disabled'}
-              fullWidth
-              disabled={!isFormValid || isSaving}
-            >
-              신청하기
-            </GdgButton>
-          </div>
+        <div className="mt-1.5 flex gap-2.5">
+          <button
+            type="button"
+            onClick={() => router.push('/recruit/member')}
+            className={DUSK_CANCEL_BUTTON}
+          >
+            이전
+          </button>
+          <button type="submit" disabled={!isFormValid || isSaving} className={DUSK_SUBMIT_BUTTON}>
+            {isSaving ? '신청 중...' : '신청하기'}
+          </button>
         </div>
       </form>
     </main>

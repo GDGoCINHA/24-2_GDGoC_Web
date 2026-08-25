@@ -3,7 +3,6 @@
 import type { AxiosInstance } from 'axios'
 import { useCallback, useEffect, useState } from 'react'
 
-import { GdgButton, GdgTextarea } from '@/components/ui/design-system'
 import { useAuth } from '@/hooks/useAuth'
 import {
   createFreeComment,
@@ -15,10 +14,27 @@ import type { FreeBoardComment } from '@/types/free'
 import { hasAtLeast } from '@/utils/auth/role'
 import { formatDate } from '@/utils/formatDate'
 
+/**
+ * 디자인 시스템의 `GdgTextarea`·`GdgButton` 은 밝은 배경을 전제로 만들어졌다.
+ * dusk 배경 위에서는 흰 입력칸이 그대로 떠 버려 여기서는 쓰지 않는다.
+ */
+const TEXTAREA_CLASS =
+  'w-full resize-y rounded-xl border border-[rgba(240,234,228,0.14)] bg-[rgba(240,234,228,0.05)] px-4 py-3.5 text-[15px] leading-[1.7] text-dusk-ink-100 outline-none mobile:text-base transition-colors placeholder:text-dusk-ink-800 focus:border-[rgba(240,234,228,0.32)]'
+
+const SUBMIT_CLASS =
+  'self-end whitespace-nowrap rounded-full bg-ember px-[26px] py-3 text-sm font-medium text-ember-ink transition-colors hover:bg-dusk-ink-100 hover:text-dusk-base disabled:opacity-50'
+
+const CANCEL_CLASS =
+  'whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.20)] px-4 py-2 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(240,234,228,0.5)] hover:text-dusk-ink-100'
+
 export interface FreeBoardCommentsProps {
   postId: number
   apiClient: AxiosInstance
 }
+
+/** 답글까지 합한 수. 제목의 "댓글 N" 은 화면에 보이는 항목 수와 같아야 한다. */
+const countAll = (comments: FreeBoardComment[]): number =>
+  comments.reduce((sum, comment) => sum + 1 + comment.replies.length, 0)
 
 /**
  * 자유게시판 댓글.
@@ -125,50 +141,49 @@ export function FreeBoardComments({ postId, apiClient }: FreeBoardCommentsProps)
   }
 
   const renderComment = (comment: FreeBoardComment, isReply: boolean) => (
-    <li key={comment.id} className={isReply ? 'border-l border-gray-200 pl-4' : ''}>
-      <div className="flex flex-col gap-1 py-3">
+    <li key={comment.id} className={isReply ? '' : 'border-t border-t-[rgba(240,234,228,0.08)]'}>
+      <div className={`flex flex-col gap-[7px] ${isReply ? 'py-4' : 'py-[18px]'}`}>
         {comment.deleted ? (
-          <p className="text-gray-600 typo-pc-b3 mobile:typo-m-b3">삭제된 댓글입니다.</p>
+          <p className="text-[15px] text-dusk-ink-800">삭제된 댓글입니다.</p>
         ) : (
           <>
-            <div className="flex flex-wrap items-center gap-3 text-gray-500 typo-pc-c1 mobile:typo-m-c1">
-              <span className="text-white">{comment.authorName}</span>
+            <div className="flex flex-wrap items-center gap-3 text-[13px] text-dusk-ink-800">
+              <span className="text-dusk-ink-100">{comment.authorName}</span>
               <span>{formatDate(comment.createdAt)}</span>
             </div>
 
             {editingId === comment.id ? (
               <div className="flex flex-col gap-2 pt-1">
-                <GdgTextarea
-                  fullWidth
+                <textarea
                   rows={3}
                   value={editInput}
                   onChange={(event) => setEditInput(event.target.value)}
+                  className={TEXTAREA_CLASS}
                 />
                 <div className="flex gap-2">
-                  <GdgButton
-                    variant="active"
-                    onClick={() => submitEdit(comment.id)}
-                    loading={submitting}
-                  >
-                    저장
-                  </GdgButton>
                   <button
                     type="button"
-                    onClick={() => setEditingId(null)}
-                    className="rounded-full border border-gray-800 px-4 py-1 typo-pc-c1 mobile:typo-m-c1"
+                    onClick={() => submitEdit(comment.id)}
+                    disabled={submitting}
+                    className={SUBMIT_CLASS}
                   >
+                    저장
+                  </button>
+                  <button type="button" onClick={() => setEditingId(null)} className={CANCEL_CLASS}>
                     취소
                   </button>
                 </div>
               </div>
             ) : (
-              <p className="whitespace-pre-wrap typo-pc-b3 mobile:typo-m-b3">{comment.content}</p>
+              <p className="whitespace-pre-wrap break-words break-keep text-[15px] leading-[1.75] text-dusk-ink-200">
+                {comment.content}
+              </p>
             )}
           </>
         )}
 
         {editingId !== comment.id && (
-          <div className="flex flex-wrap gap-3 pt-1 text-gray-600 typo-pc-c1 mobile:typo-m-c1">
+          <div className="flex flex-wrap gap-[14px] text-[13px] text-dusk-ink-800">
             {canWrite && !comment.deleted && (
               <button
                 type="button"
@@ -176,7 +191,7 @@ export function FreeBoardComments({ postId, apiClient }: FreeBoardCommentsProps)
                   setReplyTo(replyTo === comment.id ? null : comment.id)
                   setReplyInput('')
                 }}
-                className="hover:text-white"
+                className="transition-colors hover:text-dusk-ink-100"
               >
                 답글
               </button>
@@ -189,14 +204,14 @@ export function FreeBoardComments({ postId, apiClient }: FreeBoardCommentsProps)
                     setEditingId(comment.id)
                     setEditInput(comment.content ?? '')
                   }}
-                  className="hover:text-white"
+                  className="transition-colors hover:text-dusk-ink-100"
                 >
                   수정
                 </button>
                 <button
                   type="button"
                   onClick={() => remove(comment.id)}
-                  className="hover:text-red"
+                  className="transition-colors hover:text-signal-err"
                 >
                   삭제
                 </button>
@@ -207,25 +222,23 @@ export function FreeBoardComments({ postId, apiClient }: FreeBoardCommentsProps)
 
         {replyTo === comment.id && (
           <div className="flex flex-col gap-2 pt-2">
-            <GdgTextarea
-              fullWidth
+            <textarea
               rows={2}
               value={replyInput}
+              placeholder="답글을 남겨보세요"
               onChange={(event) => setReplyInput(event.target.value)}
+              className={TEXTAREA_CLASS}
             />
             <div className="flex gap-2">
-              <GdgButton
-                variant="active"
-                onClick={() => submit(replyInput, comment.id)}
-                loading={submitting}
-              >
-                답글 등록
-              </GdgButton>
               <button
                 type="button"
-                onClick={() => setReplyTo(null)}
-                className="rounded-full border border-gray-800 px-4 py-1 typo-pc-c1 mobile:typo-m-c1"
+                onClick={() => submit(replyInput, comment.id)}
+                disabled={submitting}
+                className={SUBMIT_CLASS}
               >
+                답글 등록
+              </button>
+              <button type="button" onClick={() => setReplyTo(null)} className={CANCEL_CLASS}>
                 취소
               </button>
             </div>
@@ -234,7 +247,7 @@ export function FreeBoardComments({ postId, apiClient }: FreeBoardCommentsProps)
       </div>
 
       {comment.replies.length > 0 && (
-        <ul className="ml-4 flex flex-col">
+        <ul className="ml-[18px] flex flex-col border-l border-l-[rgba(240,234,228,0.12)] pl-[18px]">
           {comment.replies.map((reply) => renderComment(reply, true))}
         </ul>
       )}
@@ -242,33 +255,41 @@ export function FreeBoardComments({ postId, apiClient }: FreeBoardCommentsProps)
   )
 
   return (
-    <section className="flex flex-col gap-4 border-t border-gray-800 pt-6">
-      <h2 className="typo-pc-s2 mobile:typo-m-s3">댓글</h2>
+    <section className="border-t border-t-[rgba(240,234,228,0.10)] pt-7">
+      <h2 className="text-[17px] font-semibold tracking-[-0.02em]">
+        댓글 {loading || error ? '' : countAll(comments)}
+      </h2>
 
-      {error && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{error}</p>}
-      {loading && <p className="text-gray-500 typo-pc-b3 mobile:typo-m-b3">불러오는 중...</p>}
+      {error && <p className="mt-5 text-[15px] text-signal-err">{error}</p>}
+      {loading && <p className="mt-5 text-[15px] text-dusk-ink-800">불러오는 중...</p>}
 
       {!loading && !error && comments.length === 0 && (
-        <p className="text-gray-500 typo-pc-b3 mobile:typo-m-b3">첫 댓글을 남겨보세요.</p>
+        <p className="mt-5 text-[15px] text-dusk-ink-800">첫 댓글을 남겨보세요.</p>
       )}
 
       {!loading && !error && comments.length > 0 && (
-        <ul className="flex flex-col divide-y divide-gray-100">
+        <ul className="mt-[22px] flex flex-col">
           {comments.map((comment) => renderComment(comment, false))}
         </ul>
       )}
 
       {canWrite && (
-        <div className="flex flex-col gap-2 pt-2">
-          <GdgTextarea
-            fullWidth
+        <div className="mt-[26px] flex flex-col gap-3 border-t border-t-[rgba(240,234,228,0.08)] pt-6">
+          <textarea
             rows={3}
             value={input}
+            placeholder="댓글을 남겨보세요"
             onChange={(event) => setInput(event.target.value)}
+            className={TEXTAREA_CLASS}
           />
-          <GdgButton variant="active" onClick={() => submit(input)} loading={submitting}>
+          <button
+            type="button"
+            onClick={() => submit(input)}
+            disabled={submitting}
+            className={SUBMIT_CLASS}
+          >
             댓글 등록
-          </GdgButton>
+          </button>
         </div>
       )}
     </section>
