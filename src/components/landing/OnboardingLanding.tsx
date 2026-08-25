@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 
 import AboutSection from './onboarding/AboutSection'
 import ActivitiesSection from './onboarding/ActivitiesSection'
-import CursorGlow from './onboarding/CursorGlow'
+import CursorGlow from '@/components/ui/common/CursorGlow'
 import FaqSection from './onboarding/FaqSection'
 import HackathonsSection from './onboarding/HackathonsSection'
 import HeroSection from './onboarding/HeroSection'

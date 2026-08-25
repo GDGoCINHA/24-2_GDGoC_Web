@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
+import {
+  BoardPageHeader,
+  BOARD_GHOST_BUTTON,
+  BOARD_PRIMARY_BUTTON
+} from '@/components/board/BoardPageHeader'
 import { BoardPagination } from '@/components/board/BoardPagination'
 import { BoardSearchBar } from '@/components/board/BoardSearchBar'
 import { GdgSiteHeader } from '@/components/ui/design-system'
@@ -101,7 +106,7 @@ export default function EventBoardListPage() {
   const canWrite = hasAtLeast(user?.userRole, 'CORE')
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen">
       <GdgSiteHeader
         menus={BOARD_MENUS}
         actionMenu={{
@@ -109,28 +114,19 @@ export default function EventBoardListPage() {
           url: user ? '/profile/' : '/login?next=%2Fboard%2Fevents%2F'
         }}
       />
-      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="typo-pc-h3 mobile:typo-m-h2">행사게시판</h1>
-          <div className="flex flex-wrap items-center gap-3">
-            {canWrite && (
-              <Link
-                href="/board/events/trash/"
-                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
-              >
-                휴지통
-              </Link>
-            )}
-            {canWrite && (
-              <Link
-                href="/board/events/new/"
-                className="rounded-full bg-red px-6 py-2 typo-pc-b3 mobile:typo-m-b3 text-white"
-              >
-                글쓰기
-              </Link>
-            )}
-          </div>
-        </div>
+      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-14">
+        <BoardPageHeader title="행사게시판" totalCount={meta?.totalElements}>
+          {canWrite && (
+            <Link href="/board/events/trash/" className={BOARD_GHOST_BUTTON}>
+              휴지통
+            </Link>
+          )}
+          {canWrite && (
+            <Link href="/board/events/new/" className={BOARD_PRIMARY_BUTTON}>
+              글쓰기
+            </Link>
+          )}
+        </BoardPageHeader>
 
         <BoardSearchBar
           searchType={searchType}
@@ -144,17 +140,21 @@ export default function EventBoardListPage() {
           onSubmit={handleSubmitSearch}
         />
 
-        {error && <p className="typo-pc-b3 mobile:typo-m-b3 text-red">{error}</p>}
-        {loading ? (
-          <p className="py-16 text-center text-gray-500 typo-pc-b2 mobile:typo-m-b2">불러오는 중...</p>
-        ) : (
+        {error && <p className="text-sm text-signal-err">{error}</p>}
+        {loading && (
+          <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
+        )}
+        {/* 실패했을 때는 목록을 그리지 않는다. 빈 배열을 넘기면 "등록된 글이 없습니다."가
+            에러 메시지와 나란히 떠서, 못 불러온 것인지 정말 없는 것인지 구분이 안 된다.
+            공지·자유게시판은 처음부터 이 가드를 갖고 있었는데 여기만 빠져 있었다. */}
+        {!loading && !error && (
           <BoardList
             items={items}
             columns={columns}
             getRowKey={(item) => item.id}
             onRowClick={(item) => router.push(`/board/events/detail?id=${item.id}`)}
             thumbnail={(item) => (
-              <div className="h-12 w-20 overflow-hidden rounded bg-gray-100">
+              <div className="h-12 w-20 overflow-hidden rounded-[3px] bg-dusk-slot">
                 {item.thumbnailUrl && (
                   // next/image 는 못 쓴다 — S3 호스트를 remotePatterns 에 적을 수 없다.
                   // eslint-disable-next-line @next/next/no-img-element

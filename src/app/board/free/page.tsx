@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { BoardList, type BoardListColumn } from '@/components/board/BoardList'
+import {
+  BoardPageHeader,
+  BOARD_GHOST_BUTTON,
+  BOARD_PRIMARY_BUTTON
+} from '@/components/board/BoardPageHeader'
 import { BoardPagination } from '@/components/board/BoardPagination'
 import { BoardSearchBar } from '@/components/board/BoardSearchBar'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
@@ -100,38 +105,29 @@ export default function FreeBoardListPage() {
   // 안내를 띄워야 "빈 게시판"으로 오해하지 않는다.
   if (!isLoggedIn) {
     return (
-      <main className="min-h-screen bg-black px-6 py-16 text-center text-white">
-        <p className="typo-pc-b2 mobile:typo-m-b2">로그인이 필요한 게시판입니다.</p>
+      <main className="min-h-screen px-6 py-16 text-center">
+        <p className="text-base text-dusk-ink-600">로그인이 필요한 게시판입니다.</p>
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen">
       <GdgSiteHeader menus={BOARD_MENUS} actionMenu={{ label: '내 정보', url: '/profile/' }} />
-      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-6 mobile:px-4 py-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h1 className="typo-pc-h3 mobile:typo-m-h2">자유게시판</h1>
-          <div className="flex flex-wrap items-center gap-3">
-            {/* 휴지통은 MEMBER 이상이면 열린다 — 자기가 지운 글만 보인다. */}
-            {canWrite && (
-              <Link
-                href="/board/free/trash/"
-                className="rounded-full border border-gray-800 px-6 py-2 typo-pc-b3 mobile:typo-m-b3"
-              >
-                휴지통
-              </Link>
-            )}
-            {canWrite && (
-              <Link
-                href="/board/free/new/"
-                className="rounded-full bg-red px-6 py-2 text-white typo-pc-b3 mobile:typo-m-b3"
-              >
-                글쓰기
-              </Link>
-            )}
-          </div>
-        </div>
+      <div className="mx-auto w-full max-w-[1120px] space-y-6 px-[clamp(20px,5vw,44px)] pb-24 pt-14">
+        <BoardPageHeader title="자유게시판" totalCount={meta?.totalElements}>
+          {/* 휴지통은 MEMBER 이상이면 열린다 — 자기가 지운 글만 보인다. */}
+          {canWrite && (
+            <Link href="/board/free/trash/" className={BOARD_GHOST_BUTTON}>
+              휴지통
+            </Link>
+          )}
+          {canWrite && (
+            <Link href="/board/free/new/" className={BOARD_PRIMARY_BUTTON}>
+              글쓰기
+            </Link>
+          )}
+        </BoardPageHeader>
 
         <BoardSearchBar
           searchType={searchType}
@@ -145,12 +141,10 @@ export default function FreeBoardListPage() {
           onSubmit={handleSubmitSearch}
         />
 
-        {error && <p className="text-red typo-pc-b3 mobile:typo-m-b3">{error}</p>}
+        {error && <p className="text-sm text-signal-err">{error}</p>}
 
         {loading && (
-          <p className="py-16 text-center text-gray-500 typo-pc-b2 mobile:typo-m-b2">
-            불러오는 중...
-          </p>
+          <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중...</p>
         )}
         {/* 실패했을 때는 목록을 그리지 않는다. 빈 배열을 넘기면 "등록된 글이 없습니다."가
             에러 메시지와 나란히 떠서, 못 불러온 것인지 정말 없는 것인지 구분이 안 된다. */}

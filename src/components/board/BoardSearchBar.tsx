@@ -1,18 +1,31 @@
 'use client'
 
-import { GdgDropdown, GdgSearchField, type GdgDropdownOption } from '@/components/ui/design-system'
 import type { BoardSearchType } from '@/types/board'
+
+export interface BoardSearchOption {
+  id: string
+  label: string
+}
 
 // 게시판 종류를 모르는 공용 컴포넌트다. 공지·자유도 그대로 쓴다.
 export interface BoardSearchBarProps {
   searchType: BoardSearchType
   keyword: string
-  searchTypeOptions: GdgDropdownOption[]
+  searchTypeOptions: BoardSearchOption[]
   onSearchTypeChange: (type: BoardSearchType) => void
   onKeywordChange: (keyword: string) => void
   onSubmit: () => void
 }
 
+const PILL = 'rounded-full border border-[rgba(240,234,228,0.16)] bg-[rgba(240,234,228,0.06)]'
+
+/**
+ * 디자인 시스템의 `GdgDropdown`·`GdgSearchField` 를 쓰지 않는다. 그쪽은 폭이
+ * device·size prop 으로 고정돼 있어 이 화면의 유동 레이아웃과 맞물리지 않았고,
+ * 밝은 배경 화면들이 계속 쓰는 컨트롤이라 색만 따로 바꿀 수도 없다.
+ *
+ * 좁아지면 검색창이 다음 줄로 접힌다. 별도의 모바일 분기가 필요 없다.
+ */
 export function BoardSearchBar({
   searchType,
   keyword,
@@ -21,52 +34,46 @@ export function BoardSearchBar({
   onKeywordChange,
   onSubmit
 }: BoardSearchBarProps) {
-  /**
-   * 디자인 시스템 컨트롤의 크기는 CSS 가 아니라 device·size prop 으로 정해진다.
-   * 기본값(device='pc', size='small')을 그대로 두면
-   *   - 검색 필드가 w-280(1120px) 고정이라 컨테이너 가용폭 1072px 를 넘고
-   *   - 드롭다운이 w-30.5(122px) 라 '제목+내용' 이 잘린다.
-   * 그래서 device 와 size 를 명시하고, pc/mobile 을 각각 렌더해 CSS 로 감춘다
-   * (login/page.tsx 의 기존 관례). 값과 핸들러가 같아 두 벌이 떠 있어도 상태는 하나다.
-   */
-  const controls = (device: 'pc' | 'mobile') => (
-    <>
-      <GdgDropdown
-        device={device}
-        // small(pc 122px / mobile 109px)은 '제목+내용'을 담지 못한다.
-        size="medium"
-        options={searchTypeOptions}
+  return (
+    <div className="flex flex-wrap items-center gap-2.5">
+      <label className="sr-only" htmlFor="board-search-type">
+        검색 조건
+      </label>
+      <select
+        id="board-search-type"
         value={searchType}
-        onChange={(value) => onSearchTypeChange(value as BoardSearchType)}
-      />
-      <GdgSearchField
-        device={device}
-        /**
-         * pc: half(412px) + 드롭다운(265px) + 간격 = 685px 로 가용폭 1072px 안에 든다.
-         *     full 은 1120px 고정이라 혼자 한 줄을 쓸 때만 맞는 값이다.
-         * mobile: 아래에서 세로로 쌓으므로 full(343px)이 가용폭 358px 에 들어간다.
-         */
-        width={device === 'pc' ? 'half' : 'full'}
-        value={keyword}
-        onChange={(event) => onKeywordChange(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
+        onChange={(event) => onSearchTypeChange(event.target.value as BoardSearchType)}
+        className={`${PILL} cursor-pointer appearance-none px-5 py-3 text-sm text-dusk-ink-200 outline-none focus:border-ember`}
+      >
+        {searchTypeOptions.map((option) => (
+          <option key={option.id} value={option.id} className="bg-dusk-field">
+            {option.label}
+          </option>
+        ))}
+      </select>
+
+      <div className={`${PILL} flex flex-[1_1_260px] items-center gap-2.5 px-5 py-3`}>
+        <input
+          type="text"
+          value={keyword}
+          onChange={(event) => onKeywordChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== 'Enter') return
             event.preventDefault()
             onSubmit()
-          }
-        }}
-        placeholder="검색어를 입력하세요"
-      />
-    </>
-  )
-
-  return (
-    <>
-      <div className="hidden w-full items-center gap-2 pc:flex">{controls('pc')}</div>
-      {/* 모바일은 한 줄에 못 넣는다. 드롭다운(168px)+검색(343px)이 가용폭 358px 를 넘는다. */}
-      <div className="flex w-full min-w-0 flex-col items-stretch gap-2 pc:hidden">
-        {controls('mobile')}
+          }}
+          placeholder="검색어를 입력하세요"
+          aria-label="검색어"
+          className="min-w-0 flex-1 appearance-none border-none bg-transparent text-sm text-dusk-ink-100 outline-none placeholder:text-dusk-ink-800"
+        />
+        <button
+          type="button"
+          onClick={onSubmit}
+          className="shrink-0 cursor-pointer whitespace-nowrap text-sm text-ember transition-colors hover:text-dusk-ink-100"
+        >
+          검색
+        </button>
       </div>
-    </>
+    </div>
   )
 }

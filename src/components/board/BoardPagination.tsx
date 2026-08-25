@@ -21,7 +21,7 @@ export function BoardPagination({ page, totalPages, onPageChange }: BoardPaginat
         type="button"
         onClick={() => onPageChange(page - 1)}
         disabled={page === 0}
-        className="px-2 py-1 text-white disabled:opacity-30"
+        className="px-2.5 py-1.5 text-sm text-dusk-ink-100 transition-opacity disabled:cursor-default disabled:opacity-30"
         aria-label="이전 페이지"
       >
         이전
@@ -33,8 +33,10 @@ export function BoardPagination({ page, totalPages, onPageChange }: BoardPaginat
           onClick={() => onPageChange(number)}
           aria-current={number === page ? 'page' : undefined}
           className={cn(
-            'flex size-8 items-center justify-center rounded-full typo-pc-b3 mobile:typo-m-b3',
-            number === page ? 'bg-red text-white' : 'text-gray-500 hover:text-white'
+            'flex size-8 items-center justify-center rounded-full text-sm transition-colors',
+            number === page
+              ? 'bg-ember text-ember-ink'
+              : 'text-dusk-ink-700 hover:text-dusk-ink-100'
           )}
         >
           {number + 1}
@@ -44,7 +46,7 @@ export function BoardPagination({ page, totalPages, onPageChange }: BoardPaginat
         type="button"
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages - 1}
-        className="px-2 py-1 text-white disabled:opacity-30"
+        className="px-2.5 py-1.5 text-sm text-dusk-ink-100 transition-opacity disabled:cursor-default disabled:opacity-30"
         aria-label="다음 페이지"
       >
         다음
