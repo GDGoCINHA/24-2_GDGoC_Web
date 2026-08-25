@@ -43,7 +43,7 @@ export function BoardSearchBar({
         id="board-search-type"
         value={searchType}
         onChange={(event) => onSearchTypeChange(event.target.value as BoardSearchType)}
-        className={`${PILL} cursor-pointer appearance-none px-5 py-3 text-sm text-dusk-ink-200 outline-none focus:border-ember`}
+        className={`${PILL} cursor-pointer appearance-none px-5 py-3 text-sm text-dusk-ink-200 outline-none focus:border-ember mobile:text-base`}
       >
         {searchTypeOptions.map((option) => (
           <option key={option.id} value={option.id} className="bg-dusk-field">
@@ -64,7 +64,7 @@ export function BoardSearchBar({
           }}
           placeholder="검색어를 입력하세요"
           aria-label="검색어"
-          className="min-w-0 flex-1 appearance-none border-none bg-transparent text-sm text-dusk-ink-100 outline-none placeholder:text-dusk-ink-800"
+          className="min-w-0 flex-1 appearance-none border-none bg-transparent text-sm text-dusk-ink-100 outline-none placeholder:text-dusk-ink-800 mobile:text-base"
         />
         <button
           type="button"

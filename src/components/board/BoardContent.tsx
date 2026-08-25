@@ -44,6 +44,9 @@ export interface BoardContentProps {
 export function BoardContent({ content }: BoardContentProps): ReactNode {
   const segments = toSegments(content)
 
+  // break-keep 은 한글을 단어째 지키지만, 링크처럼 끊을 자리가 없는 문자열은 그대로
+  // 밀고 나가 좁은 화면에서 가로 스크롤을 만든다. break-words 로 그때만 끊는다.
+
   return (
     <div className="flex flex-col gap-5 break-keep border-t border-t-[rgba(240,234,228,0.10)] pt-[34px] text-base leading-[1.85] text-dusk-ink-200">
       {segments.map((segment, index) =>
@@ -65,7 +68,7 @@ export function BoardContent({ content }: BoardContentProps): ReactNode {
             />
           </a>
         ) : (
-          <p key={index} className="whitespace-pre-wrap">
+          <p key={index} className="whitespace-pre-wrap break-words">
             {segment.value}
           </p>
         )

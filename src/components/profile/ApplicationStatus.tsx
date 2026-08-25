@@ -48,7 +48,7 @@ function ApplicationRow({
       </span>
       <span
         className={cn(
-          'shrink-0 px-[22px] py-[15px] text-center text-sm mobile:min-w-[104px] pc:min-w-[140px]',
+          'shrink-0 px-[22px] py-[15px] text-center text-sm mobile:min-w-[126px] pc:min-w-[140px]',
           statusClass
         )}
       >

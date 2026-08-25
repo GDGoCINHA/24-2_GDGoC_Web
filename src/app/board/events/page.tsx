@@ -17,6 +17,7 @@ import type { EventBoardSummary, EventSearchType } from '@/types/board'
 import type { PageMeta } from '@/utils/api/unwrapPaged'
 import { hasAtLeast } from '@/utils/auth/role'
 import { formatDate } from '@/utils/formatDate'
+import { cn } from '@/utils/cn'
 
 const SEARCH_TYPE_OPTIONS = [
   { id: 'TITLE_AND_CONTENT', label: '제목+내용' },
@@ -76,7 +77,11 @@ export default function EventBoardListPage() {
     {
       key: 'title',
       header: '제목',
-      render: (item) => <span className="block truncate">{item.title}</span>,
+      render: (item) => (
+        <span className="block overflow-hidden text-ellipsis pc:whitespace-nowrap mobile:line-clamp-2">
+          {item.title}
+        </span>
+      ),
       primary: true
     },
     {
@@ -151,7 +156,13 @@ export default function EventBoardListPage() {
             getRowKey={(item) => item.id}
             onRowClick={(item) => router.push(`/board/events/detail?id=${item.id}`)}
             thumbnail={(item) => (
-              <div className="h-12 w-20 overflow-hidden rounded-[3px] bg-dusk-slot">
+              <div
+                className={cn(
+                  'h-12 w-20 overflow-hidden rounded-[3px] bg-dusk-slot',
+                  // 표는 칸을 맞춰야 해서 빈 상자를 남기지만, 카드는 그럴 이유가 없다.
+                  !item.thumbnailUrl && 'mobile:hidden'
+                )}
+              >
                 {item.thumbnailUrl && (
                   // next/image 는 못 쓴다 — S3 호스트를 remotePatterns 에 적을 수 없다.
                   // eslint-disable-next-line @next/next/no-img-element

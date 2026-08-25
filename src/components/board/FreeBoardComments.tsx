@@ -19,7 +19,7 @@ import { formatDate } from '@/utils/formatDate'
  * dusk 배경 위에서는 흰 입력칸이 그대로 떠 버려 여기서는 쓰지 않는다.
  */
 const TEXTAREA_CLASS =
-  'w-full resize-y rounded-xl border border-[rgba(240,234,228,0.14)] bg-[rgba(240,234,228,0.05)] px-4 py-3.5 text-[15px] leading-[1.7] text-dusk-ink-100 outline-none transition-colors placeholder:text-dusk-ink-800 focus:border-[rgba(240,234,228,0.32)]'
+  'w-full resize-y rounded-xl border border-[rgba(240,234,228,0.14)] bg-[rgba(240,234,228,0.05)] px-4 py-3.5 text-[15px] leading-[1.7] text-dusk-ink-100 outline-none mobile:text-base transition-colors placeholder:text-dusk-ink-800 focus:border-[rgba(240,234,228,0.32)]'
 
 const SUBMIT_CLASS =
   'self-end whitespace-nowrap rounded-full bg-ember px-[26px] py-3 text-sm font-medium text-ember-ink transition-colors hover:bg-dusk-ink-100 hover:text-dusk-base disabled:opacity-50'
@@ -175,7 +175,7 @@ export function FreeBoardComments({ postId, apiClient }: FreeBoardCommentsProps)
                 </div>
               </div>
             ) : (
-              <p className="whitespace-pre-wrap break-keep text-[15px] leading-[1.75] text-dusk-ink-200">
+              <p className="whitespace-pre-wrap break-words break-keep text-[15px] leading-[1.75] text-dusk-ink-200">
                 {comment.content}
               </p>
             )}

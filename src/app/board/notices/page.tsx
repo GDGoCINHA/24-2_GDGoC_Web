@@ -105,7 +105,9 @@ export default function NoticeBoardListPage() {
       render: (item) => (
         <span className="flex items-center gap-2">
           {/* flex 자식은 기본 min-width:auto 라 min-w-0 없이는 줄어들지 않아 말줄임이 안 걸린다. */}
-          <span className="min-w-0 truncate">{item.title}</span>
+          <span className="min-w-0 overflow-hidden text-ellipsis pc:whitespace-nowrap mobile:line-clamp-2">
+            {item.title}
+          </span>
           {/* 서버가 CORE 미만에게는 미공개 글을 아예 주지 않으므로, 이 배지가 보인다는 건
               보는 사람이 CORE 이상이라는 뜻이다. */}
           {!item.isPublished && (
@@ -189,7 +191,7 @@ export default function NoticeBoardListPage() {
                   </span>
                   <NoticeCategoryTag category={notice.category} />
                   <span className="min-w-0 flex-1 truncate">{notice.title}</span>
-                  <span className="shrink-0 text-[13px] text-dusk-ink-800">
+                  <span className="shrink-0 text-[13px] text-dusk-ink-800 mobile:hidden">
                     {notice.authorName}
                   </span>
                 </Link>

@@ -105,57 +105,70 @@ export function GdgSiteHeader({
         </button>
       </div>
 
+      {/*
+        닫힌 서랍은 화면 오른쪽 밖에 서 있다. 그런데 fixed 요소도 문서의 스크롤 영역에
+        들어가서, 그대로 두면 모바일에서 폭이 서랍만큼 늘어나 가로로 스크롤된다.
+        fixed 는 조상의 overflow 로 잘리지 않으므로, 뷰포트를 덮는 fixed 상자를 하나 두고
+        그 안에서 absolute 로 밀어낸다. 바깥 상자는 화면을 넘지 않으니 스크롤이 안 생긴다.
+      */}
       <div
         className={cn(
-          'pointer-events-none fixed inset-0 z-50 bg-[rgba(15,12,19,0.72)] opacity-0 transition-opacity duration-200 pc:hidden',
-          isMenuOpen && 'pointer-events-auto opacity-100'
-        )}
-        onClick={() => setIsMenuOpen(false)}
-      />
-
-      <aside
-        className={cn(
-          'fixed right-0 top-0 z-50 h-full w-[78%] max-w-[320px] border-l border-l-dusk-line bg-dusk-card px-6 py-6 transition-transform duration-200 pc:hidden',
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          'pointer-events-none fixed inset-0 z-50 overflow-hidden pc:hidden',
+          isMenuOpen && 'pointer-events-auto'
         )}
       >
-        <div className="mb-8 flex items-center justify-end">
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen(false)}
-            className="inline-flex size-9 items-center justify-center rounded-full border border-dusk-line text-dusk-ink-200"
-            aria-label="메뉴 닫기"
-          >
-            <X size={18} />
-          </button>
-        </div>
+        <div
+          className={cn(
+            'absolute inset-0 bg-[rgba(15,12,19,0.72)] opacity-0 transition-opacity duration-200',
+            isMenuOpen && 'opacity-100'
+          )}
+          onClick={() => setIsMenuOpen(false)}
+        />
 
-        <nav className="flex flex-col gap-5">
-          {resolvedMenus.map((menu) => (
-            <Link
-              key={`mobile-drawer-${menu.label}-${menu.url}`}
-              href={menu.url}
+        <aside
+          className={cn(
+            'absolute right-0 top-0 h-full w-[78%] max-w-[320px] border-l border-l-dusk-line bg-dusk-card px-6 py-6 transition-transform duration-200',
+            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          )}
+        >
+          <div className="mb-8 flex items-center justify-end">
+            <button
+              type="button"
               onClick={() => setIsMenuOpen(false)}
-              className={cn(
-                'text-base transition-colors',
-                isActive(menu.url) ? 'text-ember' : 'text-dusk-ink-200 hover:text-dusk-ink-100'
-              )}
+              className="inline-flex size-9 items-center justify-center rounded-full border border-dusk-line text-dusk-ink-200"
+              aria-label="메뉴 닫기"
             >
-              {menu.label}
-            </Link>
-          ))}
-          {resolvedActionMenus.map((menu) => (
-            <Link
-              key={`mobile-action-${menu.label}-${menu.url}`}
-              href={menu.url}
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base text-dusk-ink-500 hover:text-dusk-ink-100"
-            >
-              {menu.label}
-            </Link>
-          ))}
-        </nav>
-      </aside>
+              <X size={18} />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-5">
+            {resolvedMenus.map((menu) => (
+              <Link
+                key={`mobile-drawer-${menu.label}-${menu.url}`}
+                href={menu.url}
+                onClick={() => setIsMenuOpen(false)}
+                className={cn(
+                  'text-base transition-colors',
+                  isActive(menu.url) ? 'text-ember' : 'text-dusk-ink-200 hover:text-dusk-ink-100'
+                )}
+              >
+                {menu.label}
+              </Link>
+            ))}
+            {resolvedActionMenus.map((menu) => (
+              <Link
+                key={`mobile-action-${menu.label}-${menu.url}`}
+                href={menu.url}
+                onClick={() => setIsMenuOpen(false)}
+                className="text-base text-dusk-ink-500 hover:text-dusk-ink-100"
+              >
+                {menu.label}
+              </Link>
+            ))}
+          </nav>
+        </aside>
+      </div>
     </header>
   )
 }

@@ -13,7 +13,7 @@ import { cn } from '@/utils/cn'
 export const DUSK_LABEL = 'text-[13px] text-dusk-ink-700'
 
 const CONTROL_BASE =
-  'w-full appearance-none rounded-xl border border-[rgba(240,234,228,0.14)] bg-[rgba(240,234,228,0.05)] text-[15px] text-dusk-ink-100 outline-none transition-colors placeholder:text-dusk-ink-800 focus:border-[rgba(240,234,228,0.32)] disabled:opacity-50'
+  'w-full appearance-none rounded-xl border border-[rgba(240,234,228,0.14)] bg-[rgba(240,234,228,0.05)] text-[15px] text-dusk-ink-100 outline-none transition-colors placeholder:text-dusk-ink-800 focus:border-[rgba(240,234,228,0.32)] disabled:opacity-50 mobile:text-base'
 
 export const DUSK_INPUT = `${CONTROL_BASE} px-4 py-3.5`
 
@@ -26,7 +26,7 @@ export const DUSK_TEXTAREA = `${CONTROL_BASE} resize-y p-4 leading-[1.8]`
  * 같은 밝기면 왜 안 써지는지 알 수 없다.
  */
 export const DUSK_INPUT_READONLY =
-  'w-full appearance-none rounded-xl border border-[rgba(240,234,228,0.09)] bg-[rgba(240,234,228,0.03)] px-4 py-3.5 text-[15px] text-dusk-ink-800 outline-none'
+  'w-full appearance-none rounded-xl border border-[rgba(240,234,228,0.09)] bg-[rgba(240,234,228,0.03)] px-4 py-3.5 text-[15px] text-dusk-ink-800 outline-none mobile:text-base'
 
 /** `<select>` 의 펼친 목록은 배경을 상속하지 않는다. 옵션마다 직접 칠해야 흰 목록이 안 뜬다. */
 export const DUSK_OPTION = 'bg-dusk-field text-dusk-ink-100'
