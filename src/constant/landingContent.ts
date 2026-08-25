@@ -6,7 +6,7 @@
  * 여기 타입이 그대로 그 화면의 편집 스키마이자 서버 응답 타입이 된다.
  * **필드를 늘리거나 이름을 바꿀 때는 관리자 화면과 함께 고친다.**
  *
- * 현재 사진과 행사명은 2024~2025년 것으로, 최신 내용으로 교체 예정이다.
+ * 현재 사진과 행사명은 2026-1 학기 기준이다. 학기가 바뀌면 이 파일만 고치면 되도록
  * 슬롯의 개수·비율은 그대로 두고 값만 갈아끼우는 것을 전제로 짰다.
  *
  * 모집 일정 문구는 여기 두지 않는다 — `recruitSchedule.ts` 가 이미 갖고 있고
@@ -105,11 +105,11 @@ export const LANDING_PHOTO_STRIP: LandingPhoto[] = [
     focusY: 55
   },
   {
-    /** 밤 해변이라 위쪽 절반이 하늘이다. 초점을 내려야 사람이 보인다. */
+    /** 밤 해변이라 하늘이 넓게 잡혀 원본 위쪽 26%를 잘라낸 판이다. */
     src: '/images/landing/mt-web.jpg',
     alt: '밤바다에서 현수막을 들고 찍은 MT 단체 사진',
     caption: 'MT',
-    focusY: 70
+    focusY: 60
   },
   {
     src: '/images/landing/opening-web.jpg',
@@ -131,10 +131,10 @@ export const LANDING_HACKATHON_INTRO = {
   heading: '해커톤과 대회를 직접 열고, 나갑니다',
   body: '자체 행사부터 다른 챕터·학교와 함께하는 연합 행사, Google 연계 행사까지 이어집니다.',
   photo: {
-    src: '/images/landing/buildwithai-web.jpg',
-    alt: 'Build with AI 강연이 진행 중인 강의실',
-    caption: 'Build with AI',
-    focusY: 50
+    src: '/images/landing/ax-group-web.jpg',
+    alt: 'AX 창업 프로그램 X Sinsa 를 마치고 무대 앞에 모인 참가자 단체 사진',
+    caption: 'AX 창업 프로그램 X Sinsa',
+    focusY: 58
   } satisfies LandingPhoto
 } as const
 

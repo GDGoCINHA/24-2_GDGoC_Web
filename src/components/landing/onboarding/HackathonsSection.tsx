@@ -47,9 +47,13 @@ export default function HackathonsSection() {
             ))}
           </div>
 
+          {/*
+            목록 높이만큼 늘어나면 세로로 아주 긴 슬롯이 되어, 가로로 넓은 단체
+            사진은 가운데 몇 명만 남고 잘린다. 위에 붙여 두고 4:3 으로 고정한다.
+          */}
           <figure
             data-reveal
-            className="group relative m-0 min-h-[320px] min-w-[260px] flex-[1_1_300px] overflow-hidden bg-dusk-slot"
+            className="group relative m-0 aspect-[4/3] min-w-[260px] flex-[1_1_300px] self-start overflow-hidden rounded-lg bg-dusk-slot"
           >
             <Image
               src={photo.src}
