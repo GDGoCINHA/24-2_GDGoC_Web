@@ -3,18 +3,29 @@
 import { Fragment, useState } from 'react'
 
 import { useLandingContent } from '@/components/landing/LandingContentProvider'
-import { GDGOC_EMAIL, GDGOC_OPEN_CHAT_URL } from '@/constant/landingContent'
-import { CORE_SCHEDULE, formatKoreanPeriodShort, MEMBER_SCHEDULE } from '@/constant/recruitSchedule'
+import {
+  CORE_SCHEDULE,
+  formatKoreanPeriodShort,
+  resolveCoreSchedule
+} from '@/constant/recruitSchedule'
+import { useRecruitCorePeriod } from '@/hooks/useRecruitCorePeriod'
+import { useMemberSchedule } from '@/hooks/useRecruitSchedule'
+import type { LandingContact } from '@/types/landing'
 
 /**
  * 답변 안의 연락처를 링크로 만든다. 캡처 그룹이 있는 split 은 구분자도 남기므로
  * 조각을 그대로 훑으면 된다.
+ *
+ * 찾을 주소가 관리자 화면에서 바뀌므로 패턴을 미리 만들어 두지 않는다. 정규식 특수문자를
+ * 그대로 넣으면 엉뚱한 데가 잡히니 이스케이프한다.
  */
-const CONTACT_PATTERN = new RegExp(`(${GDGOC_EMAIL.split('.').join('[.]')}|카카오톡 오픈채팅)`)
+const escapeRegExp = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-function renderAnswer(text: string) {
-  return text.split(CONTACT_PATTERN).map((part, index) => {
-    if (part === GDGOC_EMAIL) {
+function renderAnswer(text: string, contact: LandingContact) {
+  const pattern = new RegExp(`(${escapeRegExp(contact.email)}|카카오톡 오픈채팅)`)
+
+  return text.split(pattern).map((part, index) => {
+    if (part === contact.email) {
       return (
         <a key={index} href={`mailto:${part}`} className="text-ember hover:underline">
           {part}
@@ -25,7 +36,7 @@ function renderAnswer(text: string) {
       return (
         <a
           key={index}
-          href={GDGOC_OPEN_CHAT_URL}
+          href={contact.openChatUrl}
           target="_blank"
           rel="noreferrer"
           className="text-ember hover:underline"
@@ -38,37 +49,35 @@ function renderAnswer(text: string) {
   })
 }
 
-/**
- * 모집 일정 문구는 `recruitSchedule.ts` 에서만 가져온다. 여기 날짜를 적어 두면
- * 서버 설정과 갈라져 안내가 틀어진다.
- *
- * 운영진 값은 서버 응답을 못 받았을 때 쓰는 대체값이지만, 랜딩은 안내만 하고
- * 실제 지원 게이팅은 지원 페이지가 서버에 물어보므로 여기서는 대체값을 쓴다.
- */
-function getScheduleCards() {
-  return [
+export default function FaqSection() {
+  const { faqs, contact } = useLandingContent()
+  const { period: corePeriod } = useRecruitCorePeriod()
+  const coreSchedule = resolveCoreSchedule(corePeriod?.notice)
+  const memberSchedule = useMemberSchedule()
+  const [openIndex, setOpenIndex] = useState(-1)
+
+  // 랜딩은 안내만 한다. 실제 지원 게이팅은 지원 페이지가 서버에 물어본다.
+  const coreApplication = corePeriod ?? {
+    openAt: CORE_SCHEDULE.fallbackOpenAt,
+    closeAt: CORE_SCHEDULE.fallbackCloseAt
+  }
+  const scheduleCards = [
     {
       label: '부원 모집',
       value: '상시 모집',
-      note: `집중 모집 ${formatKoreanPeriodShort(MEMBER_SCHEDULE.intensiveOpenAt, MEMBER_SCHEDULE.intensiveCloseAt)}`
+      note: `집중 모집 ${formatKoreanPeriodShort(memberSchedule.intensiveOpenAt, memberSchedule.intensiveCloseAt)}`
     },
     {
       label: '운영진 서류',
-      value: formatKoreanPeriodShort(CORE_SCHEDULE.fallbackOpenAt, CORE_SCHEDULE.fallbackCloseAt),
-      note: `결과 ${CORE_SCHEDULE.documentResult}`
+      value: formatKoreanPeriodShort(coreApplication.openAt, coreApplication.closeAt),
+      note: `결과 ${coreSchedule.documentResult}`
     },
     {
       label: '운영진 면접',
-      value: formatKoreanPeriodShort(CORE_SCHEDULE.interviewOpenAt, CORE_SCHEDULE.interviewCloseAt),
-      note: `최종 발표 ${CORE_SCHEDULE.finalResult}`
+      value: formatKoreanPeriodShort(coreSchedule.interviewOpenAt, coreSchedule.interviewCloseAt),
+      note: `최종 발표 ${coreSchedule.finalResult}`
     }
   ]
-}
-
-export default function FaqSection() {
-  const { faqs } = useLandingContent()
-  const [openIndex, setOpenIndex] = useState(-1)
-  const scheduleCards = getScheduleCards()
 
   return (
     <section id="faq" className="scroll-mt-[68px] border-t border-t-dusk-line-soft">
@@ -111,7 +120,7 @@ export default function FaqSection() {
                   <div className="overflow-hidden">
                     <div className="flex flex-col gap-[7px] break-keep px-1 pb-7 text-[15px] leading-[1.8] text-dusk-ink-600">
                       {faq.answer.map((paragraph) => (
-                        <p key={paragraph}>{renderAnswer(paragraph)}</p>
+                        <p key={paragraph}>{renderAnswer(paragraph, contact)}</p>
                       ))}
                     </div>
                   </div>
@@ -134,7 +143,7 @@ export default function FaqSection() {
           ))}
         </div>
         <p data-reveal className="mt-4 text-[13px] text-dusk-ink-800">
-          {CORE_SCHEDULE.interviewNote}
+          ※ {coreSchedule.interviewNote}
         </p>
 
         <div data-reveal className="mt-16 flex flex-wrap items-baseline justify-between gap-7">

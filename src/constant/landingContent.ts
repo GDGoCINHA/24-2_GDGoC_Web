@@ -1,5 +1,7 @@
 import type {
+  LandingAbout,
   LandingActivity,
+  LandingContact,
   LandingContentDocument,
   LandingFaq,
   LandingHackathon,
@@ -25,7 +27,7 @@ import type {
  * 실제 지원 가능 여부는 서버가 판정한다.
  */
 
-/** 집중 모집 기간 문구 앞에 붙는 학기 표기. `recruitSchedule.ts` 와 함께 고친다. */
+/** 집중 모집 기간 문구 앞에 붙는 학기 표기. 관리자 화면에서 고친다. */
 export const LANDING_SEMESTER_LABEL = '2026-2'
 
 export const LANDING_HERO: LandingHero = {
@@ -43,37 +45,30 @@ export const LANDING_HERO: LandingHero = {
   ctaNote: 'GDGoC INHA와 함께해요.'
 }
 
-export const LANDING_ABOUT = {
+export const LANDING_ABOUT: LandingAbout = {
   heading: ['GDGoC INHA는', '인하대학교의 Google 개발자 커뮤니티예요.'],
   body: 'Google Developer Groups on Campus는 Google이 대학생 개발자 성장을 위해 지원하는 대학 거점형 커뮤니티입니다.',
-  /** 번호 색은 GDG 4색 고정이라 데이터에 함께 둔다. */
   values: [
-    {
-      index: '01',
-      title: '함께',
-      body: '팀으로 배우고 만들며 더 멀리 나아가요.',
-      colorClass: 'text-[#4285F4]'
-    },
-    {
-      index: '02',
-      title: '공유',
-      body: '지식과 경험을 나누며 함께 나아가요.',
-      colorClass: 'text-[#EA4335]'
-    },
-    {
-      index: '03',
-      title: '성장',
-      body: '도전하며 한 단계씩 성장해요.',
-      colorClass: 'text-[#FBBC04]'
-    },
-    {
-      index: '04',
-      title: '존중',
-      body: '서로의 관점과 속도를 존중해요.',
-      colorClass: 'text-[#34A853]'
-    }
+    { title: '함께', body: '팀으로 배우고 만들며 더 멀리 나아가요.' },
+    { title: '공유', body: '지식과 경험을 나누며 함께 나아가요.' },
+    { title: '성장', body: '도전하며 한 단계씩 성장해요.' },
+    { title: '존중', body: '서로의 관점과 속도를 존중해요.' }
   ]
-} as const
+}
+
+/**
+ * 소개 네 칸의 번호와 색.
+ *
+ * 서버로 오가지 않는다. GDG 4색이 자리에 1:1 로 묶여 있어 관리자가 고칠 값이 아니고,
+ * Tailwind 는 소스에 적힌 클래스만 CSS 로 만들기 때문에 DB 에 둬도 색이 안 나온다.
+ * `LANDING_ABOUT.values` 와 **자리 순서로** 짝지으므로 개수를 바꾸지 않는다.
+ */
+export const LANDING_ABOUT_STYLE = [
+  { index: '01', colorClass: 'text-[#4285F4]' },
+  { index: '02', colorClass: 'text-[#EA4335]' },
+  { index: '03', colorClass: 'text-[#FBBC04]' },
+  { index: '04', colorClass: 'text-[#34A853]' }
+] as const
 
 /** 사진 띠 3칸. 관리자 화면에서 추가·삭제·순서 변경이 되므로 개수를 고정하지 않는다. */
 export const LANDING_PHOTO_STRIP: LandingPhoto[] = [
@@ -198,20 +193,42 @@ export const LANDING_FAQS: LandingFaq[] = [
   }
 ]
 
-export const GDGOC_EMAIL = 'gdsc.inha@gmail.com'
-export const GDGOC_OPEN_CHAT_URL = 'https://open.kakao.com/o/s2OqrcIi'
+export const LANDING_CONTACT: LandingContact = {
+  email: 'gdsc.inha@gmail.com',
+  openChatUrl: 'https://open.kakao.com/o/s2OqrcIi'
+}
 
-/**
- * 서버 문서가 없을 때 쓰는 바닥값. 서버 응답과 같은 모양이라 그대로 바꿔 끼울 수 있다.
- *
- * `LANDING_ABOUT`·`LANDING_SEMESTER_LABEL` 은 여기 없다 — 관리자 화면에서 고치지 않는
- * 값이라 서버로 오갈 이유가 없다.
- */
+/** 서버 문서가 없을 때 쓰는 바닥값. 서버 응답과 같은 모양이라 그대로 바꿔 끼울 수 있다. */
 export const LANDING_CONTENT_FALLBACK: LandingContentDocument = {
   hero: LANDING_HERO,
+  about: LANDING_ABOUT,
   photoStrip: LANDING_PHOTO_STRIP,
   activities: LANDING_ACTIVITIES,
   hackathonIntro: LANDING_HACKATHON_INTRO,
   hackathons: LANDING_HACKATHONS,
-  faqs: LANDING_FAQS
+  faqs: LANDING_FAQS,
+  contact: LANDING_CONTACT,
+  semesterLabel: LANDING_SEMESTER_LABEL
 }
+
+/**
+ * 서버 문서를 바닥값 위에 얹는다.
+ *
+ * 통째로 갈아끼우지 않는 이유는 **먼저 발행된 문서에는 나중에 늘어난 칸이 없기** 때문이다.
+ * 소개글·문의 창구·학기 라벨은 뒤에 추가됐고, 그 이전에 발행된 문서를 그대로 쓰면 그 자리가
+ * 비어 화면이 깨진다. 칸 단위로만 얹고 안쪽까지 섞지는 않는다 — 반쯤 섞인 문단이 나오면
+ * 관리자가 화면에서 본 것과 방문자가 보는 것이 갈린다.
+ */
+export const mergeLandingContent = (
+  document: Partial<LandingContentDocument> | null | undefined
+): LandingContentDocument => ({
+  hero: document?.hero ?? LANDING_CONTENT_FALLBACK.hero,
+  about: document?.about ?? LANDING_CONTENT_FALLBACK.about,
+  photoStrip: document?.photoStrip ?? LANDING_CONTENT_FALLBACK.photoStrip,
+  activities: document?.activities ?? LANDING_CONTENT_FALLBACK.activities,
+  hackathonIntro: document?.hackathonIntro ?? LANDING_CONTENT_FALLBACK.hackathonIntro,
+  hackathons: document?.hackathons ?? LANDING_CONTENT_FALLBACK.hackathons,
+  faqs: document?.faqs ?? LANDING_CONTENT_FALLBACK.faqs,
+  contact: document?.contact ?? LANDING_CONTENT_FALLBACK.contact,
+  semesterLabel: document?.semesterLabel ?? LANDING_CONTENT_FALLBACK.semesterLabel
+})

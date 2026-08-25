@@ -11,6 +11,7 @@ import {
   DUSK_SELECT,
   DUSK_TEXTAREA
 } from '@/components/ui/dusk/DuskForm'
+import { LANDING_ABOUT_STYLE } from '@/constant/landingContent'
 import {
   LANDING_BADGE_TONE_LABEL,
   type LandingActivity,
@@ -109,6 +110,132 @@ export function HeroPanel({ document, onChange, apiClient }: PanelProps) {
           type="text"
           value={hero.ctaNote}
           onChange={(event) => patch({ ctaNote: event.target.value })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+    </div>
+  )
+}
+
+export function AboutPanel({ document, onChange }: PanelProps) {
+  const { about } = document
+  const patch = (next: Partial<typeof about>) =>
+    onChange({ ...document, about: { ...about, ...next } })
+
+  const patchValue = (index: number, next: Partial<(typeof about.values)[number]>) =>
+    patch({ values: about.values.map((item, i) => (i === index ? { ...item, ...next } : item)) })
+
+  return (
+    <div className="flex flex-col gap-7">
+      <PanelHeading
+        title="소개"
+        body="첫 화면 아래 커뮤니티 소개입니다. 네 칸의 번호와 색은 GDG 4색에 묶여 있어 문구만 바꿉니다."
+      />
+
+      {/* 제목은 두 줄로 끊어 그린다. 한 줄에 몰아 쓰면 좁은 화면에서 아무 데서나 끊긴다. */}
+      <DuskField label="제목 첫 줄">
+        <input
+          type="text"
+          value={about.heading[0] ?? ''}
+          onChange={(event) => patch({ heading: [event.target.value, about.heading[1] ?? ''] })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+      <DuskField label="제목 둘째 줄">
+        <input
+          type="text"
+          value={about.heading[1] ?? ''}
+          onChange={(event) => patch({ heading: [about.heading[0] ?? '', event.target.value] })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+
+      <DuskField label="소개글">
+        <textarea
+          rows={3}
+          value={about.body}
+          onChange={(event) => patch({ body: event.target.value })}
+          className={DUSK_TEXTAREA}
+        />
+      </DuskField>
+
+      <div className="flex flex-col gap-4">
+        {about.values.map((value, index) => (
+          <div
+            key={index}
+            className="flex flex-col gap-[18px] rounded-[14px] border border-[rgba(240,234,228,0.12)] p-5"
+          >
+            <div className="flex items-baseline gap-2.5">
+              <span className={`text-sm font-medium ${LANDING_ABOUT_STYLE[index]?.colorClass}`}>
+                {LANDING_ABOUT_STYLE[index]?.index}
+              </span>
+              <span className="text-[13px] text-dusk-ink-700">번호와 색은 바꿀 수 없습니다.</span>
+            </div>
+            <DuskField label="제목">
+              <input
+                type="text"
+                value={value.title}
+                onChange={(event) => patchValue(index, { title: event.target.value })}
+                className={DUSK_INPUT}
+              />
+            </DuskField>
+            <DuskField label="설명">
+              <textarea
+                rows={2}
+                value={value.body}
+                onChange={(event) => patchValue(index, { body: event.target.value })}
+                className={DUSK_TEXTAREA}
+              />
+            </DuskField>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function ContactPanel({ document, onChange }: PanelProps) {
+  const { contact } = document
+  const patch = (next: Partial<typeof contact>) =>
+    onChange({ ...document, contact: { ...contact, ...next } })
+
+  return (
+    <div className="flex flex-col gap-7">
+      <PanelHeading
+        title="문의 · 학기"
+        body="바닥글과 FAQ 답변의 연락처, 그리고 첫 화면 배지에 붙는 학기 표기입니다."
+      />
+
+      <DuskField label="공식 메일">
+        <input
+          type="email"
+          value={contact.email}
+          onChange={(event) => patch({ email: event.target.value })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+
+      <DuskField label="카카오톡 오픈채팅 주소" hint="https:// 로 시작해야 저장됩니다.">
+        <input
+          type="url"
+          value={contact.openChatUrl}
+          onChange={(event) => patch({ openChatUrl: event.target.value })}
+          className={DUSK_INPUT}
+        />
+      </DuskField>
+
+      {/* FAQ 답변에 적힌 메일 주소는 여기 값과 같을 때만 링크가 걸린다. 답변 문구를 직접
+          바꾸지 않고 주소만 고치면 옛 주소가 글자로 남는다. */}
+      <p className="rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-4 text-[13px] leading-[1.7] text-dusk-ink-700">
+        FAQ 답변 안에 메일 주소를 적어 두셨다면 그쪽도 함께 고쳐 주세요. 답변 문구는 FAQ 탭에서
+        바꿉니다.
+      </p>
+
+      <DuskField label="학기 표기" hint="예: 2026-2. 첫 화면 '부원 모집 중' 앞에 붙는다.">
+        <input
+          type="text"
+          value={document.semesterLabel}
+          onChange={(event) => onChange({ ...document, semesterLabel: event.target.value })}
           className={DUSK_INPUT}
         />
       </DuskField>
