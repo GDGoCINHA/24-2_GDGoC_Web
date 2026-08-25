@@ -94,9 +94,16 @@ export default function EventBoardListPage() {
       key: 'team',
       header: '팀',
       render: (item) => item.organizingTeam ?? '-',
-      className: 'w-28'
+      className: 'w-28',
+      mobileHidden: true
     },
-    { key: 'author', header: '작성자', render: (item) => item.authorName, className: 'w-28' },
+    {
+      key: 'author',
+      header: '작성자',
+      render: (item) => item.authorName,
+      className: 'w-28',
+      mobileHidden: true
+    },
     {
       key: 'status',
       header: '상태',

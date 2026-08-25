@@ -92,8 +92,20 @@ export default function FreeBoardListPage() {
         </span>
       )
     },
-    { key: 'author', header: '작성자', render: (item) => item.authorName, className: 'w-32' },
-    { key: 'view', header: '조회', render: (item) => item.viewCount, className: 'w-20' },
+    {
+      key: 'author',
+      header: '작성자',
+      render: (item) => item.authorName,
+      className: 'w-32',
+      mobileHidden: true
+    },
+    {
+      key: 'view',
+      header: '조회',
+      render: (item) => item.viewCount,
+      className: 'w-20',
+      mobileHidden: true
+    },
     {
       key: 'createdAt',
       header: '작성일',

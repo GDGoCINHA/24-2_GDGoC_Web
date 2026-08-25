@@ -9,6 +9,13 @@ export interface BoardListColumn<T> {
   render: (item: T) => ReactNode
   className?: string
   /**
+   * 좁은 화면의 카드에서 뺀다. 표에는 그대로 나온다.
+   *
+   * 카드는 한 줄에 하나씩 세로로 쌓이므로 열 하나가 곧 화면 한 줄이다. 목록에서
+   * 고를 때 안 쓰는 값(작성자·조회수 등)까지 다 실으면 카드 하나가 화면을 덮는다.
+   */
+  mobileHidden?: boolean
+  /**
    * 모바일 카드에서 제목 자리에 크게 나올 열. 지정하지 않으면 첫 열을 쓴다.
    * 게시판마다 첫 열이 제목이 아니다 — 공지는 첫 열이 분류 태그다.
    * PC 표에서도 이 열만 글씨가 크고 밝다.
@@ -44,6 +51,7 @@ export function BoardList<T>({
 
   const primaryColumn = columns.find((column) => column.primary) ?? columns[0]
   const metaColumns = columns.filter((column) => column !== primaryColumn)
+  const mobileMetaColumns = metaColumns.filter((column) => !column.mobileHidden)
 
   return (
     <>
@@ -112,7 +120,7 @@ export function BoardList<T>({
               <div className="min-w-0 flex-1">
                 <p className="text-[15px] text-dusk-ink-100">{primaryColumn.render(item)}</p>
                 <dl className="mt-2 flex flex-col gap-1 text-[13px]">
-                  {metaColumns.map((column) => (
+                  {mobileMetaColumns.map((column) => (
                     <div key={column.key} className="flex items-start gap-2">
                       <dt className="w-14 shrink-0 text-dusk-ink-800">{column.header}</dt>
                       <dd className="min-w-0 flex-1 text-dusk-ink-600">{column.render(item)}</dd>
