@@ -70,7 +70,11 @@ export default function LandingHeader() {
             {item.label}
           </a>
         ))}
-        <a href="/board/events/" className={`${LINK_CLASS} mobile:hidden`}>
+        {/*
+          앵커와 달리 좁은 화면에서도 남긴다. 앵커는 링크가 없어도 스크롤로 닿지만
+          게시판은 이 화면에서 나가는 유일한 통로다 — 숨기면 모바일에서 갈 방법이 없다.
+        */}
+        <a href="/board/events/" className={LINK_CLASS}>
           게시판
         </a>
         {/* 로그인 상태에서 /login?next=... 로 보내면 로그인 화면을 한 번 거쳐 되돌아온다. */}
