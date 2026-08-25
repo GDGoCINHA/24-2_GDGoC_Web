@@ -51,10 +51,10 @@ export const LANDING_SEMESTER_LABEL = '2026-2'
 
 export const LANDING_HERO = {
   photo: {
-    src: '/images/landing/conf-web.jpg',
-    alt: 'GreenTech Globalthon 2025 참가자 단체 사진',
-    caption: 'GreenTech Globalthon 2025 · 인하대학교',
-    focusY: 46
+    src: '/images/landing/aingthon-hero-web.jpg',
+    alt: 'Build with AI : AINGTHON 시상식에 모인 참가자 단체 사진',
+    caption: 'Build with AI : AINGTHON · GDGoC INHA × GDGoC AJOU',
+    focusY: 50
   } satisfies LandingPhoto,
   /** 제목은 두 조각으로 나눠 뒷부분만 강조 자간을 쓴다. */
   titleLead: 'Google 개발자 커뮤니티에서 함께 성장하는 즐거움,',
@@ -99,22 +99,23 @@ export const LANDING_ABOUT = {
 /** 사진 띠 3칸. 관리자 화면에서 추가·삭제·순서 변경이 되므로 개수를 고정하지 않는다. */
 export const LANDING_PHOTO_STRIP: LandingPhoto[] = [
   {
-    src: '/images/landing/seminar-web.jpg',
-    alt: '현업 개발자가 세미나에서 강연하는 모습',
-    caption: '세미나 · 현업 강연',
-    focusY: 58
+    src: '/images/landing/goat-talk-web.jpg',
+    alt: '부원이 무대에서 GOAT 팀 프로젝트 결과를 발표하는 모습',
+    caption: 'GOAT 2.0 · 팀 프로젝트 발표',
+    focusY: 35
   },
   {
-    src: '/images/landing/core-web.jpg',
-    alt: 'GDG on Campus Inha University 부원 단체 사진',
-    caption: 'GDG on Campus Inha University',
-    focusY: 38
+    /** 밤 해변이라 위쪽 절반이 하늘이다. 초점을 내려야 사람이 보인다. */
+    src: '/images/landing/mt-web.jpg',
+    alt: '밤바다에서 현수막을 들고 찍은 MT 단체 사진',
+    caption: 'MT',
+    focusY: 70
   },
   {
-    src: '/images/landing/googleconf-web.jpg',
-    alt: 'DevFest Incheon / Songdo 2024 행사 현장',
-    caption: 'DevFest Incheon / Songdo 2024',
-    focusY: 40
+    src: '/images/landing/opening-web.jpg',
+    alt: '개강총회를 위해 강의실에 모인 부원들',
+    caption: '개강총회',
+    focusY: 60
   }
 ]
 
@@ -130,10 +131,10 @@ export const LANDING_HACKATHON_INTRO = {
   heading: '해커톤과 대회를 직접 열고, 나갑니다',
   body: '자체 행사부터 다른 챕터·학교와 함께하는 연합 행사, Google 연계 행사까지 이어집니다.',
   photo: {
-    src: '/images/landing/globalthon-web.jpg',
-    alt: 'GreenTech Globalthon 시상식 장면',
-    caption: 'GreenTech Globalthon 2025',
-    focusY: 42
+    src: '/images/landing/buildwithai-web.jpg',
+    alt: 'Build with AI 강연이 진행 중인 강의실',
+    caption: 'Build with AI',
+    focusY: 50
   } satisfies LandingPhoto
 } as const
 
@@ -152,9 +153,16 @@ export const LANDING_HACKATHONS: LandingHackathon[] = [
   {
     year: '2026',
     title: 'Build with AI : AINGTHON',
+    badge: '연합 주최',
+    badgeClass: BADGE_UNION,
+    body: 'AI를 주제로 팀을 이뤄 하나를 만들어 보는 해커톤. 05.09 ~ 05.10, 인하대학교 정석학술정보관 국제회의장에서 GDGoC AJOU와 함께 열었습니다.'
+  },
+  {
+    year: '2026',
+    title: 'Build with AI',
     badge: '학술 행사',
     badgeClass: BADGE_ACADEMIC,
-    body: 'AI를 주제로 팀을 이뤄 하나를 만들어 보는 해커톤. Build with AI 프로그램의 일부로 진행했습니다.'
+    body: 'Google의 Build with AI 프로그램과 연계해 연 학술 행사. AI 기술을 주제로 강연과 실습을 함께 진행했습니다.'
   },
   {
     year: '—',
@@ -178,9 +186,9 @@ export const LANDING_FAQS: LandingFaq[] = [
     answer: [
       'GDGoC INHA만의 다채로운 행사를 즐기실 수 있습니다!',
       '2026년 1학기 기준,',
-      '네트워킹 행사: 간식드리미, 친해지길 바라, 빙고',
-      '학술 행사: GOAT 2.0, AX 프로그램, Build with AI : AINGTHON',
-      'Google 연계 행사: Build with AI Incheon, Google I/O Extended 등의 행사를 진행했습니다'
+      '네트워킹 행사: 개강총회, MT, 잔막, 동방에서 만나용, 간식드리미',
+      '학술 행사: GOAT 2.0, AX 창업 프로그램 X Sinsa, 스터디',
+      'Google 연계 행사: Build with AI, Build with AI : AINGTHON 등의 행사를 진행했습니다'
     ]
   },
   {

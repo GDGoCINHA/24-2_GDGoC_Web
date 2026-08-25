@@ -46,12 +46,17 @@ export default function HeroSection() {
           filter: 'saturate(0.82) contrast(1.02)'
         }}
       />
+      {/*
+        중간 지점(38%)이 핸드오프 값(0.54)보다 진하다. 그 높이에 제목이 놓이는데
+        지금 사진은 한가운데에 밝은 스크린이 있어 흰 글씨가 묻혔다.
+        사진을 갈아끼울 때 배경이 어두우면 0.54 로 되돌려도 된다.
+      */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(178deg, rgba(25,20,30,0.80) 0%, rgba(31,25,36,0.54) 38%, rgba(47,34,37,0.82) 100%)'
+            'linear-gradient(178deg, rgba(25,20,30,0.80) 0%, rgba(31,25,36,0.66) 38%, rgba(47,34,37,0.82) 100%)'
         }}
       />
 
