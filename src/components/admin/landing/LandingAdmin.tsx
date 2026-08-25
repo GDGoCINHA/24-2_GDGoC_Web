@@ -51,6 +51,18 @@ export default function LandingAdmin() {
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [tabsOverflow, setTabsOverflow] = useState(false)
+
+  /**
+   * 탭 줄이 오른쪽으로 더 남아 있는지 잰다.
+   *
+   * ref 콜백으로 넘겨 붙는 순간과 스크롤할 때 모두 다시 잰다 — 마운트 직후 한 번만
+   * 재면 탭 개수가 바뀌었을 때 표시가 틀어진다.
+   */
+  const measureTabs = useCallback((element: HTMLElement | null) => {
+    if (!element) return
+    setTabsOverflow(element.scrollLeft + element.clientWidth < element.scrollWidth - 1)
+  }, [])
 
   useEffect(() => {
     let alive = true
@@ -162,24 +174,40 @@ export default function LandingAdmin() {
 
       <div className="mt-9 flex flex-wrap gap-8 pc:flex-nowrap">
         {/* 좁은 화면에서는 가로로 흐르는 탭 줄이 된다. 사이드바를 세로로 두면 본문이 밀린다. */}
-        <nav className="flex w-full shrink-0 flex-row gap-2 overflow-x-auto pb-1 pc:w-[220px] pc:flex-col pc:overflow-visible pc:pb-0">
-          {TABS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setTab(item.id)}
-              className={cn(
-                'flex shrink-0 items-center justify-between gap-3 whitespace-nowrap rounded-xl px-4 py-3 text-left text-sm transition-colors pc:shrink',
-                tab === item.id
-                  ? 'bg-[rgba(240,234,228,0.10)] text-dusk-ink-100'
-                  : 'text-dusk-ink-500 hover:text-dusk-ink-100'
-              )}
-            >
-              <span>{item.label}</span>
-              <span className="text-[11px] text-dusk-ink-800">{counts[item.id]}</span>
-            </button>
-          ))}
-        </nav>
+        <div className="relative w-full shrink-0 pc:w-[220px]">
+          <nav
+            ref={measureTabs}
+            onScroll={(event) => measureTabs(event.currentTarget)}
+            className="flex w-full flex-row gap-2 overflow-x-auto pb-1 pc:flex-col pc:overflow-visible pc:pb-0"
+          >
+            {TABS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setTab(item.id)}
+                className={cn(
+                  'flex shrink-0 items-center justify-between gap-3 whitespace-nowrap rounded-xl px-4 py-3 text-left text-sm transition-colors pc:shrink',
+                  tab === item.id
+                    ? 'bg-[rgba(240,234,228,0.10)] text-dusk-ink-100'
+                    : 'text-dusk-ink-500 hover:text-dusk-ink-100'
+                )}
+              >
+                <span>{item.label}</span>
+                <span className="text-[11px] text-dusk-ink-800">{counts[item.id]}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* 탭이 여섯 개라 좁은 화면에서는 끝이 잘린다. 잘린 글자만 보이면 더 있는 줄
+              모르고 지나치므로, 오른쪽에 그라데이션을 덮어 옆으로 더 있다고 알린다.
+              끝까지 밀면 사라진다 — 남아 있으면 없는 탭이 있다고 거짓말하는 셈이다. */}
+          {tabsOverflow && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-dusk-base to-transparent pc:hidden"
+            />
+          )}
+        </div>
 
         <div className="min-w-0 flex-1">
           {tab === 'hero' && (
