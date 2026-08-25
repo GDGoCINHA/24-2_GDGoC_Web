@@ -99,10 +99,10 @@ export const LANDING_ABOUT = {
 /** 사진 띠 3칸. 관리자 화면에서 추가·삭제·순서 변경이 되므로 개수를 고정하지 않는다. */
 export const LANDING_PHOTO_STRIP: LandingPhoto[] = [
   {
-    src: '/images/landing/goat-talk-web.jpg',
-    alt: '부원이 무대에서 GOAT 팀 프로젝트 결과를 발표하는 모습',
-    caption: 'GOAT 2.0 · 팀 프로젝트 발표',
-    focusY: 35
+    src: '/images/landing/goat-group-web.jpg',
+    alt: 'GOAT 2.0 Final Pitch 를 마치고 현수막을 들고 모인 참가자 단체 사진',
+    caption: 'GOAT 2.0 · Final Pitch',
+    focusY: 55
   },
   {
     /** 밤 해변이라 위쪽 절반이 하늘이다. 초점을 내려야 사람이 보인다. */
@@ -144,13 +144,6 @@ const BADGE_INTERNAL = 'bg-[rgba(126,150,200,0.20)] text-tag-info'
 
 export const LANDING_HACKATHONS: LandingHackathon[] = [
   {
-    year: '2025',
-    title: 'GreenTech Globalthon',
-    badge: '연합 주최',
-    badgeClass: BADGE_UNION,
-    body: '지속가능성을 주제로 한 글로벌 해커톤. 01.17 ~ 01.18, 인하대학교 60주년기념관에서 AIESEC in INHA와 함께 열었습니다.'
-  },
-  {
     year: '2026',
     title: 'Build with AI : AINGTHON',
     badge: '연합 주최',
@@ -165,18 +158,25 @@ export const LANDING_HACKATHONS: LandingHackathon[] = [
     body: 'Google의 Build with AI 프로그램과 연계해 연 학술 행사. AI 기술을 주제로 강연과 실습을 함께 진행했습니다.'
   },
   {
-    year: '—',
-    title: 'Solution Challenge 예선',
-    badge: '내부 행사',
-    badgeClass: BADGE_INTERNAL,
-    body: 'Google Solution Challenge 본선 진출을 위한 인하 챕터 내부 예선. UN 지속가능발전목표(SDGs)를 주제로 팀을 꾸립니다.'
+    year: '2026',
+    title: 'AX 창업 프로그램 X Sinsa',
+    badge: '학술 행사',
+    badgeClass: BADGE_ACADEMIC,
+    body: 'AX를 주제로 Sinsa와 함께 연 창업 프로그램. 아이디어를 다듬어 발표까지 이어갑니다.'
   },
   {
-    year: '—',
-    title: 'GDGoC 연합 해커톤',
-    badge: '연합 행사',
+    year: '2026',
+    title: 'GOAT 2.0',
+    badge: '내부 행사',
+    badgeClass: BADGE_INTERNAL,
+    body: 'GDGoC Original Advanced Track. 04.09 ~ 06.22, 한 학기 동안 팀을 이뤄 기획부터 개발까지 완주하고 Final Pitch 에서 결과를 발표합니다.'
+  },
+  {
+    year: '2025',
+    title: 'GreenTech Globalthon',
+    badge: '연합 주최',
     badgeClass: BADGE_UNION,
-    body: '다른 학교 GDGoC 챕터와 팀을 섞어 진행하는 해커톤. 학교 밖 사람들과 처음 협업해 보는 자리입니다.'
+    body: '지속가능성을 주제로 한 글로벌 해커톤. 01.17 ~ 01.18, 인하대학교 60주년기념관에서 AIESEC in INHA와 함께 열었습니다.'
   }
 ]
 
