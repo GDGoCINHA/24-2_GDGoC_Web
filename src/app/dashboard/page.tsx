@@ -52,6 +52,12 @@ const DASHBOARD_LINKS = [
     title: '8bit 순위표',
     description: '8bit 게임 점수 전체 컬럼을 순위표 형태로 조회합니다.',
     minRoleRank: 2
+  },
+  {
+    href: '/dashboard/landing',
+    title: '온보딩 관리',
+    description: '온보딩 화면의 문구, 사진, 모집 일정을 수정하고 발행합니다.',
+    minRoleRank: 3
   }
 ] as const
 
