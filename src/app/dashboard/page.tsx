@@ -17,6 +17,8 @@ type DashboardGroup = {
   label: string
   note: string
   items: DashboardItem[]
+  /** 기본으로 접어 둘 그룹. 자주 안 쓰는 화면을 목록 밖으로 치운다. */
+  collapsed?: boolean
 }
 
 /** 표시 순서대로 번호를 새로 매긴 항목. 걸러진 뒤에야 정해지므로 별도 타입이다. */
@@ -26,6 +28,7 @@ type VisibleGroup = {
   label: string
   note: string
   items: NumberedItem[]
+  collapsed: boolean
 }
 
 const DASHBOARD_GROUPS: DashboardGroup[] = [
@@ -62,19 +65,20 @@ const DASHBOARD_GROUPS: DashboardGroup[] = [
         title: 'Core 지원서',
         description: '코어 지원서를 열람하고 합격/불합격을 처리합니다.',
         minRoleRank: 3
-      }
-    ]
-  },
-  {
-    label: '운영',
-    note: '학기 중 반복해서 쓰는 화면',
-    items: [
+      },
       {
         href: '/dashboard/core/attendance',
         title: 'Core 출석',
         description: '코어 출석 현황을 조회하고 lead 이상은 출석을 기록합니다.',
         minRoleRank: 2
-      },
+      }
+    ]
+  },
+  {
+    label: '가끔 쓰는 화면',
+    note: '행사 기간에만 씁니다',
+    collapsed: true,
+    items: [
       {
         href: '/dashboard/mbti',
         title: 'MBTI',
@@ -86,13 +90,7 @@ const DASHBOARD_GROUPS: DashboardGroup[] = [
         title: 'Memo 발송',
         description: '신입생 알림 신청 대상에게 안내 메시지를 발송합니다.',
         minRoleRank: 2
-      }
-    ]
-  },
-  {
-    label: '이벤트',
-    note: '행사 기간에만 씁니다',
-    items: [
+      },
       {
         href: '/dashboard/bingo',
         title: 'Bingo',
@@ -141,6 +139,7 @@ export default function DashboardIndexPage() {
 
   const [query, setQuery] = useState('')
   const [viewRole, setViewRole] = useState<string | null>(null)
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
   const searchRef = useRef<HTMLInputElement>(null)
 
   /**
@@ -168,6 +167,8 @@ export default function DashboardIndexPage() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
+  const isSearching = query.trim().length > 0
+
   const { groups, visibleCount } = useMemo(() => {
     const keyword = query.trim().toLowerCase()
     const result: VisibleGroup[] = []
@@ -184,7 +185,14 @@ export default function DashboardIndexPage() {
           return { ...item, no: String(no).padStart(2, '0') }
         })
 
-      if (items.length > 0) result.push({ label: group.label, note: group.note, items })
+      if (items.length > 0) {
+        result.push({
+          label: group.label,
+          note: group.note,
+          items,
+          collapsed: Boolean(group.collapsed)
+        })
+      }
     })
 
     return { groups: result, visibleCount: no }
@@ -255,54 +263,84 @@ export default function DashboardIndexPage() {
 
       {/* 아홉 개가 한 화면에 들어와야 한다. 넓은 화면에서는 그룹을 2열로 흘린다. */}
       <div className="mx-auto w-full max-w-[1120px] gap-6 px-[clamp(20px,5vw,44px)] pt-6 pc:columns-2">
-        {groups.map((group) => (
-          <section key={group.label} className="mb-5 break-inside-avoid">
-            <div className="flex items-baseline gap-3">
-              <h2 data-admin-reveal className="text-[17px] font-semibold tracking-[-0.025em]">
-                {group.label}
-              </h2>
-              <span data-admin-reveal className="break-keep text-[12px] text-admin-ink-dim">
-                {group.note}
-              </span>
-            </div>
+        {groups.map((group) => {
+          // 검색 중에는 접힌 그룹도 펼친다 — 안 그러면 결과가 없다고 나온다.
+          const isOpen = !group.collapsed || Boolean(openGroups[group.label]) || isSearching
 
-            <div className="mt-2.5 flex flex-col gap-2">
-              {group.items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  data-admin-reveal
-                  className="grid grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-admin-line-soft bg-admin-card p-3.5 shadow-admin outline-0 transition-[transform,box-shadow,border-color] duration-[350ms] ease-[cubic-bezier(.22,.61,.36,1)] hover:-translate-y-[3px] hover:border-admin-line-accent hover:shadow-admin-lift focus-visible:-translate-y-[3px] focus-visible:border-admin-accent focus-visible:shadow-admin-ring-strong"
+          return (
+            <section key={group.label} className="mb-5 break-inside-avoid">
+              {group.collapsed ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenGroups((prev) => ({ ...prev, [group.label]: !prev[group.label] }))
+                  }
+                  aria-expanded={isOpen}
+                  className="flex w-full items-baseline gap-3 rounded-lg text-left outline-0 transition-colors duration-200 hover:text-admin-ink focus-visible:shadow-admin-ring"
                 >
-                  <span className="grid size-8 place-items-center rounded-[11px] bg-admin-badge text-[13px] font-semibold tabular-nums text-admin-badge-ink">
-                    {item.no}
+                  <span
+                    aria-hidden="true"
+                    className={`text-[11px] text-admin-accent transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+                  >
+                    ▶
                   </span>
-                  <span className="min-w-0">
-                    <span className="block text-[16px] font-semibold tracking-[-0.025em] text-admin-ink">
-                      {item.title}
-                    </span>
-                    <span className="mt-0.5 block break-keep text-[13px] leading-[1.5] text-admin-ink-soft">
-                      {item.description}
-                    </span>
+                  <h2 className="text-[17px] font-semibold tracking-[-0.025em]">{group.label}</h2>
+                  <span className="break-keep text-[12px] text-admin-ink-dim">
+                    {isOpen ? group.note : `${group.items.length}개 · 눌러서 펼치기`}
                   </span>
-                  <span className="flex items-center gap-2.5 whitespace-nowrap">
-                    <span className="rounded-full bg-admin-tag px-2.5 py-1 text-[11px] tracking-[0.04em] text-admin-tag-ink mobile:hidden">
-                      {ROLE_LABEL[item.minRoleRank] ?? ''}
-                    </span>
-                    <span aria-hidden="true" className="text-[15px] text-admin-accent">
-                      →
-                    </span>
+                </button>
+              ) : (
+                <div className="flex items-baseline gap-3">
+                  <h2 data-admin-reveal className="text-[17px] font-semibold tracking-[-0.025em]">
+                    {group.label}
+                  </h2>
+                  <span data-admin-reveal className="break-keep text-[12px] text-admin-ink-dim">
+                    {group.note}
                   </span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        ))}
+                </div>
+              )}
+
+              {isOpen ? (
+                <div className="mt-2.5 flex flex-col gap-2">
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      data-admin-reveal
+                      className="grid grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-admin-line-soft bg-admin-card p-3.5 shadow-admin outline-0 transition-[transform,box-shadow,border-color] duration-[350ms] ease-[cubic-bezier(.22,.61,.36,1)] hover:-translate-y-[3px] hover:border-admin-line-accent hover:shadow-admin-lift focus-visible:-translate-y-[3px] focus-visible:border-admin-accent focus-visible:shadow-admin-ring-strong"
+                    >
+                      <span className="grid size-8 place-items-center rounded-[11px] bg-admin-badge text-[13px] font-semibold tabular-nums text-admin-badge-ink">
+                        {item.no}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[16px] font-semibold tracking-[-0.025em] text-admin-ink">
+                          {item.title}
+                        </span>
+                        <span className="mt-0.5 block break-keep text-[13px] leading-[1.5] text-admin-ink-soft">
+                          {item.description}
+                        </span>
+                      </span>
+                      <span className="flex items-center gap-2.5 whitespace-nowrap">
+                        <span className="rounded-full bg-admin-tag px-2.5 py-1 text-[11px] tracking-[0.04em] text-admin-tag-ink mobile:hidden">
+                          {ROLE_LABEL[item.minRoleRank] ?? ''}
+                        </span>
+                        <span aria-hidden="true" className="text-[15px] text-admin-accent">
+                          →
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          )
+        })}
       </div>
 
       <footer className="mx-auto mt-8 flex w-full max-w-[1120px] flex-wrap justify-between gap-4 border-t border-admin-line-soft px-[clamp(20px,5vw,44px)] pt-4">
         <span className="break-keep text-[13px] text-admin-ink-dim">
-          권한 기준을 바꾸면 그 등급이 볼 수 있는 페이지만 남습니다.
+          권한 기준을 바꾸면 그 등급이 볼 수 있는 페이지만 남습니다. 접힌 그룹은 검색하면 함께
+          나옵니다.
         </span>
         <span className="break-keep text-[13px] text-admin-ink-dim">GDGoC INHA · 내부 운영용</span>
       </footer>
