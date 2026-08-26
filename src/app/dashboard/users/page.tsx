@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 
+import AdminHeader from '@/components/admin/dashboard/AdminHeader'
 import Loader from '@/components/ui/common/Loader'
 import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuth } from '@/hooks/useAuth'
@@ -48,6 +49,8 @@ const TEAM_OPTIONS = [
   { value: 'BD', label: 'BD' }
 ] as const
 
+const ROLE_FILTER_OPTIONS = ['GUEST', 'MEMBER', 'CORE', 'LEAD', 'ORGANIZER'] as const
+
 const ROLE_RANK: Record<string, number> = {
   GUEST: 0,
   MEMBER: 1,
@@ -57,7 +60,24 @@ const ROLE_RANK: Record<string, number> = {
   ADMIN: 5
 }
 
+const HEADER_LINKS = [
+  { label: '← 대시보드', href: '/dashboard' },
+  { label: '온보딩 화면', href: '/' }
+]
+
+/** 같은 카테고리(멤버 · 지원)의 형제 화면만 노출한다. 허브의 그룹 구성과 같다. */
+const SIBLING_SCREENS = [
+  { label: 'Members', href: '/dashboard/members' },
+  { label: 'Core 지원서', href: '/dashboard/core/application' }
+]
+
 const isTeamAssignableRole = (role: string) => role === 'CORE' || role === 'LEAD'
+
+const selectClassName =
+  'w-full min-w-[96px] cursor-pointer rounded-[10px] border border-admin-line bg-admin-card px-2.5 py-2 text-[14px] text-admin-ink outline-none transition-colors duration-200 hover:border-admin-accent disabled:cursor-not-allowed disabled:opacity-40'
+
+const pillClassName =
+  'flex items-center gap-2.5 rounded-full border border-admin-line bg-admin-card px-4 py-2.5'
 
 export default function DashboardUsersPage() {
   const { apiClient } = useAuthenticatedApi()
@@ -68,6 +88,8 @@ export default function DashboardUsersPage() {
   const [users, setUsers] = useState<UserSummary[]>([])
   const [searchInput, setSearchInput] = useState('')
   const [query, setQuery] = useState('')
+  const [roleFilter, setRoleFilter] = useState('ALL')
+  const [teamFilter, setTeamFilter] = useState('ALL')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalElements, setTotalElements] = useState(0)
@@ -84,7 +106,9 @@ export default function DashboardUsersPage() {
           size: 20,
           sort: 'name',
           dir: 'ASC',
-          ...(query.trim() ? { q: query.trim() } : {})
+          ...(query.trim() ? { q: query.trim() } : {}),
+          ...(roleFilter !== 'ALL' ? { role: roleFilter } : {}),
+          ...(teamFilter !== 'ALL' ? { team: teamFilter } : {})
         }
       })
 
@@ -111,7 +135,7 @@ export default function DashboardUsersPage() {
     } finally {
       setLoading(false)
     }
-  }, [apiClient, page, query])
+  }, [apiClient, page, query, roleFilter, teamFilter])
 
   useEffect(() => {
     void fetchUsers()
@@ -146,7 +170,9 @@ export default function DashboardUsersPage() {
       if (myTeam !== 'HR' && target.team !== myTeam) return false
 
       if (myRole === 'LEAD') {
-        return target.userRole === 'GUEST' || target.userRole === 'MEMBER' || target.userRole === 'CORE'
+        return (
+          target.userRole === 'GUEST' || target.userRole === 'MEMBER' || target.userRole === 'CORE'
+        )
       }
 
       return target.userRole === 'GUEST' || target.userRole === 'MEMBER'
@@ -159,7 +185,8 @@ export default function DashboardUsersPage() {
     if (!myRole) return []
 
     const base = ROLE_OPTIONS.filter((role) => (ROLE_RANK[myRole] ?? -1) > (ROLE_RANK[role] ?? -1))
-    if (myRole === 'LEAD') return base.filter((role) => role === 'GUEST' || role === 'MEMBER' || role === 'CORE')
+    if (myRole === 'LEAD')
+      return base.filter((role) => role === 'GUEST' || role === 'MEMBER' || role === 'CORE')
     if (myRole === 'CORE') return base.filter((role) => role === 'GUEST' || role === 'MEMBER')
     return base
   }
@@ -178,6 +205,8 @@ export default function DashboardUsersPage() {
     const draft = getDraft(target)
     return draft.userRole !== target.userRole || (draft.team ?? null) !== (target.team ?? null)
   }
+
+  const dirtyUsers = users.filter((user) => canEditTarget(user) && hasChanges(user))
 
   const handleRoleChange = (target: UserSummary, nextRole: string) => {
     const teamValues = allowedTeamValues()
@@ -233,7 +262,7 @@ export default function DashboardUsersPage() {
         )
       )
     } catch (e: any) {
-      alert(e?.response?.data?.message || '유저 권한/팀 수정에 실패했습니다.')
+      setError(e?.response?.data?.message || '유저 권한/팀 수정에 실패했습니다.')
       setDrafts((prev) => ({
         ...prev,
         [target.id]: { userRole: target.userRole, team: target.team }
@@ -243,212 +272,318 @@ export default function DashboardUsersPage() {
     }
   }
 
+  /** 순차 저장. 한 건이 실패해도 나머지는 계속 간다 — 실패분만 드래프트가 되돌아온다. */
+  const handleSaveAll = async () => {
+    for (const target of dirtyUsers) {
+      await handleSave(target)
+    }
+  }
+
+  const runSearch = () => {
+    setPage(1)
+    setQuery(searchInput)
+  }
+
   return (
-    <div className="min-h-screen bg-black px-6 py-8 text-white pc:px-10">
+    <div className="min-h-screen bg-admin-base pb-12 font-pretendard text-admin-ink">
+      <AdminHeader links={HEADER_LINKS} />
       <Loader isLoading={loading} />
 
-      <div className="mx-auto w-full max-w-[1280px] space-y-6">
-        <div className="flex flex-col gap-4 pc:flex-row pc:items-center pc:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="typo-h4 mobile:typo-m-h3">Users Dashboard</h1>
-            <Link
-              href="/dashboard/members"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              Members
-            </Link>
-            <Link
-              href="/dashboard/mbti"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              MBTI
-            </Link>
-            <Link
-              href="/dashboard/core/application"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              Core 지원서
-            </Link>
-            <Link
-              href="/dashboard/core/attendance"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              Core 출석
-            </Link>
-          </div>
-          <div className="flex w-full gap-2 pc:w-auto">
-            <input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setPage(1)
-                  setQuery(searchInput)
-                }
-              }}
-              placeholder="이름 검색"
-              className="h-11 w-full rounded-lg border border-gray-300 bg-gray-100 px-3 text-white outline-none focus:border-white pc:w-[260px]"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setPage(1)
-                setQuery(searchInput)
-              }}
-              className="h-11 rounded-lg bg-red px-4 typo-pc-b3 text-white"
-            >
-              검색
-            </button>
-          </div>
+      <section className="mx-auto w-full max-w-[1240px] px-[clamp(20px,4vw,40px)] pt-[clamp(20px,2.5vw,32px)]">
+        <p data-admin-reveal className="text-[12px] uppercase tracking-[0.14em] text-admin-ink-dim">
+          Users
+        </p>
+        <div data-admin-reveal className="mt-2 flex flex-wrap items-end justify-between gap-4">
+          <h1 className="text-[clamp(22px,2.4vw,30px)] font-semibold leading-[1.2] tracking-[-0.03em]">
+            유저 권한 · 팀 관리
+          </h1>
+          <span className="text-[14px] text-admin-ink-soft">
+            전체 {totalElements}명 · 페이지 {page} / {totalPages}
+          </span>
         </div>
 
-        <div className="rounded-xl border border-white/10 bg-gray-100/30 p-4">
-          <p className="typo-pc-b3 text-gray-700">
-            전체 {totalElements}명 / 페이지 {page} of {totalPages}
-          </p>
+        <div data-admin-reveal className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="mr-1 whitespace-nowrap text-[13px] text-admin-ink-dim">멤버 · 지원</span>
+          <span className="whitespace-nowrap rounded-full border border-admin-line-current px-3.5 py-1.5 text-[13px] text-admin-ink">
+            Users
+          </span>
+          {SIBLING_SCREENS.map((screen) => (
+            <Link
+              key={screen.href}
+              href={screen.href}
+              className="whitespace-nowrap rounded-full border border-admin-line px-3.5 py-1.5 text-[13px] text-admin-ink-muted transition-colors duration-[250ms] hover:border-admin-accent hover:text-admin-ink"
+            >
+              {screen.label}
+            </Link>
+          ))}
+        </div>
+
+        <div data-admin-reveal className="mt-3 flex flex-wrap items-center gap-2.5">
+          <label className="flex min-w-0 flex-1 basis-[300px] items-center gap-2.5 rounded-full border border-admin-line bg-admin-card px-4 py-2.5 shadow-admin transition duration-[250ms] focus-within:border-admin-accent focus-within:shadow-admin-ring">
+            <span aria-hidden="true" className="text-[14px] text-admin-ink-dim">
+              ⌕
+            </span>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(event) => setSearchInput(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') runSearch()
+              }}
+              onBlur={runSearch}
+              placeholder="이름 · 이메일 · 학번 검색"
+              className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+            />
+          </label>
+
+          <label className={pillClassName}>
+            <span className="whitespace-nowrap text-[13px] text-admin-ink-dim">권한</span>
+            <select
+              value={roleFilter}
+              onChange={(event) => {
+                setPage(1)
+                setRoleFilter(event.target.value)
+              }}
+              className="cursor-pointer border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+            >
+              <option value="ALL" className="bg-admin-card text-admin-ink">
+                전체
+              </option>
+              {ROLE_FILTER_OPTIONS.map((role) => (
+                <option key={role} value={role} className="bg-admin-card text-admin-ink">
+                  {role}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className={pillClassName}>
+            <span className="whitespace-nowrap text-[13px] text-admin-ink-dim">팀</span>
+            <select
+              value={teamFilter}
+              onChange={(event) => {
+                setPage(1)
+                setTeamFilter(event.target.value)
+              }}
+              className="cursor-pointer border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+            >
+              <option value="ALL" className="bg-admin-card text-admin-ink">
+                전체
+              </option>
+              {TEAM_OPTIONS.map((team) => (
+                <option
+                  key={team.value}
+                  value={team.value}
+                  className="bg-admin-card text-admin-ink"
+                >
+                  {team.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {dirtyUsers.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => void handleSaveAll()}
+              disabled={savingUserId !== null}
+              className="whitespace-nowrap rounded-full bg-admin-accent px-5 py-2.5 text-[14px] font-medium text-admin-accent-ink transition-colors duration-200 hover:bg-admin-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              변경 {dirtyUsers.length}건 저장
+            </button>
+          ) : null}
         </div>
 
         {error ? (
-          <div className="rounded-xl border border-red bg-red-400/30 p-4 typo-pc-b3 text-red">
+          <p
+            role="alert"
+            className="mt-5 rounded-2xl border border-admin-line bg-admin-card px-5 py-4 text-[14px] text-signal-err"
+          >
             {error}
-          </div>
+          </p>
         ) : null}
+      </section>
 
-        <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full min-w-[980px] border-collapse">
+      <section
+        data-admin-reveal
+        className="mx-auto w-full max-w-[1240px] px-[clamp(20px,4vw,40px)] pt-4"
+      >
+        <div className="overflow-hidden rounded-[20px] border border-admin-line-soft bg-admin-card shadow-admin">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">ID</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">이름</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">이메일</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">학과</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">학번</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">권한</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">팀</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">수정</th>
+              <tr>
+                {['ID', '이름', '이메일', '학과 · 학번', '권한', '팀'].map((label) => (
+                  <th
+                    key={label}
+                    className="whitespace-nowrap border-b border-admin-line-soft bg-admin-thead px-3.5 py-2.5 text-left text-[12px] font-medium tracking-[0.06em] text-admin-ink-dim"
+                  >
+                    {label}
+                  </th>
+                ))}
+                <th className="whitespace-nowrap border-b border-admin-line-soft bg-admin-thead px-3.5 py-2.5 text-right text-[12px] font-medium tracking-[0.06em] text-admin-ink-dim">
+                  수정
+                </th>
               </tr>
             </thead>
             <tbody>
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center typo-pc-b3 text-gray-700">
+                  <td
+                    colSpan={7}
+                    className="px-4 py-[72px] text-center text-[15px] text-admin-ink-dim"
+                  >
                     조회된 유저가 없습니다.
                   </td>
                 </tr>
               ) : (
-                users.map((user) => (
-                  <tr key={user.id} className="border-t border-white/10 bg-black">
-                    {(() => {
-                      const editable = canEditTarget(user)
-                      const draft = getDraft(user)
-                      const roleOptions = allowedRoleOptions(user)
-                      const teamOptions = allowedTeamValues()
-                      const teamEditable = editable && isTeamAssignableRole(draft.userRole)
-                      const isSaving = savingUserId === user.id
+                users.map((user) => {
+                  const editable = canEditTarget(user)
+                  const draft = getDraft(user)
+                  const roleOptions = allowedRoleOptions(user)
+                  const teamOptions = allowedTeamValues()
+                  const teamEditable = editable && isTeamAssignableRole(draft.userRole)
+                  const isSaving = savingUserId === user.id
+                  const dirty = editable && hasChanges(user)
 
-                      return (
-                        <>
-                          <td className="px-4 py-3 typo-pc-b3">{user.id}</td>
-                          <td className="px-4 py-3 typo-pc-b3">{user.name}</td>
-                          <td className="px-4 py-3 typo-pc-b3">{user.email}</td>
-                          <td className="px-4 py-3 typo-pc-b3">{formatMajorLabel(user.major)}</td>
-                          <td className="px-4 py-3 typo-pc-b3">{user.studentId || '-'}</td>
-                          <td className="px-4 py-3">
-                            {editable ? (
-                              <select
-                                value={draft.userRole}
-                                disabled={isSaving}
-                                onChange={(e) => handleRoleChange(user, e.target.value)}
-                                className="h-9 min-w-[120px] rounded-md border border-gray-300 bg-gray-100 px-2 typo-pc-c2 text-white"
+                  return (
+                    <tr
+                      key={user.id}
+                      className="border-b border-admin-line-row transition-colors duration-[250ms] hover:bg-admin-row-hover"
+                    >
+                      <td className="px-3.5 py-2.5 text-[14px] tabular-nums text-admin-ink-dim">
+                        {user.id}
+                      </td>
+                      <td className="whitespace-nowrap px-3.5 py-2.5 text-[15px] text-admin-ink">
+                        {user.name}
+                      </td>
+                      <td className="break-all px-3.5 py-2.5 text-[14px] text-admin-ink-soft">
+                        {user.email}
+                      </td>
+                      <td className="px-3.5 py-2.5">
+                        <span className="block break-keep text-[14px] text-admin-ink-muted">
+                          {formatMajorLabel(user.major)}
+                        </span>
+                        <span className="mt-[3px] block text-[12px] tabular-nums text-admin-ink-dim">
+                          {user.studentId || '-'}
+                        </span>
+                      </td>
+                      <td className="px-3.5 py-2.5">
+                        {editable ? (
+                          <select
+                            value={draft.userRole}
+                            disabled={isSaving}
+                            onChange={(event) => handleRoleChange(user, event.target.value)}
+                            className={selectClassName}
+                          >
+                            {roleOptions.map((role) => (
+                              <option
+                                key={role}
+                                value={role}
+                                className="bg-admin-card text-admin-ink"
                               >
-                                {roleOptions.map((role) => (
-                                  <option key={role} value={role}>
-                                    {role}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <span className="typo-pc-b3">{user.userRole}</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3">
-                            {editable ? (
-                              <select
-                                value={teamEditable ? (draft.team ?? teamOptions[0] ?? '') : ''}
-                                disabled={!teamEditable || isSaving}
-                                onChange={(e) => handleTeamChange(user, e.target.value)}
-                                className="h-9 min-w-[120px] rounded-md border border-gray-300 bg-gray-100 px-2 typo-pc-c2 text-white disabled:opacity-40"
+                                {role}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="text-[14px] text-admin-ink-soft">{user.userRole}</span>
+                        )}
+                      </td>
+                      <td className="px-3.5 py-2.5">
+                        {teamEditable ? (
+                          <select
+                            value={draft.team ?? teamOptions[0] ?? ''}
+                            disabled={isSaving}
+                            onChange={(event) => handleTeamChange(user, event.target.value)}
+                            className={selectClassName}
+                          >
+                            {teamOptions.map((team) => (
+                              <option
+                                key={team}
+                                value={team}
+                                className="bg-admin-card text-admin-ink"
                               >
-                                <option value="">-</option>
-                                {teamOptions.map((team) => (
-                                  <option key={team} value={team}>
-                                    {TEAM_OPTIONS.find((item) => item.value === team)?.label ?? team}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <span className="typo-pc-b3">
-                                {TEAM_OPTIONS.find((item) => item.value === user.team)?.label || user.team || '-'}
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3">
-                            {editable ? (
-                              <button
-                                type="button"
-                                disabled={!hasChanges(user) || isSaving}
-                                onClick={() => handleSave(user)}
-                                className="rounded-md bg-red px-3 py-1 typo-pc-c2 text-white disabled:cursor-not-allowed disabled:opacity-40"
-                              >
-                                {isSaving ? '저장중' : '저장'}
-                              </button>
-                            ) : (
-                              <span className="typo-pc-c2 text-gray-700">수정 불가</span>
-                            )}
-                          </td>
-                        </>
-                      )
-                    })()}
-                  </tr>
-                ))
+                                {TEAM_OPTIONS.find((item) => item.value === team)?.label ?? team}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="text-[14px] text-admin-ink-soft">
+                            {TEAM_OPTIONS.find((item) => item.value === user.team)?.label ||
+                              user.team ||
+                              '—'}
+                          </span>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-3.5 py-2.5 text-right">
+                        {dirty ? (
+                          <button
+                            type="button"
+                            disabled={isSaving}
+                            onClick={() => void handleSave(user)}
+                            className="whitespace-nowrap rounded-full bg-admin-accent px-[18px] py-2 text-[13px] font-medium text-admin-accent-ink transition-colors duration-200 hover:bg-admin-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {isSaving ? '저장중' : '저장'}
+                          </button>
+                        ) : (
+                          <span className="text-[12px] text-admin-ink-faint">
+                            {editable ? '변경 없음' : '수정 불가'}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>
         </div>
+      </section>
 
-        {totalPages > 1 ? (
-          <div className="flex items-center justify-center gap-2 pt-2">
+      {totalPages > 1 ? (
+        <section className="mx-auto flex w-full max-w-[1240px] flex-wrap items-center justify-between gap-4 px-[clamp(20px,4vw,40px)] pt-5">
+          <span className="text-[13px] text-admin-ink-dim">
+            페이지 {page} / {totalPages}
+          </span>
+          <div className="flex items-center gap-2">
             <button
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded-md border border-white/20 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+              className="whitespace-nowrap rounded-full border border-admin-line px-[18px] py-2.5 text-[14px] text-admin-ink-muted transition-colors duration-200 hover:border-admin-accent hover:text-admin-ink disabled:cursor-not-allowed disabled:opacity-40"
             >
               이전
             </button>
-            {pageNumbers.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPage(p)}
-                className={`rounded-md px-3 py-1 ${
-                  p === page ? 'bg-red text-white' : 'border border-white/20 text-white'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+            {pageNumbers.map((p) =>
+              p === page ? (
+                <span
+                  key={p}
+                  className="min-w-[38px] rounded-full bg-admin-accent py-2.5 text-center text-[14px] tabular-nums text-admin-accent-ink"
+                >
+                  {p}
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setPage(p)}
+                  className="min-w-[38px] rounded-full border border-admin-line py-2.5 text-[14px] tabular-nums text-admin-ink-muted transition-colors duration-200 hover:border-admin-accent hover:text-admin-ink"
+                >
+                  {p}
+                </button>
+              )
+            )}
             <button
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded-md border border-white/20 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+              className="whitespace-nowrap rounded-full border border-admin-line px-[18px] py-2.5 text-[14px] text-admin-ink-muted transition-colors duration-200 hover:border-admin-accent hover:text-admin-ink disabled:cursor-not-allowed disabled:opacity-40"
             >
               다음
             </button>
           </div>
-        ) : null}
-      </div>
+        </section>
+      ) : null}
     </div>
   )
 }
