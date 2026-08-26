@@ -1,11 +1,32 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 
 import Loader from '@/components/ui/common/Loader'
 import UserDetailsModal from '@/components/admin/UserDetailsModal'
-import { GdgSegmentedButton } from '@/components/ui/design-system'
+import AdminCategoryNav from '@/components/admin/dashboard/AdminCategoryNav'
+import AdminHeader from '@/components/admin/dashboard/AdminHeader'
+import AdminPagination from '@/components/admin/dashboard/AdminPagination'
+import {
+  ADMIN_CAPTION,
+  ADMIN_CONTAINER,
+  ADMIN_EMPTY_CELL,
+  ADMIN_ERROR_BANNER,
+  ADMIN_GHOST_BUTTON,
+  ADMIN_OPTION,
+  ADMIN_PAGE,
+  ADMIN_PILL,
+  ADMIN_PILL_SELECT,
+  ADMIN_SEARCH_FIELD,
+  ADMIN_SEARCH_INPUT,
+  ADMIN_TABLE_CARD,
+  ADMIN_TD,
+  ADMIN_TD_MUTED,
+  ADMIN_TH,
+  ADMIN_TH_RIGHT,
+  ADMIN_TITLE,
+  ADMIN_TR
+} from '@/components/admin/dashboard/adminStyles'
 import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { formatPhoneNumberDisplay } from '@/utils/phoneNumber'
@@ -73,12 +94,37 @@ const PAY_SEGMENTS = [
 
 // 서버 AdmissionSemester enum 과 값을 맞춘다. 목록에 없는 값을 보내면 400 이 난다.
 const SEMESTER_OPTIONS = [
-  'Y29_2', 'Y29_1', 'Y28_2', 'Y28_1', 'Y27_2', 'Y27_1',
-  'Y26_2', 'Y26_1', 'Y25_2', 'Y25_1', 'Y24_2', 'Y24_1',
-  'Y23_2', 'Y23_1', 'Y22_2', 'Y22_1', 'Y21_2'
+  'Y29_2',
+  'Y29_1',
+  'Y28_2',
+  'Y28_1',
+  'Y27_2',
+  'Y27_1',
+  'Y26_2',
+  'Y26_1',
+  'Y25_2',
+  'Y25_1',
+  'Y24_2',
+  'Y24_1',
+  'Y23_2',
+  'Y23_1',
+  'Y22_2',
+  'Y22_1',
+  'Y21_2'
 ] as const
 
 const ALL_SEMESTERS = 'ALL'
+
+const HEADER_LINKS = [
+  { label: '← 대시보드', href: '/dashboard' },
+  { label: '온보딩 화면', href: '/' }
+]
+
+const SIBLING_SCREENS = [
+  { label: 'Users', href: '/dashboard/users' },
+  { label: 'Core 지원서', href: '/dashboard/core/application' },
+  { label: 'Core 출석', href: '/dashboard/core/attendance' }
+]
 
 /** 서버 SemesterCalculator 와 같은 규칙 — 1월은 직전 해 2학기, 2~7월 1학기, 8~12월 2학기. */
 function currentAdmissionSemester(): string {
@@ -113,8 +159,6 @@ function formatSemesterLabel(value?: string | null): string {
   const matched = /^Y(\d{2})_(\d)$/.exec(value)
   return matched ? `20${matched[1]}-${matched[2]}학기` : value
 }
-
-const SEGMENT_WIDTH_PX = Math.max(...PAY_SEGMENTS.map((item) => item.label.length * 16 + 26))
 
 export default function DashboardMembersPage() {
   const { apiClient } = useAuthenticatedApi()
@@ -210,8 +254,7 @@ export default function DashboardMembersPage() {
         setSelectedMember((prev) => (prev ? { ...prev, isPayed: nextState } : prev))
       }
     } catch (e: any) {
-      const message = e?.response?.data?.message || '입금 상태 변경에 실패했습니다.'
-      alert(message)
+      setError(e?.response?.data?.message || '입금 상태 변경에 실패했습니다.')
     } finally {
       setPayUpdatingMemberId((prev) => (prev === memberId ? null : prev))
     }
@@ -224,8 +267,7 @@ export default function DashboardMembersPage() {
       setSelectedMember(response.data?.data ?? null)
       setDetailOpen(true)
     } catch (e: any) {
-      const message = e?.response?.data?.message || '상세 정보를 불러오지 못했습니다.'
-      alert(message)
+      setError(e?.response?.data?.message || '상세 정보를 불러오지 못했습니다.')
     } finally {
       setLoading(false)
     }
@@ -238,211 +280,164 @@ export default function DashboardMembersPage() {
     return index >= 0 ? SEMESTER_OPTIONS.slice(index) : SEMESTER_OPTIONS
   }, [])
 
-  const pageNumbers = useMemo(() => {
-    const maxVisible = 7
-    const pages: number[] = []
-    const start = Math.max(1, page - Math.floor(maxVisible / 2))
-    const end = Math.min(totalPages, start + maxVisible - 1)
-    for (let p = start; p <= end; p += 1) pages.push(p)
-    return pages
-  }, [page, totalPages])
-
   return (
-    <div className="min-h-screen bg-black px-6 py-8 text-white pc:px-10">
+    <div className={ADMIN_PAGE}>
+      <AdminHeader links={HEADER_LINKS} />
       <Loader isLoading={loading} />
 
-      <div className="mx-auto w-full max-w-[1280px] space-y-6">
-        <div className="flex flex-col gap-4 pc:flex-row pc:items-center pc:justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="typo-h4 mobile:typo-m-h3">Members Dashboard</h1>
-            <Link
-              href="/dashboard/users"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              Users
-            </Link>
-            <Link
-              href="/dashboard/mbti"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              MBTI
-            </Link>
-            <Link
-              href="/dashboard/memo"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              Memo 발송
-            </Link>
-            <Link
-              href="/dashboard/core/application"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              Core 지원서
-            </Link>
-            <Link
-              href="/dashboard/core/attendance"
-              className="inline-flex h-9 items-center rounded-lg border border-white/20 px-3 typo-pc-c2 text-white hover:border-white"
-            >
-              Core 출석
-            </Link>
-          </div>
-          <div className="flex w-full gap-2 pc:w-auto">
+      <section className={`${ADMIN_CONTAINER} pt-[clamp(20px,2.5vw,32px)]`}>
+        <p data-admin-reveal className={ADMIN_CAPTION}>
+          Members
+        </p>
+        <div data-admin-reveal className="mt-2 flex flex-wrap items-end justify-between gap-4">
+          <h1 className={ADMIN_TITLE}>신입 멤버 지원서</h1>
+          <span className="text-[14px] text-admin-ink-soft">
+            전체 {totalElements}명 · 페이지 {page} / {totalPages}
+          </span>
+        </div>
+
+        <AdminCategoryNav category="멤버 · 지원" current="Members" siblings={SIBLING_SCREENS} />
+
+        <div data-admin-reveal className="mt-3 flex flex-wrap items-center gap-2.5">
+          <label className={ADMIN_SEARCH_FIELD}>
+            <span aria-hidden="true" className="text-[14px] text-admin-ink-dim">
+              ⌕
+            </span>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSearch()
+              }}
+              onBlur={handleSearch}
+              placeholder="이름 검색"
+              className={ADMIN_SEARCH_INPUT}
+            />
+          </label>
+
+          <label className={ADMIN_PILL}>
+            <span className="whitespace-nowrap text-[13px] text-admin-ink-dim">지원 학기</span>
             <select
               value={semester}
               onChange={(e) => {
                 setPage(1)
                 setSemester(e.target.value)
               }}
-              className="h-11 rounded-lg border border-gray-300 bg-gray-100 px-3 text-white outline-none focus:border-white"
+              className={ADMIN_PILL_SELECT}
             >
-              <option value={ALL_SEMESTERS}>전체 학기</option>
+              <option value={ALL_SEMESTERS} className={ADMIN_OPTION}>
+                전체
+              </option>
               {semesterOptions.map((option) => (
-                <option key={option} value={option}>
+                <option key={option} value={option} className={ADMIN_OPTION}>
                   {formatSemesterLabel(option)}
                 </option>
               ))}
             </select>
-            <input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSearch()
-              }}
-              placeholder="이름 검색"
-              className="h-11 w-full rounded-lg border border-gray-300 bg-gray-100 px-3 text-white outline-none focus:border-white pc:w-[260px]"
-            />
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="h-11 rounded-lg bg-red px-4 typo-pc-b3 text-white"
-            >
-              검색
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-white/10 bg-gray-100/30 p-4">
-          <p className="typo-pc-b3 text-gray-700">
-            전체 {totalElements}명 / 페이지 {page} of {totalPages}
-          </p>
+          </label>
         </div>
 
         {error ? (
-          <div className="rounded-xl border border-red bg-red-400/30 p-4 typo-pc-b3 text-red">
+          <p role="alert" className={ADMIN_ERROR_BANNER}>
             {error}
-          </div>
+          </p>
         ) : null}
+      </section>
 
-        <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full min-w-[960px] border-collapse">
+      <section data-admin-reveal className={`${ADMIN_CONTAINER} pt-4`}>
+        <div className={ADMIN_TABLE_CARD}>
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">이름</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">학과</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">학번</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">지원 학기</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">제출 시각</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">전화번호</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">회비</th>
-                <th className="px-4 py-3 typo-pc-b3 text-gray-700">상세</th>
+              <tr>
+                {['이름', '학과 · 학번', '지원 학기', '제출 시각', '전화번호', '회비'].map(
+                  (label) => (
+                    <th key={label} className={ADMIN_TH}>
+                      {label}
+                    </th>
+                  )
+                )}
+                <th className={ADMIN_TH_RIGHT}>상세</th>
               </tr>
             </thead>
             <tbody>
               {members.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center typo-pc-b3 text-gray-700">
+                  <td colSpan={7} className={ADMIN_EMPTY_CELL}>
                     조회된 지원자가 없습니다.
                   </td>
                 </tr>
               ) : (
-                members.map((member) => (
-                  <tr key={member.id} className="border-t border-white/10 bg-black">
-                    <td className="px-4 py-3 typo-pc-b3">{member.name}</td>
-                    <td className="px-4 py-3 typo-pc-b3">{formatMajorLabel(member.major)}</td>
-                    <td className="px-4 py-3 typo-pc-b3">{member.studentId}</td>
-                    <td className="px-4 py-3 typo-pc-b3">
-                      {formatSemesterLabel(member.admissionSemester)}
-                    </td>
-                    <td className="px-4 py-3 typo-pc-b3 whitespace-nowrap">
-                      {formatSubmittedAt(member.createdAt)}
-                    </td>
-                    <td className="px-4 py-3 typo-pc-b3">
-                      {formatPhoneNumberDisplay(member.phoneNumber)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="inline-flex">
-                        {PAY_SEGMENTS.map((segment, index) => {
-                          const isPressed = member.isPayed === segment.value
-                          const isDisabled = payUpdatingMemberId === member.id
-                          return (
-                            <GdgSegmentedButton
-                              key={segment.label}
-                              device="pc"
-                              edge={index === 0 ? 'left' : 'right'}
-                              state={isDisabled ? 'disabled' : isPressed ? 'pressed' : 'default'}
-                              style={{ width: `${SEGMENT_WIDTH_PX}px` }}
-                              className="typo-pc-c2"
-                              onClick={() => {
-                                if (!isDisabled && member.isPayed !== segment.value) {
-                                  void handleTogglePay(member.id, member.name, segment.value)
-                                }
-                              }}
-                            >
-                              {segment.label}
-                            </GdgSegmentedButton>
-                          )
-                        })}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        onClick={() => openDetail(member.id)}
-                        className="rounded-md border border-white px-3 py-1 typo-pc-c2 text-white hover:bg-white hover:text-black"
-                      >
-                        보기
-                      </button>
-                    </td>
-                  </tr>
-                ))
+                members.map((member) => {
+                  const isUpdating = payUpdatingMemberId === member.id
+
+                  return (
+                    <tr key={member.id} className={ADMIN_TR}>
+                      <td className={`${ADMIN_TD} whitespace-nowrap text-[15px]`}>{member.name}</td>
+                      <td className="px-3.5 py-2.5">
+                        <span className="block break-keep text-[14px] text-admin-ink-muted">
+                          {formatMajorLabel(member.major)}
+                        </span>
+                        <span className="mt-[3px] block text-[12px] tabular-nums text-admin-ink-dim">
+                          {member.studentId || '-'}
+                        </span>
+                      </td>
+                      <td className={`${ADMIN_TD_MUTED} whitespace-nowrap tabular-nums`}>
+                        {formatSemesterLabel(member.admissionSemester)}
+                      </td>
+                      <td className={`${ADMIN_TD_MUTED} whitespace-nowrap tabular-nums`}>
+                        {formatSubmittedAt(member.createdAt)}
+                      </td>
+                      <td className={`${ADMIN_TD_MUTED} whitespace-nowrap tabular-nums`}>
+                        {formatPhoneNumberDisplay(member.phoneNumber)}
+                      </td>
+                      <td className="px-3.5 py-2.5">
+                        {/* 입금 체크는 계정 역할까지 바꾼다. 지금 상태가 어느 쪽인지 한눈에 보여야 한다. */}
+                        <div className="inline-flex overflow-hidden rounded-full border border-admin-line">
+                          {PAY_SEGMENTS.map((segment) => {
+                            const isPressed = member.isPayed === segment.value
+                            return (
+                              <button
+                                key={segment.label}
+                                type="button"
+                                disabled={isUpdating}
+                                aria-pressed={isPressed}
+                                onClick={() => {
+                                  if (!isUpdating && member.isPayed !== segment.value) {
+                                    void handleTogglePay(member.id, member.name, segment.value)
+                                  }
+                                }}
+                                className={`whitespace-nowrap px-3 py-1.5 text-[12px] transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${
+                                  isPressed
+                                    ? 'bg-admin-accent text-admin-accent-ink'
+                                    : 'text-admin-ink-dim hover:text-admin-ink'
+                                }`}
+                              >
+                                {segment.label}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap px-3.5 py-2.5 text-right">
+                        <button
+                          type="button"
+                          onClick={() => void openDetail(member.id)}
+                          className={ADMIN_GHOST_BUTTON}
+                        >
+                          보기
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>
         </div>
+      </section>
 
-        {totalPages > 1 ? (
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <button
-              type="button"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded-md border border-white/20 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              이전
-            </button>
-            {pageNumbers.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setPage(p)}
-                className={`rounded-md px-3 py-1 ${
-                  p === page ? 'bg-red text-white' : 'border border-white/20 text-white'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-            <button
-              type="button"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded-md border border-white/20 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              다음
-            </button>
-          </div>
-        ) : null}
-      </div>
+      <AdminPagination page={page} totalPages={totalPages} onChange={setPage} />
 
       <UserDetailsModal
         user={selectedMember}
