@@ -83,6 +83,69 @@
   --color-signal-err: #d9756a;
   --color-tag-info: #a9bbe0;
   --color-tag-event: #e0a24e;
+
+  /* ----------------------------------------------------------------------
+     Admin 팔레트 — 2026 관리자 대시보드 리디자인 (허브 · Users)
+     핸드오프 "Design Tokens" 기준. dusk(warm + ember)와 다른 near-black +
+     lavender 계열이며, 이 차이는 의도된 선택이다. 관리자 화면 중
+     /dashboard/landing 은 여전히 dusk 다.
+     ---------------------------------------------------------------------- */
+
+  /* 표면 */
+  --color-admin-base: #0a0a0c;
+  --color-admin-card: #101014;
+  --color-admin-veil: rgba(10, 10, 12, 0.84);
+
+  /* 텍스트 — 밝은 쪽이 앞 */
+  --color-admin-ink: #f4f4f6;
+  --color-admin-ink-muted: #a7a7b2;
+  --color-admin-ink-soft: #8e8e99;
+  --color-admin-ink-dim: #6e6e79;
+  --color-admin-ink-faint: #57575f;
+
+  /* 강조 */
+  --color-admin-accent: #c3b5fd;
+  --color-admin-accent-ink: #15121f;
+  --color-admin-ok: #4ade80;
+  --color-admin-pure: #ffffff;
+
+  /* 괘선 — 세기가 다른 네 단계를 실제로 구분해 쓴다 */
+  --color-admin-line-strong: rgba(255, 255, 255, 0.16);
+  --color-admin-line: rgba(255, 255, 255, 0.11);
+  --color-admin-line-soft: rgba(255, 255, 255, 0.09);
+  --color-admin-line-row: rgba(255, 255, 255, 0.07);
+  --color-admin-line-veil: rgba(255, 255, 255, 0.08);
+
+  /* 강조 틴트 — 비율을 화면마다 다시 적지 않도록 파생을 여기서 끝낸다 */
+  --color-admin-badge: color-mix(in srgb, var(--color-admin-accent) 13%, var(--color-admin-card));
+  --color-admin-tag: color-mix(in srgb, var(--color-admin-accent) 11%, var(--color-admin-card));
+  --color-admin-thead: color-mix(in srgb, var(--color-admin-accent) 7%, var(--color-admin-card));
+  --color-admin-row-hover: color-mix(
+    in srgb,
+    var(--color-admin-accent) 5%,
+    var(--color-admin-card)
+  );
+  --color-admin-badge-ink: color-mix(
+    in srgb,
+    var(--color-admin-accent) 55%,
+    var(--color-admin-ink)
+  );
+  --color-admin-tag-ink: color-mix(in srgb, var(--color-admin-accent) 42%, var(--color-admin-ink));
+  --color-admin-accent-hover: color-mix(
+    in srgb,
+    var(--color-admin-accent) 62%,
+    var(--color-admin-pure)
+  );
+  --color-admin-line-accent: color-mix(in srgb, var(--color-admin-accent) 45%, transparent);
+  --color-admin-line-current: color-mix(in srgb, var(--color-admin-accent) 60%, transparent);
+  --color-admin-rule: color-mix(in srgb, var(--color-admin-accent) 55%, transparent);
+
+  /* 그림자 — 포커스 링을 box-shadow 로 주므로 여기 함께 둔다 */
+  --shadow-admin: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-admin-lift: 0 14px 30px rgba(0, 0, 0, 0.55);
+  --shadow-admin-ring: 0 0 0 3px color-mix(in srgb, var(--color-admin-accent) 18%, transparent);
+  --shadow-admin-ring-strong: 0 0 0 3px
+    color-mix(in srgb, var(--color-admin-accent) 24%, transparent);
 }
 
 /* Breakpoints */
@@ -1234,4 +1297,40 @@ input[type='search']::-webkit-search-results-decoration {
 .gdg-dropdown-popover [data-bottom-scroll] {
   mask-image: none !important;
   -webkit-mask-image: none !important;
+}
+
+/* ========================================================================
+   Admin 대시보드 — 등장 애니메이션
+   ========================================================================
+
+   CSS 만으로 끝낸다. JS 로 opacity 를 0 으로 만들면 콜백을 한 번 놓칠 때
+   화면이 통째로 투명하게 남는다 (`useReveal.ts` 가 4초 폴백을 둔 이유).
+   여기서는 종료 상태가 보이는 상태이므로 스크립트가 죽어도 화면은 남는다. */
+
+@keyframes admin-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+[data-admin-reveal] {
+  animation: admin-reveal 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@supports (animation-timeline: view()) {
+  [data-admin-reveal] {
+    animation-timeline: view();
+    animation-range: entry 4% cover 20%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-admin-reveal] {
+    animation: none;
+  }
 }
