@@ -92,6 +92,8 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
       await load()
     } catch (e) {
       setError(readErrorMessage(e))
+      // 정원이 차서 막힌 경우가 있다. 화면에 남은 "n자리 남음" 이 옛 숫자면 계속 눌러보게 된다.
+      await load()
     } finally {
       setSubmitting(false)
     }
@@ -134,7 +136,9 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
           {form.closesAt ? `${formatDate(form.closesAt)}까지 신청할 수 있습니다.` : '상시 신청'}
           {form.capacity != null
             ? ` · 정원 ${form.capacity}명 중 ${form.appliedCount}명 신청${
-                form.remainingSeats != null ? ` (${form.remainingSeats}자리 남음)` : ''
+                form.remainingSeats != null && form.remainingSeats > 0
+                  ? ` (${form.remainingSeats}자리 남음)`
+                  : ''
               }`
             : ''}
         </p>

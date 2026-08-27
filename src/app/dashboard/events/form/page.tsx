@@ -16,6 +16,7 @@ import {
   ADMIN_PAGE,
   ADMIN_TITLE
 } from '@/components/admin/dashboard/adminStyles'
+import FormPreview from '@/components/eventApplication/FormPreview'
 import QuestionEditor, { conditionCandidates } from '@/components/eventApplication/QuestionEditor'
 import Loader from '@/components/ui/common/Loader'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
@@ -276,6 +277,13 @@ export default function EventFormBuilderPage() {
                 )}
               </div>
 
+              {form.capacity != null && form.appliedCount >= form.capacity && (
+                <p className="text-[13px] text-signal-ok">
+                  정원 {form.capacity}명이 모두 찼습니다. 새 신청은 서버가 자동으로 막으므로 따로
+                  닫지 않아도 됩니다. 정원을 늘리면 그 즉시 다시 받습니다.
+                </p>
+              )}
+
               {form.appliedCount > 0 && (
                 <p className="text-[12px] text-admin-ink-dim">
                   신청자가 {form.appliedCount}명 있어 질문 유형과 선택지를 바꿀 수 없습니다. 문구와
@@ -283,6 +291,8 @@ export default function EventFormBuilderPage() {
                 </p>
               )}
             </div>
+
+            <FormPreview questions={form.questions} />
 
             <div className="mt-6 flex flex-col gap-3 pb-12">
               <div className="flex items-center justify-between">
