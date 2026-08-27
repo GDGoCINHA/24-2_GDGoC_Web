@@ -26,6 +26,7 @@ import {
 } from '@/components/admin/dashboard/adminStyles'
 import ProxyRegisterPanel from '@/components/eventApplication/ProxyRegisterPanel'
 import Loader from '@/components/ui/common/Loader'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import {
   downloadApplicantsCsv,
@@ -249,7 +250,7 @@ export default function EventApplicantsPage() {
                         )}
                       </td>
                       <td className={ADMIN_TD_MUTED}>{applicant.studentId}</td>
-                      <td className={ADMIN_TD_MUTED}>{applicant.major}</td>
+                      <td className={ADMIN_TD_MUTED}>{formatMajorLabel(applicant.major)}</td>
                       <td className={ADMIN_TD_MUTED}>{formatDate(applicant.appliedAt)}</td>
                       <td className={ADMIN_TD}>
                         <div className="flex items-center gap-1.5">

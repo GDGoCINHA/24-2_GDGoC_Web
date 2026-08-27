@@ -9,6 +9,7 @@ import {
   ADMIN_SEARCH_INPUT
 } from '@/components/admin/dashboard/adminStyles'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { registerProxyApplicant } from '@/services/eventApplication/eventApplicationClient'
 
 interface UserHit {
@@ -125,7 +126,7 @@ export default function ProxyRegisterPanel({
               <span className="text-[14px] text-admin-ink">
                 {user.name}
                 <span className="ml-2 text-[13px] text-admin-ink-dim">
-                  {user.studentId || '-'} · {user.major || '-'}
+                  {user.studentId || '-'} · {formatMajorLabel(user.major)}
                 </span>
               </span>
               <button
