@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { BOARD_MENUS } from '@/components/board/boardMenus'
+import MyEventActivitySection from '@/components/eventApplication/MyEventActivitySection'
 import ApplicationDetailModal from '@/components/profile/ApplicationDetailModal'
 import ApplicationStatus from '@/components/profile/ApplicationStatus'
 import ProfileCard from '@/components/profile/ProfileCard'
@@ -225,6 +226,10 @@ export default function ProfilePage() {
             onOpenCore={() => void openCoreDetail()}
             onOpenMember={openMemberDetail}
           />
+        </div>
+
+        <div className="mt-15">
+          <MyEventActivitySection />
         </div>
       </div>
 
