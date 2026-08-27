@@ -50,6 +50,14 @@ export const updateEventForm = async (
   await apiClient.put(`/admin/events/${eventBoardId}/form`, payload)
 }
 
+/** 부원에게 공개한다. 이 요청 전까지 행사 상세에는 신청 영역이 그려지지 않는다. */
+export const publishEventForm = async (
+  apiClient: AxiosInstance,
+  eventBoardId: number
+): Promise<void> => {
+  await apiClient.post(`/admin/events/${eventBoardId}/form/publish`)
+}
+
 /** 신청자가 있으면 서버가 거절한다. 그때는 마감으로 닫도록 안내한다. */
 export const deleteEventForm = async (
   apiClient: AxiosInstance,
