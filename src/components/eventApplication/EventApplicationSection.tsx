@@ -100,6 +100,11 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
   }
 
   const handleCancel = async () => {
+    // 취소 버튼이 제출 버튼과 같은 자리에 있어 잘못 누르기 쉽다. 정원이 찬 행사면
+    // 되돌리지 못할 수도 있으므로 한 번 묻는다.
+    if (!window.confirm('신청을 취소할까요? 정원이 찬 경우 다시 신청하지 못할 수 있습니다.')) {
+      return
+    }
     setSubmitting(true)
     setError(null)
     try {
