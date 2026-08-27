@@ -117,7 +117,7 @@ export default function EventCheckinDisplayPage() {
 
       <div className="flex flex-col items-center gap-2">
         <p className="text-[15px] tabular-nums text-admin-ink-muted">
-          {remaining}초 뒤 새 QR 로 바뀝니다
+          {formatRemaining(remaining)} 뒤 새 QR 로 바뀝니다
         </p>
         {counts && (
           <p className="text-[clamp(16px,2vw,22px)] tabular-nums text-admin-ink">
@@ -165,4 +165,14 @@ const renderQr = async (text: string): Promise<string> => {
 const readErrorMessage = (error: unknown): string => {
   const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
   return message ?? 'QR 을 받지 못했습니다. 잠시 후 다시 시도해주세요.'
+}
+
+/**
+ * 남은 시간 표기. 창이 3분이라 초로만 적으면 "173초 뒤" 처럼 읽기 어렵다.
+ */
+const formatRemaining = (seconds: number): string => {
+  if (seconds < 60) return `${seconds}초`
+  const minutes = Math.floor(seconds / 60)
+  const rest = seconds % 60
+  return rest === 0 ? `${minutes}분` : `${minutes}분 ${rest}초`
 }
