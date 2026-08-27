@@ -70,7 +70,8 @@ export const fetchMyCoreApplicationDetail = async (
 
 /**
  * 부원 지원서 조회.
- * 부원 지원은 비로그인으로 받으므로 서버가 로그인 계정의 이메일로 지원서를 찾는다.
+ * 서버가 로그인 계정의 이메일로 이번 학기 지원서를 찾는다. 이메일이 어긋나면 학번+이름으로 한 번 더 본다 —
+ * 로그인 필수로 바뀌기 전에는 폼에 이메일을 직접 적었기 때문이다.
  * 404(지원 이력 없음)면 null 을 반환하고, 그 외 에러는 호출자에게 던진다.
  */
 export const fetchMyMemberApplication = async (
