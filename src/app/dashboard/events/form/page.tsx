@@ -167,7 +167,13 @@ export default function EventFormBuilderPage() {
 
   const handlePublish = () => run(() => publishEventForm(apiClient, eventBoardId))
 
-  const handleDeleteForm = () => run(() => deleteEventForm(apiClient, eventBoardId))
+  const handleDeleteForm = () => {
+    // 폼과 질문이 통째로 사라진다. 되돌릴 수 없으므로 한 번 묻는다.
+    if (!window.confirm('신청 폼을 삭제할까요? 질문까지 함께 지워지며 되돌릴 수 없습니다.')) {
+      return
+    }
+    run(() => deleteEventForm(apiClient, eventBoardId))
+  }
 
   if (Number.isNaN(eventBoardId)) {
     return (
@@ -319,17 +325,23 @@ export default function EventFormBuilderPage() {
                 >
                   설정 저장
                 </button>
-                {form.appliedCount === 0 && (
-                  <button
-                    type="button"
-                    className={ADMIN_GHOST_BUTTON}
-                    disabled={saving}
-                    onClick={handleDeleteForm}
-                  >
-                    신청 받기 해제
-                  </button>
-                )}
+                {/* 숨기면 왜 없어졌는지 알 수 없다. 잠그고 이유를 옆에 적는다. */}
+                <button
+                  type="button"
+                  className={ADMIN_GHOST_BUTTON}
+                  disabled={saving || form.appliedCount > 0}
+                  onClick={handleDeleteForm}
+                >
+                  신청 폼 삭제
+                </button>
               </div>
+
+              {form.appliedCount > 0 && (
+                <p className="text-[13px] text-admin-ink-muted">
+                  신청자 {form.appliedCount}명이 있어 삭제할 수 없습니다. 그만 받으려면 위의 「지금
+                  신청 받는 중」을 해제하세요.
+                </p>
+              )}
 
               {form.capacity != null && form.appliedCount >= form.capacity && (
                 <p className="text-[13px] text-signal-ok">
