@@ -45,7 +45,7 @@ const LABEL = 'text-[12px] tracking-[0.06em] text-admin-ink-dim'
 
 /** 신청 자격으로 고를 수 있는 등급. 그 위 등급은 운영진뿐이라 폼 자격으로 둘 이유가 없다. */
 const MIN_ROLE_CHOICES: { value: UserRoleValue; label: string }[] = [
-  { value: 'GUEST', label: '누구나 (외부 공개)' },
+  { value: 'GUEST', label: '로그인한 누구나 (부원 아니어도)' },
   { value: 'MEMBER', label: '부원부터' },
   { value: 'CORE', label: '코어부터' }
 ]
@@ -243,6 +243,9 @@ export default function EventFormBuilderPage() {
                       </option>
                     ))}
                   </select>
+                  <span className="text-[12px] text-admin-ink-dim">
+                    어느 쪽이든 로그인이 필요합니다
+                  </span>
                 </label>
 
                 <label className="flex items-end gap-2 pb-2 text-[13px] text-admin-ink-muted">
