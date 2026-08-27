@@ -1,11 +1,12 @@
 'use client'
 
-import React, { type FormEvent, useMemo, useRef, useState } from 'react'
+import React, { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import axios from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 
 import RecruitMemberGate from '@/components/recruit/RecruitMemberGate'
+import { RecruitNotice } from '@/components/recruit/RecruitNotice'
 import Loader from '@/components/ui/common/Loader'
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
 import {
@@ -13,30 +14,44 @@ import {
   DUSK_CHECKBOX,
   DUSK_CHIP,
   DUSK_CHIP_ACTIVE,
-  DUSK_GHOST_BUTTON,
   DUSK_INPUT,
+  DUSK_INPUT_READONLY,
   DUSK_OPTION,
   DUSK_SELECT,
   DUSK_SUBMIT_BUTTON,
   DUSK_TEXTAREA
 } from '@/components/ui/dusk/DuskForm'
 import { interestOptions } from '@/constant/interestOptions'
-import { majorOptions } from '@/constant/majorOptions'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { wishOptions } from '@/constant/wishOptions'
-import { usePhoneNumber } from '@/hooks/usePhoneNumber'
+import { useAuth } from '@/hooks/useAuth'
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { fetchMyMemberApplication, fetchMyProfile } from '@/services/profile/profileClient'
+import type { MyMemberApplication, UserProfile } from '@/types/profile'
 import { cn } from '@/utils/cn'
 import { formatDateInput } from '@/utils/date'
+import { formatPhoneNumberDisplay } from '@/utils/phoneNumber'
+
+/** 이 페이지로 돌아오는 로그인 링크. `trailingSlash: true` 라 끝의 `/` 가 필요하다. */
+const LOGIN_HREF = `/login?next=${encodeURIComponent('/recruit/member/')}`
+
+/**
+ * 지원서에 실리는 신원. 폼이 아니라 계정에서 온다.
+ *
+ * 서버도 로그인 계정의 값으로 덮어쓰므로 여기 보이는 것이 실제로 저장되는 값이다.
+ */
+type Identity = {
+  name: string
+  studentId: string
+  email: string
+  phoneNumber: string
+  major: string
+}
 
 type RecruitFormState = {
-  name: string
   gender: string
   birth: string
-  major: string
   enrolledClassification: string
-  studentId: string
-  phoneNumber: string
-  emailLocal: string
-  emailDomain: string
   gdgInterest: string[]
   gdgWish: string[]
   gdgFeedback: string
@@ -44,30 +59,15 @@ type RecruitFormState = {
   proofFile: File | null
 }
 
-type DuplicateCheckStatus = 'idle' | 'checking' | 'available' | 'duplicate' | 'unverified' | 'error'
-
 type PresignedUploadResponse = {
   key?: string
   uploadUrl?: string
 }
 
-interface DuplicateCheckState {
-  status: DuplicateCheckStatus
-  message?: string
-  checkedValue?: string
-  verifiedValue?: string
-}
-
 const initialFormState: RecruitFormState = {
-  name: '',
   gender: '',
   birth: '',
-  major: '',
   enrolledClassification: '',
-  studentId: '',
-  phoneNumber: '',
-  emailLocal: '',
-  emailDomain: 'inha.edu',
   gdgInterest: [],
   gdgWish: [],
   gdgFeedback: '',
@@ -82,24 +82,98 @@ const genderOptions = [
   { id: '비공개', label: '비공개' }
 ]
 
-/** 중복 확인 결과 표시. 예전에는 GdgFieldContainer 의 status 를 썼다. */
-type FieldStatus = 'success' | 'error' | undefined
+/** `?preview=1` 용 가짜 계정. 오픈 전에 로그인 없이 폼 모양만 볼 때 쓴다. */
+const PREVIEW_IDENTITY: Identity = {
+  name: '홍길동',
+  studentId: '12200000',
+  email: 'hong@inha.edu',
+  phoneNumber: '01000000000',
+  major: 'CSE'
+}
 
-function RecruitMemberForm() {
+/** 'Y26_2' → '2026-2학기' */
+const formatSemesterLabel = (value?: string | null) => {
+  if (!value) return '-'
+  const matched = /^Y(\d{2})_(\d)$/.exec(value)
+  return matched ? `20${matched[1]}-${matched[2]}학기` : value
+}
+
+const formatDateTime = (value?: string | null) => {
+  if (!value) return '-'
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return value
+  return parsed.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+/**
+ * 고칠 수 없는 값이지만 **읽히기는 해야 한다.** DUSK_INPUT_READONLY 의 글자색은
+ * placeholder 와 같은 밝기라, 칸이 전부 읽기 전용인 여기서는 빈 폼처럼 보인다.
+ * 테두리·배경만 흐리게 두고 값은 입력칸과 같은 밝기로 올린다.
+ */
+function IdentityRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="text-[13px] text-dusk-ink-700">{label}</span>
+      <p className={cn(DUSK_INPUT_READONLY, 'text-dusk-ink-100')}>{value}</p>
+    </div>
+  )
+}
+
+/**
+ * 계정에서 가져온 신원을 읽기 전용으로 보여준다.
+ *
+ * 입력칸으로 두면 여기서 고친 값이 저장될 것처럼 보이는데 실제로는 서버가 계정 값으로 덮어쓴다.
+ * 무엇이 제출되는지는 보여주되 고치는 자리는 프로필로 넘긴다.
+ */
+function IdentitySection({ identity }: { identity: Identity }) {
+  return (
+    <section className="flex flex-col gap-[18px] rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[22px]">
+      <div className="flex flex-col gap-1.5">
+        <h2 className="text-[15px] font-medium text-dusk-ink-200">지원자 정보</h2>
+        <p className="text-[13px] leading-[1.7] text-dusk-ink-700">
+          로그인한 계정에서 가져온 값이며 이대로 제출됩니다. 이름·전화번호·주전공이 다르다면{' '}
+          <Link href="/profile/" className="text-ember underline underline-offset-2">
+            프로필
+          </Link>
+          에서 먼저 수정해 주세요.
+        </p>
+      </div>
+
+      <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
+        <IdentityRow label="이름" value={identity.name} />
+        <IdentityRow label="학번" value={identity.studentId} />
+        <IdentityRow label="전화번호" value={formatPhoneNumberDisplay(identity.phoneNumber)} />
+        <IdentityRow label="이메일" value={identity.email} />
+      </div>
+      <IdentityRow label="주전공" value={formatMajorLabel(identity.major)} />
+    </section>
+  )
+}
+
+function RecruitMemberForm({
+  identity,
+  apiClient,
+  preview,
+  onAlreadyApplied
+}: {
+  identity: Identity
+  /** 미리보기에서는 제출하지 않으므로 없다. */
+  apiClient: AxiosInstance | null
+  preview: boolean
+  onAlreadyApplied: () => void
+}) {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const { formatInput, isValidFormat, toDigits } = usePhoneNumber()
-  const isPreview = searchParams?.get('preview') === '1'
   const [formData, setFormData] = useState<RecruitFormState>(initialFormState)
   const [loading, setLoading] = useState(false)
-  const [studentCheckState, setStudentCheckState] = useState<DuplicateCheckState>({
-    status: 'idle'
-  })
-  const [phoneCheckState, setPhoneCheckState] = useState<DuplicateCheckState>({ status: 'idle' })
-  const [emailCheckState, setEmailCheckState] = useState<DuplicateCheckState>({ status: 'idle' })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [globalError, setGlobalError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [, setGlobalError] = useState<string | null>(null)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -112,55 +186,8 @@ function RecruitMemberForm() {
   }
 
   const handleValueChange = (field: keyof RecruitFormState) => (value: string) => {
-    const nextValue =
-      field === 'phoneNumber'
-        ? formatInput(value)
-        : field === 'birth'
-          ? formatDateInput(value)
-          : value
+    const nextValue = field === 'birth' ? formatDateInput(value) : value
     setFormData((prev) => ({ ...prev, [field]: nextValue }))
-
-    if (field === 'studentId') {
-      const trimmed = nextValue.trim()
-      if (studentCheckState.verifiedValue === trimmed && trimmed !== '') {
-        setStudentCheckState((prev) => ({
-          ...prev,
-          status: 'available',
-          message: '※ 가입 가능한 학번입니다.',
-          checkedValue: trimmed
-        }))
-      } else {
-        setStudentCheckState((prev) => ({ status: 'idle', verifiedValue: prev.verifiedValue }))
-      }
-    }
-
-    if (field === 'phoneNumber') {
-      const trimmed = nextValue.trim()
-      if (phoneCheckState.verifiedValue === trimmed && trimmed !== '') {
-        setPhoneCheckState((prev) => ({
-          ...prev,
-          status: 'available',
-          message: '※ 가입 가능한 전화번호입니다.',
-          checkedValue: trimmed
-        }))
-      } else {
-        setPhoneCheckState((prev) => ({ status: 'idle', verifiedValue: prev.verifiedValue }))
-      }
-    }
-
-    if (field === 'emailLocal') {
-      const currentEmail = `${nextValue.trim()}@${formData.emailDomain}`
-      if (emailCheckState.verifiedValue === currentEmail && nextValue.trim() !== '') {
-        setEmailCheckState((prev) => ({
-          ...prev,
-          status: 'available',
-          message: '※ 가입 가능한 이메일입니다.',
-          checkedValue: currentEmail
-        }))
-      } else {
-        setEmailCheckState((prev) => ({ status: 'idle', verifiedValue: prev.verifiedValue }))
-      }
-    }
   }
 
   /** 최대 3개까지 고른다. 넘치면 담지 않고 알린다 — 조용히 무시하면 왜 안 되는지 알 수 없다. */
@@ -177,182 +204,25 @@ function RecruitMemberForm() {
     setFormData((prev) => ({ ...prev, [field]: [...prev[field], value] }))
   }
 
-  const handleStudentCheck = async () => {
-    const candidate = formData.studentId.trim()
-    if (!candidate || candidate.length !== 8) return
-    setStudentCheckState({ status: 'checking', checkedValue: candidate })
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/student-id`,
-        { studentId: candidate }
-      )
-      const isExists = response.data?.data?.isExists
-      if (isExists) {
-        setStudentCheckState({
-          status: 'duplicate',
-          message: '※ 중복된 학번입니다.',
-          checkedValue: candidate
-        })
-        return
-      }
-      setStudentCheckState({
-        status: 'available',
-        message: '※ 가입 가능한 학번입니다.',
-        checkedValue: candidate,
-        verifiedValue: candidate
-      })
-    } catch {
-      setStudentCheckState({
-        status: 'error',
-        message: '※ 중복 확인 중 오류가 발생했습니다.',
-        checkedValue: candidate
-      })
-    }
-  }
-
-  const handlePhoneCheck = async () => {
-    const candidate = formData.phoneNumber.trim()
-    if (!candidate || !isValidFormat(candidate)) return
-    const digits = toDigits(candidate)
-    setPhoneCheckState({ status: 'checking', checkedValue: digits })
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/phone-number`,
-        { phoneNumber: digits }
-      )
-      const isExists = response.data?.data?.isExists
-      if (isExists) {
-        setPhoneCheckState({
-          status: 'duplicate',
-          message: '※ 중복된 전화번호입니다.',
-          checkedValue: candidate
-        })
-        return
-      }
-      setPhoneCheckState({
-        status: 'available',
-        message: '※ 가입 가능한 전화번호입니다.',
-        checkedValue: candidate,
-        verifiedValue: candidate
-      })
-    } catch {
-      setPhoneCheckState({
-        status: 'error',
-        message: '※ 중복 확인 중 오류가 발생했습니다.',
-        checkedValue: candidate
-      })
-    }
-  }
-
-  const handleEmailCheck = async () => {
-    const emailLocal = formData.emailLocal.trim()
-    if (!emailLocal) return
-    const fullEmail = `${emailLocal}@${formData.emailDomain}`
-    setEmailCheckState({ status: 'checking', checkedValue: fullEmail })
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/check/email`,
-        { email: fullEmail }
-      )
-      const isExists = response.data?.data?.isExists
-      if (isExists) {
-        setEmailCheckState({
-          status: 'duplicate',
-          message: '※ 중복된 이메일입니다.',
-          checkedValue: fullEmail
-        })
-        return
-      }
-      setEmailCheckState({
-        status: 'available',
-        message: '※ 가입 가능한 이메일입니다.',
-        checkedValue: fullEmail,
-        verifiedValue: fullEmail
-      })
-    } catch {
-      setEmailCheckState({
-        status: 'error',
-        message: '※ 중복 확인 중 오류가 발생했습니다.',
-        checkedValue: fullEmail
-      })
-    }
-  }
-
   const isFormValid = useMemo(() => {
-    const required = ['name', 'gender', 'birth', 'major', 'enrolledClassification']
+    const required = ['gender', 'birth', 'enrolledClassification']
     const hasStrings = required.every(
       (f) => String(formData[f as keyof RecruitFormState]).trim() !== ''
     )
-    const isChecksPassed =
-      formData.studentId.trim() === studentCheckState.verifiedValue &&
-      formData.phoneNumber.trim() === phoneCheckState.verifiedValue &&
-      `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
     const isProofPassed =
       formData.enrolledClassification !== '군휴학' || formData.proofFile !== null
     return (
       hasStrings &&
       formData.gdgInterest.length > 0 &&
       formData.gdgWish.length > 0 &&
-      isChecksPassed &&
       isProofPassed &&
       formData.privacyAgreed
     )
-  }, [formData, phoneCheckState, studentCheckState, emailCheckState])
+  }, [formData])
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setIsSubmitted(true)
-    if (isPreview || !isFormValid) return
-    try {
-      setLoading(true)
-      const buildRecruitMap = () => {
-        const map = new Map<number, Record<string, unknown>>()
-        map.set(2, {
-          name: formData.name,
-          studentId: formData.studentId,
-          enrolledClassification: formData.enrolledClassification
-        })
-        map.set(3, {
-          phoneNumber: toDigits(formData.phoneNumber)
-        })
-        map.set(4, {
-          gender: formData.gender,
-          birth: formData.birth,
-          email: `${formData.emailLocal.trim()}@${formData.emailDomain}`
-        })
-        map.set(5, { major: formData.major })
-        // 회비 입금 여부는 여기서 보내지 않는다. 전에는 개인정보 동의 체크가 그 필드에
-        // 실려 나갔다 — 동의가 곧 입금으로 읽히는 모양이었다. 서버가
-        // RecruitMemberRequest.toEntity() 에서 false 로 못 박고 있어 실제로 입금 처리된
-        // 지원자는 없었지만, 입금 표시는 내역을 보고 운영진이 따로 누른다.
-        map.set(6, {
-          gdgInterest: formData.gdgInterest,
-          gdgWish: formData.gdgWish,
-          gdgFeedback: formData.gdgFeedback
-        })
-        return map
-      }
-      const payload = Object.fromEntries(buildRecruitMap())
-      if (formData.enrolledClassification === '군휴학' && formData.proofFile) {
-        const proofFileKey = await uploadProofFile(formData.proofFile)
-        const step6 = payload[6] as Record<string, unknown>
-        payload[6] = {
-          ...step6,
-          proofFileUrl: proofFileKey
-        }
-      }
-      await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply`, payload)
-      router.push('/recruit/member/completed?from=recruit')
-    } catch (error: any) {
-      setGlobalError(error.response?.data?.message || '지원서 제출 중 오류가 발생했습니다.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const uploadProofFile = async (file: File) => {
-    const presignedResponse = await axios.post(
-      `${process.env.NEXT_PUBLIC_BASE_API_URL}/recruit/member/apply/proof-file/presigned-upload`,
+  const uploadProofFile = async (client: AxiosInstance, file: File) => {
+    const presignedResponse = await client.post(
+      '/recruit/member/apply/proof-file/presigned-upload',
       {
         fileName: file.name,
         contentType: file.type || 'application/octet-stream',
@@ -365,6 +235,7 @@ function RecruitMemberForm() {
       throw new Error('증빙 파일 업로드 URL 발급 응답이 올바르지 않습니다.')
     }
 
+    // presigned URL 은 S3 로 바로 나간다. 여기에 Authorization 을 실으면 서명이 깨진다.
     const uploadResponse = await fetch(payload.uploadUrl, {
       method: 'PUT',
       headers: {
@@ -394,58 +265,54 @@ function RecruitMemberForm() {
     }
   }
 
-  const studentStatus: FieldStatus =
-    formData.studentId.trim() === studentCheckState.verifiedValue
-      ? 'success'
-      : studentCheckState.status === 'error' || studentCheckState.status === 'duplicate'
-        ? 'error'
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsSubmitted(true)
+    setGlobalError(null)
+    if (preview || !apiClient || !isFormValid) return
+    try {
+      setLoading(true)
+      // 이름·학번·전화번호·이메일·주전공은 보내지 않는다. 서버가 계정 값으로 채운다.
+      const payload: Record<string, unknown> = {
+        2: { enrolledClassification: formData.enrolledClassification },
+        4: { gender: formData.gender, birth: formData.birth },
+        // 회비 입금 여부는 여기서 보내지 않는다. 전에는 개인정보 동의 체크가 그 필드에
+        // 실려 나갔다 — 동의가 곧 입금으로 읽히는 모양이었다. 서버가
+        // RecruitMemberRequest.toEntity() 에서 false 로 못 박고 있어 실제로 입금 처리된
+        // 지원자는 없었지만, 입금 표시는 내역을 보고 운영진이 따로 누른다.
+        6: {
+          gdgInterest: formData.gdgInterest,
+          gdgWish: formData.gdgWish,
+          gdgFeedback: formData.gdgFeedback
+        }
+      }
+      if (formData.enrolledClassification === '군휴학' && formData.proofFile) {
+        const proofFileKey = await uploadProofFile(apiClient, formData.proofFile)
+        const step6 = payload[6] as Record<string, unknown>
+        payload[6] = {
+          ...step6,
+          proofFileUrl: proofFileKey
+        }
+      }
+      await apiClient.post('/recruit/member/apply', payload)
+      router.push('/recruit/member/completed?from=recruit')
+    } catch (error: unknown) {
+      // 화면에서 미리 걸렀어도 다른 탭에서 먼저 냈을 수 있다. 오류 대신 지원 완료 화면으로 넘긴다.
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        onAlreadyApplied()
+        return
+      }
+      const message = axios.isAxiosError(error)
+        ? (error.response?.data as { message?: string } | undefined)?.message
         : undefined
-  const studentStatusMessage =
-    formData.studentId.trim() === studentCheckState.verifiedValue
-      ? '※ 가입 가능한 학번입니다.'
-      : studentCheckState.message
+      setGlobalError(message || '지원서 제출 중 오류가 발생했습니다.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
-  const phoneStatus: FieldStatus =
-    formData.phoneNumber.trim() === phoneCheckState.verifiedValue
-      ? 'success'
-      : phoneCheckState.status === 'error' || phoneCheckState.status === 'duplicate'
-        ? 'error'
-        : undefined
-  const phoneStatusMessage =
-    formData.phoneNumber.trim() === phoneCheckState.verifiedValue
-      ? '※ 가입 가능한 전화번호입니다.'
-      : phoneCheckState.message
-
-  const emailStatus: FieldStatus =
-    `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
-      ? 'success'
-      : emailCheckState.status === 'error' || emailCheckState.status === 'duplicate'
-        ? 'error'
-        : undefined
-  const emailStatusMessage =
-    `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
-      ? '※ 가입 가능한 이메일입니다.'
-      : emailCheckState.message
-
-  const enrollmentStatus: FieldStatus =
-    isSubmitted && !formData.enrolledClassification ? 'error' : undefined
   const enrollmentStatusMessage =
     isSubmitted && !formData.enrolledClassification ? '※ 필수 선택 사항입니다.' : undefined
-
-  const isStudentCheckDisabled =
-    !formData.studentId.trim() ||
-    formData.studentId.trim().length !== 8 ||
-    studentCheckState.status === 'checking' ||
-    formData.studentId.trim() === studentCheckState.verifiedValue
-  const isPhoneCheckDisabled =
-    !formData.phoneNumber.trim() ||
-    !isValidFormat(formData.phoneNumber) ||
-    phoneCheckState.status === 'checking' ||
-    formData.phoneNumber.trim() === phoneCheckState.verifiedValue
-  const isEmailCheckDisabled =
-    !formData.emailLocal.trim() ||
-    emailCheckState.status === 'checking' ||
-    `${formData.emailLocal.trim()}@${formData.emailDomain}` === emailCheckState.verifiedValue
 
   return (
     <>
@@ -463,16 +330,9 @@ function RecruitMemberForm() {
         <p className="mt-3 text-[15px] text-dusk-ink-600">GDGoC INHA 2026-2 신입 멤버 모집</p>
 
         <form onSubmit={handleSubmit} className="mt-[38px] flex flex-col gap-[22px]">
+          <IdentitySection identity={identity} />
+
           <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-            <DuskField label="이름" required>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => handleValueChange('name')(e.target.value)}
-                placeholder="이름을 입력해 주세요."
-                className={DUSK_INPUT}
-              />
-            </DuskField>
             <DuskField label="성별" required>
               <select
                 value={formData.gender}
@@ -489,39 +349,17 @@ function RecruitMemberForm() {
                 ))}
               </select>
             </DuskField>
+            <DuskField label="생년월일" required>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={formData.birth}
+                onChange={(e) => handleValueChange('birth')(e.target.value)}
+                placeholder="생년월일을 입력해 주세요. (YYYY.MM.DD)"
+                className={DUSK_INPUT}
+              />
+            </DuskField>
           </div>
-
-          <DuskField label="생년월일" required>
-            <input
-              type="text"
-              inputMode="numeric"
-              value={formData.birth}
-              onChange={(e) => handleValueChange('birth')(e.target.value)}
-              placeholder="생년월일을 입력해 주세요. (YYYY.MM.DD)"
-              className={DUSK_INPUT}
-            />
-          </DuskField>
-
-          <DuskField label="주전공" required>
-            <select
-              value={formData.major}
-              onChange={(e) => handleValueChange('major')(e.target.value)}
-              className={DUSK_SELECT}
-            >
-              <option value="" className={DUSK_OPTION}>
-                주전공을 선택해 주세요.
-              </option>
-              {majorOptions.map((group) => (
-                <optgroup key={group.title} label={group.title} className={DUSK_OPTION}>
-                  {group.items.map((item) => (
-                    <option key={item.code} value={item.code} className={DUSK_OPTION}>
-                      {item.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </DuskField>
 
           <div className="flex flex-col gap-3">
             <span className="text-[13px] text-dusk-ink-700">
@@ -583,101 +421,6 @@ function RecruitMemberForm() {
               )}
             </DuskField>
           )}
-
-          {/* 학번·전화번호·이메일은 중복 확인을 통과해야 제출된다. */}
-          <DuskField
-            label="학번"
-            required
-            hint={studentStatus === 'success' ? studentStatusMessage : undefined}
-            error={studentStatus === 'error' ? studentStatusMessage : undefined}
-          >
-            <div className="flex items-center gap-2.5">
-              <input
-                type="text"
-                inputMode="numeric"
-                aria-label="학번"
-                value={formData.studentId}
-                onChange={(e) => handleValueChange('studentId')(e.target.value)}
-                placeholder="학번을 입력해 주세요."
-                className={cn(
-                  'min-w-0 flex-1',
-                  DUSK_INPUT,
-                  studentStatus === 'error' && 'border-[rgba(196,88,74,0.6)]'
-                )}
-              />
-              <button
-                type="button"
-                onClick={handleStudentCheck}
-                disabled={isStudentCheckDisabled}
-                className={DUSK_GHOST_BUTTON}
-              >
-                중복 확인
-              </button>
-            </div>
-          </DuskField>
-
-          <DuskField
-            label="전화번호"
-            required
-            hint={phoneStatus === 'success' ? phoneStatusMessage : undefined}
-            error={phoneStatus === 'error' ? phoneStatusMessage : undefined}
-          >
-            <div className="flex items-center gap-2.5">
-              <input
-                type="tel"
-                aria-label="전화번호"
-                value={formData.phoneNumber}
-                onChange={(e) => handleValueChange('phoneNumber')(e.target.value)}
-                placeholder="전화번호를 입력해 주세요. (010-1234-5678)"
-                className={cn(
-                  'min-w-0 flex-1',
-                  DUSK_INPUT,
-                  phoneStatus === 'error' && 'border-[rgba(196,88,74,0.6)]'
-                )}
-              />
-              <button
-                type="button"
-                onClick={handlePhoneCheck}
-                disabled={isPhoneCheckDisabled}
-                className={DUSK_GHOST_BUTTON}
-              >
-                중복 확인
-              </button>
-            </div>
-          </DuskField>
-
-          <DuskField
-            label="이메일"
-            required
-            hint={emailStatus === 'success' ? emailStatusMessage : undefined}
-            error={emailStatus === 'error' ? emailStatusMessage : undefined}
-          >
-            <div className="flex flex-wrap items-center gap-2.5">
-              <input
-                type="text"
-                aria-label="이메일 아이디"
-                value={formData.emailLocal}
-                onChange={(e) => handleValueChange('emailLocal')(e.target.value)}
-                placeholder="이메일 아이디를 입력해 주세요."
-                className={cn(
-                  'min-w-[140px] flex-1',
-                  DUSK_INPUT,
-                  emailStatus === 'error' && 'border-[rgba(196,88,74,0.6)]'
-                )}
-              />
-              <span className="shrink-0 text-[15px] text-dusk-ink-400">
-                @{formData.emailDomain}
-              </span>
-              <button
-                type="button"
-                onClick={handleEmailCheck}
-                disabled={isEmailCheckDisabled}
-                className={DUSK_GHOST_BUTTON}
-              >
-                중복 확인
-              </button>
-            </div>
-          </DuskField>
 
           <div className="flex flex-col gap-3">
             <span className="text-[13px] text-dusk-ink-700">
@@ -745,6 +488,10 @@ function RecruitMemberForm() {
             </span>
           </label>
 
+          {globalError ? (
+            <p className="text-[13px] leading-[1.7] text-signal-err">{globalError}</p>
+          ) : null}
+
           <div className="mt-1.5 flex">
             <button type="submit" disabled={!isFormValid || loading} className={DUSK_SUBMIT_BUTTON}>
               제출하기
@@ -757,23 +504,164 @@ function RecruitMemberForm() {
 }
 
 /**
+ * 이미 낸 사람에게는 폼 대신 이 화면을 보여준다.
+ *
+ * 전에는 폼을 다 채우고 제출한 뒤에야 "중복된 학번입니다" 를 만났다. 정상 동작인데도 뭔가
+ * 잘못된 것처럼 읽혀서, 아예 폼을 열지 않는다.
+ */
+function AlreadyAppliedScreen({ application }: { application: MyMemberApplication }) {
+  return (
+    <RecruitNotice
+      title="이미 지원하셨습니다"
+      message={`${formatSemesterLabel(application.admissionSemester)} 부원 지원서가 접수되어 있습니다. 한 학기에 한 번만 지원할 수 있습니다.`}
+    >
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[15px] font-medium text-dusk-ink-200">접수 내역</h2>
+        <div className="flex flex-col gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[18px] text-[15px]">
+          <div className="flex gap-3">
+            <span className="w-24 shrink-0 text-dusk-ink-700">제출 일시</span>
+            <span className="text-dusk-ink-100">{formatDateTime(application.createdAt)}</span>
+          </div>
+          <div className="flex gap-3">
+            <span className="w-24 shrink-0 text-dusk-ink-700">회비 입금</span>
+            <span className="text-dusk-ink-100">
+              {application.isPayed ? '확인 완료' : '확인 전'}
+            </span>
+          </div>
+        </div>
+        <p className="text-[13px] leading-[1.7] text-dusk-ink-700">
+          제출한 내용은{' '}
+          <Link href="/profile/" className="text-ember underline underline-offset-2">
+            프로필
+          </Link>
+          에서 확인할 수 있습니다.
+        </p>
+      </section>
+    </RecruitNotice>
+  )
+}
+
+type EntryState =
+  | { kind: 'loading' }
+  | { kind: 'login' }
+  | { kind: 'error' }
+  | { kind: 'applied'; application: MyMemberApplication }
+  | { kind: 'form'; identity: Identity }
+
+/**
+ * 로그인 여부와 지원 이력을 먼저 확인하고 그에 맞는 화면을 고른다.
+ *
+ * 지원에는 로그인이 필요하다. 신원을 계정에서 가져오면 이름·학번 오타로 지원서와 계정이
+ * 영영 안 이어지는 일이 없어지고, 이미 낸 사람은 폼을 열기 전에 걸러진다.
+ */
+function RecruitMemberEntry() {
+  const { user } = useAuth()
+  const { apiClient } = useAuthenticatedApi()
+  const isLoggedIn = Boolean(user)
+  const [state, setState] = useState<EntryState>({ kind: 'loading' })
+  const [reloadKey, setReloadKey] = useState(0)
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setState({ kind: 'login' })
+      return
+    }
+
+    let alive = true
+    setState({ kind: 'loading' })
+
+    Promise.all([fetchMyProfile(apiClient), fetchMyMemberApplication(apiClient)])
+      .then(([profile, application]) => {
+        if (!alive) return
+        if (application) {
+          setState({ kind: 'applied', application })
+          return
+        }
+        setState({ kind: 'form', identity: toIdentity(profile) })
+      })
+      .catch(() => {
+        // 401 은 useAuthenticatedApi 가 로그인으로 보낸다. 여기 오는 것은 그 밖의 실패다.
+        if (alive) setState({ kind: 'error' })
+      })
+
+    return () => {
+      alive = false
+    }
+  }, [apiClient, isLoggedIn, reloadKey])
+
+  const reload = useCallback(() => setReloadKey((key) => key + 1), [])
+
+  if (state.kind === 'loading') return <Loader />
+
+  if (state.kind === 'login') {
+    return (
+      <RecruitNotice
+        title="로그인이 필요합니다"
+        message="지원서에 들어가는 이름·학번·이메일을 계정에서 가져옵니다. 인하대학교(@inha.edu) 구글 계정으로 로그인해 주세요."
+        action={{ label: '로그인하고 지원하기', href: LOGIN_HREF }}
+      />
+    )
+  }
+
+  if (state.kind === 'error') {
+    return (
+      <RecruitNotice
+        title="지원 이력을 확인하지 못했습니다"
+        message="일시적인 오류로 지원 가능 여부를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요."
+        action={{ label: '다시 시도', onClick: reload }}
+      />
+    )
+  }
+
+  if (state.kind === 'applied') {
+    return <AlreadyAppliedScreen application={state.application} />
+  }
+
+  return (
+    <RecruitMemberForm
+      identity={state.identity}
+      apiClient={apiClient}
+      preview={false}
+      onAlreadyApplied={reload}
+    />
+  )
+}
+
+const toIdentity = (profile: UserProfile): Identity => ({
+  name: profile.name,
+  studentId: profile.studentId,
+  email: profile.email,
+  phoneNumber: profile.phoneNumber,
+  major: profile.major
+})
+
+/**
  * 모집 기간 밖이면 폼 대신 안내를 보여준다. 카드 버튼만 잠그면 주소를 직접 친 사람은
  * 폼을 다 채운 뒤 제출에서 403 을 만난다.
  *
  * 게이트는 이 페이지에만 건다. 같은 layout 아래의 `/recruit/member/memo` 는 **모집 전에**
  * 연락처를 남겨두는 화면이라 기간으로 막으면 정반대가 된다.
  *
- * `?preview=1` 은 통과시킨다. 제출은 이미 막혀 있고(위 handleSubmit), 오픈 전에 폼을
+ * `?preview=1` 은 로그인 확인까지 통째로 건너뛴다. 제출은 이미 막혀 있고, 오픈 전에 폼을
  * 확인하려는 용도라 게이트가 그걸 가로막으면 쓸모가 없어진다.
  */
 export default function Recruit() {
   const searchParams = useSearchParams()
 
-  if (searchParams?.get('preview') === '1') return <RecruitMemberForm />
+  if (searchParams?.get('preview') === '1') {
+    return (
+      <RecruitMemberForm
+        identity={PREVIEW_IDENTITY}
+        apiClient={null}
+        preview
+        onAlreadyApplied={() => {}}
+      />
+    )
+  }
 
   return (
     <RecruitMemberGate>
-      <RecruitMemberForm />
+      <RecruitMemberEntry />
     </RecruitMemberGate>
   )
 }

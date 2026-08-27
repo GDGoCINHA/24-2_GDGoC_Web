@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { AttachmentList } from '@/components/board/AttachmentList'
 import { BoardContent } from '@/components/board/BoardContent'
+import EventApplicationSection from '@/components/eventApplication/EventApplicationSection'
 import { GdgSiteHeader } from '@/components/ui/design-system'
 import { DUSK_GHOST_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { BOARD_MENUS } from '@/components/board/boardMenus'
@@ -175,10 +176,15 @@ export default function EventBoardDetailPage() {
           </div>
         )}
 
+        <EventApplicationSection eventBoardId={detail.id} />
+
         {canManage && (
           <div className="flex gap-3 border-t border-t-[rgba(240,234,228,0.10)] pt-7">
             <Link href={`/board/events/edit?id=${detail.id}`} className={DUSK_GHOST_BUTTON}>
               수정
+            </Link>
+            <Link href={`/dashboard/events/form/?id=${detail.id}`} className={DUSK_GHOST_BUTTON}>
+              신청 폼
             </Link>
             <button
               type="button"
