@@ -58,6 +58,7 @@ export default function QuestionEditor({
   const [baseValues, setBaseValues] = useState<string[]>(question.visibleWhenValues ?? [])
 
   const needsOptions = TYPES_WITH_OPTIONS.includes(type)
+  const requiredLocked = locked && !question.isRequired
   const base = candidates.find((candidate) => candidate.id === baseId) ?? null
   const conditionValueChoices = base ? conditionValuesOf(base) : []
 
@@ -97,20 +98,9 @@ export default function QuestionEditor({
           </select>
         </label>
 
-        <label className="ml-auto flex items-center gap-2 text-[13px] text-admin-ink-muted">
-          <input
-            type="checkbox"
-            checked={isRequired}
-            disabled={locked && !question.isRequired}
-            onChange={(e) => setIsRequired(e.target.checked)}
-            className="size-[15px] cursor-pointer accent-admin-accent"
-          />
-          필수
-        </label>
-
         <button
           type="button"
-          className={ADMIN_GHOST_BUTTON}
+          className={`${ADMIN_GHOST_BUTTON} ml-auto`}
           disabled={!canMoveUp}
           onClick={() => onMove(-1)}
         >
@@ -135,6 +125,33 @@ export default function QuestionEditor({
         <span className={LABEL}>도움말 (선택)</span>
         <input className={INPUT} value={helpText} onChange={(e) => setHelpText(e.target.value)} />
       </label>
+
+      <div className="flex flex-col gap-1.5">
+        <span className={LABEL}>답변</span>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            disabled={requiredLocked}
+            onClick={() => setIsRequired(true)}
+            className={isRequired ? ADMIN_ACCENT_BUTTON_SM : ADMIN_GHOST_BUTTON}
+          >
+            필수
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsRequired(false)}
+            className={isRequired ? ADMIN_GHOST_BUTTON : ADMIN_ACCENT_BUTTON_SM}
+          >
+            선택
+          </button>
+        </div>
+        {requiredLocked && (
+          <p className="text-[12px] text-admin-ink-dim">
+            신청자가 있어 필수로 바꿀 수 없습니다. 이미 낸 사람은 이 질문에 답한 적이 없어 필수를
+            어긴 상태가 되기 때문입니다.
+          </p>
+        )}
+      </div>
 
       {needsOptions && (
         <div className="flex flex-col gap-2">

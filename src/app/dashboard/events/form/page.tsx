@@ -25,6 +25,7 @@ import {
   createEventForm,
   deleteEventForm,
   deleteQuestion,
+  publishEventForm,
   fetchEventForm,
   reorderQuestions,
   updateEventForm,
@@ -44,6 +45,26 @@ const INPUT =
 const LABEL = 'text-[12px] tracking-[0.06em] text-admin-ink-dim'
 
 /** 신청 자격으로 고를 수 있는 등급. 그 위 등급은 운영진뿐이라 폼 자격으로 둘 이유가 없다. */
+type FormStatus = 'DRAFT' | 'OPEN' | 'CLOSED'
+
+/** 발행 여부와 isOpen 은 다른 축이다 — 발행은 "드러냈는가", isOpen 은 "지금 받는가". */
+const formStatusOf = (form: EventForm): FormStatus =>
+  !form.publishedAt ? 'DRAFT' : form.isOpen ? 'OPEN' : 'CLOSED'
+
+const STATUS_LABEL: Record<FormStatus, string> = {
+  DRAFT: '작성 중',
+  OPEN: '신청 받는 중',
+  CLOSED: '마감'
+}
+
+const BADGE = 'rounded-full px-3 py-1 text-[12px] tracking-[0.04em]'
+
+const STATUS_BADGE: Record<FormStatus, string> = {
+  DRAFT: `${BADGE} border border-admin-line text-admin-ink-dim`,
+  OPEN: `${BADGE} bg-admin-accent text-admin-accent-ink`,
+  CLOSED: `${BADGE} border border-admin-line text-admin-ink-muted`
+}
+
 const MIN_ROLE_CHOICES: { value: UserRoleValue; label: string }[] = [
   { value: 'GUEST', label: '로그인한 누구나 (부원 아니어도)' },
   { value: 'MEMBER', label: '부원부터' },
@@ -144,6 +165,8 @@ export default function EventFormBuilderPage() {
     return run(() => reorderQuestions(apiClient, eventBoardId, ids))
   }
 
+  const handlePublish = () => run(() => publishEventForm(apiClient, eventBoardId))
+
   const handleDeleteForm = () => run(() => deleteEventForm(apiClient, eventBoardId))
 
   if (Number.isNaN(eventBoardId)) {
@@ -167,7 +190,14 @@ export default function EventFormBuilderPage() {
           신청 폼
         </p>
         <div data-admin-reveal className="mt-2 flex flex-wrap items-end justify-between gap-4">
-          <h1 className={ADMIN_TITLE}>{form?.eventTitle ?? '행사 신청 폼'}</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className={ADMIN_TITLE}>{form?.eventTitle ?? '행사 신청 폼'}</h1>
+            {form && (
+              <span className={STATUS_BADGE[formStatusOf(form)]}>
+                {STATUS_LABEL[formStatusOf(form)]}
+              </span>
+            )}
+          </div>
           <div className="flex gap-2">
             <Link href={`/board/events/detail/?id=${eventBoardId}`} className={ADMIN_GHOST_BUTTON}>
               행사 글 보기
@@ -183,14 +213,35 @@ export default function EventFormBuilderPage() {
           </div>
         </div>
 
+        {form && !form.publishedAt && (
+          <div className="mt-6 flex flex-col items-start gap-3 rounded-[20px] border border-admin-line-accent bg-admin-card p-5">
+            <p className="text-[15px] text-admin-ink">아직 부원에게 보이지 않습니다.</p>
+            <p className="text-[13px] leading-[1.7] text-admin-ink-dim">
+              지금은 이 화면에서만 보입니다. 질문을 다 넣고 미리보기로 확인한 뒤 공개하세요.
+              공개하기 전까지는 무엇이든 몇 번이든 고칠 수 있습니다.
+              <br />
+              공개한 뒤에는 되돌릴 수 없습니다 — 그만 받고 싶을 때는 아래의 「지금 신청 받는 중」을
+              끄면 됩니다.
+            </p>
+            <button
+              type="button"
+              className={ADMIN_ACCENT_BUTTON}
+              disabled={saving}
+              onClick={handlePublish}
+            >
+              신청 폼 공개하기
+            </button>
+          </div>
+        )}
+
         {error && <p className={ADMIN_ERROR_BANNER}>{error}</p>}
 
         {!loading && !form && (
           <div className="mt-8 flex flex-col items-start gap-3 rounded-[20px] border border-admin-line-soft bg-admin-card p-6">
             <p className="text-[15px] text-admin-ink">이 행사는 아직 신청을 받지 않습니다.</p>
-            <p className="text-[13px] text-admin-ink-dim">
-              신청 받기를 켜면 행사 상세에 신청 버튼이 생깁니다. 질문 없이 참가 신청만 받을 수도
-              있습니다.
+            <p className="text-[13px] leading-[1.7] text-admin-ink-dim">
+              폼을 만들어도 곧바로 공개되지 않습니다. 질문을 다 넣고 공개 버튼을 눌러야 부원에게
+              보입니다. 질문 없이 참가 신청만 받을 수도 있습니다.
             </p>
             <button
               type="button"
@@ -198,7 +249,7 @@ export default function EventFormBuilderPage() {
               disabled={saving}
               onClick={handleCreate}
             >
-              신청 받기 시작
+              폼 만들기
             </button>
           </div>
         )}
@@ -289,8 +340,8 @@ export default function EventFormBuilderPage() {
 
               {form.appliedCount > 0 && (
                 <p className="text-[12px] text-admin-ink-dim">
-                  신청자가 {form.appliedCount}명 있어 질문 유형과 선택지를 바꿀 수 없습니다. 문구와
-                  순서는 고칠 수 있습니다.
+                  신청자가 {form.appliedCount}명 있어 질문 유형·선택지를 바꾸거나 선택 질문을 필수로
+                  올릴 수 없습니다. 문구와 순서는 고칠 수 있습니다.
                 </p>
               )}
             </div>

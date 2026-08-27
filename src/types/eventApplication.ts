@@ -95,6 +95,8 @@ export interface EventForm {
   capacity: number | null
   minRole: UserRoleValue
   isOpen: boolean
+  /** null 이면 아직 만드는 중이라 부원에게 보이지 않는다. */
+  publishedAt: string | null
   appliedCount: number
   questions: FormQuestion[]
 }
