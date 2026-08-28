@@ -7,7 +7,8 @@ import { cn } from '@/utils/cn'
  *
  * 디자인 시스템의 `GdgInputField`·`GdgDropdown`·`GdgTextarea`·`GdgButton` 은 밝은 배경을
  * 전제로 만들어졌다. dusk 배경 위에 그대로 두면 흰 입력칸이 떠 버려 여기서는 쓰지 않는다.
- * 로그인·회원가입 같은 밝은 화면은 계속 `Gdg*` 를 쓴다.
+ * 로그인·회원가입도 dusk 로 옮겼다(2026-08-28). 구글 로그인 버튼만은 브랜드 규격이라
+ * 흰 버튼(`GdgGoogleLoginButton`)을 그대로 쓴다.
  */
 
 export const DUSK_LABEL = 'text-[13px] text-dusk-ink-700'
