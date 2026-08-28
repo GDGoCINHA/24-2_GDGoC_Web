@@ -1,20 +1,21 @@
 'use client'
 
 import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
-import axios from 'axios'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-import { GdgMajorDropdown } from '@/components/ui/design-system/GdgMajorDropdown'
-import {
-  GdgButton,
-  GdgCheckbox,
-  GdgFieldContainer,
-  GdgLogo,
-  GdgInputField,
-  type GdgFieldStatus
-} from '@/components/ui/design-system'
 import Loader from '@/components/ui/common/Loader'
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
+import { GdgLogo } from '@/components/ui/design-system'
+import {
+  DuskField,
+  DUSK_CANCEL_BUTTON,
+  DUSK_CHECKBOX,
+  DUSK_GHOST_BUTTON,
+  DUSK_INPUT,
+  DUSK_OPTION,
+  DUSK_SELECT,
+  DUSK_SUBMIT_BUTTON
+} from '@/components/ui/dusk/DuskForm'
 import { useAuth } from '@/hooks/useAuth'
 import {
   checkPhoneNumberDuplicated,
@@ -24,8 +25,10 @@ import {
   signupWithProfile
 } from '@/services/auth/authClient'
 import { PENDING_SIGNUP_STORAGE_KEY, type PendingSignupPayload } from '@/constant/auth'
+import { majorOptions } from '@/constant/majorOptions'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
+import { cn } from '@/utils/cn'
 
 const DEFAULT_FALLBACK_ROUTE = '/'
 const STUDENT_ID_PATTERN = /^12\d{6}$/
@@ -41,13 +44,6 @@ const getSafeNextUrl = (raw: string | null): string => {
   }
 }
 
-interface FieldErrors {
-  name?: string
-  studentId?: string
-  phoneNumber?: string
-  major?: string
-}
-
 type DuplicateCheckStatus = 'idle' | 'checking' | 'available' | 'duplicate' | 'unverified' | 'error'
 
 interface DuplicateCheckState {
@@ -56,6 +52,9 @@ interface DuplicateCheckState {
   checkedValue?: string
   verifiedValue?: string
 }
+
+/** 중복 확인 버튼. 입력칸 오른쪽에 붙으므로 높이를 입력칸에 맞춘다. */
+const DUPLICATE_CHECK_BUTTON = cn(DUSK_GHOST_BUTTON, 'shrink-0 px-[18px] py-3.5')
 
 export default function SignupPage() {
   const router = useRouter()
@@ -71,7 +70,6 @@ export default function SignupPage() {
   const [phoneNumber, setPhoneNumber] = useState('')
   const [major, setMajor] = useState('')
   const [isPrivacyAgreed, setIsPrivacyAgreed] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [globalError, setGlobalError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [studentCheckState, setStudentCheckState] = useState<DuplicateCheckState>({
@@ -297,299 +295,174 @@ export default function SignupPage() {
     phoneNumber.trim() === phoneCheckState.verifiedValue &&
     isPrivacyAgreed
 
-  const studentStatusMessage =
-    studentId === studentCheckState.verifiedValue
-      ? '※ 가입 가능한 학번입니다.'
-      : studentCheckState.message
-  const studentStatus: GdgFieldStatus | undefined =
-    studentId === studentCheckState.verifiedValue
-      ? 'success'
-      : studentCheckState.status === 'error' || studentCheckState.status === 'duplicate'
-        ? 'error'
-        : undefined
+  const isStudentVerified = studentId !== '' && studentId === studentCheckState.verifiedValue
+  const isPhoneVerified = phoneNumber !== '' && phoneNumber === phoneCheckState.verifiedValue
 
-  const phoneStatusMessage =
-    phoneNumber === phoneCheckState.verifiedValue
-      ? '※ 가입 가능한 전화번호입니다.'
-      : phoneCheckState.message
-  const phoneStatus: GdgFieldStatus | undefined =
-    phoneNumber === phoneCheckState.verifiedValue
-      ? 'success'
-      : phoneCheckState.status === 'error' || phoneCheckState.status === 'duplicate'
-        ? 'error'
-        : undefined
+  const studentError =
+    !isStudentVerified &&
+    (studentCheckState.status === 'duplicate' || studentCheckState.status === 'error')
+      ? studentCheckState.message
+      : undefined
+
+  const phoneError =
+    !isPhoneVerified &&
+    (phoneCheckState.status === 'duplicate' || phoneCheckState.status === 'error')
+      ? phoneCheckState.message
+      : undefined
 
   return (
     <>
       <Loader isLoading={loading} />
-      <div className="relative min-h-screen bg-black text-white overflow-x-hidden">
-        {initializing ? null : pendingInfo ? (
-          <form
-            onSubmit={handleSubmit}
-            className="relative z-10 pt-18 pb-30 mobile:pt-12 mobile:pb-36"
-          >
-            <div className="layout-grid layout-grid--narrow-screen layout-grid--4 gap-y-8 mobile:gap-y-6">
-              <div className="col-span-4 flex items-center gap-3 pb-8 mobile:gap-2 mobile:pb-2">
-                <GdgLogo mode="auto" />
-                <p className="typo-pc-h3 mobile:typo-m-h2 text-white">회원가입</p>
-              </div>
+      {initializing ? null : pendingInfo ? (
+        <main className="mx-auto w-full max-w-[560px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
+          <div className="flex items-center gap-3">
+            <GdgLogo mode="auto" />
+            <h1 className="text-[clamp(24px,2.8vw,34px)] font-semibold leading-[1.26] tracking-[-0.03em]">
+              회원가입
+            </h1>
+          </div>
+          <p className="mt-3 break-keep text-[15px] text-dusk-ink-600">
+            GDGoC INHA 홈페이지에서 쓸 정보를 입력해 주세요.
+          </p>
 
-              {/* PC Version */}
-              <div className="pc:contents hidden">
-                <div className="col-span-4">
-                  <GdgFieldContainer label="이름" required>
-                    <GdgInputField
-                      device="pc"
-                      aria-label="이름"
-                      placeholder="이름을 입력해 주세요."
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      state={fieldErrors.name ? 'error' : 'available'}
-                      width="full"
-                    />
-                  </GdgFieldContainer>
-                </div>
-                <div className="col-span-4">
-                  <GdgFieldContainer
-                    label="학과"
-                    required
-                    caption="검색 또는 스크롤하여 지정하세요."
-                    status={fieldErrors.major ? 'error' : undefined}
-                    statusMessage={fieldErrors.major ? '※ 필수 선택 사항입니다.' : undefined}
-                  >
-                    <GdgMajorDropdown device="pc" value={major} onChangeAction={setMajor} />
-                  </GdgFieldContainer>
-                </div>
-                <div className="col-span-4">
-                  <GdgFieldContainer
-                    label="학번"
-                    required
-                    status={studentStatus}
-                    statusMessage={studentStatusMessage}
-                    action={
-                      <GdgButton
-                        device="pc"
-                        type="button"
-                        onClick={handleStudentCheck}
-                        disabled={isStudentCheckDisabled}
-                        size="small"
-                        variant={!isStudentCheckDisabled ? 'active' : 'default'}
-                      >
-                        중복 확인
-                      </GdgButton>
-                    }
-                  >
-                    <>
-                      <GdgInputField
-                        device="pc"
-                        aria-label="학번"
-                        placeholder="학번을 입력해 주세요."
-                        value={studentId}
-                        onChange={(e) => handleStudentIdChange(e.target.value)}
-                        state={studentStatus === 'error' ? 'error' : 'available'}
-                        width="twoThirds"
-                      />
-                    </>
-                  </GdgFieldContainer>
-                </div>
-                <div className="col-span-4">
-                  <GdgFieldContainer
-                    label="전화번호"
-                    required
-                    status={phoneStatus}
-                    statusMessage={phoneStatusMessage}
-                    action={
-                      <GdgButton
-                        device="pc"
-                        type="button"
-                        onClick={handlePhoneCheck}
-                        disabled={isPhoneCheckDisabled}
-                        size="small"
-                        variant={!isPhoneCheckDisabled ? 'active' : 'default'}
-                      >
-                        중복 확인
-                      </GdgButton>
-                    }
-                  >
-                    <>
-                      <GdgInputField
-                        device="pc"
-                        aria-label="전화번호"
-                        placeholder="전화번호를 입력해 주세요."
-                        value={phoneNumber}
-                        onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                        state={phoneStatus === 'error' ? 'error' : 'available'}
-                        width="twoThirds"
-                      />
-                    </>
-                  </GdgFieldContainer>
-                </div>
-              </div>
+          <form onSubmit={handleSubmit} className="mt-[38px] flex flex-col gap-[22px]">
+            <DuskField label="이름" required>
+              <input
+                type="text"
+                aria-label="이름"
+                placeholder="이름을 입력해 주세요."
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className={DUSK_INPUT}
+              />
+            </DuskField>
 
-              {/* Mobile Version */}
-              <div className="pc:hidden contents">
-                <div className="col-span-4">
-                  <GdgFieldContainer label="이름" required>
-                    <GdgInputField
-                      device="mobile"
-                      aria-label="이름"
-                      placeholder="이름을 입력해 주세요."
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      state={fieldErrors.name ? 'error' : 'available'}
-                      width="full"
-                    />
-                  </GdgFieldContainer>
-                </div>
-                <div className="col-span-4">
-                  <GdgFieldContainer
-                    label="학과"
-                    required
-                    caption="검색 혹은 스크롤하여 지정하세요."
-                    status={fieldErrors.major ? 'error' : undefined}
-                    statusMessage={fieldErrors.major ? '※ 필수 선택 사항입니다.' : undefined}
-                  >
-                    <GdgMajorDropdown device="mobile" value={major} onChangeAction={setMajor} />
-                  </GdgFieldContainer>
-                </div>
-                <div className="col-span-4">
-                  <GdgFieldContainer
-                    label="학번"
-                    required
-                    status={studentStatus}
-                    statusMessage={studentStatusMessage}
-                    action={
-                      <GdgButton
-                        device="mobile"
-                        type="button"
-                        onClick={handleStudentCheck}
-                        disabled={isStudentCheckDisabled}
-                        size="small"
-                        variant={!isStudentCheckDisabled ? 'active' : 'default'}
-                      >
-                        중복 확인
-                      </GdgButton>
-                    }
-                  >
-                    <>
-                      <GdgInputField
-                        device="mobile"
-                        aria-label="학번"
-                        placeholder="학번을 입력해 주세요."
-                        value={studentId}
-                        onChange={(e) => handleStudentIdChange(e.target.value)}
-                        state={studentStatus === 'error' ? 'error' : 'available'}
-                        width="twoThirds"
-                      />
-                    </>
-                  </GdgFieldContainer>
-                </div>
-                <div className="col-span-4">
-                  <GdgFieldContainer
-                    label="전화번호"
-                    required
-                    status={phoneStatus}
-                    statusMessage={phoneStatusMessage}
-                    action={
-                      <GdgButton
-                        device="mobile"
-                        type="button"
-                        onClick={handlePhoneCheck}
-                        disabled={isPhoneCheckDisabled}
-                        size="small"
-                        variant={!isPhoneCheckDisabled ? 'active' : 'default'}
-                      >
-                        중복 확인
-                      </GdgButton>
-                    }
-                  >
-                    <>
-                      <GdgInputField
-                        device="mobile"
-                        aria-label="전화번호"
-                        placeholder="전화번호를 입력해 주세요."
-                        value={phoneNumber}
-                        onChange={(e) => handlePhoneNumberChange(e.target.value)}
-                        state={phoneStatus === 'error' ? 'error' : 'available'}
-                        width="twoThirds"
-                      />
-                    </>
-                  </GdgFieldContainer>
-                </div>
-              </div>
+            <DuskField label="학과" required>
+              <select
+                aria-label="학과"
+                value={major}
+                onChange={(event) => setMajor(event.target.value)}
+                className={cn(DUSK_SELECT, major === '' && 'text-dusk-ink-800')}
+              >
+                <option value="" className={DUSK_OPTION}>
+                  학과를 선택해 주세요.
+                </option>
+                {majorOptions.map((group) => (
+                  <optgroup key={group.title} label={group.title} className={DUSK_OPTION}>
+                    {group.items.map((item) => (
+                      <option key={item.code} value={item.code} className={DUSK_OPTION}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </DuskField>
 
-              <div className="col-span-4 space-y-4">
-                <PrivacyPolicyNotice target="signup" compact />
-                <div className="flex items-center justify-end gap-2">
-                  <p className="typo-pc-b3 mobile:typo-m-c1 text-white text-right">
-                    <span className="text-red typo-pc-b3 mobile:typo-m-c1">* </span>개인정보
-                    처리방침에 동의합니다.
-                  </p>
-                  <GdgCheckbox
-                    size="mobile"
-                    checked={isPrivacyAgreed}
-                    onCheckedChange={setIsPrivacyAgreed}
-                  />
-                </div>
+            <DuskField
+              label="학번"
+              required
+              error={studentError}
+              hint={
+                isStudentVerified ? (
+                  <span className="text-signal-ok">※ 가입 가능한 학번입니다.</span>
+                ) : (
+                  '8자리 학번을 입력한 뒤 중복 확인을 눌러 주세요.'
+                )
+              }
+            >
+              <div className="flex gap-2.5">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  aria-label="학번"
+                  placeholder="학번을 입력해 주세요."
+                  value={studentId}
+                  onChange={(event) => handleStudentIdChange(event.target.value)}
+                  className={DUSK_INPUT}
+                />
+                <button
+                  type="button"
+                  onClick={handleStudentCheck}
+                  disabled={isStudentCheckDisabled}
+                  className={DUPLICATE_CHECK_BUTTON}
+                >
+                  중복 확인
+                </button>
               </div>
+            </DuskField>
 
-              {globalError && (
-                <p className="typo-pc-c1 mobile:typo-m-c1 col-span-4 text-center text-red">
-                  {globalError}
-                </p>
-              )}
-
-              <div className="col-span-4 flex justify-end gap-5 pt-12 mobile:grid mobile:grid-cols-3 mobile:gap-2 mobile:pt-8">
-                <div className="hidden mobile:block" aria-hidden />
-                <div className="pc:contents hidden">
-                  <GdgButton
-                    device="pc"
-                    type="button"
-                    onClick={() => router.replace(`/login?next=${encodeURIComponent(nextUrl)}`)}
-                    size="small"
-                    variant="default"
-                  >
-                    이전
-                  </GdgButton>
-                  <GdgButton
-                    device="pc"
-                    type="submit"
-                    loading={loading}
-                    disabled={!isSignupReady || loading}
-                    size="small"
-                    variant={isSignupReady ? 'active' : 'disabled'}
-                  >
-                    회원가입
-                  </GdgButton>
-                </div>
-                <div className="pc:hidden contents">
-                  <GdgButton
-                    device="mobile"
-                    type="button"
-                    onClick={() => router.replace(`/login?next=${encodeURIComponent(nextUrl)}`)}
-                    size="small"
-                    variant="default"
-                    fullWidth
-                  >
-                    이전
-                  </GdgButton>
-                  <GdgButton
-                    device="mobile"
-                    type="submit"
-                    loading={loading}
-                    disabled={!isSignupReady || loading}
-                    size="small"
-                    variant={isSignupReady ? 'active' : 'disabled'}
-                    fullWidth
-                  >
-                    회원가입
-                  </GdgButton>
-                </div>
+            <DuskField
+              label="전화번호"
+              required
+              error={phoneError}
+              hint={
+                isPhoneVerified ? (
+                  <span className="text-signal-ok">※ 가입 가능한 전화번호입니다.</span>
+                ) : (
+                  '전화번호를 입력한 뒤 중복 확인을 눌러 주세요.'
+                )
+              }
+            >
+              <div className="flex gap-2.5">
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  aria-label="전화번호"
+                  placeholder="전화번호를 입력해 주세요."
+                  value={phoneNumber}
+                  onChange={(event) => handlePhoneNumberChange(event.target.value)}
+                  className={DUSK_INPUT}
+                />
+                <button
+                  type="button"
+                  onClick={handlePhoneCheck}
+                  disabled={isPhoneCheckDisabled}
+                  className={DUPLICATE_CHECK_BUTTON}
+                >
+                  중복 확인
+                </button>
               </div>
+            </DuskField>
+
+            <PrivacyPolicyNotice target="signup" showTitle={false} compact />
+
+            <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
+              <input
+                type="checkbox"
+                checked={isPrivacyAgreed}
+                onChange={(event) => setIsPrivacyAgreed(event.target.checked)}
+                className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
+              />
+              <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
+                개인정보 처리방침에 동의합니다.
+                <span className="text-signal-err"> *</span>
+              </span>
+            </label>
+
+            {globalError ? (
+              <p className="text-[13px] leading-[1.7] text-signal-err">{globalError}</p>
+            ) : null}
+
+            <div className="mt-1.5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => router.replace(`/login?next=${encodeURIComponent(nextUrl)}`)}
+                className={DUSK_CANCEL_BUTTON}
+              >
+                이전
+              </button>
+              <button
+                type="submit"
+                disabled={!isSignupReady || loading}
+                className={DUSK_SUBMIT_BUTTON}
+              >
+                회원가입
+              </button>
             </div>
           </form>
-        ) : null}
-      </div>
+        </main>
+      ) : null}
     </>
   )
 }
