@@ -114,7 +114,7 @@ export default function QuestionField({ question, value, onChange, disabled }: Q
     /** 알약 버튼이 라디오보다 손가락으로 누르기 쉬워 모바일에서 낫다. */
     case 'SINGLE_CHOICE':
       return (
-        <DuskField {...common}>
+        <DuskField {...common} group>
           <div className="flex flex-wrap gap-2">
             {options.map((option) => (
               <button
@@ -134,7 +134,7 @@ export default function QuestionField({ question, value, onChange, disabled }: Q
     case 'MULTI_CHOICE': {
       const selected = Array.isArray(value) ? value : []
       return (
-        <DuskField {...common}>
+        <DuskField {...common} group>
           <div className="flex flex-col gap-2.5 pt-1">
             {options.map((option) => (
               <label key={option.value} className="flex cursor-pointer items-center gap-2.5">
