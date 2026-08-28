@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 import Loader from '@/components/ui/common/Loader'
 import { GdgGoogleLoginButton, GdgLogo } from '@/components/ui/design-system'
+import { DUSK_INPUT, DUSK_SUBMIT_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { useAuth } from '@/hooks/useAuth'
 import {
   type LoginApiResponseBody,
@@ -16,6 +17,7 @@ import {
 } from '@/services/auth/authClient'
 import { PENDING_SIGNUP_STORAGE_KEY, type PendingSignupPayload } from '@/constant/auth'
 import { unwrapApiResponse } from '@/utils/api/unwrap'
+import { cn } from '@/utils/cn'
 
 const DEFAULT_FALLBACK_ROUTE = '/'
 
@@ -276,161 +278,101 @@ export default function LoginPage() {
     window.location.href = url
   }, [googleClientId, googleRedirectUri, nextUrl])
 
-  const renderPcView = () => (
-    <div className="mx-auto -mt-6 flex min-h-screen w-full max-w-[1128px] flex-col items-center justify-center px-6 py-16">
-      <div className="w-[550px] space-y-6">
-        <div className="flex items-center gap-3">
-          <GdgLogo mode="pc" variant="long" priority />
-        </div>
-        <div className="rounded-[20px] border border-white/10 bg-black m-auto text-white shadow-[0_0_12px_rgba(250,250,250,0.25)] h-[315px]">
-          <div className="flex h-full flex-col items-center justify-center gap-6 text-center">
-            <div className="space-y-2 text-center">
-              <p className="typo-pc-h4 text-white">방문을 환영합니다!</p>
-              <p className="typo-pc-b3 text-white">
-                {isDashboardLogin
-                  ? '대시보드는 CORE 이상 계정으로 접근할 수 있습니다.'
-                  : 'GDGoC INHA 홈페이지를 이용하려면 로그인하세요.'}
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              {showAdminLogin ? (
-                <div className="flex w-[300px] flex-col gap-3">
-                  <div className="flex flex-col gap-2">
-                    <input
-                      value={adminId}
-                      onChange={(e) => setAdminId(e.target.value)}
-                      placeholder="Admin ID"
-                      className="h-11 rounded-lg border border-gray-300 bg-gray-100 px-3 typo-pc-b3 text-white outline-none focus:border-white"
-                    />
-                    <input
-                      type="password"
-                      value={adminPassword}
-                      onChange={(e) => setAdminPassword(e.target.value)}
-                      placeholder="Password"
-                      className="h-11 rounded-lg border border-gray-300 bg-gray-100 px-3 typo-pc-b3 text-white outline-none focus:border-white"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault()
-                          void handleAdminLogin()
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => void handleAdminLogin()}
-                      disabled={loading}
-                      className="h-11 rounded-lg bg-red typo-pc-b3 text-white disabled:opacity-60"
-                    >
-                      Admin 로그인
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <GdgGoogleLoginButton
-                  device="pc"
-                  onClick={handleGoogleLogin}
-                  disabled={!canUseGoogleLogin || loading}
-                  loading={loading}
-                />
-              )}
-              <div className="space-y-1 typo-pc-c2 text-gray-400">
-                <p>
-                  {isDashboardLogin
-                    ? showAdminLogin
-                      ? 'Google 로그인은 CORE 이상 권한 계정이 필요합니다.'
-                      : '관리자 로그인은 쿼리 파라미터(?admin=1)로만 표시됩니다.'
-                    : '@inha.edu 계정만 사용 가능합니다'}
-                </p>
-                {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
-              </div>
-            </div>
-          </div>
-        </div>
+  /** 구글 버튼은 폭이 고정이라 CSS 로 줄일 수 없다. 화면별로 갈라 렌더한다. */
+  const googleButton = (
+    <>
+      <div className="hidden pc:block">
+        <GdgGoogleLoginButton
+          device="pc"
+          onClick={handleGoogleLogin}
+          disabled={!canUseGoogleLogin || loading}
+          loading={loading}
+        />
       </div>
-    </div>
-  )
-
-  const renderMobileView = () => (
-    <div className="relative -mt-6 flex min-h-screen flex-col items-center justify-center px-4 py-16 text-white">
-      <div className="w-[343px] space-y-4">
-        <div className="flex items-center gap-2">
-          <GdgLogo mode="mobile" variant="long" />
-        </div>
-        <div className="rounded-[20px] border border-white/10 bg-black m-auto text-white shadow-[0_0_12px_rgba(250,250,250,0.25)]  h-[212px]">
-          <div className="flex h-full flex-col items-center justify-center gap-6 text-center">
-            <div className="space-y-2 text-center">
-              <p className="typo-m-h3 text-white">방문을 환영합니다!</p>
-              <p className="typo-m-c2 text-white">
-                {isDashboardLogin
-                  ? '대시보드는 CORE 이상 계정으로 접근할 수 있습니다.'
-                  : 'GDGoC INHA 홈페이지를 이용하려면 로그인하세요.'}
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              {showAdminLogin ? (
-                <div className="flex w-[260px] flex-col gap-3">
-                  <div className="flex flex-col gap-2">
-                    <input
-                      value={adminId}
-                      onChange={(e) => setAdminId(e.target.value)}
-                      placeholder="Admin ID"
-                      className="h-10 rounded-lg border border-gray-300 bg-gray-100 px-3 typo-m-b3 text-white outline-none focus:border-white"
-                    />
-                    <input
-                      type="password"
-                      value={adminPassword}
-                      onChange={(e) => setAdminPassword(e.target.value)}
-                      placeholder="Password"
-                      className="h-10 rounded-lg border border-gray-300 bg-gray-100 px-3 typo-m-b3 text-white outline-none focus:border-white"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault()
-                          void handleAdminLogin()
-                        }
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => void handleAdminLogin()}
-                      disabled={loading}
-                      className="h-10 rounded-lg bg-red typo-m-b3 text-white disabled:opacity-60"
-                    >
-                      Admin 로그인
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <GdgGoogleLoginButton
-                  device="mobile"
-                  onClick={handleGoogleLogin}
-                  disabled={!canUseGoogleLogin || loading}
-                  loading={loading}
-                />
-              )}
-              <div className="space-y-1 typo-m-c2 text-gray-400">
-                <p>
-                  {isDashboardLogin
-                    ? showAdminLogin
-                      ? 'Google 로그인은 CORE 이상 권한 계정이 필요합니다.'
-                      : '관리자 로그인은 쿼리 파라미터(?admin=1)로만 표시됩니다.'
-                    : '@inha.edu 계정만 사용 가능합니다'}
-                </p>
-                {errorMessage ? <p className="text-red">{errorMessage}</p> : null}
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="block pc:hidden">
+        <GdgGoogleLoginButton
+          device="mobile"
+          onClick={handleGoogleLogin}
+          disabled={!canUseGoogleLogin || loading}
+          loading={loading}
+        />
       </div>
-    </div>
+    </>
   )
 
   return (
     <>
       <Loader isLoading={loading} />
-      <div className="min-h-screen bg-[#1e1e1e] text-white">
-        <div className="hidden pc:block">{renderPcView()}</div>
-        <div className="block pc:hidden">{renderMobileView()}</div>
-      </div>
+      <main className="mx-auto flex min-h-screen w-full max-w-[520px] flex-col justify-center px-[clamp(20px,5vw,44px)] py-16">
+        <div className="flex items-center gap-3">
+          <GdgLogo mode="auto" />
+          <h1 className="text-[clamp(22px,2.6vw,30px)] font-semibold leading-[1.26] tracking-[-0.03em]">
+            로그인
+          </h1>
+        </div>
+
+        <section className="mt-7 rounded-[18px] border border-[rgba(240,234,228,0.12)] px-[clamp(20px,4vw,36px)] py-[clamp(32px,5vw,44px)]">
+          <div className="text-center">
+            <p className="text-[clamp(18px,2vw,22px)] font-medium text-dusk-ink-100">
+              방문을 환영합니다!
+            </p>
+            <p className="mt-2.5 break-keep text-[15px] leading-[1.7] text-dusk-ink-600">
+              {isDashboardLogin
+                ? '대시보드는 CORE 이상 계정으로 접근할 수 있습니다.'
+                : 'GDGoC INHA 홈페이지를 이용하려면 로그인하세요.'}
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-col items-center gap-3.5">
+            {showAdminLogin ? (
+              <div className="flex w-full max-w-[300px] flex-col gap-2.5">
+                <input
+                  value={adminId}
+                  onChange={(e) => setAdminId(e.target.value)}
+                  placeholder="Admin ID"
+                  className={DUSK_INPUT}
+                />
+                <input
+                  type="password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="Password"
+                  className={DUSK_INPUT}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      void handleAdminLogin()
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => void handleAdminLogin()}
+                  disabled={loading}
+                  className={cn(DUSK_SUBMIT_BUTTON, 'w-full flex-none')}
+                >
+                  Admin 로그인
+                </button>
+              </div>
+            ) : (
+              googleButton
+            )}
+
+            <p className="text-center text-[13px] leading-[1.7] text-dusk-ink-800">
+              {isDashboardLogin
+                ? showAdminLogin
+                  ? 'Google 로그인은 CORE 이상 권한 계정이 필요합니다.'
+                  : '관리자 로그인은 쿼리 파라미터(?admin=1)로만 표시됩니다.'
+                : '@inha.edu 계정만 사용 가능합니다'}
+            </p>
+            {errorMessage ? (
+              <p className="text-center text-[13px] leading-[1.7] text-signal-err">
+                {errorMessage}
+              </p>
+            ) : null}
+          </div>
+        </section>
+      </main>
     </>
   )
 }
