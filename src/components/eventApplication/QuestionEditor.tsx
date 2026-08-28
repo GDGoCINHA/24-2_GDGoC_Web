@@ -62,6 +62,29 @@ export default function QuestionEditor({
   const base = candidates.find((candidate) => candidate.id === baseId) ?? null
   const conditionValueChoices = base ? conditionValuesOf(base) : []
 
+  /**
+   * 아직 저장하지 않은 편집이 남아 있는지.
+   *
+   * 이 편집기는 서버 값을 첫 상태로만 받고 그 뒤로는 스스로 들고 있다. 저장을 누르지 않으면
+   * 화면은 고친 값을 보여주지만 부원이 보는 폼과 미리보기는 여전히 옛 값이다 — 유형을
+   * 「객관식 (하나)」로 바꿔 두고 저장하지 않으면 화면에는 하나만 고를 수 있는 것처럼
+   * 보이는데 실제로는 체크박스 그대로다. 그래서 어긋난 상태를 눈에 보이게 적는다.
+   */
+  const unsaved =
+    shapeOf(
+      type,
+      label,
+      helpText.trim() === '' ? null : helpText,
+      needsOptions ? options : null,
+      isRequired,
+      baseId,
+      baseValues
+    ) !== questionRevision(question)
+
+  /** 선택형인데 선택지가 없거나 문구가 빈 것이 있으면 서버가 400 으로 막는다. 미리 잠근다. */
+  const optionsIncomplete =
+    needsOptions && (options.length === 0 || options.some((option) => option.label.trim() === ''))
+
   const handleSave = () => {
     onSave({
       type,
@@ -90,9 +113,20 @@ export default function QuestionEditor({
               if (!TYPES_WITH_OPTIONS.includes(next)) setOptions([])
             }}
           >
+            {/*
+              파일 첨부는 입력칸이 아직 잠겨 있어 부원이 답할 수 없다. 필수로 걸면 아무도
+              제출하지 못하는 폼이 되므로 고를 수 없게 둔다. 이미 이 유형인 질문은 유형이
+              사라져 보이지 않도록 그대로 남긴다.
+            */}
             {QUESTION_TYPES.map((option) => (
-              <option key={option} value={option} className={ADMIN_OPTION}>
+              <option
+                key={option}
+                value={option}
+                disabled={option === 'FILE' && type !== 'FILE'}
+                className={ADMIN_OPTION}
+              >
                 {QUESTION_TYPE_LABEL[option]}
+                {option === 'FILE' ? ' (준비 중)' : ''}
               </option>
             ))}
           </select>
@@ -257,11 +291,11 @@ export default function QuestionEditor({
         )}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           className={ADMIN_ACCENT_BUTTON_SM}
-          disabled={saving || label.trim() === ''}
+          disabled={saving || label.trim() === '' || optionsIncomplete}
           onClick={handleSave}
         >
           {saving ? '저장 중…' : '저장'}
@@ -269,10 +303,63 @@ export default function QuestionEditor({
         <button type="button" className={ADMIN_GHOST_BUTTON} disabled={saving} onClick={onDelete}>
           삭제
         </button>
+        {unsaved && !saving && (
+          <span className="text-[12px] text-signal-err">
+            저장하지 않았습니다 — 부원에게는 아직 옛 내용이 보입니다.
+          </span>
+        )}
       </div>
+
+      {optionsIncomplete && (
+        <p className="text-[12px] text-admin-ink-dim">
+          {options.length === 0
+            ? '선택지를 하나 이상 넣어야 저장할 수 있습니다.'
+            : '문구가 비어 있는 선택지가 있습니다.'}
+        </p>
+      )}
     </div>
   )
 }
+
+/**
+ * 서버가 준 질문의 지문.
+ *
+ * 부모가 이것을 `key` 에 넣어, 저장이 실제로 반영됐을 때만 편집기를 새 값으로 다시
+ * 세운다. 저장이 실패하면 지문이 그대로라 사용자가 치던 내용이 살아남는다.
+ *
+ * sortOrder 는 넣지 않는다 — 다른 질문을 위아래로 옮기면 이 질문의 순서도 따라 바뀌는데,
+ * 그때 편집 중이던 내용까지 되돌아가면 안 된다.
+ */
+export const questionRevision = (question: FormQuestion): string =>
+  shapeOf(
+    question.type,
+    question.label,
+    question.helpText,
+    question.options,
+    question.isRequired,
+    question.visibleWhenQuestionId,
+    question.visibleWhenValues
+  )
+
+/** 저장되는 값만 추린 문자열. 키 순서에 흔들리지 않게 배열로 편다. */
+const shapeOf = (
+  type: QuestionType,
+  label: string,
+  helpText: string | null,
+  options: QuestionOption[] | null,
+  isRequired: boolean,
+  baseId: number | null,
+  baseValues: string[] | null
+): string =>
+  JSON.stringify([
+    type,
+    label,
+    helpText ?? '',
+    (options ?? []).map((option) => [option.value, option.label]),
+    isRequired,
+    baseId,
+    baseId == null ? [] : (baseValues ?? [])
+  ])
 
 /** 동의 질문은 선택지가 없어 true/false 를 조건 값으로 쓴다. */
 const conditionValuesOf = (question: FormQuestion): QuestionOption[] => {

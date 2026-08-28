@@ -17,7 +17,10 @@ import {
   ADMIN_TITLE
 } from '@/components/admin/dashboard/adminStyles'
 import FormPreview from '@/components/eventApplication/FormPreview'
-import QuestionEditor, { conditionCandidates } from '@/components/eventApplication/QuestionEditor'
+import QuestionEditor, {
+  conditionCandidates,
+  questionRevision
+} from '@/components/eventApplication/QuestionEditor'
 import Loader from '@/components/ui/common/Loader'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import {
@@ -381,9 +384,14 @@ export default function EventFormBuilderPage() {
                 </p>
               )}
 
+              {/*
+                key 에 서버 값의 지문을 붙인다. 저장이 실제로 반영되면 편집기를 새 값으로
+                다시 세우고, 실패했을 때는 지문이 그대로라 치던 내용이 살아남는다.
+                id 만 key 로 쓰면 편집기가 서버와 어긋난 채 계속 남는다.
+              */}
               {form.questions.map((question, index) => (
                 <QuestionEditor
-                  key={question.id}
+                  key={`${question.id}:${questionRevision(question)}`}
                   question={question}
                   candidates={conditionCandidates(form.questions, question)}
                   locked={form.appliedCount > 0}

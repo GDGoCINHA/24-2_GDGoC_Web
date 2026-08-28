@@ -65,12 +65,28 @@ export interface DuskFieldProps {
   /** 붉게 뜨는 검증 문구. 있으면 hint 대신 이쪽이 보인다. */
   error?: ReactNode
   className?: string
+  /**
+   * 컨트롤이 여럿인 묶음(선택지 버튼·체크박스 목록)이면 켠다.
+   *
+   * `<label>` 은 자기 안의 **첫 번째** 컨트롤에 클릭을 넘긴다. 선택지 묶음을 label 로
+   * 감싸면 라벨 글자나 여백을 누른 것이 첫 선택지를 고른 것이 되어, 누른 적 없는 답이
+   * 켜진다. 복수 선택에서는 그 뒤에 진짜로 고른 것이 더해져 두 개가 켜진 것처럼 보인다.
+   */
+  group?: boolean
   children: ReactNode
 }
 
-export function DuskField({ label, required, hint, error, className, children }: DuskFieldProps) {
-  return (
-    <label className={cn('flex flex-col gap-[9px]', className)}>
+export function DuskField({
+  label,
+  required,
+  hint,
+  error,
+  className,
+  group,
+  children
+}: DuskFieldProps) {
+  const content = (
+    <>
       <span className={DUSK_LABEL}>
         {label}
         {required && <span className="text-signal-err"> *</span>}
@@ -81,6 +97,16 @@ export function DuskField({ label, required, hint, error, className, children }:
       ) : (
         hint && <span className="text-[13px] text-dusk-ink-800">{hint}</span>
       )}
-    </label>
+    </>
   )
+  const classes = cn('flex flex-col gap-[9px]', className)
+
+  if (group) {
+    return (
+      <div role="group" aria-label={label} className={classes}>
+        {content}
+      </div>
+    )
+  }
+  return <label className={classes}>{content}</label>
 }
