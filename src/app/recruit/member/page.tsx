@@ -59,6 +59,19 @@ type RecruitFormState = {
   proofFile: File | null
 }
 
+type RecruitFormErrorKey =
+  | 'gender'
+  | 'birth'
+  | 'enrolledClassification'
+  | 'proofFile'
+  | 'gdgInterest'
+  | 'gdgWish'
+  | 'privacyAgreed'
+
+type RecruitFormErrors = Partial<
+  Record<RecruitFormErrorKey, string>
+>
+
 type PresignedUploadResponse = {
   key?: string
   uploadUrl?: string
@@ -81,6 +94,68 @@ const genderOptions = [
   { id: '여성', label: '여성' },
   { id: '비공개', label: '비공개' }
 ]
+
+const recruitFormErrorOrder: RecruitFormErrorKey[] = [
+  'gender',
+  'birth',
+  'enrolledClassification',
+  'proofFile',
+  'gdgInterest',
+  'gdgWish',
+  'privacyAgreed'
+]
+
+const isValidBirthDate = (value: string) => {
+  const matched = /^(\d{4})\.(\d{2})\.(\d{2})$/.exec(value.trim())
+  if (!matched) return false
+
+  const year = Number(matched[1])
+  const month = Number(matched[2])
+  const day = Number(matched[3])
+  const parsed = new Date(year, month - 1, day)
+
+  return (
+    parsed.getFullYear() === year &&
+    parsed.getMonth() === month - 1 &&
+    parsed.getDate() === day
+  )
+}
+
+const validateRecruitForm = (formData: RecruitFormState): RecruitFormErrors => {
+  const errors: RecruitFormErrors = {}
+
+  if (!formData.gender.trim()) {
+    errors.gender = '성별을 선택해 주세요.'
+  }
+
+  if (!formData.birth.trim()) {
+    errors.birth = '생년월일을 입력해 주세요.'
+  } else if (!isValidBirthDate(formData.birth)) {
+    errors.birth = '생년월일을 YYYY.MM.DD 형식으로 입력해 주세요.'
+  }
+
+  if (!formData.enrolledClassification.trim()) {
+    errors.enrolledClassification = '재학 상태를 선택해 주세요.'
+  }
+
+  if (formData.enrolledClassification === '군휴학' && !formData.proofFile) {
+    errors.proofFile = '군휴학은 증빙 서류를 첨부해 주세요.'
+  }
+
+  if (formData.gdgInterest.length === 0) {
+    errors.gdgInterest = '관심 분야를 1개 이상 선택해 주세요.'
+  }
+
+  if (formData.gdgWish.length === 0) {
+    errors.gdgWish = '하고 싶은 활동을 1개 이상 선택해 주세요.'
+  }
+
+  if (!formData.privacyAgreed) {
+    errors.privacyAgreed = '개인정보 수집 및 이용에 동의해 주세요.'
+  }
+
+  return errors
+}
 
 /** `?preview=1` 용 가짜 계정. 오픈 전에 로그인 없이 폼 모양만 볼 때 쓴다. */
 const PREVIEW_IDENTITY: Identity = {
@@ -204,21 +279,12 @@ function RecruitMemberForm({
     setFormData((prev) => ({ ...prev, [field]: [...prev[field], value] }))
   }
 
-  const isFormValid = useMemo(() => {
-    const required = ['gender', 'birth', 'enrolledClassification']
-    const hasStrings = required.every(
-      (f) => String(formData[f as keyof RecruitFormState]).trim() !== ''
-    )
-    const isProofPassed =
-      formData.enrolledClassification !== '군휴학' || formData.proofFile !== null
-    return (
-      hasStrings &&
-      formData.gdgInterest.length > 0 &&
-      formData.gdgWish.length > 0 &&
-      isProofPassed &&
-      formData.privacyAgreed
-    )
-  }, [formData])
+  const formErrors = useMemo(() => validateRecruitForm(formData), [formData])
+  const isFormValid = Object.keys(formErrors).length === 0
+  const submittedErrors: RecruitFormErrors = isSubmitted ? formErrors : {}
+  const submittedErrorMessages = recruitFormErrorOrder
+    .map((key) => submittedErrors[key])
+    .filter((message): message is string => Boolean(message))
 
   const uploadProofFile = async (client: AxiosInstance, file: File) => {
     const presignedResponse = await client.post(
@@ -269,7 +335,8 @@ function RecruitMemberForm({
     event.preventDefault()
     setIsSubmitted(true)
     setGlobalError(null)
-    if (preview || !apiClient || !isFormValid) return
+    if (!isFormValid) return
+    if (preview || !apiClient) return
     try {
       setLoading(true)
       // 이름·학번·전화번호·이메일·주전공은 보내지 않는다. 서버가 계정 값으로 채운다.
@@ -311,9 +378,6 @@ function RecruitMemberForm({
     }
   }
 
-  const enrollmentStatusMessage =
-    isSubmitted && !formData.enrolledClassification ? '※ 필수 선택 사항입니다.' : undefined
-
   return (
     <>
       <Loader isLoading={loading} />
@@ -333,11 +397,12 @@ function RecruitMemberForm({
           <IdentitySection identity={identity} />
 
           <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-            <DuskField label="성별" required>
+            <DuskField label="성별" required error={submittedErrors.gender}>
               <select
                 value={formData.gender}
                 onChange={(e) => handleValueChange('gender')(e.target.value)}
                 className={DUSK_SELECT}
+                aria-invalid={Boolean(submittedErrors.gender)}
               >
                 <option value="" className={DUSK_OPTION}>
                   성별을 선택해 주세요.
@@ -349,7 +414,7 @@ function RecruitMemberForm({
                 ))}
               </select>
             </DuskField>
-            <DuskField label="생년월일" required>
+            <DuskField label="생년월일" required error={submittedErrors.birth}>
               <input
                 type="text"
                 inputMode="numeric"
@@ -357,6 +422,7 @@ function RecruitMemberForm({
                 onChange={(e) => handleValueChange('birth')(e.target.value)}
                 placeholder="생년월일을 입력해 주세요. (YYYY.MM.DD)"
                 className={DUSK_INPUT}
+                aria-invalid={Boolean(submittedErrors.birth)}
               />
             </DuskField>
           </div>
@@ -379,14 +445,21 @@ function RecruitMemberForm({
                 </button>
               ))}
             </div>
-            {enrollmentStatusMessage ? (
-              <span className="text-[13px] text-signal-err">{enrollmentStatusMessage}</span>
+            {submittedErrors.enrolledClassification ? (
+              <span className="text-[13px] text-signal-err">
+                {submittedErrors.enrolledClassification}
+              </span>
             ) : null}
           </div>
 
           {/* 군휴학은 회비 면제 대상이라 증빙을 받는다. 다른 상태에서는 칸 자체가 없다. */}
           {formData.enrolledClassification === '군휴학' && (
-            <DuskField label="증빙 서류 (군 휴학)" required hint="포털에서 군휴학 신청내역 캡쳐">
+            <DuskField
+              label="증빙 서류 (군 휴학)"
+              required
+              hint="포털에서 군휴학 신청내역 캡쳐"
+              error={submittedErrors.proofFile}
+            >
               <input
                 type="file"
                 ref={fileInputRef}
@@ -439,6 +512,9 @@ function RecruitMemberForm({
                 </button>
               ))}
             </div>
+            {submittedErrors.gdgInterest ? (
+              <span className="text-[13px] text-signal-err">{submittedErrors.gdgInterest}</span>
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-3">
@@ -458,6 +534,9 @@ function RecruitMemberForm({
                 </button>
               ))}
             </div>
+            {submittedErrors.gdgWish ? (
+              <span className="text-[13px] text-signal-err">{submittedErrors.gdgWish}</span>
+            ) : null}
           </div>
 
           <DuskField label="동아리 운영에 바라는 점" hint={`${formData.gdgFeedback.length} / 100`}>
@@ -481,6 +560,7 @@ function RecruitMemberForm({
               checked={formData.privacyAgreed}
               onChange={(e) => setFormData((p) => ({ ...p, privacyAgreed: e.target.checked }))}
               className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
+              aria-invalid={Boolean(submittedErrors.privacyAgreed)}
             />
             <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
               개인정보 수집 및 이용, 개인정보 처리방침에 동의합니다.
@@ -492,9 +572,25 @@ function RecruitMemberForm({
             <p className="text-[13px] leading-[1.7] text-signal-err">{globalError}</p>
           ) : null}
 
+          {submittedErrorMessages.length > 0 ? (
+            <div
+              role="alert"
+              className="rounded-[14px] border border-[rgba(196,88,74,0.45)] bg-[rgba(196,88,74,0.10)] px-4 py-3"
+            >
+              <p className="text-[13px] font-medium text-signal-err">
+                필수 항목을 확인해 주세요.
+              </p>
+              <ul className="mt-2 flex flex-col gap-1 text-[13px] leading-[1.7] text-signal-err">
+                {submittedErrorMessages.map((message) => (
+                  <li key={message}>- {message}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
           <div className="mt-1.5 flex">
-            <button type="submit" disabled={!isFormValid || loading} className={DUSK_SUBMIT_BUTTON}>
-              제출하기
+            <button type="submit" disabled={loading} className={DUSK_SUBMIT_BUTTON}>
+              {loading ? '제출 중...' : '제출하기'}
             </button>
           </div>
         </form>
