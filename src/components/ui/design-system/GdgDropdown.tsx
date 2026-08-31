@@ -26,6 +26,16 @@ export type GdgDropdownOptionGroup = {
 
 export type GdgDropdownSize = Exclude<WidthToken, 'quarter'>
 
+/**
+ * 배경 톤. 기본값은 near-black 화면(관리자·모집 등)을 전제한 스타일이다.
+ * `dusk` 는 로그인·회원가입용으로, `DuskForm` 의 입력칸과 같은 모양·색을 낸다.
+ * 이 톤에서는 폭과 글자 크기를 device 와 무관하게 고정한다 — dusk 화면은 PC/모바일을
+ * 가르지 않고 clamp 하나로 간다.
+ */
+export type GdgDropdownTone = 'default' | 'dusk'
+
+const DUSK_TEXT_CLASS = 'text-[15px] mobile:text-base'
+
 export interface GdgDropdownProps {
   device?: Device
   size?: GdgDropdownSize
@@ -42,6 +52,7 @@ export interface GdgDropdownProps {
   autoFocus?: boolean
   isInvalid?: boolean
   errorMessage?: string
+  tone?: GdgDropdownTone
 }
 
 const POPOVER_MAX_HEIGHT_CLASS: Record<Device, string> = {
@@ -64,18 +75,29 @@ export function GdgDropdown({
   disabled,
   autoFocus,
   isInvalid,
-  errorMessage
+  errorMessage,
+  tone = 'default'
 }: GdgDropdownProps) {
   const controlMeta = getControlMeta(device, size)
-  const ITEM_CLASS = cn(
-    'flex h-9 items-center justify-between rounded-lg px-2 text-white outline-none transition-colors',
-    controlMeta.text,
-    'hover:bg-white hover:text-black',
-    'selected:font-medium',
-    'focus:bg-white focus:text-black',
-    'hover:[&_[data-slot=selected-icon]]:text-black',
-    'focus:[&_[data-slot=selected-icon]]:text-black'
-  )
+  const isDusk = tone === 'dusk'
+  const textClass = isDusk ? DUSK_TEXT_CLASS : controlMeta.text
+  const ITEM_CLASS = isDusk
+    ? cn(
+        'flex h-10 items-center justify-between rounded-lg px-3 outline-none transition-colors',
+        textClass,
+        'text-dusk-ink-200 selected:font-medium selected:text-dusk-ink-100',
+        'hover:bg-[rgba(240,234,228,0.10)] hover:text-dusk-ink-100',
+        'focus:bg-[rgba(240,234,228,0.10)] focus:text-dusk-ink-100'
+      )
+    : cn(
+        'flex h-9 items-center justify-between rounded-lg px-2 text-white outline-none transition-colors',
+        controlMeta.text,
+        'hover:bg-white hover:text-black',
+        'selected:font-medium',
+        'focus:bg-white focus:text-black',
+        'hover:[&_[data-slot=selected-icon]]:text-black',
+        'focus:[&_[data-slot=selected-icon]]:text-black'
+      )
   const [internalValue, setInternalValue] = useState(defaultValue ?? '')
   const currentValue = value ?? internalValue
   const isGrouped = Boolean(optionGroups?.length)
@@ -105,20 +127,29 @@ export function GdgDropdown({
   const isMini = device === 'pc' && size === 'mini'
 
   // Fixed border color to gray-800 unless it's an error.
-  const baseClass = cn(
-    'rounded-full bg-black border transition-colors',
-    controlMeta.height,
-    hasError ? 'border-red' : 'border-gray-800',
-    hasError ? 'hover:border-red' : '',
-    hasError ? 'focus:border-red' : '',
-    'disabled:bg-gray-100 disabled:border-gray-100 disabled:cursor-not-allowed disabled:text-white/40'
-  )
+  const baseClass = isDusk
+    ? cn(
+        'w-full rounded-xl border bg-[rgba(240,234,228,0.05)] transition-colors',
+        'h-[50px]',
+        hasError ? 'border-[rgba(196,88,74,0.6)]' : 'border-[rgba(240,234,228,0.14)]',
+        'disabled:cursor-not-allowed disabled:opacity-50'
+      )
+    : cn(
+        'rounded-full bg-black border transition-colors',
+        controlMeta.height,
+        hasError ? 'border-red' : 'border-gray-800',
+        hasError ? 'hover:border-red' : '',
+        hasError ? 'focus:border-red' : '',
+        'disabled:bg-gray-100 disabled:border-gray-100 disabled:cursor-not-allowed disabled:text-white/40'
+      )
 
   const selectorClass = cn(
-    'h-full w-auto min-w-0 mx-0 justify-between bg-transparent font-medium text-white hover:bg-transparent focus-visible:outline-none',
+    'h-full w-auto min-w-0 mx-0 justify-between bg-transparent font-medium hover:bg-transparent focus-visible:outline-none',
+    isDusk ? 'text-dusk-ink-600' : 'text-white',
     isMini && 'px-0 py-0 [&_[data-slot=inner-wrapper]]:h-auto',
-    controlMeta.text,
-    'disabled:text-white/40 disabled:cursor-not-allowed'
+    textClass,
+    isDusk ? 'disabled:opacity-50' : 'disabled:text-white/40',
+    'disabled:cursor-not-allowed'
   )
 
   const caption = hasError ? (errorMessage ?? helperText) : helperText
@@ -137,7 +168,13 @@ export function GdgDropdown({
   )
 
   return (
-    <div className={cn('flex flex-col items-start gap-2 text-white', styles.root)}>
+    <div
+      className={cn(
+        'flex flex-col items-start gap-2',
+        isDusk ? 'w-full text-dusk-ink-100' : 'text-white',
+        styles.root
+      )}
+    >
       {label && (
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">{label}</p>
       )}
@@ -162,7 +199,7 @@ export function GdgDropdown({
             )
           }
         }}
-        className={cn('w-full', widthClass)}
+        className={cn('w-full', !isDusk && widthClass)}
         classNames={{
           base: cn('gdg-dropdown-trigger w-full', baseClass),
           selectorButton: selectorClass,
@@ -173,11 +210,15 @@ export function GdgDropdown({
           listboxWrapper:
             'bg-transparent block p-0 m-0 w-full items-stretch content-start justify-start',
           popoverContent: cn(
-            'gdg-dropdown-popover bg-gray-100 border border-white/10 rounded-xl shadow-[0_20px_120px_rgba(0,0,0,0.75)] p-3 h-auto overflow-auto justify-start',
+            'gdg-dropdown-popover rounded-xl shadow-[0_20px_120px_rgba(0,0,0,0.75)] p-3 h-auto overflow-auto justify-start',
+            isDusk
+              ? 'bg-dusk-field border border-[rgba(240,234,228,0.14)]'
+              : 'bg-gray-100 border border-white/10',
             POPOVER_MAX_HEIGHT_CLASS[device]
           ),
           endContentWrapper: cn(
-            'ml-auto flex items-center justify-end text-gray-900 bg-transparent border-0 shadow-none rounded-none !p-0 !px-0 !py-0 !m-0 mx-0',
+            'ml-auto flex items-center justify-end bg-transparent border-0 shadow-none rounded-none !p-0 !px-0 !py-0 !m-0 mx-0',
+            isDusk ? 'text-dusk-ink-600' : 'text-gray-900',
             isMini && 'h-auto self-center'
           ),
           clearButton: 'hidden'
@@ -196,10 +237,10 @@ export function GdgDropdown({
               'h-full',
               'py-0',
               'leading-normal',
-              controlMeta.text,
+              textClass,
               getPlaceholderTypoByText(controlMeta.text),
-              'text-white',
-              'placeholder:text-gray-700',
+              isDusk ? 'text-dusk-ink-100' : 'text-white',
+              isDusk ? 'placeholder:text-dusk-ink-800' : 'placeholder:text-gray-700',
               'placeholder:font-medium',
               'placeholder:opacity-100',
               'font-medium',
@@ -218,7 +259,10 @@ export function GdgDropdown({
                 showDivider={false}
                 classNames={{
                   base: 'relative mb-0 flex flex-col gap-2',
-                  heading: 'text-gray-800 text-xs font-medium leading-5 p-0 m-0',
+                  heading: cn(
+                    'text-xs font-medium leading-5 p-0 m-0',
+                    isDusk ? 'text-dusk-ink-700' : 'text-gray-800'
+                  ),
                   group: 'flex flex-col gap-1 p-0 m-0 data-[has-title=true]:pt-0',
                   divider: 'mt-0'
                 }}
@@ -237,7 +281,20 @@ export function GdgDropdown({
             ))}
       </Autocomplete>
       {caption && (
-        <p className={cn('typo-pc-c1 mobile:typo-m-c1 pl-2', hasError ? 'text-red' : 'text-gray-400')}>{caption}</p>
+        <p
+          className={cn(
+            'typo-pc-c1 mobile:typo-m-c1 pl-2',
+            isDusk
+              ? hasError
+                ? 'text-signal-err'
+                : 'text-dusk-ink-700'
+              : hasError
+                ? 'text-red'
+                : 'text-gray-400'
+          )}
+        >
+          {caption}
+        </p>
       )}
     </div>
   )

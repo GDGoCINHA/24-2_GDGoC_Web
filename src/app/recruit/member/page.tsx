@@ -6,6 +6,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import axios, { type AxiosInstance } from 'axios'
 
 import RecruitMemberGate from '@/components/recruit/RecruitMemberGate'
+import {
+  RECRUIT_STEP_COUNT,
+  RecruitStepIndicator,
+  RecruitStepNav
+} from '@/components/recruit/RecruitFormSteps'
 import { RecruitNotice } from '@/components/recruit/RecruitNotice'
 import Loader from '@/components/ui/common/Loader'
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
@@ -18,13 +23,14 @@ import {
   DUSK_INPUT_READONLY,
   DUSK_OPTION,
   DUSK_SELECT,
-  DUSK_SUBMIT_BUTTON,
   DUSK_TEXTAREA
 } from '@/components/ui/dusk/DuskForm'
 import { interestOptions } from '@/constant/interestOptions'
 import { formatMajorLabel } from '@/constant/majorOptions'
+import { formatKoreanPeriodShort, resolveMemberSchedule } from '@/constant/recruitSchedule'
 import { wishOptions } from '@/constant/wishOptions'
 import { useAuth } from '@/hooks/useAuth'
+import { useRecruitMemberPeriod } from '@/hooks/useRecruitMemberPeriod'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { fetchMyMemberApplication, fetchMyProfile } from '@/services/profile/profileClient'
 import type { MyMemberApplication, UserProfile } from '@/types/profile'
@@ -68,9 +74,7 @@ type RecruitFormErrorKey =
   | 'gdgWish'
   | 'privacyAgreed'
 
-type RecruitFormErrors = Partial<
-  Record<RecruitFormErrorKey, string>
->
+type RecruitFormErrors = Partial<Record<RecruitFormErrorKey, string>>
 
 type PresignedUploadResponse = {
   key?: string
@@ -95,6 +99,19 @@ const genderOptions = [
   { id: '비공개', label: '비공개' }
 ]
 
+/**
+ * 어느 칸이 어느 단계에 속하는지.
+ *
+ * "다음" 을 누를 때 이 단계의 칸만 본다. 전체를 보면 아직 열지도 않은 뒷 단계가
+ * 걸려 첫 단계에서 진행이 막힌다. 일정 안내(2)는 읽기만 하므로 비어 있다.
+ */
+const RECRUIT_STEP_ERROR_KEYS: RecruitFormErrorKey[][] = [
+  ['gender', 'birth', 'enrolledClassification', 'proofFile'],
+  ['gdgInterest', 'gdgWish'],
+  [],
+  ['privacyAgreed']
+]
+
 const recruitFormErrorOrder: RecruitFormErrorKey[] = [
   'gender',
   'birth',
@@ -115,9 +132,7 @@ const isValidBirthDate = (value: string) => {
   const parsed = new Date(year, month - 1, day)
 
   return (
-    parsed.getFullYear() === year &&
-    parsed.getMonth() === month - 1 &&
-    parsed.getDate() === day
+    parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day
   )
 }
 
@@ -281,10 +296,58 @@ function RecruitMemberForm({
 
   const formErrors = useMemo(() => validateRecruitForm(formData), [formData])
   const isFormValid = Object.keys(formErrors).length === 0
-  const submittedErrors: RecruitFormErrors = isSubmitted ? formErrors : {}
+
+  const [step, setStep] = useState(0)
+  /** 여기까지는 가 봤다. 인디케이터에서 되돌아갈 수 있는 범위를 정한다. */
+  const [maxReachedStep, setMaxReachedStep] = useState(0)
+  /** "다음" 을 눌러 본 단계. 그 전에는 아직 손대지 않은 칸을 붉게 칠하지 않는다. */
+  const [attemptedSteps, setAttemptedSteps] = useState<number[]>([])
+
+  const { period: memberPeriod } = useRecruitMemberPeriod()
+  const memberSchedule = resolveMemberSchedule(memberPeriod?.notice)
+  const intensivePeriodText = formatKoreanPeriodShort(
+    memberSchedule.intensiveOpenAt,
+    memberSchedule.intensiveCloseAt
+  )
+
+  const showStepErrors = isSubmitted || attemptedSteps.includes(step)
+  const submittedErrors: RecruitFormErrors = showStepErrors ? formErrors : {}
+  // 요약도 지금 단계의 것만 모은다. 화면에 없는 칸을 짚어 봐야 찾아갈 수 없다.
   const submittedErrorMessages = recruitFormErrorOrder
+    .filter((key) => RECRUIT_STEP_ERROR_KEYS[step].includes(key))
     .map((key) => submittedErrors[key])
     .filter((message): message is string => Boolean(message))
+
+  const stepHasError = useCallback(
+    (index: number) => RECRUIT_STEP_ERROR_KEYS[index].some((key) => Boolean(formErrors[key])),
+    [formErrors]
+  )
+
+  const markAttempted = useCallback((index: number) => {
+    setAttemptedSteps((prev) => (prev.includes(index) ? prev : [...prev, index]))
+  }, [])
+
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  const goNext = () => {
+    markAttempted(step)
+    if (stepHasError(step)) return
+    const next = Math.min(step + 1, RECRUIT_STEP_COUNT - 1)
+    setStep(next)
+    setMaxReachedStep((reached) => Math.max(reached, next))
+    scrollToTop()
+  }
+
+  const goPrev = () => {
+    setStep((current) => Math.max(current - 1, 0))
+    scrollToTop()
+  }
+
+  const goTo = (index: number) => {
+    if (index > maxReachedStep) return
+    setStep(index)
+    scrollToTop()
+  }
 
   const uploadProofFile = async (client: AxiosInstance, file: File) => {
     const presignedResponse = await client.post(
@@ -335,7 +398,19 @@ function RecruitMemberForm({
     event.preventDefault()
     setIsSubmitted(true)
     setGlobalError(null)
-    if (!isFormValid) return
+    if (!isFormValid) {
+      // 빠진 칸이 앞 단계에 있으면 그 단계로 되돌린다. 마지막 화면에 없는 항목을
+      // 붉게 칠해 봐야 보이지 않아, 누르면 아무 일도 안 일어나는 것처럼 보인다.
+      const firstBadStep = RECRUIT_STEP_ERROR_KEYS.findIndex((keys) =>
+        keys.some((key) => Boolean(formErrors[key]))
+      )
+      if (firstBadStep >= 0 && firstBadStep !== step) {
+        markAttempted(firstBadStep)
+        setStep(firstBadStep)
+        scrollToTop()
+      }
+      return
+    }
     if (preview || !apiClient) return
     try {
       setLoading(true)
@@ -393,180 +468,219 @@ function RecruitMemberForm({
         </h1>
         <p className="mt-3 text-[15px] text-dusk-ink-600">GDGoC INHA 2026-2 신입 멤버 모집</p>
 
+        <RecruitStepIndicator current={step} maxReached={maxReachedStep} onJump={goTo} />
+
         <form onSubmit={handleSubmit} className="mt-[38px] flex flex-col gap-[22px]">
-          <IdentitySection identity={identity} />
+          {step === 0 ? (
+            <>
+              <IdentitySection identity={identity} />
 
-          <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
-            <DuskField label="성별" required error={submittedErrors.gender}>
-              <select
-                value={formData.gender}
-                onChange={(e) => handleValueChange('gender')(e.target.value)}
-                className={DUSK_SELECT}
-                aria-invalid={Boolean(submittedErrors.gender)}
-              >
-                <option value="" className={DUSK_OPTION}>
-                  성별을 선택해 주세요.
-                </option>
-                {genderOptions.map((option) => (
-                  <option key={option.id} value={option.id} className={DUSK_OPTION}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </DuskField>
-            <DuskField label="생년월일" required error={submittedErrors.birth}>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={formData.birth}
-                onChange={(e) => handleValueChange('birth')(e.target.value)}
-                placeholder="생년월일을 입력해 주세요. (YYYY.MM.DD)"
-                className={DUSK_INPUT}
-                aria-invalid={Boolean(submittedErrors.birth)}
-              />
-            </DuskField>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <span className="text-[13px] text-dusk-ink-700">
-              재학 상태<span className="text-signal-err"> *</span>
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {enrollmentOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => handleValueChange('enrolledClassification')(option)}
-                  className={
-                    formData.enrolledClassification === option ? DUSK_CHIP_ACTIVE : DUSK_CHIP
-                  }
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-            {submittedErrors.enrolledClassification ? (
-              <span className="text-[13px] text-signal-err">
-                {submittedErrors.enrolledClassification}
-              </span>
-            ) : null}
-          </div>
-
-          {/* 군휴학은 회비 면제 대상이라 증빙을 받는다. 다른 상태에서는 칸 자체가 없다. */}
-          {formData.enrolledClassification === '군휴학' && (
-            <DuskField
-              label="증빙 서류 (군 휴학)"
-              required
-              hint="포털에서 군휴학 신청내역 캡쳐"
-              error={submittedErrors.proofFile}
-            >
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={handleFileChange}
-              />
-              {!formData.proofFile ? (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full rounded-xl border border-[rgba(240,234,228,0.22)] px-6 py-[15px] text-[15px] text-dusk-ink-100 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:bg-[rgba(208,129,85,0.06)]"
-                >
-                  + 파일 선택
-                </button>
-              ) : (
-                <div className="flex items-center gap-3 rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-dusk-ink-100">
-                  <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {formData.proofFile.name}
-                  </span>
-                  <span className="shrink-0 text-sm text-dusk-ink-800">
-                    {(formData.proofFile.size / 1024 / 1024).toFixed(2)} MB
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleFileRemove}
-                    className="shrink-0 text-sm text-dusk-ink-800 transition-colors hover:text-signal-err"
+              <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
+                <DuskField label="성별" required error={submittedErrors.gender}>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => handleValueChange('gender')(e.target.value)}
+                    className={DUSK_SELECT}
+                    aria-invalid={Boolean(submittedErrors.gender)}
                   >
-                    삭제
-                  </button>
+                    <option value="" className={DUSK_OPTION}>
+                      성별을 선택해 주세요.
+                    </option>
+                    {genderOptions.map((option) => (
+                      <option key={option.id} value={option.id} className={DUSK_OPTION}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </DuskField>
+                <DuskField label="생년월일" required error={submittedErrors.birth}>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={formData.birth}
+                    onChange={(e) => handleValueChange('birth')(e.target.value)}
+                    placeholder="생년월일을 입력해 주세요. (YYYY.MM.DD)"
+                    className={DUSK_INPUT}
+                    aria-invalid={Boolean(submittedErrors.birth)}
+                  />
+                </DuskField>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <span className="text-[13px] text-dusk-ink-700">
+                  재학 상태<span className="text-signal-err"> *</span>
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {enrollmentOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => handleValueChange('enrolledClassification')(option)}
+                      className={
+                        formData.enrolledClassification === option ? DUSK_CHIP_ACTIVE : DUSK_CHIP
+                      }
+                    >
+                      {option}
+                    </button>
+                  ))}
                 </div>
+                {submittedErrors.enrolledClassification ? (
+                  <span className="text-[13px] text-signal-err">
+                    {submittedErrors.enrolledClassification}
+                  </span>
+                ) : null}
+              </div>
+
+              {/* 군휴학은 회비 면제 대상이라 증빙을 받는다. 다른 상태에서는 칸 자체가 없다. */}
+              {formData.enrolledClassification === '군휴학' && (
+                <DuskField
+                  label="증빙 서류 (군 휴학)"
+                  required
+                  hint="포털에서 군휴학 신청내역 캡쳐"
+                  error={submittedErrors.proofFile}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handleFileChange}
+                  />
+                  {!formData.proofFile ? (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full rounded-xl border border-[rgba(240,234,228,0.22)] px-6 py-[15px] text-[15px] text-dusk-ink-100 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:bg-[rgba(208,129,85,0.06)]"
+                    >
+                      + 파일 선택
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-3 rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-dusk-ink-100">
+                      <span className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                        {formData.proofFile.name}
+                      </span>
+                      <span className="shrink-0 text-sm text-dusk-ink-800">
+                        {(formData.proofFile.size / 1024 / 1024).toFixed(2)} MB
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleFileRemove}
+                        className="shrink-0 text-sm text-dusk-ink-800 transition-colors hover:text-signal-err"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
+                </DuskField>
               )}
-            </DuskField>
-          )}
+            </>
+          ) : null}
 
-          <div className="flex flex-col gap-3">
-            <span className="text-[13px] text-dusk-ink-700">
-              관심 분야<span className="text-signal-err"> *</span>{' '}
-              <span className="text-dusk-ink-800">최대 3개</span>
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {interestOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => toggleChoice('gdgInterest', '관심 분야', option)}
-                  className={formData.gdgInterest.includes(option) ? DUSK_CHIP_ACTIVE : DUSK_CHIP}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-            {submittedErrors.gdgInterest ? (
-              <span className="text-[13px] text-signal-err">{submittedErrors.gdgInterest}</span>
-            ) : null}
-          </div>
+          {step === 1 ? (
+            <>
+              <div className="flex flex-col gap-3">
+                <span className="text-[13px] text-dusk-ink-700">
+                  관심 분야<span className="text-signal-err"> *</span>{' '}
+                  <span className="text-dusk-ink-800">최대 3개</span>
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {interestOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => toggleChoice('gdgInterest', '관심 분야', option)}
+                      className={
+                        formData.gdgInterest.includes(option) ? DUSK_CHIP_ACTIVE : DUSK_CHIP
+                      }
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+                {submittedErrors.gdgInterest ? (
+                  <span className="text-[13px] text-signal-err">{submittedErrors.gdgInterest}</span>
+                ) : null}
+              </div>
 
-          <div className="flex flex-col gap-3">
-            <span className="text-[13px] text-dusk-ink-700">
-              하고 싶은 활동<span className="text-signal-err"> *</span>{' '}
-              <span className="text-dusk-ink-800">최대 3개</span>
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {wishOptions.map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => toggleChoice('gdgWish', '하고 싶은 활동', option)}
-                  className={formData.gdgWish.includes(option) ? DUSK_CHIP_ACTIVE : DUSK_CHIP}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-            {submittedErrors.gdgWish ? (
-              <span className="text-[13px] text-signal-err">{submittedErrors.gdgWish}</span>
-            ) : null}
-          </div>
+              <div className="flex flex-col gap-3">
+                <span className="text-[13px] text-dusk-ink-700">
+                  하고 싶은 활동<span className="text-signal-err"> *</span>{' '}
+                  <span className="text-dusk-ink-800">최대 3개</span>
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {wishOptions.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => toggleChoice('gdgWish', '하고 싶은 활동', option)}
+                      className={formData.gdgWish.includes(option) ? DUSK_CHIP_ACTIVE : DUSK_CHIP}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+                {submittedErrors.gdgWish ? (
+                  <span className="text-[13px] text-signal-err">{submittedErrors.gdgWish}</span>
+                ) : null}
+              </div>
 
-          <DuskField label="동아리 운영에 바라는 점" hint={`${formData.gdgFeedback.length} / 100`}>
-            <textarea
-              rows={5}
-              value={formData.gdgFeedback}
-              onChange={(e) =>
-                setFormData((p) => ({ ...p, gdgFeedback: e.target.value.slice(0, 100) }))
-              }
-              maxLength={100}
-              placeholder="내용을 입력해 주세요."
-              className={DUSK_TEXTAREA}
-            />
-          </DuskField>
+              <DuskField
+                label="동아리 운영에 바라는 점"
+                hint={`${formData.gdgFeedback.length} / 100`}
+              >
+                <textarea
+                  rows={5}
+                  value={formData.gdgFeedback}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, gdgFeedback: e.target.value.slice(0, 100) }))
+                  }
+                  maxLength={100}
+                  placeholder="내용을 입력해 주세요."
+                  className={DUSK_TEXTAREA}
+                />
+              </DuskField>
+            </>
+          ) : null}
 
-          <PrivacyPolicyNotice target="member" showTitle={false} compact />
+          {step === 2 ? (
+            <section className="flex flex-col gap-4 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[22px]">
+              <h2 className="text-[15px] font-medium text-dusk-ink-200">모집 일정</h2>
+              <div className="flex flex-col">
+                <div className="flex flex-wrap justify-between gap-4 border-t border-[rgba(240,234,228,0.10)] py-3.5">
+                  <span className="text-sm text-dusk-ink-700">집중 모집</span>
+                  <span className="text-[15px]">{intensivePeriodText}</span>
+                </div>
+                <div className="flex flex-wrap justify-between gap-4 border-t border-[rgba(240,234,228,0.10)] py-3.5">
+                  <span className="text-sm text-dusk-ink-700">이후</span>
+                  <span className="text-[15px]">상시 모집</span>
+                </div>
+              </div>
+              <p className="break-keep text-[13px] leading-[1.8] text-dusk-ink-800">
+                부원은 별도 면접 없이 지원서로 합류합니다. 집중 모집 기간이 지난 뒤에도 상시
+                모집으로 지원할 수 있어요.
+              </p>
+            </section>
+          ) : null}
 
-          <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
-            <input
-              type="checkbox"
-              checked={formData.privacyAgreed}
-              onChange={(e) => setFormData((p) => ({ ...p, privacyAgreed: e.target.checked }))}
-              className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
-              aria-invalid={Boolean(submittedErrors.privacyAgreed)}
-            />
-            <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
-              개인정보 수집 및 이용, 개인정보 처리방침에 동의합니다.
-              <span className="text-signal-err"> *</span>
-            </span>
-          </label>
+          {step === 3 ? (
+            <>
+              <PrivacyPolicyNotice target="member" showTitle={false} compact />
+
+              <label className="flex cursor-pointer items-start gap-2.5 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-[18px] py-4">
+                <input
+                  type="checkbox"
+                  checked={formData.privacyAgreed}
+                  onChange={(e) => setFormData((p) => ({ ...p, privacyAgreed: e.target.checked }))}
+                  className={cn(DUSK_CHECKBOX, 'mt-[3px]')}
+                  aria-invalid={Boolean(submittedErrors.privacyAgreed)}
+                />
+                <span className="text-[15px] leading-[1.7] text-dusk-ink-400">
+                  개인정보 수집 및 이용, 개인정보 처리방침에 동의합니다.
+                  <span className="text-signal-err"> *</span>
+                </span>
+              </label>
+            </>
+          ) : null}
 
           {globalError ? (
             <p className="text-[13px] leading-[1.7] text-signal-err">{globalError}</p>
@@ -577,9 +691,7 @@ function RecruitMemberForm({
               role="alert"
               className="rounded-[14px] border border-[rgba(196,88,74,0.45)] bg-[rgba(196,88,74,0.10)] px-4 py-3"
             >
-              <p className="text-[13px] font-medium text-signal-err">
-                필수 항목을 확인해 주세요.
-              </p>
+              <p className="text-[13px] font-medium text-signal-err">필수 항목을 확인해 주세요.</p>
               <ul className="mt-2 flex flex-col gap-1 text-[13px] leading-[1.7] text-signal-err">
                 {submittedErrorMessages.map((message) => (
                   <li key={message}>- {message}</li>
@@ -588,11 +700,13 @@ function RecruitMemberForm({
             </div>
           ) : null}
 
-          <div className="mt-1.5 flex">
-            <button type="submit" disabled={loading} className={DUSK_SUBMIT_BUTTON}>
-              {loading ? '제출 중...' : '제출하기'}
-            </button>
-          </div>
+          <RecruitStepNav
+            step={step}
+            loading={loading}
+            onPrev={goPrev}
+            onNext={goNext}
+            submitLabel="제출하기"
+          />
         </form>
       </main>
     </>

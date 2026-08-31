@@ -1,171 +1,60 @@
-'use client';
+import Image from 'next/image'
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import gdgocPcLogo from '@public/icons/gdgocIcon/pc.svg'
 
-// resource
-import gdgocIcon from "@public/icons/logo.png";
-
-const LOADING_TEXTS = [
-    '페이지를 불러오는 중',
-    '데이터를 가져오는 중',
-    '잠시만 기다려주세요',
-    '거의 다 왔습니다'
-];
-
+/**
+ * 페이지 전환 사이에 잠깐 뜨는 화면.
+ *
+ * 실제로 보이는 시간이 0.5초 남짓이라 **완주하지 않는 연출은 넣지 않는다.** 예전 구현은
+ * 3초 주기로 문구를 갈아끼우고 무한 진행바를 돌렸는데, 그 주기가 한 바퀴 돌기 전에 화면이
+ * 사라져 "무언가 버벅이다 만" 인상만 남았다. 지금은 선을 지나가는 막대 하나만 움직인다.
+ *
+ * 전역 `overflow: hidden` 을 주입하던 것도 걷어냈다. 이 화면은 스크롤이 필요 없고,
+ * 전역 스타일을 건드리면 다음 페이지까지 영향이 남는다.
+ */
 export default function Loading() {
-    const [loadingDots, setLoadingDots] = useState('.');
-    const [loadingText, setLoadingText] = useState(LOADING_TEXTS[0]);
-    const [imageError, setImageError] = useState(false);
+  return (
+    <div
+      role="status"
+      aria-label="페이지 로딩 중"
+      className="relative flex min-h-screen flex-col justify-between overflow-hidden bg-dusk-base px-[clamp(20px,4vw,44px)] pb-[34px] pt-[30px] text-dusk-ink-100 break-keep"
+    >
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(120% 86% at 50% 118%, rgba(208,129,85,0.16) 0%, rgba(208,129,85,0) 60%), radial-gradient(90% 70% at 12% 6%, rgba(110,74,134,0.16) 0%, rgba(110,74,134,0) 62%)'
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[6] opacity-[0.28] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.5'/></svg>\")"
+        }}
+      />
 
-    // 로딩 점(...)의 애니메이션
-    useEffect(() => {
-        const dotsInterval = setInterval(() => {
-            setLoadingDots(dots => dots.length >= 3 ? '.' : dots + '.');
-        }, 500);
+      <div className="relative flex items-center gap-[11px]">
+        <Image src={gdgocPcLogo} alt="" priority className="block h-[22px] w-auto opacity-85" />
+        <span className="text-[13px] text-dusk-ink-800">GDGoC INHA</span>
+      </div>
 
-        return () => clearInterval(dotsInterval);
-    }, []);
-
-    // 로딩 텍스트를 주기적으로 변경
-    useEffect(() => {
-        const textInterval = setInterval(() => {
-            setLoadingText(current => {
-                const currentIndex = LOADING_TEXTS.indexOf(current);
-                const nextIndex = (currentIndex + 1) % LOADING_TEXTS.length;
-                return LOADING_TEXTS[nextIndex];
-            });
-        }, 3000);
-
-        return () => clearInterval(textInterval);
-    }, []);
-
-    return (
-        <div 
-            className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black relative overflow-hidden"
-            role="status"
-            aria-label="페이지 로딩 중"
-        >
-            {/* 아이콘 배경 */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none z-0" aria-hidden="true">
-                <div className="relative">
-                    <Image
-                        src={gdgocIcon}
-                        alt="GDGoC Icon"
-                        width={600}
-                        height={600}
-                        className="animate-pulse"
-                        priority
-                    />
-                </div>
-            </div>
-
-            {/* 로딩 박스 */}
-            <div className="z-10 bg-gray-800/70 backdrop-blur-sm p-4 sm:p-8 rounded-xl shadow-2xl border border-blue-500/20 max-w-[90%] sm:max-w-md w-full mx-4">
-                <div className="flex flex-col items-center justify-center text-center">
-                    {/* 로딩 아이콘 */}
-                    <div className="relative mb-4 sm:mb-6">
-                        <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-ping"></div>
-                        <div className="relative">
-                            {!imageError ? (
-                                <Image
-                                    src={gdgocIcon}
-                                    alt="GDGoC Icon"
-                                    width={80}
-                                    height={80}
-                                    className="animate-pulse"
-                                    onError={() => setImageError(true)}
-                                />
-                            ) : (
-                                <div className="w-[80px] h-[80px] bg-blue-500/10 rounded-full flex items-center justify-center">
-                                    <span className="text-blue-500 text-xl">GDGoC</span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 회전하는 로딩 원 */}
-                        <div className="absolute inset-0 w-full h-full">
-                            <svg className="absolute inset-0 w-full h-full animate-spin-slow" viewBox="0 0 100 100">
-                                <circle
-                                    cx="50"
-                                    cy="50"
-                                    r="48"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeDasharray="1, 8"
-                                    className="text-blue-500"
-                                />
-                            </svg>
-                        </div>
-                    </div>
-
-                    {/* 로딩 텍스트 */}
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                        <span className="text-blue-500">Loading</span>
-                    </h2>
-                    <div className="w-12 sm:w-16 h-1 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full mb-3 sm:mb-4" aria-hidden="true"></div>
-
-                    <div className="bg-blue-500/10 py-3 px-6 rounded-lg border border-blue-500/20">
-                        <p className="text-lg sm:text-xl text-blue-100">
-                            {loadingText}<span className="inline-block min-w-8 text-blue-400">{loadingDots}</span>
-                        </p>
-                    </div>
-
-                    {/* 로딩 프로그레스 바 */}
-                    <div className="mt-6 sm:mt-8 w-full max-w-[280px] h-1.5 bg-blue-500/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full loading-progress"></div>
-                    </div>
-
-                    {/* 작은 로고 */}
-                    <div className="mt-4 sm:mt-6">
-                        <Image
-                            src={gdgocIcon}
-                            alt="GDGoC Small Icon"
-                            width={32}
-                            height={32}
-                            className="opacity-50"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* CSS for animations */}
-            <style jsx global>{`
-                html, body {
-                    overflow: hidden;
-                }
-
-                @media (min-width: 768px) {
-                    html, body {
-                        overflow: auto;
-                    }
-                }
-
-                @keyframes loading-progress {
-                    0% { transform: scaleX(0); }
-                    25% { transform: scaleX(0.35); }
-                    50% { transform: scaleX(0.6); }
-                    75% { transform: scaleX(0.85); }
-                    100% { transform: scaleX(1); }
-                }
-
-                .loading-progress {
-                    display: block;
-                    width: 100%;
-                    transform-origin: left;
-                    animation: loading-progress 2s ease-in-out infinite;
-                }
-
-                .animate-spin-slow {
-                    animation: spin 3s linear infinite;
-                }
-
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            `}</style>
+      <div className="relative mx-auto flex w-full max-w-[34ch] flex-col items-start gap-[22px]">
+        <p className="text-[clamp(30px,4.6vw,58px)] font-semibold leading-[1.1] tracking-[-0.04em]">
+          불러오는 중
+        </p>
+        <div className="h-px w-full max-w-[320px] overflow-hidden bg-[rgba(240,234,228,0.14)]">
+          <span className="animate-gdg-sweep block h-full w-1/4 bg-ember" />
         </div>
-    );
+        <p className="text-sm leading-[1.7] text-dusk-ink-800">잠시만 기다려 주세요.</p>
+      </div>
+
+      <div className="relative flex flex-wrap items-center justify-between gap-5 text-[13px] text-[#7C7280]">
+        <span>모두가 함께하는 성장을 꿈꿉니다.</span>
+        <span>Inha University</span>
+      </div>
+    </div>
+  )
 }

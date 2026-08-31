@@ -116,13 +116,13 @@ function StepBar({
 
         return (
           <div key={step} className="flex items-center gap-2">
-            {index > 0 && <span className="text-dusk-ink-800">·</span>}
+            {index > 0 && <span className="hidden text-dusk-ink-800 min-[420px]:inline">·</span>}
             <button
               type="button"
               onClick={() => onStepClick(stepIndex)}
               disabled={!isClickable}
               className={cn(
-                'whitespace-nowrap rounded-full px-4 py-[9px] text-sm transition-colors',
+                'whitespace-nowrap rounded-full px-3 py-[9px] text-[13px] transition-colors min-[420px]:px-4 min-[420px]:text-sm',
                 isCurrent
                   ? 'bg-ember text-ember-ink'
                   : isClickable

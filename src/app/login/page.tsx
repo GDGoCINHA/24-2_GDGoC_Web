@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
+import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+import { useLandingContent } from '@/components/landing/LandingContentProvider'
 import Loader from '@/components/ui/common/Loader'
-import { GdgGoogleLoginButton, GdgLogo } from '@/components/ui/design-system'
+import { GdgLogo } from '@/components/ui/design-system'
 import { DUSK_INPUT, DUSK_SUBMIT_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { useAuth } from '@/hooks/useAuth'
 import {
@@ -88,6 +91,7 @@ export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, setUser } = useAuth()
+  const { hero } = useLandingContent()
 
   const baseNextUrl = useMemo(
     () => getSafeNextUrl(searchParams?.get('next') ?? null),
@@ -278,42 +282,94 @@ export default function LoginPage() {
     window.location.href = url
   }, [googleClientId, googleRedirectUri, nextUrl])
 
-  /** 구글 버튼은 폭이 고정이라 CSS 로 줄일 수 없다. 화면별로 갈라 렌더한다. */
   const googleButton = (
-    <>
-      <div className="hidden pc:block">
-        <GdgGoogleLoginButton
-          device="pc"
-          onClick={handleGoogleLogin}
-          disabled={!canUseGoogleLogin || loading}
-          loading={loading}
-        />
-      </div>
-      <div className="block pc:hidden">
-        <GdgGoogleLoginButton
-          device="mobile"
-          onClick={handleGoogleLogin}
-          disabled={!canUseGoogleLogin || loading}
-          loading={loading}
-        />
-      </div>
-    </>
+    <button
+      type="button"
+      onClick={handleGoogleLogin}
+      disabled={!canUseGoogleLogin || loading}
+      className="flex w-full items-center justify-center gap-3 rounded-[10px] bg-dusk-ink-100 px-5 py-4 text-[15px] font-semibold text-dusk-card transition-[background-color,transform,box-shadow] duration-200 hover:-translate-y-px hover:bg-white hover:shadow-[0_10px_30px_rgba(0,0,0,0.32)] active:scale-[0.99] disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-dusk-ink-100 disabled:hover:shadow-none"
+    >
+      <Image
+        src="/icons/logo/google-g.svg"
+        alt=""
+        width={20}
+        height={20}
+        className="block shrink-0"
+      />
+      Google 계정으로 로그인
+    </button>
   )
 
   return (
     <>
       <Loader isLoading={loading} />
-      <main className="mx-auto flex min-h-screen w-full max-w-[520px] flex-col justify-center px-[clamp(20px,5vw,44px)] py-16">
-        <div className="flex items-center gap-3">
-          <GdgLogo mode="auto" />
-          <h1 className="text-[clamp(22px,2.6vw,30px)] font-semibold leading-[1.26] tracking-[-0.03em]">
-            로그인
-          </h1>
+      <main className="relative flex min-h-[100dvh] flex-col overflow-hidden min-[1024px]:flex-row">
+        {/*
+          사진 레이어. 모바일에서는 화면 전체를 덮고, 1024px 부터 패널(496px) 왼쪽만 덮는다.
+          768px(`pc:`)에서 가르면 사진 자리가 270px 남짓으로 찌그러져 분할 기준을 따로 잡았다.
+        */}
+        <div aria-hidden className="absolute inset-0 min-[1024px]:right-[496px]">
+          <Image
+            src={hero.photo.src}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 60vw, 100vw"
+            className="object-cover"
+            style={{
+              objectPosition: `50% ${hero.photo.focusY}%`,
+              filter: 'saturate(0.86) contrast(1.02)'
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(178deg, rgba(25,20,30,0.80) 0%, rgba(31,25,36,0.66) 38%, rgba(47,34,37,0.82) 100%)'
+            }}
+          />
+          {/* 모바일은 사진 위에 글이 통째로 앉으므로 아래쪽을 더 눌러 준다. */}
+          <div className="absolute inset-0 bg-gradient-to-t from-dusk-base via-dusk-base/85 to-transparent min-[1024px]:hidden" />
+          {/* PC 에서만 오른쪽 경계를 배경색에 녹인다. */}
+          <div
+            className="absolute inset-y-0 right-0 hidden w-[180px] min-[1024px]:block"
+            style={{ background: 'linear-gradient(90deg, rgba(27,22,34,0), #1B1622 88%)' }}
+          />
         </div>
 
-        <section className="mt-7 rounded-[18px] border border-[rgba(240,234,228,0.12)] px-[clamp(20px,4vw,36px)] py-[clamp(32px,5vw,44px)]">
-          <div className="text-center">
-            <p className="text-[clamp(18px,2vw,22px)] font-medium text-dusk-ink-100">
+        <section className="relative z-10 flex flex-1 flex-col justify-between gap-10 px-[clamp(20px,5vw,44px)] pb-8 pt-[clamp(28px,4vw,34px)] min-[1024px]:pb-[38px]">
+          {/* 글자만이면 터치 영역이 20px 밖에 안 된다. 음수 여백으로 자리는 그대로 두고 누를 곳만 넓힌다. */}
+          <Link
+            href="/onboarding"
+            className="-mx-2 -my-2 inline-flex min-h-11 items-center self-start px-2 py-2 text-sm text-dusk-ink-300 transition-colors hover:text-dusk-ink-100"
+          >
+            ← GDGoC INHA
+          </Link>
+
+          <div className="max-w-[30ch]">
+            <p className="break-keep text-[clamp(20px,4.6vw,30px)] font-semibold leading-[1.38] tracking-[-0.03em] text-balance">
+              {hero.description}
+            </p>
+            <p className="mt-3.5 hidden text-[15px] leading-[1.75] text-dusk-ink-500 min-[1024px]:block">
+              인하대학교 Google 개발자 커뮤니티, GDGoC INHA
+            </p>
+            <div className="mt-6 hidden items-center gap-3 min-[1024px]:flex">
+              <span className="h-px w-11 shrink-0 bg-[rgba(240,234,228,0.28)]" />
+              <span className="text-[13px] text-dusk-ink-700">{hero.photo.caption}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative z-10 flex flex-col justify-center px-[clamp(20px,5vw,44px)] pb-[clamp(32px,6vw,56px)] min-[1024px]:w-[496px] min-[1024px]:shrink-0 min-[1024px]:px-[clamp(24px,3.6vw,60px)] min-[1024px]:py-14">
+          <div className="mx-auto w-full min-[1024px]:max-w-[372px]">
+            <div className="flex items-center gap-3">
+              <GdgLogo mode="auto" />
+              <h1 className="text-[clamp(22px,2.6vw,30px)] font-semibold leading-[1.26] tracking-[-0.03em]">
+                로그인
+              </h1>
+            </div>
+
+            <p className="mt-[26px] text-[clamp(18px,2vw,22px)] font-medium text-dusk-ink-100">
               방문을 환영합니다!
             </p>
             <p className="mt-2.5 break-keep text-[15px] leading-[1.7] text-dusk-ink-600">
@@ -321,52 +377,62 @@ export default function LoginPage() {
                 ? '대시보드는 CORE 이상 계정으로 접근할 수 있습니다.'
                 : 'GDGoC INHA 홈페이지를 이용하려면 로그인하세요.'}
             </p>
-          </div>
 
-          <div className="mt-8 flex flex-col items-center gap-3.5">
-            {showAdminLogin ? (
-              <div className="flex w-full max-w-[300px] flex-col gap-2.5">
-                <input
-                  value={adminId}
-                  onChange={(e) => setAdminId(e.target.value)}
-                  placeholder="Admin ID"
-                  className={DUSK_INPUT}
-                />
-                <input
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  placeholder="Password"
-                  className={DUSK_INPUT}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      void handleAdminLogin()
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => void handleAdminLogin()}
-                  disabled={loading}
-                  className={cn(DUSK_SUBMIT_BUTTON, 'w-full flex-none')}
-                >
-                  Admin 로그인
-                </button>
-              </div>
-            ) : (
-              googleButton
-            )}
+            <div className="mt-8">
+              {showAdminLogin ? (
+                <div className="flex w-full flex-col gap-2.5">
+                  <input
+                    value={adminId}
+                    onChange={(e) => setAdminId(e.target.value)}
+                    placeholder="Admin ID"
+                    className={DUSK_INPUT}
+                  />
+                  <input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Password"
+                    className={DUSK_INPUT}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        void handleAdminLogin()
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void handleAdminLogin()}
+                    disabled={loading}
+                    className={cn(DUSK_SUBMIT_BUTTON, 'w-full flex-none')}
+                  >
+                    Admin 로그인
+                  </button>
+                </div>
+              ) : (
+                googleButton
+              )}
+            </div>
 
-            <p className="text-center text-[13px] leading-[1.7] text-dusk-ink-800">
-              {isDashboardLogin
-                ? showAdminLogin
-                  ? 'Google 로그인은 CORE 이상 권한 계정이 필요합니다.'
-                  : '관리자 로그인은 쿼리 파라미터(?admin=1)로만 표시됩니다.'
-                : '@inha.edu 계정만 사용 가능합니다'}
-            </p>
+            <div className="mt-5 flex items-center gap-2.5 rounded-lg border border-[rgba(240,234,228,0.10)] bg-[rgba(240,234,228,0.05)] px-3.5 py-3">
+              <span className="size-1.5 shrink-0 rounded-full bg-signal-ok" />
+              <span className="break-keep text-[13px] leading-[1.6] text-dusk-ink-700">
+                {isDashboardLogin ? (
+                  showAdminLogin ? (
+                    'Google 로그인은 CORE 이상 권한 계정이 필요합니다.'
+                  ) : (
+                    '관리자 로그인은 쿼리 파라미터(?admin=1)로만 표시됩니다.'
+                  )
+                ) : (
+                  <>
+                    <span className="text-dusk-ink-300">@inha.edu</span> 계정만 사용 가능합니다
+                  </>
+                )}
+              </span>
+            </div>
+
             {errorMessage ? (
-              <p className="text-center text-[13px] leading-[1.7] text-signal-err">
+              <p className="mt-4 break-keep text-[13px] leading-[1.7] text-signal-err">
                 {errorMessage}
               </p>
             ) : null}
