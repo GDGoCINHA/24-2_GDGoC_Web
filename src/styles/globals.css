@@ -1334,3 +1334,49 @@ input[type='search']::-webkit-search-results-decoration {
     animation: none;
   }
 }
+
+/* 회원가입 폼에서 다음 칸이 열릴 때. 갑자기 나타나면 무엇이 늘었는지 놓친다. */
+@keyframes dusk-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-dusk-reveal {
+  animation: dusk-reveal 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-dusk-reveal {
+    animation: none;
+  }
+}
+
+/*
+  로딩 화면의 진행 막대. 이 화면은 0.5초쯤 보였다 사라지므로 연출은 이것 하나뿐이다.
+  완주하지 않는 긴 주기 애니메이션은 "버벅이다 만" 인상만 남긴다.
+*/
+@keyframes gdg-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.animate-gdg-sweep {
+  animation: gdg-sweep 1.5s cubic-bezier(0.65, 0.05, 0.36, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-gdg-sweep {
+    animation: none;
+    transform: none;
+  }
+}

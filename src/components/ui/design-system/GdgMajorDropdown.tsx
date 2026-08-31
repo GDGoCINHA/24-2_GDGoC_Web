@@ -1,7 +1,7 @@
 'use client'
 
 import { majorOptions, normalizeMajorCode } from '@/constant/majorOptions'
-import { GdgDropdown, type GdgDropdownOptionGroup } from './GdgDropdown'
+import { GdgDropdown, type GdgDropdownOptionGroup, type GdgDropdownTone } from './GdgDropdown'
 
 export type GdgMajorDropdownProps = {
   value: string
@@ -10,6 +10,8 @@ export type GdgMajorDropdownProps = {
   isInvalid?: boolean
   errorMessage?: string
   device?: 'pc' | 'mobile' | 'auto'
+  placeholder?: string
+  tone?: GdgDropdownTone
 }
 
 export function GdgMajorDropdown({
@@ -18,7 +20,9 @@ export function GdgMajorDropdown({
   autoFocus,
   isInvalid,
   errorMessage,
-  device = 'auto'
+  device = 'auto',
+  placeholder = '학과를 입력해 주세요.',
+  tone = 'default'
 }: GdgMajorDropdownProps) {
   const groupedOptions: GdgDropdownOptionGroup[] = majorOptions.map((group) => ({
     title: group.title,
@@ -32,13 +36,14 @@ export function GdgMajorDropdown({
     <GdgDropdown
       device={device as any}
       size="full"
-      placeholder="학과를 입력해 주세요."
+      placeholder={placeholder}
       optionGroups={groupedOptions}
       value={normalizeMajorCode(value)}
       onChange={onChangeAction}
       autoFocus={autoFocus}
       isInvalid={isInvalid ?? Boolean(errorMessage)}
       errorMessage={errorMessage}
+      tone={tone}
     />
   )
 }
