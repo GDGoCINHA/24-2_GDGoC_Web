@@ -1,7 +1,7 @@
 'use client'
 
 import { GdgLogo } from '@/components/ui/design-system'
-import { RecruitTypeCard } from '@/components/recruit/RecruitTypeCard'
+import { RecruitTypeRow } from '@/components/recruit/RecruitTypeRow'
 import { useRecruitCorePeriod } from '@/hooks/useRecruitCorePeriod'
 import { useRecruitMemberPeriod } from '@/hooks/useRecruitMemberPeriod'
 import {
@@ -48,7 +48,7 @@ export default function RecruitSelect() {
   )
 
   return (
-    <main className="mx-auto w-full max-w-[760px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
+    <main className="mx-auto w-full max-w-[1120px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
       <div className="flex items-center gap-3">
         <GdgLogo mode="auto" />
         <h1 className="text-[clamp(26px,3vw,38px)] font-semibold leading-[1.24] tracking-[-0.03em]">
@@ -57,18 +57,22 @@ export default function RecruitSelect() {
       </div>
       <p className="mt-3.5 text-base text-dusk-ink-600">지원 종류를 선택해 주세요.</p>
 
-      <div className="mt-10 grid items-stretch gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
-        <RecruitTypeCard
+      {/* 띠는 border-top 만 갖는다. 마지막 줄 아래를 이 묶음이 닫는다. */}
+      <div className="mt-10 border-b border-[rgba(240,234,228,0.14)]">
+        <RecruitTypeRow
+          index="01"
           title="Core"
-          subtitle="운영진"
+          subtitle="운영진 · 서류 후 면접"
           period={corePeriodText}
           href="/recruit/core"
           statusLabel={coreStatusLabel}
           isOpen={coreOpen}
+          accent="core"
         />
-        <RecruitTypeCard
+        <RecruitTypeRow
+          index="02"
           title="Member"
-          subtitle="부원"
+          subtitle="부원 · 상시 모집"
           period={
             <>
               {memberIntensivePeriodText}{' '}
@@ -79,6 +83,7 @@ export default function RecruitSelect() {
           href="/recruit/member"
           statusLabel={memberStatusLabel}
           isOpen={memberOpen}
+          accent="member"
         />
       </div>
 
