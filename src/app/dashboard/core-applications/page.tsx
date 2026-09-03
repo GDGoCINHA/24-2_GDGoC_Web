@@ -27,7 +27,9 @@ import {
   ADMIN_TR
 } from '@/components/admin/dashboard/adminStyles'
 import { formatMajorLabel } from '@/constant/majorOptions'
+import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { hasAtLeast } from '@/utils/auth/role'
 
 type RecruitCoreResultStatus = 'SUBMITTED' | 'IN_REVIEW' | 'ACCEPTED' | 'REJECTED'
 
@@ -145,6 +147,8 @@ const currentRecruitSession = () => {
 
 export default function DashboardCoreApplicationsPage() {
   const { apiClient } = useAuthenticatedApi()
+  const { user } = useAuth()
+  const canDecide = hasAtLeast(user?.userRole, 'LEAD')
 
   const [session, setSession] = useState(currentRecruitSession())
   const [selectedStatus, setSelectedStatus] = useState<RecruitCoreResultStatus | 'ALL'>('ALL')
@@ -562,7 +566,7 @@ export default function DashboardCoreApplicationsPage() {
                       <button
                         type="button"
                         onClick={() => void handleDecision('reject')}
-                        disabled={decisionLoading !== null}
+                        disabled={decisionLoading !== null || !canDecide}
                         className="whitespace-nowrap rounded-full border border-signal-err px-5 py-2.5 text-[14px] text-signal-err transition-colors duration-200 hover:bg-signal-err/10 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         불합격
@@ -570,7 +574,7 @@ export default function DashboardCoreApplicationsPage() {
                       <button
                         type="button"
                         onClick={() => void handleDecision('accept')}
-                        disabled={decisionLoading !== null}
+                        disabled={decisionLoading !== null || !canDecide}
                         className={ADMIN_ACCENT_BUTTON}
                       >
                         합격 처리
