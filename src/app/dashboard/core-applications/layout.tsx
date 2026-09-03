@@ -4,7 +4,7 @@ import ApiCodeGuard from '@/components/auth/ApiCodeGuard'
 
 export default function DashboardCoreApplicationsLayout({ children }: { children: ReactNode }) {
   return (
-    <ApiCodeGuard requiredRole="LEAD" nextOverride="/dashboard/core-applications">
+    <ApiCodeGuard requiredRole="CORE" nextOverride="/dashboard/core-applications">
       {children}
     </ApiCodeGuard>
   )

@@ -64,7 +64,7 @@ const DASHBOARD_GROUPS: DashboardGroup[] = [
         href: '/dashboard/core/application',
         title: 'Core 지원서',
         description: '코어 지원서를 열람하고 합격/불합격을 처리합니다.',
-        minRoleRank: 3
+        minRoleRank: 2
       },
       {
         href: '/dashboard/core/attendance',

@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Loader from '@/components/ui/common/Loader'
+import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { canManageMembers } from '@/utils/auth/role'
 
 type ApiResponse<T> = {
   code: number
@@ -35,6 +37,8 @@ const CONFIRM_KEYWORD = '발송'
 
 export default function DashboardMemoPage() {
   const { apiClient } = useAuthenticatedApi()
+  const { user } = useAuth()
+  const canSend = canManageMembers(user?.userRole, user?.team)
 
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -81,7 +85,7 @@ export default function DashboardMemoPage() {
   }, [body, subject])
 
   const isConfirmMatched = confirmText.trim() === CONFIRM_KEYWORD
-  const canSubmit = isFormValid && isConfirmMatched && !submitting
+  const canSubmit = isFormValid && isConfirmMatched && !submitting && canSend
 
   const handleEnqueue = async () => {
     if (!canSubmit) return
@@ -195,7 +199,7 @@ export default function DashboardMemoPage() {
             <button
               type="button"
               onClick={handleRetryFailed}
-              disabled={retrying}
+              disabled={retrying || !canSend}
               className="h-11 shrink-0 rounded-lg border border-white/20 px-4 typo-pc-b3 text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               {retrying ? '재시도 반영 중...' : '실패건 재시도'}

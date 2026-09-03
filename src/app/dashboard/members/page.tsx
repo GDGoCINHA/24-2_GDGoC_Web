@@ -28,7 +28,9 @@ import {
   ADMIN_TR
 } from '@/components/admin/dashboard/adminStyles'
 import { formatMajorLabel } from '@/constant/majorOptions'
+import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { canManageMembers } from '@/utils/auth/role'
 import { formatPhoneNumberDisplay } from '@/utils/phoneNumber'
 
 type RecruitMemberSummary = {
@@ -162,6 +164,8 @@ function formatSemesterLabel(value?: string | null): string {
 
 export default function DashboardMembersPage() {
   const { apiClient } = useAuthenticatedApi()
+  const { user } = useAuth()
+  const canPay = canManageMembers(user?.userRole, user?.team)
 
   const [members, setMembers] = useState<RecruitMemberSummary[]>([])
   const [loading, setLoading] = useState(false)
@@ -400,7 +404,7 @@ export default function DashboardMembersPage() {
                               <button
                                 key={segment.label}
                                 type="button"
-                                disabled={isUpdating}
+                                disabled={isUpdating || !canPay}
                                 aria-pressed={isPressed}
                                 onClick={() => {
                                   if (!isUpdating && member.isPayed !== segment.value) {
