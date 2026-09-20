@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import QuestionField from '@/components/eventApplication/QuestionField'
@@ -33,6 +34,8 @@ import { formatDate } from '@/utils/formatDate'
 export default function EventApplicationSection({ eventBoardId }: { eventBoardId: number }) {
   const { user } = useAuth()
   const { apiClient } = useAuthenticatedApi()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const [form, setForm] = useState<PublicEventForm | null>(null)
   const [loading, setLoading] = useState(true)
@@ -119,11 +122,14 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
   }
 
   if (!user) {
+    // 로그인을 마치고 홈으로 떨어지면 행사를 다시 찾아 들어와야 한다. 보던 화면으로 돌려보낸다.
+    const query = searchParams.toString()
+    const loginHref = `/login/?next=${encodeURIComponent(`${pathname}${query ? `?${query}` : ''}`)}`
     return (
       <div className="border-t border-t-[rgba(240,234,228,0.10)] pt-7">
         <p className="text-sm text-dusk-ink-500">
           신청은 로그인 후 이용할 수 있습니다.{' '}
-          <Link href="/login/" className="text-dusk-ink-200 underline">
+          <Link href={loginHref} className="text-dusk-ink-200 underline">
             로그인하기
           </Link>
         </p>
