@@ -7,8 +7,7 @@ import { useRecruitMemberPeriod } from '@/hooks/useRecruitMemberPeriod'
 import {
   CORE_SCHEDULE,
   formatKoreanDateShort,
-  formatKoreanPeriodShort,
-  resolveMemberSchedule
+  formatKoreanPeriodShort
 } from '@/constant/recruitSchedule'
 
 export default function RecruitSelect() {
@@ -29,9 +28,8 @@ export default function RecruitSelect() {
     ? formatKoreanPeriodShort(period.openAt, period.closeAt)
     : formatKoreanPeriodShort(CORE_SCHEDULE.fallbackOpenAt, CORE_SCHEDULE.fallbackCloseAt)
 
-  // 부원은 코어와 달리 상시 모집이다. 게이팅은 코어와 같은 규칙이지만 서버 close-at 이
-  // 학기 말까지 열려 있어, 카드에 그 값을 그대로 쓰면 '8. 17. ~ 1. 31.' 로 나온다.
-  // 그래서 날짜는 집중 모집 기간(MEMBER_SCHEDULE)을 보여주고 서버 응답은 상태 판정에만 쓴다.
+  // 부원은 코어와 달리 상시 모집이다. 서버 close-at 이 학기 말까지 열려 있어 그 값을
+  // 띠에 그대로 그리면 '8. 17. ~ 1. 31.' 로 나온다. 날짜를 아예 달지 않고 상태 판정에만 쓴다.
   const memberUnknown = memberFailed || !memberPeriod
   const memberOpen = memberUnknown || memberPeriod.status === 'OPEN'
   const memberStatusLabel = memberUnknown
@@ -41,11 +39,6 @@ export default function RecruitSelect() {
       : memberPeriod.status === 'BEFORE_OPEN'
         ? `${formatKoreanDateShort(memberPeriod.openAt)} 오픈`
         : '모집 마감'
-  const memberSchedule = resolveMemberSchedule(memberPeriod?.notice)
-  const memberIntensivePeriodText = formatKoreanPeriodShort(
-    memberSchedule.intensiveOpenAt,
-    memberSchedule.intensiveCloseAt
-  )
 
   return (
     <main className="mx-auto w-full max-w-[1120px] px-[clamp(20px,5vw,44px)] pb-[100px] pt-14">
@@ -72,14 +65,7 @@ export default function RecruitSelect() {
         <RecruitTypeRow
           index="02"
           title="Member"
-          subtitle="부원 · 상시 모집"
-          period={
-            <>
-              {memberIntensivePeriodText}{' '}
-              {/* 괄호 문구가 '(집중 모 / 집 기간)' 으로 쪼개지지 않게 통째로 넘긴다. */}
-              <span className="whitespace-nowrap">(집중 모집 기간)</span>
-            </>
-          }
+          subtitle="부원 · 면접 없이 지원서로 합류"
           href="/recruit/member"
           statusLabel={memberStatusLabel}
           isOpen={memberOpen}
@@ -88,8 +74,7 @@ export default function RecruitSelect() {
       </div>
 
       <p className="mt-7 text-[13px] leading-[1.8] text-dusk-ink-800">
-        ※ 부원 모집은 집중 모집 기간 이후에도 상시 모집으로 전환됩니다. 실제 지원 가능 여부는
-        서버에서 판정합니다.
+        ※ 부원은 학기 중 상시 모집입니다. 실제 지원 가능 여부는 서버에서 판정합니다.
       </p>
     </main>
   )
