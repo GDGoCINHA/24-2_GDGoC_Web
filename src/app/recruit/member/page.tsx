@@ -27,10 +27,8 @@ import {
 } from '@/components/ui/dusk/DuskForm'
 import { interestOptions } from '@/constant/interestOptions'
 import { formatMajorLabel } from '@/constant/majorOptions'
-import { formatKoreanPeriodShort, resolveMemberSchedule } from '@/constant/recruitSchedule'
 import { wishOptions } from '@/constant/wishOptions'
 import { useAuth } from '@/hooks/useAuth'
-import { useRecruitMemberPeriod } from '@/hooks/useRecruitMemberPeriod'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { fetchMyMemberApplication, fetchMyProfile } from '@/services/profile/profileClient'
 import type { MyMemberApplication, UserProfile } from '@/types/profile'
@@ -302,13 +300,6 @@ function RecruitMemberForm({
   const [maxReachedStep, setMaxReachedStep] = useState(0)
   /** "다음" 을 눌러 본 단계. 그 전에는 아직 손대지 않은 칸을 붉게 칠하지 않는다. */
   const [attemptedSteps, setAttemptedSteps] = useState<number[]>([])
-
-  const { period: memberPeriod } = useRecruitMemberPeriod()
-  const memberSchedule = resolveMemberSchedule(memberPeriod?.notice)
-  const intensivePeriodText = formatKoreanPeriodShort(
-    memberSchedule.intensiveOpenAt,
-    memberSchedule.intensiveCloseAt
-  )
 
   const showStepErrors = isSubmitted || attemptedSteps.includes(step)
   const submittedErrors: RecruitFormErrors = showStepErrors ? formErrors : {}
@@ -645,19 +636,12 @@ function RecruitMemberForm({
           {step === 2 ? (
             <section className="flex flex-col gap-4 rounded-[14px] border border-[rgba(240,234,228,0.12)] px-5 py-[22px]">
               <h2 className="text-[15px] font-medium text-dusk-ink-200">모집 일정</h2>
-              <div className="flex flex-col">
-                <div className="flex flex-wrap justify-between gap-4 border-t border-[rgba(240,234,228,0.10)] py-3.5">
-                  <span className="text-sm text-dusk-ink-700">집중 모집</span>
-                  <span className="text-[15px]">{intensivePeriodText}</span>
-                </div>
-                <div className="flex flex-wrap justify-between gap-4 border-t border-[rgba(240,234,228,0.10)] py-3.5">
-                  <span className="text-sm text-dusk-ink-700">이후</span>
-                  <span className="text-[15px]">상시 모집</span>
-                </div>
+              <div className="flex flex-wrap justify-between gap-4 border-t border-[rgba(240,234,228,0.10)] py-3.5">
+                <span className="text-sm text-dusk-ink-700">부원 모집</span>
+                <span className="text-[15px]">상시 모집</span>
               </div>
               <p className="break-keep text-[13px] leading-[1.8] text-dusk-ink-800">
-                부원은 별도 면접 없이 지원서로 합류합니다. 집중 모집 기간이 지난 뒤에도 상시
-                모집으로 지원할 수 있어요.
+                부원은 별도 면접 없이 지원서로 합류합니다. 학기 중 언제든 지원할 수 있어요.
               </p>
             </section>
           ) : null}

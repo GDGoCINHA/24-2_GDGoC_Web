@@ -11,8 +11,8 @@ type Props = {
   title: string
   /** 한글명과 조건을 한 줄로. 예: `운영진 · 서류 후 면접` */
   subtitle: string
-  /** 문자열 외에 부가 문구를 붙일 수 있게 노드로 받는다 — 부원 띠가 '(집중 모집 기간)' 을 단다. */
-  period: ReactNode
+  /** 날짜가 있는 띠만 단다. 상시 모집인 부원은 비워 둔다 — 상태 문구와 같은 말이 두 번 울린다. */
+  period?: ReactNode
   href: string
   statusLabel: string
   isOpen: boolean
@@ -63,7 +63,7 @@ export function RecruitTypeRow({
 
       {/*
         좁은 폭에서는 두 띠가 같은 모양이어야 한다. flex-wrap 에 맡기면 기간 문구가 긴
-        쪽만 줄바꿈돼(부원의 '(집중 모집 기간)') 나란히 놓인 띠의 생김새가 갈린다.
+        쪽만 줄바꿈돼 나란히 놓인 띠의 생김새가 갈린다.
       */}
       <span className="relative flex flex-col gap-6 min-[600px]:flex-row min-[600px]:items-end min-[600px]:justify-between min-[600px]:gap-x-8">
         <span className="min-w-0">
@@ -114,14 +114,16 @@ export function RecruitTypeRow({
             </span>
           </span>
 
-          <span
-            className={cn(
-              'break-keep text-[15px] text-dusk-ink-400 transition-colors duration-[400ms] min-[600px]:text-right',
-              isOpen && INVERTED_SOFT
-            )}
-          >
-            {period}
-          </span>
+          {period ? (
+            <span
+              className={cn(
+                'break-keep text-[15px] text-dusk-ink-400 transition-colors duration-[400ms] min-[600px]:text-right',
+                isOpen && INVERTED_SOFT
+              )}
+            >
+              {period}
+            </span>
+          ) : null}
 
           {isOpen ? (
             <span
