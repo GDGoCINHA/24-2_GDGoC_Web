@@ -9,7 +9,6 @@ import {
   resolveCoreSchedule
 } from '@/constant/recruitSchedule'
 import { useRecruitCorePeriod } from '@/hooks/useRecruitCorePeriod'
-import { useMemberSchedule } from '@/hooks/useRecruitSchedule'
 import type { LandingContact } from '@/types/landing'
 
 /**
@@ -53,7 +52,6 @@ export default function FaqSection() {
   const { faqs, contact } = useLandingContent()
   const { period: corePeriod } = useRecruitCorePeriod()
   const coreSchedule = resolveCoreSchedule(corePeriod?.notice)
-  const memberSchedule = useMemberSchedule()
   const [openIndex, setOpenIndex] = useState(-1)
 
   // 랜딩은 안내만 한다. 실제 지원 게이팅은 지원 페이지가 서버에 물어본다.
@@ -65,7 +63,7 @@ export default function FaqSection() {
     {
       label: '부원 모집',
       value: '상시 모집',
-      note: `집중 모집 ${formatKoreanPeriodShort(memberSchedule.intensiveOpenAt, memberSchedule.intensiveCloseAt)}`
+      note: '면접 없이 지원서로 합류'
     },
     {
       label: '운영진 서류',

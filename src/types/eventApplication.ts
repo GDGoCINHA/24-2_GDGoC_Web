@@ -95,6 +95,8 @@ export interface EventForm {
   capacity: number | null
   minRole: UserRoleValue
   isOpen: boolean
+  /** 켜져 있으면 로그인 없이 신원을 적어 신청한다. 이때 minRole 은 보지 않는다. */
+  allowAnonymous: boolean
   /** null 이면 아직 만드는 중이라 부원에게 보이지 않는다. */
   publishedAt: string | null
   appliedCount: number
@@ -126,17 +128,28 @@ export interface PublicEventForm {
   remainingSeats: number | null
   canApply: boolean
   blockedReason: string | null
+  /** 로그인하지 않은 사람에게 신원 입력칸을 줄지, 로그인 안내를 띄울지 가른다. */
+  allowAnonymous: boolean
   questions: FormQuestion[]
   myApplication: MyApplicationSummary | null
 }
 
-export interface Applicant {
-  applicationId: number
-  userId: number
+/** 로그인 없이 신청할 때 적는 신원. major 는 학과 코드, phoneNumber 는 숫자만이다. */
+export interface AnonymousIdentity {
   name: string
   studentId: string
   major: string
-  email: string
+  phoneNumber: string
+}
+
+export interface Applicant {
+  applicationId: number
+  /** null 이면 로그인 없이 낸 신청이다. 이메일도 받지 않았다. */
+  userId: number | null
+  name: string
+  studentId: string
+  major: string
+  email: string | null
   phoneNumber: string
   status: ApplicationStatus
   attendanceStatus: EventAttendanceStatus
@@ -177,6 +190,7 @@ export interface EventFormSavePayload {
   clearCapacity?: boolean
   minRole?: UserRoleValue
   isOpen?: boolean
+  allowAnonymous?: boolean
 }
 
 export interface QuestionSavePayload {

@@ -245,6 +245,9 @@ export default function EventApplicantsPage() {
                     <tr key={applicant.applicationId} className={ADMIN_TR}>
                       <td className={ADMIN_TD}>
                         {applicant.name}
+                        {applicant.userId == null && (
+                          <span className="ml-1.5 text-[12px] text-admin-ink-dim">(비로그인)</span>
+                        )}
                         {applicant.status === 'CANCELED' && (
                           <span className="ml-1.5 text-[12px] text-admin-ink-dim">(취소)</span>
                         )}

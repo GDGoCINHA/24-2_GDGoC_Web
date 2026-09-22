@@ -4,14 +4,11 @@ import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 
 import { useLandingContent } from '@/components/landing/LandingContentProvider'
-import { formatKoreanPeriodShort } from '@/constant/recruitSchedule'
-import { useMemberSchedule } from '@/hooks/useRecruitSchedule'
 
 import { scrollToSection } from './LandingHeader'
 
 export default function HeroSection() {
   const { hero, semesterLabel } = useLandingContent()
-  const memberSchedule = useMemberSchedule()
   const contentRef = useRef<HTMLDivElement>(null)
 
   /** 스크롤을 내리는 동안 히어로 문구만 살짝 밀려 올라가며 옅어진다. */
@@ -29,11 +26,6 @@ export default function HeroSection() {
 
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-
-  const intensivePeriod = formatKoreanPeriodShort(
-    memberSchedule.intensiveOpenAt,
-    memberSchedule.intensiveCloseAt
-  )
 
   return (
     <section id="top" className="relative flex min-h-svh items-end">
@@ -81,7 +73,7 @@ export default function HeroSection() {
             <div className="flex flex-wrap items-baseline gap-2.5">
               <span aria-hidden className="size-1.5 rounded-full bg-signal-ok" />
               <span className="text-sm text-dusk-ink-200">{semesterLabel} 부원 모집 중</span>
-              <span className="text-sm text-dusk-ink-700">집중 모집 {intensivePeriod}</span>
+              <span className="text-sm text-dusk-ink-700">학기 중 상시 모집</span>
             </div>
             <a
               href="/recruit/"

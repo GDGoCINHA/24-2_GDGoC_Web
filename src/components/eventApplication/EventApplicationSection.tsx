@@ -1,8 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 
+import AnonymousIdentityFields, {
+  EMPTY_IDENTITY,
+  missingIdentityFields,
+  toAnonymousIdentity,
+  type AnonymousIdentityDraft
+} from '@/components/eventApplication/AnonymousIdentityFields'
 import QuestionField from '@/components/eventApplication/QuestionField'
 import {
   DUSK_CANCEL_BUTTON,
@@ -13,7 +20,9 @@ import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import {
   cancelApplication,
+  fetchAnonymousEventForm,
   fetchPublicEventForm,
+  submitAnonymousApplication,
   submitApplication
 } from '@/services/eventApplication/eventApplicationClient'
 import type { AnswerValue, PublicEventForm } from '@/types/eventApplication'
@@ -25,24 +34,42 @@ import {
 import { formatDate } from '@/utils/formatDate'
 
 /**
- * 행사 상세 아래에 붙는 신청 영역.
+ * 행사 상세 아래에 붙는 신청 영역. 신청 전용 화면(/board/events/apply)도 이것을 그대로 쓴다.
  *
- * 폼이 없는 행사에서는 아무것도 그리지 않는다. 신청을 받지 않는 행사의 화면은
- * 지금까지와 완전히 같아야 한다.
+ * 폼이 없는 행사에서는 아무것도 그리지 않는다(fallback 을 주면 그것을 그린다). 신청을 받지
+ * 않는 행사의 화면은 지금까지와 완전히 같아야 한다.
+ *
+ * 로그인하지 않은 사람은 폼이 로그인 없이 받을 때(allowAnonymous)만 신원 칸을 채워 신청한다.
+ * 아니면 로그인 안내를 띄운다.
  */
-export default function EventApplicationSection({ eventBoardId }: { eventBoardId: number }) {
+export default function EventApplicationSection({
+  eventBoardId,
+  fallback = null
+}: {
+  eventBoardId: number
+  /** 신청을 받지 않는 행사일 때 대신 그린다. 신청 전용 화면이 빈 화면을 피하려고 쓴다. */
+  fallback?: ReactNode
+}) {
   const { user } = useAuth()
   const { apiClient } = useAuthenticatedApi()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const loggedIn = Boolean(user)
 
   const [form, setForm] = useState<PublicEventForm | null>(null)
   const [loading, setLoading] = useState(true)
   const [answers, setAnswers] = useState<Record<number, AnswerValue>>({})
+  const [identity, setIdentity] = useState<AnonymousIdentityDraft>(EMPTY_IDENTITY)
+  // 로그인 없이 낸 신청은 서버가 "내 신청" 으로 돌려주지 못한다. 완료 화면은 여기서만 기억한다.
+  const [anonymousSubmitted, setAnonymousSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     try {
-      const loaded = await fetchPublicEventForm(apiClient, eventBoardId)
+      const loaded = loggedIn
+        ? await fetchPublicEventForm(apiClient, eventBoardId)
+        : await fetchAnonymousEventForm(eventBoardId)
       setForm(loaded)
       // 이미 신청했다면 냈던 답을 그대로 채워 다시 볼 수 있게 한다.
       if (loaded.myApplication) {
@@ -58,24 +85,22 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
     } finally {
       setLoading(false)
     }
-  }, [apiClient, eventBoardId])
+  }, [apiClient, eventBoardId, loggedIn])
 
   useEffect(() => {
-    if (!user) {
-      setLoading(false)
-      return
-    }
     void load()
-  }, [user, load])
+  }, [load])
+
+  const anonymous = !loggedIn && form?.allowAnonymous === true
 
   const visible = useMemo(
     () => (form ? visibleQuestionIds(form.questions, answers) : new Set<number>()),
     [form, answers]
   )
-  const missing = useMemo(
-    () => (form ? findMissingRequired(form.questions, answers) : []),
-    [form, answers]
-  )
+  const missing = useMemo(() => {
+    const questions = form ? findMissingRequired(form.questions, answers).map((q) => q.label) : []
+    return anonymous ? [...missingIdentityFields(identity), ...questions] : questions
+  }, [form, answers, anonymous, identity])
 
   const applied = form?.myApplication?.status === 'APPLIED'
 
@@ -84,11 +109,18 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
     setSubmitting(true)
     setError(null)
     try {
-      await submitApplication(
-        apiClient,
-        eventBoardId,
-        collectSubmittableAnswers(form.questions, answers)
-      )
+      const submittable = collectSubmittableAnswers(form.questions, answers)
+      if (anonymous) {
+        await submitAnonymousApplication(
+          eventBoardId,
+          toAnonymousIdentity(identity),
+          identity.privacyAgreed,
+          submittable
+        )
+        setAnonymousSubmitted(true)
+      } else {
+        await submitApplication(apiClient, eventBoardId, submittable)
+      }
       await load()
     } catch (e) {
       setError(readErrorMessage(e))
@@ -118,12 +150,18 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
     }
   }
 
-  if (!user) {
+  if (loading) return null
+  if (!form) return <>{fallback}</>
+
+  if (!loggedIn && !form.allowAnonymous) {
+    // 로그인을 마치고 홈으로 떨어지면 행사를 다시 찾아 들어와야 한다. 보던 화면으로 돌려보낸다.
+    const query = searchParams.toString()
+    const loginHref = `/login/?next=${encodeURIComponent(`${pathname}${query ? `?${query}` : ''}`)}`
     return (
       <div className="border-t border-t-[rgba(240,234,228,0.10)] pt-7">
         <p className="text-sm text-dusk-ink-500">
           신청은 로그인 후 이용할 수 있습니다.{' '}
-          <Link href="/login/" className="text-dusk-ink-200 underline">
+          <Link href={loginHref} className="text-dusk-ink-200 underline">
             로그인하기
           </Link>
         </p>
@@ -131,7 +169,19 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
     )
   }
 
-  if (loading || !form) return null
+  if (anonymousSubmitted) {
+    return (
+      <div className="flex flex-col gap-3 border-t border-t-[rgba(240,234,228,0.10)] pt-7">
+        <p className="rounded-xl border border-[rgba(208,129,85,0.4)] bg-[rgba(208,129,85,0.10)] px-4 py-3 text-[15px] text-ember">
+          신청이 완료되었습니다.
+        </p>
+        <p className="text-[13px] leading-[1.7] text-dusk-ink-800">
+          행사장에서 QR 을 찍으면 학번과 이름으로 체크인합니다. 신청을 취소하거나 고치려면
+          운영진에게 연락해 주세요.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6 border-t border-t-[rgba(240,234,228,0.10)] pt-7">
@@ -147,12 +197,19 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
               }`
             : ''}
         </p>
+        {loggedIn && !applied && user?.name && (
+          <p className="text-[13px] text-dusk-ink-800">{user.name} 님 계정으로 신청합니다.</p>
+        )}
       </div>
 
       {applied && (
         <p className="rounded-xl border border-[rgba(208,129,85,0.4)] bg-[rgba(208,129,85,0.10)] px-4 py-3 text-[15px] text-ember">
           신청이 완료되었습니다. 아래는 제출한 내용입니다.
         </p>
+      )}
+
+      {anonymous && form.canApply && (
+        <AnonymousIdentityFields value={identity} onChange={setIdentity} disabled={submitting} />
       )}
 
       {form.questions.length > 0 && (
@@ -201,7 +258,7 @@ export default function EventApplicationSection({ eventBoardId }: { eventBoardId
           )}
           {form.canApply && missing.length > 0 && (
             <p className="text-[13px] text-dusk-ink-800">
-              필수 항목을 채워주세요 — {missing.map((q) => q.label).join(', ')}
+              필수 항목을 채워주세요 — {missing.join(', ')}
             </p>
           )}
         </div>
