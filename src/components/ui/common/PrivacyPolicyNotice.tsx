@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn'
 
-type PolicyTarget = 'signup' | 'member' | 'core' | 'memo'
+type PolicyTarget = 'signup' | 'member' | 'core' | 'memo' | 'event'
 
 type PolicyRow = {
   category: string
@@ -46,6 +46,14 @@ const POLICY_ROWS: Record<PolicyTarget, PolicyRow[]> = {
       purpose: ['신입생 지원 일정 안내', '지원 가능 시점 알림 전달'],
       fields: '이름, 휴대전화번호, 이메일',
       retention: '신입생 지원 기간 종료 시까지 (또는 동의 철회 시)'
+    }
+  ],
+  event: [
+    {
+      category: '행사 신청 (로그인 없이)',
+      purpose: ['신청 확인 및 참석 관리', '행사 관련 안내 전달'],
+      fields: '이름, 학번, 학과, 휴대전화번호, 신청서 답변',
+      retention: '행사 종료 시까지'
     }
   ]
 }

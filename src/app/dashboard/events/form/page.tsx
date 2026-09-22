@@ -68,7 +68,15 @@ const STATUS_BADGE: Record<FormStatus, string> = {
   CLOSED: `${BADGE} border border-admin-line text-admin-ink-muted`
 }
 
-const MIN_ROLE_CHOICES: { value: UserRoleValue; label: string }[] = [
+/**
+ * 「누구나」는 등급이 아니라 서버의 allowAnonymous 다. 켜면 서버가 minRole 을 보지 않으므로
+ * 한 선택지로 합쳐 보여준다.
+ */
+const ANONYMOUS = 'ANONYMOUS'
+type EligibilityChoice = UserRoleValue | typeof ANONYMOUS
+
+const ELIGIBILITY_CHOICES: { value: EligibilityChoice; label: string }[] = [
+  { value: ANONYMOUS, label: '누구나 (로그인 없이)' },
   { value: 'GUEST', label: '로그인한 누구나 (부원 아니어도)' },
   { value: 'MEMBER', label: '부원부터' },
   { value: 'CORE', label: '코어부터' }
@@ -88,8 +96,9 @@ export default function EventFormBuilderPage() {
 
   const [closesAt, setClosesAt] = useState('')
   const [capacity, setCapacity] = useState('')
-  const [minRole, setMinRole] = useState<UserRoleValue>('MEMBER')
+  const [eligibility, setEligibility] = useState<EligibilityChoice>('MEMBER')
   const [isOpen, setIsOpen] = useState(true)
+  const [linkCopied, setLinkCopied] = useState(false)
 
   const load = useCallback(async () => {
     if (Number.isNaN(eventBoardId)) {
@@ -102,7 +111,7 @@ export default function EventFormBuilderPage() {
       setForm(loaded)
       setClosesAt(toLocalInput(loaded.closesAt))
       setCapacity(loaded.capacity == null ? '' : String(loaded.capacity))
-      setMinRole(loaded.minRole)
+      setEligibility(loaded.allowAnonymous ? ANONYMOUS : loaded.minRole)
       setIsOpen(loaded.isOpen)
     } catch (e) {
       // 폼이 아직 없는 행사는 404 다. 만들기 전 상태이므로 오류가 아니다.
@@ -139,10 +148,29 @@ export default function EventFormBuilderPage() {
         closesAt: closesAt === '' ? null : new Date(closesAt).toISOString(),
         capacity: capacity === '' ? null : Number(capacity),
         clearCapacity: capacity === '',
-        minRole,
+        // 「누구나」를 고르면 등급은 그대로 두고 로그인 없이 받기만 켠다. 되돌릴 때 원래 등급이 남는다.
+        ...(eligibility === ANONYMOUS
+          ? { allowAnonymous: true }
+          : { allowAnonymous: false, minRole: eligibility }),
         isOpen
       })
     )
+
+  /** 링크를 타고 온 사람에게 신청 폼만 보여주는 주소. 운영진이 단톡·SNS 에 뿌린다. */
+  const applyLink =
+    typeof window === 'undefined'
+      ? ''
+      : `${window.location.origin}/board/events/apply/?id=${eventBoardId}`
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(applyLink)
+      setLinkCopied(true)
+      window.setTimeout(() => setLinkCopied(false), 2000)
+    } catch {
+      setError('복사하지 못했습니다. 주소를 직접 선택해 복사해 주세요.')
+    }
+  }
 
   const handleAddQuestion = () =>
     run(() =>
@@ -265,6 +293,22 @@ export default function EventFormBuilderPage() {
 
         {form && (
           <>
+            {form.publishedAt && (
+              <div className="mt-8 flex flex-col gap-2 rounded-[20px] border border-admin-line-soft bg-admin-card p-5">
+                <p className="text-[14px] font-medium text-admin-ink">신청 링크</p>
+                <p className="text-[12px] text-admin-ink-dim">
+                  행사 글 없이 신청 폼만 열리는 주소입니다. 신청 자격이 「누구나 (로그인 없이)」면
+                  가입하지 않은 사람도 바로 신청합니다.
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input readOnly value={applyLink} className={`${INPUT} min-w-0 flex-1`} />
+                  <button type="button" className={ADMIN_GHOST_BUTTON} onClick={handleCopyLink}>
+                    {linkCopied ? '복사됨' : '복사'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="mt-8 flex flex-col gap-4 rounded-[20px] border border-admin-line-soft bg-admin-card p-5">
               <p className="text-[14px] font-medium text-admin-ink">신청 설정</p>
 
@@ -294,17 +338,19 @@ export default function EventFormBuilderPage() {
                   <span className={LABEL}>신청 자격</span>
                   <select
                     className={ADMIN_CELL_SELECT}
-                    value={minRole}
-                    onChange={(e) => setMinRole(e.target.value as UserRoleValue)}
+                    value={eligibility}
+                    onChange={(e) => setEligibility(e.target.value as EligibilityChoice)}
                   >
-                    {MIN_ROLE_CHOICES.map((choice) => (
+                    {ELIGIBILITY_CHOICES.map((choice) => (
                       <option key={choice.value} value={choice.value} className={ADMIN_OPTION}>
                         {choice.label}
                       </option>
                     ))}
                   </select>
                   <span className="text-[12px] text-admin-ink-dim">
-                    어느 쪽이든 로그인이 필요합니다
+                    {eligibility === ANONYMOUS
+                      ? '로그인 안 한 사람은 이름·학번·학과·연락처를 적고 신청합니다'
+                      : '로그인이 필요합니다'}
                   </span>
                 </label>
 
