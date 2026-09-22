@@ -1,14 +1,8 @@
 'use client'
 
 import { PrivacyPolicyNotice } from '@/components/ui/common/PrivacyPolicyNotice'
-import {
-  DuskField,
-  DUSK_CHECKBOX,
-  DUSK_INPUT,
-  DUSK_OPTION,
-  DUSK_SELECT
-} from '@/components/ui/dusk/DuskForm'
-import { majorOptions } from '@/constant/majorOptions'
+import { GdgMajorDropdown } from '@/components/ui/design-system'
+import { DuskField, DUSK_CHECKBOX, DUSK_INPUT } from '@/components/ui/dusk/DuskForm'
 import { usePhoneNumber } from '@/hooks/usePhoneNumber'
 import type { AnonymousIdentity } from '@/types/eventApplication'
 import { cn } from '@/utils/cn'
@@ -109,26 +103,16 @@ export default function AnonymousIdentityFields({
           />
         </DuskField>
 
+        {/* 학과가 78개라 목록을 내려 찾기 어렵다. 회원가입과 같은 검색형 입력을 쓴다 —
+            목록에 있는 것만 고를 수 있어 값은 여전히 학과 코드다. */}
         <DuskField label="학과" required>
-          <select
+          <GdgMajorDropdown
             value={value.major}
-            onChange={(e) => set('major', e.target.value)}
-            disabled={disabled}
-            className={DUSK_SELECT}
-          >
-            <option value="" className={DUSK_OPTION}>
-              학과를 선택하세요
-            </option>
-            {majorOptions.map((group) => (
-              <optgroup key={group.title} label={group.title} className={DUSK_OPTION}>
-                {group.items.map((item) => (
-                  <option key={item.code} value={item.code} className={DUSK_OPTION}>
-                    {item.label}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
+            onChangeAction={(major) => set('major', major)}
+            device="pc"
+            tone="dusk"
+            placeholder="학과 이름을 검색해 보세요"
+          />
         </DuskField>
 
         <DuskField
