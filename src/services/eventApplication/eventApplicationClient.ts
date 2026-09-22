@@ -1,6 +1,8 @@
 import type { AxiosInstance } from 'axios'
 
+import { publicClient } from '@/lib/api/publicClient'
 import type {
+  AnonymousIdentity,
   Applicant,
   AnswerEntry,
   ApplicationStatus,
@@ -199,6 +201,45 @@ export const checkIn = async (
   token: string
 ): Promise<CheckinResult> => {
   const response = await apiClient.post(`/board/events/${eventBoardId}/checkin`, { token })
+  return unwrapOnce<CheckinResult>(response.data)
+}
+
+/* ---------------- 로그인하지 않은 사람 ---------------- */
+
+/**
+ * 로그인 없이 보는 폼. 로그인 없이 받지 않는 폼이어도 내려오며, 그때는 canApply 가 false 이고
+ * allowAnonymous 로 로그인 안내를 띄울지 가른다.
+ */
+export const fetchAnonymousEventForm = async (eventBoardId: number): Promise<PublicEventForm> => {
+  const response = await publicClient.get(`/board/events/${eventBoardId}/anonymous/form`)
+  return unwrapOnce<PublicEventForm>(response.data)
+}
+
+export const submitAnonymousApplication = async (
+  eventBoardId: number,
+  identity: AnonymousIdentity,
+  privacyAgreed: boolean,
+  answers: AnswerEntry[]
+): Promise<void> => {
+  await publicClient.post(`/board/events/${eventBoardId}/anonymous/applications`, {
+    ...identity,
+    privacyAgreed,
+    answers
+  })
+}
+
+/** 로그인하지 않은 폰으로 QR 을 찍었을 때. 신청할 때의 학번·이름으로 찾는다. */
+export const checkInAnonymously = async (
+  eventBoardId: number,
+  token: string,
+  studentId: string,
+  name: string
+): Promise<CheckinResult> => {
+  const response = await publicClient.post(`/board/events/${eventBoardId}/anonymous/checkin`, {
+    token,
+    studentId,
+    name
+  })
   return unwrapOnce<CheckinResult>(response.data)
 }
 
