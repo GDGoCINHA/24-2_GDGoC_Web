@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
+import { ClubFixRequestSection } from '@/components/club/ClubFixRequestSection'
 import { ClubBackLink, ClubLeaderTag } from '@/components/club/ClubUi'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
@@ -13,7 +14,6 @@ import {
 } from '@/components/ui/dusk/DuskForm'
 import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
-import { MOCK_FIX_REQUESTS } from '@/mock/clubMock'
 import {
   fetchClubApplicants,
   fetchClubDetail,
@@ -194,38 +194,7 @@ export default function ClubManagePage() {
           )}
         </section>
 
-        <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">
-            출석 수정 요청 <span className="text-ember">{MOCK_FIX_REQUESTS.length}</span>
-          </h2>
-          {MOCK_FIX_REQUESTS.map((request) => (
-            <div
-              key={request.id}
-              className="flex flex-wrap items-center gap-3.5 rounded-[14px] border border-dusk-line px-[18px] py-4"
-            >
-              <div className="min-w-0 flex-[1_1_300px]">
-                <div className="text-[15px] font-semibold">
-                  {request.name}{' '}
-                  <span className="text-[13px] font-normal text-dusk-ink-800">
-                    {request.target}
-                  </span>
-                </div>
-                <div className="mt-1.5 text-sm text-dusk-ink-400">{request.reason}</div>
-              </div>
-              <div className="flex gap-2">
-                <button type="button" className={cn(DUSK_GHOST_BUTTON, SMALL)}>
-                  거절
-                </button>
-                <button type="button" className={cn(DUSK_PRIMARY_BUTTON, SMALL)}>
-                  반영
-                </button>
-              </div>
-            </div>
-          ))}
-          <p className="text-[13px] text-dusk-ink-800">
-            반영하면 그 활동 기록은 다시 검토 중이 돼요. 인증 완료된 기록은 고칠 수 없어요.
-          </p>
-        </section>
+        <ClubFixRequestSection clubId={clubId} />
 
         <section className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold">멤버 {members.length}명</h2>

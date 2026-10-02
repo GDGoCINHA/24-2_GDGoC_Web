@@ -3,24 +3,25 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
-import { formatScheduleTime } from '@/components/club/clubDate'
+import { formatActivityDate, formatScheduleTime } from '@/components/club/clubDate'
 import { KakaoShareButton } from '@/components/club/ClubUi'
 import { DUSK_GHOST_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { fetchMyAttendance, requestAttendanceFix } from '@/services/club/attendanceClient'
 import { readClubError } from '@/services/club/clubClient'
 import { fetchSchedules, respondSchedule } from '@/services/club/scheduleClient'
-import type { ClubMembership, ClubRsvp, ClubSchedule } from '@/types/club'
+import type { ClubMembership, ClubMyAttendance, ClubRsvp, ClubSchedule } from '@/types/club'
 import { cn } from '@/utils/cn'
 
 const RSVP_BUTTON = 'min-h-11 flex-1 rounded-full border text-sm disabled:opacity-60'
 const RSVP_ON = 'border-ember bg-[rgba(208,129,85,0.18)] text-dusk-ink-100'
 const RSVP_OFF = 'border-[rgba(240,234,228,0.2)] text-dusk-ink-400'
-const LEADER_LINK = 'min-h-9 text-[13px] text-ember'
+const ACTION_LINK = 'min-h-9 text-[13px] text-ember'
 
 /**
  * 상세 「일정·출석」 탭 (B 담당).
  *
- * 일정은 부원 누구나 본다. 참석 예정 응답은 팀원만, 일정 관리·QR 은 리더만 한다.
+ * 일정은 부원 누구나 본다. 참석 예정 응답·내 출석·출석 수정 요청은 팀원만, 일정 관리·QR 은 리더만 한다.
  * 참석 예정 응답은 실제 출석과 무관하다 — 실제 출석은 리더가 활동 기록에 제출한다.
  */
 export function ClubScheduleTab({
@@ -35,35 +36,52 @@ export function ClubScheduleTab({
   const isLeader = Boolean(myMembership?.isLeader)
   const [upcoming, setUpcoming] = useState<ClubSchedule[] | null>(null)
   const [past, setPast] = useState<ClubSchedule[]>([])
+  const [myAttendance, setMyAttendance] = useState<ClubMyAttendance[]>([])
   const [error, setError] = useState<string | null>(null)
-  /** 응답을 보내는 중인 일정. 버튼을 두 번 눌러 요청이 겹치지 않게 한다. */
-  const [responding, setResponding] = useState<number | null>(null)
+  /** 요청을 보내는 중인 일정·기록. 버튼을 두 번 눌러 요청이 겹치지 않게 한다. */
+  const [working, setWorking] = useState<string | null>(null)
 
   const load = useCallback(() => {
     Promise.all([
       fetchSchedules(apiClient, clubId, 'upcoming'),
-      fetchSchedules(apiClient, clubId, 'past')
+      fetchSchedules(apiClient, clubId, 'past'),
+      isMember ? fetchMyAttendance(apiClient, clubId) : Promise.resolve([])
     ])
-      .then(([nextSchedules, pastSchedules]) => {
+      .then(([nextSchedules, pastSchedules, mine]) => {
         setUpcoming(nextSchedules)
         setPast(pastSchedules)
+        setMyAttendance(mine)
         setError(null)
       })
       .catch((err) => setError(readClubError(err, '일정을 불러오지 못했어요.')))
-  }, [apiClient, clubId])
+  }, [apiClient, clubId, isMember])
 
   useEffect(load, [load])
 
-  const respond = async (scheduleId: number, response: ClubRsvp) => {
-    setResponding(scheduleId)
+  const run = async (key: string, action: () => Promise<unknown>) => {
+    setWorking(key)
     try {
-      await respondSchedule(apiClient, scheduleId, response)
+      await action()
       load()
     } catch (err) {
       window.alert(readClubError(err))
     } finally {
-      setResponding(null)
+      setWorking(null)
     }
+  }
+
+  const respond = (scheduleId: number, response: ClubRsvp) =>
+    run(`rsvp-${scheduleId}`, () => respondSchedule(apiClient, scheduleId, response))
+
+  const requestFix = (row: ClubMyAttendance) => {
+    const want = row.attended ? '결석' : '출석'
+    const reason = window.prompt(
+      `${formatActivityDate(row.activityDate)} 출석을 ${want}(으)로 바꿔 달라고 리더에게 요청해요.\n이유를 적어 주세요.`
+    )
+    if (!reason?.trim()) return
+    void run(`fix-${row.activityId}`, () =>
+      requestAttendanceFix(apiClient, row.activityId, reason.trim())
+    )
   }
 
   if (error) return <p className="py-12 text-center text-sm text-dusk-ink-800">{error}</p>
@@ -101,7 +119,7 @@ export function ClubScheduleTab({
                   <button
                     key={response}
                     type="button"
-                    disabled={responding === next.id}
+                    disabled={working === `rsvp-${next.id}`}
                     onClick={() => void respond(next.id, response)}
                     className={cn(RSVP_BUTTON, next.myResponse === response ? RSVP_ON : RSVP_OFF)}
                   >
@@ -115,7 +133,8 @@ export function ClubScheduleTab({
               {next.noResponseCount}명
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              {isLeader && <LeaderActions clubId={clubId} scheduleId={next.id} />}
+              {isLeader && <LeaderActions clubId={clubId} schedule={next} />}
+              {!isLeader && <RecordLink clubId={clubId} schedule={next} isLeader={false} />}
               {/* TODO(C): 회차 제목·날짜·장소를 공유한다(기획 2.10). */}
               <KakaoShareButton compact />
             </div>
@@ -135,7 +154,7 @@ export function ClubScheduleTab({
             </div>
             {isLeader && (
               <div className="flex flex-wrap gap-x-4">
-                <LeaderActions clubId={clubId} scheduleId={schedule.id} />
+                <LeaderActions clubId={clubId} schedule={schedule} />
               </div>
             )}
           </div>
@@ -156,19 +175,66 @@ export function ClubScheduleTab({
                 <span className="text-dusk-ink-200">
                   {formatScheduleTime(schedule.startsAt)} · {schedule.title}
                 </span>
-                {isLeader && (
-                  <Link
-                    href={`/club/activity/edit/?clubId=${clubId}&scheduleId=${schedule.id}`}
-                    className={LEADER_LINK}
-                  >
-                    활동 기록 작성
-                  </Link>
-                )}
+                <RecordLink clubId={clubId} schedule={schedule} isLeader={isLeader} />
               </div>
             ))}
           </div>
         )}
-        {/* TODO(B): 「내 출석」과 출석 수정 요청은 출석 수정 요청 API(6번)가 나오면 붙인다. */}
+
+        {isMember && (
+          <>
+            <h2 className="mt-2 text-lg font-semibold">내 출석</h2>
+            {myAttendance.length === 0 ? (
+              <p className="text-sm text-dusk-ink-800">아직 기록된 회차가 없어요.</p>
+            ) : (
+              <div className="overflow-hidden rounded-[20px] border border-dusk-line">
+                {myAttendance.map((row) => (
+                  <div
+                    key={row.activityId}
+                    className="flex items-center justify-between gap-3 border-b border-dusk-line-soft px-[18px] py-3.5 text-sm last:border-b-0"
+                  >
+                    <Link
+                      href={`/club/activity/?clubId=${clubId}&id=${row.activityId}`}
+                      className="min-w-0 truncate text-dusk-ink-200"
+                    >
+                      {formatActivityDate(row.activityDate)}
+                      {row.scheduleTitle && (
+                        <span className="text-dusk-ink-800"> · {row.scheduleTitle}</span>
+                      )}
+                    </Link>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <span
+                        className={cn(
+                          'inline-flex rounded-full px-2.5 py-[3px] text-xs',
+                          row.attended
+                            ? 'bg-[rgba(134,192,143,0.20)] text-signal-ok'
+                            : 'bg-[rgba(217,117,106,0.18)] text-signal-err'
+                        )}
+                      >
+                        {row.attended ? '출석' : '결석'}
+                      </span>
+                      {/* 인증 완료된 기록은 고칠 수 없으므로 수정 요청도 받지 않는다. */}
+                      {row.status === 'APPROVED' ? (
+                        <span className="text-xs text-dusk-ink-800">인증 완료</span>
+                      ) : row.fixRequestPending ? (
+                        <span className="text-xs text-tag-event">요청 중</span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={working === `fix-${row.activityId}`}
+                          onClick={() => requestFix(row)}
+                          className="min-h-9 text-[13px] text-ember disabled:opacity-60"
+                        >
+                          수정 요청
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </section>
     </div>
   )
@@ -200,22 +266,51 @@ function SchedulePlace({ schedule }: { schedule: ClubSchedule }) {
   )
 }
 
-/** 리더만: QR 띄우기 · 수정 · 이 일정으로 활동 기록 작성. */
-function LeaderActions({ clubId, scheduleId }: { clubId: number; scheduleId: number }) {
+/** 기록이 연결된 일정이면 누구에게나 「기록 보기」, 아니면 리더에게만 「활동 기록 작성」. */
+function RecordLink({
+  clubId,
+  schedule,
+  isLeader
+}: {
+  clubId: number
+  schedule: ClubSchedule
+  isLeader: boolean
+}) {
+  if (schedule.activityId) {
+    return (
+      <Link
+        href={`/club/activity/?clubId=${clubId}&id=${schedule.activityId}`}
+        className={ACTION_LINK}
+      >
+        기록 보기
+      </Link>
+    )
+  }
+  if (!isLeader) return null
+  return (
+    <Link
+      href={`/club/activity/edit/?clubId=${clubId}&scheduleId=${schedule.id}`}
+      className={ACTION_LINK}
+    >
+      활동 기록 작성
+    </Link>
+  )
+}
+
+/** 리더만: QR 띄우기 · 수정 · 기록 보기 또는 작성. */
+function LeaderActions({ clubId, schedule }: { clubId: number; schedule: ClubSchedule }) {
   return (
     <>
-      <Link href={`/club/schedule/qr/?clubId=${clubId}&id=${scheduleId}`} className={LEADER_LINK}>
+      <Link href={`/club/schedule/qr/?clubId=${clubId}&id=${schedule.id}`} className={ACTION_LINK}>
         QR 띄우기
       </Link>
-      <Link href={`/club/schedule/edit/?clubId=${clubId}&id=${scheduleId}`} className={LEADER_LINK}>
+      <Link
+        href={`/club/schedule/edit/?clubId=${clubId}&id=${schedule.id}`}
+        className={ACTION_LINK}
+      >
         수정
       </Link>
-      <Link
-        href={`/club/activity/edit/?clubId=${clubId}&scheduleId=${scheduleId}`}
-        className={LEADER_LINK}
-      >
-        활동 기록 작성
-      </Link>
+      <RecordLink clubId={clubId} schedule={schedule} isLeader />
     </>
   )
 }

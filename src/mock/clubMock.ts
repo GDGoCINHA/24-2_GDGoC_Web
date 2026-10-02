@@ -97,12 +97,3 @@ export const MOCK_COMMENTS = [
   { author: '이도윤', content: '3번 풀이 코드 피드에 올려주실 수 있나요?' },
   { author: '박지아', content: '자료 탭에 올렸어요!' }
 ]
-
-export const MOCK_FIX_REQUESTS = [
-  {
-    id: 1,
-    name: '윤서아',
-    target: '9월 25일 모임 · 결석 → 출석',
-    reason: '늦게 도착해서 체크가 빠진 것 같아요'
-  }
-]

@@ -206,6 +206,43 @@ export interface ClubSchedule {
   noResponseCount: number
   /** 내 응답. 응답하지 않았거나 팀원이 아니면 없다. */
   myResponse?: ClubRsvp | null
+  /** 이 일정에 연결된 활동 기록. 있으면 「기록 보기」, 없으면 「기록 작성」. */
+  activityId?: number | null
+}
+
+/** 한 회차의 내 출석. 서버 `MyAttendanceResponse`. */
+export interface ClubMyAttendance {
+  activityId: number
+  /** YYYY-MM-DD */
+  activityDate: string
+  /** 일정에 연결된 기록이면 그 회차 제목. */
+  scheduleTitle?: string | null
+  /** 인증 완료(APPROVED)면 수정 요청을 받지 않는다. */
+  status: ClubActivityStatus
+  attended: boolean
+  /** 내가 낸 수정 요청이 처리 대기 중이다. */
+  fixRequestPending: boolean
+}
+
+export type ClubFixRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED'
+
+/** 리더가 처리할 출석 수정 요청. 서버 `ClubFixRequestResponse`. */
+export interface ClubFixRequest {
+  id: number
+  activityId: number
+  /** YYYY-MM-DD */
+  activityDate: string
+  /** 인증 완료(APPROVED)면 수락할 수 없다(거절만). */
+  activityStatus: ClubActivityStatus
+  userId: number
+  userName: string
+  /** 지금 기록된 출석. 요청자가 명단에서 빠졌으면(활동일 변경) 없다 — 수락할 수 없다. */
+  currentAttended?: boolean | null
+  /** 수락하면 출석이 이 값이 된다. */
+  requestedAttended: boolean
+  reason?: string | null
+  status: ClubFixRequestStatus
+  createdAt: string
 }
 
 /** 리더 화면이 QR 로 그릴 값. 서버 `ClubCheckinTokenResponse`. */
