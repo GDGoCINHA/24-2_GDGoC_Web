@@ -135,8 +135,15 @@ export function ClubScheduleTab({
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
               {isLeader && <LeaderActions clubId={clubId} schedule={next} />}
               {!isLeader && <RecordLink clubId={clubId} schedule={next} isLeader={false} />}
-              {/* TODO(C): 회차 제목·날짜·장소를 공유한다(기획 2.10). */}
-              <KakaoShareButton compact />
+              {/* 기획 2.10: 회차 제목·날짜·장소. 온라인 링크는 팀원 전용이라 공유 카드에 싣지 않는다. */}
+              <KakaoShareButton
+                compact
+                title={next.title}
+                description={[formatScheduleTime(next.startsAt), next.location]
+                  .filter(Boolean)
+                  .join(' · ')}
+                path={`/club/detail/?id=${clubId}`}
+              />
             </div>
           </div>
         )}

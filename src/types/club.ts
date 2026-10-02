@@ -107,33 +107,42 @@ export interface ClubLeaderGrant {
   clubNames: string[]
 }
 
-export interface ClubActivity {
+/**
+ * 피드 카드 한 장. 서버 `ClubFeedItemResponse`. 팀 피드는 게시글(POST)과 활동 기록(ACTIVITY)을 섞고,
+ * 전체 피드는 활동 기록만 담는다. `type`·`id` 가 그대로 좋아요·댓글 대상이다.
+ *
+ * 종류에 해당하지 않는 필드는 서버가 응답에서 뺀다 — 그래서 `?:` 다.
+ * 활동 기록 카드에는 출석 명단이 없다(인원 수만). 명단은 상세에서 팀 멤버·운영진에게만 보인다.
+ */
+export interface ClubFeedItem {
+  type: ClubTargetType
   id: number
-  activityDate: string
-  content: string
-  status: ClubActivityStatus
-  photoUrls: string[]
-  attendedCount: number
-  rosterCount: number
-  requiredCount: number
-  /** 멤버·운영진에게만 채워진다. */
-  attendeeNames: string[] | null
-  revisionReason: string | null
-  likeCount: number
-  commentCount: number
-}
-
-export interface ClubPost {
-  id: number
-  category: ClubPostCategory
-  authorName: string
-  content: string
+  /** ISO 시각. 피드는 이 순서(최신순)다. */
   createdAt: string
+  content: string
   likeCount: number
   commentCount: number
+  likedByMe: boolean
+  /** 전체 피드에서만. */
+  clubId?: number | null
+  clubName?: string | null
+  /** 활동 기록. YYYY-MM-DD */
+  activityDate?: string | null
+  status?: ClubActivityStatus | null
+  photoUrls?: string[] | null
+  attendedCount?: number | null
+  rosterCount?: number | null
+  requiredCount?: number | null
+  /** 게시글. */
+  category?: ClubPostCategory | null
+  authorId?: number | null
+  authorName?: string | null
+  imageUrls?: string[] | null
+  /** 게시글: 내가 작성자다. */
+  editable?: boolean | null
+  /** 게시글: 작성자·리더·운영진이다. */
+  deletable?: boolean | null
 }
-
-export type ClubFeedItem = ({ type: 'ACTIVITY' } & ClubActivity) | ({ type: 'POST' } & ClubPost)
 
 /**
  * 활동 기록 상세. 서버 `ClubActivityDetailResponse`.

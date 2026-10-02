@@ -76,8 +76,13 @@ export default function ClubActivityPage() {
                 {activity.status === 'REVISION_REQUESTED' ? '보완해서 다시 제출' : '수정하기'}
               </Link>
             )}
-            {/* TODO(C): 활동일·대표 사진·기록 링크를 공유한다(기획 2.10). */}
-            <KakaoShareButton />
+            {/* 기획 2.10: 활동일·대표 사진·기록 링크. */}
+            <KakaoShareButton
+              title={`${formatActivityDate(activity.activityDate)} 활동 기록`}
+              description={activity.content.slice(0, 80)}
+              imageUrl={activity.photoUrls[0] ?? null}
+              path={`/club/activity/?clubId=${clubId}&id=${activity.id}`}
+            />
           </div>
         </header>
 
