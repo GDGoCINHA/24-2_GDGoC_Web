@@ -29,7 +29,7 @@ import {
   fetchMyLeaderGrant,
   fetchMyOpenRequests,
   readClubError,
-  updateClub,
+  replaceClub,
   type ClubSavePayload
 } from '@/services/club/clubClient'
 import { CLUB_CATEGORY_LABEL, type ClubCategory, type ClubOpenRequest } from '@/types/club'
@@ -279,7 +279,7 @@ export default function ClubNewPage() {
     setMessage(null)
     try {
       if (editId) {
-        await updateClub(apiClient, editId, form)
+        await replaceClub(apiClient, editId, form)
         router.push(`/club/detail/?id=${editId}`)
       } else {
         const id = await createClub(apiClient, form)
