@@ -51,6 +51,10 @@ export interface ClubMembership {
 }
 
 export interface ClubDetail extends ClubSummary {
+  leaderId: number
+  status: ClubStatus
+  termId: number
+  termName: string
   description: string | null
   activityMethod: string | null
   startDate: string | null
@@ -60,11 +64,47 @@ export interface ClubDetail extends ClubSummary {
   myMembership: ClubMembership | null
 }
 
+/** 멤버·신청자 한 줄. `memberId` 는 승인·거절·강퇴에 쓰는 club_member 행 id 다. */
 export interface ClubMember {
+  memberId: number
   userId: number
   name: string
+  major: string | null
+  status: ClubMemberStatus
   isLeader: boolean
-  joinedAt: string
+  applyMessage: string | null
+  appliedAt: string
+  joinedAt: string | null
+}
+
+export interface MyClub {
+  club: ClubSummary
+  status: ClubMemberStatus
+  isLeader: boolean
+}
+
+export type ClubOpenRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+
+export interface ClubOpenRequest {
+  id: number
+  userId: number
+  userName: string
+  name: string
+  category: ClubCategory
+  summary: string
+  goal: string | null
+  status: ClubOpenRequestStatus
+  rejectReason: string | null
+  createdAt: string
+}
+
+export interface ClubLeaderGrant {
+  userId: number
+  name: string
+  major: string | null
+  grantedAt: string
+  /** 지금 이끄는 소모임 이름. */
+  clubNames: string[]
 }
 
 export interface ClubActivity {
