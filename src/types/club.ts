@@ -184,16 +184,45 @@ export interface ClubActivityRosterMember {
   checkedIn: boolean
 }
 
+export type ClubRsvp = 'ATTEND' | 'ABSENT'
+
+/**
+ * 일정과 참석 예정 응답 집계. 서버 `ClubScheduleResponse`.
+ *
+ * 서버는 null 필드를 응답에서 뺀다 — 그래서 비어 있을 수 있는 필드는 `?:` 다.
+ */
 export interface ClubSchedule {
   id: number
   title: string
+  /** ISO 시각 */
   startsAt: string
-  location: string | null
-  onlineLink: string | null
+  location?: string | null
+  /** 팀 멤버·운영진에게만 채워진다. */
+  onlineLink?: string | null
+  description?: string | null
+  /** 지금 팀원만 센다. */
   attendCount: number
   absentCount: number
   noResponseCount: number
-  myResponse: 'ATTEND' | 'ABSENT' | null
+  /** 내 응답. 응답하지 않았거나 팀원이 아니면 없다. */
+  myResponse?: ClubRsvp | null
+}
+
+/** 리더 화면이 QR 로 그릴 값. 서버 `ClubCheckinTokenResponse`. */
+export interface ClubCheckinToken {
+  scheduleId: number
+  token: string
+  expiresInSeconds: number
+}
+
+/** QR 체크인 결과. 서버 `ClubCheckinResponse`. */
+export interface ClubCheckinResult {
+  clubId: number
+  scheduleId: number
+  scheduleTitle: string
+  /** 이미 체크인돼 있었다. 오류가 아니다. */
+  alreadyCheckedIn: boolean
+  checkedAt: string
 }
 
 /* ---------------- C: 기수·완주·검토·현황·반응 ---------------- */

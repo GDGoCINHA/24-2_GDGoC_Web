@@ -3,12 +3,15 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
 
+import { formatScheduleTime, kstDateOf } from '@/components/club/clubDate'
 import { ClubBackLink } from '@/components/club/ClubUi'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
   DUSK_CANCEL_BUTTON,
   DUSK_CHECKBOX,
   DUSK_INPUT,
+  DUSK_OPTION,
+  DUSK_SELECT,
   DUSK_SUBMIT_BUTTON,
   DUSK_TEXTAREA,
   DuskField
@@ -29,7 +32,8 @@ import {
   uploadFileToS3,
   validateUploadSize
 } from '@/services/board/uploadClient'
-import type { ClubActivityRoster } from '@/types/club'
+import { fetchSchedules } from '@/services/club/scheduleClient'
+import type { ClubActivityRoster, ClubSchedule } from '@/types/club'
 import { cn } from '@/utils/cn'
 
 /** 서버 `ClubActivitySubmitRequest` 의 사진 최대 개수. */
@@ -53,8 +57,11 @@ export default function ClubActivityEditPage() {
   const { apiClient } = useAuthenticatedApi()
 
   const [activityDate, setActivityDate] = useState(todayKst)
-  // TODO(B): 일정 API(5번)가 나오면 연결 일정을 고르게 한다. 지금은 수정할 때 기존 연결만 유지한다.
-  const [scheduleId, setScheduleId] = useState<number | null>(null)
+  /** 일정 탭의 「활동 기록 작성」으로 들어오면 그 일정이 골라져 있다. */
+  const [scheduleId, setScheduleId] = useState<number | null>(
+    () => Number(searchParams.get('scheduleId') ?? 0) || null
+  )
+  const [schedules, setSchedules] = useState<ClubSchedule[]>([])
   const [content, setContent] = useState('')
   const [progressNote, setProgressNote] = useState('')
   const [photoUrls, setPhotoUrls] = useState<string[]>([])
@@ -97,6 +104,33 @@ export default function ClubActivityEditPage() {
       .catch((err) => setBlocked(readClubError(err, '기록을 불러오지 못했어요.')))
       .finally(() => setLoaded(true))
   }, [apiClient, clubId, activityId])
+
+  // 연결할 수 있는 일정. 새로 쓸 때 일정이 골라져 있으면 활동일을 그 일정 날짜로 맞춘다.
+  useEffect(() => {
+    if (!clubId) return
+    Promise.all([
+      fetchSchedules(apiClient, clubId, 'upcoming'),
+      fetchSchedules(apiClient, clubId, 'past')
+    ])
+      .then(([upcoming, past]) => {
+        const all = [...upcoming, ...past].sort((a, b) => b.startsAt.localeCompare(a.startsAt))
+        setSchedules(all)
+        if (!isEdit) {
+          const preset = all.find((schedule) => schedule.id === scheduleId)
+          if (preset) setActivityDate(kstDateOf(preset.startsAt))
+        }
+      })
+      .catch(() => setSchedules([]))
+    // 처음 한 번만. 이후 일정 선택은 chooseSchedule 이 날짜를 맞춘다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiClient, clubId])
+
+  const chooseSchedule = (value: string) => {
+    const id = Number(value) || null
+    setScheduleId(id)
+    const chosen = schedules.find((schedule) => schedule.id === id)
+    if (chosen) setActivityDate(kstDateOf(chosen.startsAt))
+  }
 
   // 활동일이 바뀌면 그날 명단을 다시 받는다.
   useEffect(() => {
@@ -238,15 +272,33 @@ export default function ClubActivityEditPage() {
             )}
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
-              <DuskField label="활동일" required>
-                <input
-                  type="date"
-                  required
-                  value={activityDate}
-                  onChange={(event) => setActivityDate(event.target.value)}
-                  className={cn(DUSK_INPUT, '[color-scheme:dark]')}
-                />
-              </DuskField>
+              <div className="grid grid-cols-2 gap-3 mobile:grid-cols-1">
+                <DuskField label="활동일" required>
+                  <input
+                    type="date"
+                    required
+                    value={activityDate}
+                    onChange={(event) => setActivityDate(event.target.value)}
+                    className={cn(DUSK_INPUT, '[color-scheme:dark]')}
+                  />
+                </DuskField>
+                <DuskField label="연결 일정 (선택)">
+                  <select
+                    value={scheduleId ?? ''}
+                    onChange={(event) => chooseSchedule(event.target.value)}
+                    className={DUSK_SELECT}
+                  >
+                    <option value="" className={DUSK_OPTION}>
+                      일정 없이 기록
+                    </option>
+                    {schedules.map((schedule) => (
+                      <option key={schedule.id} value={schedule.id} className={DUSK_OPTION}>
+                        {formatScheduleTime(schedule.startsAt)} · {schedule.title}
+                      </option>
+                    ))}
+                  </select>
+                </DuskField>
+              </div>
 
               <DuskField
                 label="실제 참석자"
