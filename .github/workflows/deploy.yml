@@ -18,6 +18,8 @@ jobs:
     env:
       NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_REDIRECT_CLIENT_ID }}
       NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+      # 카카오톡 공유(소모임). 운영·개발 도메인이 한 앱에 함께 등록되므로 키 하나로 둘 다 쓴다.
+      NEXT_PUBLIC_KAKAO_JS_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_JS_KEY }}
 
     steps:
       - name: Checkout source code

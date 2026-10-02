@@ -1,9 +1,24 @@
 'use client'
 
 import Link from 'next/link'
-import type { ReactNode } from 'react'
+import { type ReactNode, useCallback, useEffect, useState } from 'react'
 
-import type { ClubActivityStatus, ClubCategory, ClubPostCategory } from '@/types/club'
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { KAKAO_JS_KEY, shareToKakao } from '@/lib/kakao/kakaoShare'
+import { readClubError } from '@/services/club/clubClient'
+import {
+  createClubComment,
+  deleteClubComment,
+  fetchClubComments,
+  setClubLike
+} from '@/services/club/clubCompletionClient'
+import type {
+  ClubActivityStatus,
+  ClubCategory,
+  ClubComment,
+  ClubPostCategory,
+  ClubTargetType
+} from '@/types/club'
 import {
   CLUB_ACTIVITY_STATUS_LABEL,
   CLUB_CATEGORY_LABEL,
@@ -109,37 +124,206 @@ export function ClubPhotoGrid({ urls, count = 3 }: { urls: string[]; count?: num
   )
 }
 
-/** 좋아요·댓글 줄 (C 담당). 지금은 숫자만 보여준다. */
+/**
+ * 좋아요·댓글 줄 (C 담당).
+ *
+ * `targetType`·`targetId` 를 주면 좋아요를 토글하고 댓글을 펼쳐 쓰고 지울 수 있다. 주지 않으면 숫자만
+ * 보여 준다(목 데이터 화면용). 처음 숫자는 목록 응답에서 받아 오고, 누른 뒤에는 서버가 돌려준 값으로 바꾼다.
+ */
 export function ReactionBar({
+  targetType,
+  targetId,
   likeCount,
   commentCount,
+  likedByMe = false,
   children
 }: {
+  targetType?: ClubTargetType
+  targetId?: number
   likeCount: number
   commentCount: number
+  likedByMe?: boolean
   children?: ReactNode
 }) {
+  const { apiClient } = useAuthenticatedApi()
+  const live = targetType !== undefined && targetId !== undefined
+  const [liked, setLiked] = useState(likedByMe)
+  const [likes, setLikes] = useState(likeCount)
+  const [commentTotal, setCommentTotal] = useState(commentCount)
+  const [open, setOpen] = useState(false)
+  const [comments, setComments] = useState<ClubComment[] | null>(null)
+  const [draft, setDraft] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const loadComments = useCallback(() => {
+    if (targetType === undefined || targetId === undefined) return
+    fetchClubComments(apiClient, targetType, targetId)
+      .then((list) => {
+        setComments(list)
+        setCommentTotal(list.length)
+      })
+      .catch((err) => window.alert(readClubError(err, '댓글을 불러오지 못했어요.')))
+  }, [apiClient, targetType, targetId])
+
+  useEffect(() => {
+    if (open && comments === null) loadComments()
+  }, [open, comments, loadComments])
+
+  const toggleLike = async () => {
+    if (targetType === undefined || targetId === undefined || busy) return
+    setBusy(true)
+    try {
+      const result = await setClubLike(apiClient, targetType, targetId, !liked)
+      setLiked(result.liked)
+      setLikes(result.likeCount)
+    } catch (err) {
+      window.alert(readClubError(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const submit = async () => {
+    if (targetType === undefined || targetId === undefined || draft.trim() === '') return
+    setBusy(true)
+    try {
+      await createClubComment(apiClient, targetType, targetId, draft.trim())
+      setDraft('')
+      loadComments()
+    } catch (err) {
+      window.alert(readClubError(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const remove = async (commentId: number) => {
+    if (!window.confirm('댓글을 지울까요?')) return
+    try {
+      await deleteClubComment(apiClient, commentId)
+      loadComments()
+    } catch (err) {
+      window.alert(readClubError(err))
+    }
+  }
+
   return (
-    <div className="flex items-center gap-5 border-t border-dusk-line-soft pt-3 text-[13px]">
-      <button type="button" className="min-h-9 text-ember">
-        ♥ 좋아요 {likeCount}
-      </button>
-      <button type="button" className="min-h-9 text-dusk-ink-700">
-        댓글 {commentCount}
-      </button>
-      {children}
+    <div className="flex flex-col gap-2.5">
+      <div className="flex items-center gap-5 border-t border-dusk-line-soft pt-3 text-[13px]">
+        <button
+          type="button"
+          onClick={toggleLike}
+          disabled={busy}
+          aria-pressed={liked}
+          className={cn('min-h-9', liked ? 'text-ember' : 'text-dusk-ink-700')}
+        >
+          {liked ? '♥' : '♡'} 좋아요 {likes}
+        </button>
+        <button
+          type="button"
+          onClick={() => live && setOpen((prev) => !prev)}
+          aria-expanded={open}
+          className="min-h-9 text-dusk-ink-700"
+        >
+          댓글 {commentTotal}
+        </button>
+        {children}
+      </div>
+      {open && (
+        <div className="flex flex-col gap-2.5 rounded-[14px] bg-[rgba(240,234,228,0.04)] px-3.5 py-3">
+          {comments === null && <span className="text-sm text-dusk-ink-800">불러오는 중…</span>}
+          {comments?.length === 0 && (
+            <span className="text-sm text-dusk-ink-800">첫 댓글을 남겨 보세요.</span>
+          )}
+          {comments?.map((comment) => (
+            <div key={comment.id} className="flex items-start gap-2 text-sm leading-[1.5]">
+              <span className="shrink-0 font-semibold text-dusk-ink-400">{comment.authorName}</span>
+              <span className="min-w-0 flex-1 whitespace-pre-line break-words text-dusk-ink-200">
+                {comment.content}
+              </span>
+              {comment.deletable && (
+                <button
+                  type="button"
+                  onClick={() => remove(comment.id)}
+                  className="shrink-0 text-xs text-dusk-ink-800 hover:text-dusk-ink-100"
+                >
+                  삭제
+                </button>
+              )}
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={draft}
+              maxLength={1000}
+              placeholder="댓글 달기"
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.nativeEvent.isComposing) void submit()
+              }}
+              className="min-h-10 min-w-0 flex-1 rounded-full border border-dusk-line bg-transparent px-4 text-sm outline-none focus:border-ember"
+            />
+            <button
+              type="button"
+              onClick={submit}
+              disabled={busy || draft.trim() === ''}
+              className="min-h-10 shrink-0 px-2 text-sm text-ember disabled:text-dusk-ink-800"
+            >
+              등록
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
 /**
- * 카카오톡 공유 버튼 (C 담당). SDK 연동 전이라 아직 아무것도 보내지 않는다.
- * 공식 공유 기능만 쓴다 — 단톡방 자동 발송은 공식 API 가 없다.
+ * 카카오톡 공유 버튼 (C 담당). 누르면 제목·설명·바로가기 링크가 채워진 카드가 만들어지고, 사용자가
+ * 채팅방(공지 카톡방 등)을 골라 보낸다. 공식 공유 기능만 쓴다 — 단톡방 자동 발송은 공식 API 가 없다.
+ *
+ * 내용을 주지 않으면 지금 페이지의 제목과 주소를 쓴다.
  */
-export function KakaoShareButton({ compact = false }: { compact?: boolean }) {
+export function KakaoShareButton({
+  title,
+  description,
+  imageUrl,
+  path,
+  compact = false,
+  className
+}: {
+  title?: string
+  description?: string
+  imageUrl?: string | null
+  path?: string
+  compact?: boolean
+  className?: string
+}) {
+  const disabled = !KAKAO_JS_KEY
+  const share = async () => {
+    try {
+      await shareToKakao({
+        title: title ?? document.title,
+        description,
+        imageUrl,
+        path: path ?? `${window.location.pathname}${window.location.search}`
+      })
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : '카카오톡으로 공유하지 못했어요.')
+    }
+  }
+  const hint = disabled ? '카카오톡 공유가 아직 설정되지 않았어요' : undefined
+
   if (compact) {
     return (
-      <button type="button" className="min-h-9 text-[13px] text-dusk-ink-700">
+      <button
+        type="button"
+        onClick={share}
+        disabled={disabled}
+        title={hint}
+        className={cn('min-h-9 text-[13px] text-dusk-ink-700 disabled:opacity-50', className)}
+      >
         카카오톡 공유
       </button>
     )
@@ -147,7 +331,13 @@ export function KakaoShareButton({ compact = false }: { compact?: boolean }) {
   return (
     <button
       type="button"
-      className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.20)] px-5 text-sm text-dusk-ink-400 transition-colors hover:border-[rgba(240,234,228,0.5)] hover:text-dusk-ink-100"
+      onClick={share}
+      disabled={disabled}
+      title={hint}
+      className={cn(
+        'inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.20)] px-5 text-sm text-dusk-ink-400 transition-colors hover:border-[rgba(240,234,228,0.5)] hover:text-dusk-ink-100 disabled:opacity-50',
+        className
+      )}
     >
       <svg
         width="16"
