@@ -11,6 +11,7 @@ import {
   DUSK_GHOST_BUTTON,
   DUSK_PRIMARY_BUTTON
 } from '@/components/ui/dusk/DuskForm'
+import { formatMajorLabel } from '@/constant/majorOptions'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { MOCK_FIX_REQUESTS } from '@/mock/clubMock'
 import {
@@ -149,7 +150,7 @@ export default function ClubManagePage() {
                 <div className="text-[15px] font-semibold">
                   {applicant.name}{' '}
                   <span className="text-[13px] font-normal text-dusk-ink-800">
-                    {applicant.major ?? ''}
+                    {applicant.major ? formatMajorLabel(applicant.major) : ''}
                   </span>
                 </div>
                 {applicant.applyMessage && (
