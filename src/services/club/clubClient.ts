@@ -73,7 +73,16 @@ export const createClub = async (
   payload: ClubSavePayload
 ): Promise<number> => unwrapOnce<number>((await apiClient.post('/clubs', payload)).data)
 
-/** null 인 항목은 서버가 그대로 둔다. */
+/** 수정 화면 저장. 보낸 값으로 통째로 바꾼다 — null 이면 비운다. 모집 상태는 건드리지 않는다. */
+export const replaceClub = async (
+  apiClient: AxiosInstance,
+  clubId: number,
+  payload: ClubSavePayload
+): Promise<void> => {
+  await apiClient.put(`/clubs/${clubId}`, payload)
+}
+
+/** 부분 수정(모집 마감 등). null 인 항목은 서버가 그대로 둔다. */
 export const updateClub = async (
   apiClient: AxiosInstance,
   clubId: number,

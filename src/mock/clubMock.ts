@@ -138,12 +138,3 @@ export const MOCK_FIX_REQUESTS = [
     reason: '늦게 도착해서 체크가 빠진 것 같아요'
   }
 ]
-
-export const MOCK_ROSTER = [
-  { userId: 1, name: '한서준', attended: true, qr: true, isLeader: true },
-  { userId: 2, name: '이도윤', attended: true, qr: true, isLeader: false },
-  { userId: 3, name: '박지아', attended: true, qr: true, isLeader: false },
-  { userId: 4, name: '최민준', attended: true, qr: false, isLeader: false },
-  { userId: 5, name: '정하린', attended: true, qr: false, isLeader: false },
-  { userId: 6, name: '윤서아', attended: false, qr: false, isLeader: false }
-]
