@@ -196,6 +196,16 @@ export interface ClubSchedule {
   myResponse: 'ATTEND' | 'ABSENT' | null
 }
 
+/* ---------------- C: 기수·완주·검토·현황·반응 ---------------- */
+
+export interface ClubTerm {
+  id: number
+  name: string
+  /** 0.01 ~ 1.00 (0.5 = 50%). 서버 BigDecimal 이라 number 로 온다. */
+  attendanceRatio: number
+}
+
+/** 화면에서 칸 색을 고르는 상태. 서버 값(`rest`·`satisfied`·활동 상태)에서 `weekStateOf` 로 만든다. */
 export type ClubWeekState =
   | 'SATISFIED'
   | 'MISSED'
@@ -204,10 +214,25 @@ export type ClubWeekState =
   | 'CURRENT'
   | 'UPCOMING'
 
+export interface ClubWeekActivity {
+  activityId: number
+  date: string
+  status: ClubActivityStatus
+  attended: number
+  roster: number
+  /** ceil(roster × 참석 비율) */
+  required: number
+  /** 인증 완료이고 필요 인원을 채워 인정 활동인지 */
+  counted: boolean
+}
+
+/** 월요일 시작 한 주. */
 export interface ClubWeek {
   weekStart: string
-  state: ClubWeekState
-  countedActivities: number
+  rest: boolean
+  activities: ClubWeekActivity[]
+  /** true 충족 / false 놓침 / null 진행 중(이번 주·앞으로의 주) 또는 쉬는 주 */
+  satisfied: boolean | null
 }
 
 export type ClubWarning =
@@ -227,13 +252,100 @@ export const CLUB_WARNING_LABEL: Record<ClubWarning, string> = {
   OVER_CAPACITY: '정원 초과'
 }
 
+export const CLUB_GOAL_STATUS_LABEL: Record<ClubGoalStatus, string> = {
+  NOT_SUBMITTED: '결과 제출 전',
+  SUBMITTED: '결과 제출됨 · 확인 전',
+  ACHIEVED: '달성 확인',
+  NOT_ACHIEVED: '미달성'
+}
+
+export const CLUB_COMPLETION_STATUS_LABEL: Record<ClubCompletionStatus, string> = {
+  IN_PROGRESS: '진행 중',
+  COMPLETED: '완주',
+  FAILED: '미완주'
+}
+
+/** `GET /clubs/{id}/completion`. 계산값은 참고용이고 확정은 운영진이 한다. */
 export interface ClubCompletion {
+  /** null 이면 활동 기간 미설정 — weeks 는 빈 배열 */
+  period: { startDate: string; endDate: string } | null
+  weeks: ClubWeek[]
+  restWeeks: string[]
+  memberCount: number
+  memberCountSatisfied: boolean
+  goalStatus: ClubGoalStatus
+  /** 아직 검토하지 않은 기록 수 */
+  pendingActivityCount: number
+  /** 활동 기간 밖 기록 수 — 계산에서 빠졌다 */
+  outOfPeriodActivityCount: number
+  /** 쉬는 주 뺀 모든 주 충족 && 4명 이상 && 목표 ACHIEVED */
+  eligible: boolean
+  warnings: ClubWarning[]
   goal: string | null
   goalCriteria: string | null
   goalResult: string | null
-  goalStatus: ClubGoalStatus
-  weeks: ClubWeek[]
-  memberCount: number
+  goalEvidenceUrls: string[]
   completionStatus: ClubCompletionStatus
+  completionMemo: string | null
+  confirmedAt: string | null
+}
+
+/** 운영진 현황 표 한 줄 (`GET /admin/clubs`). */
+export interface AdminClubRow {
+  clubId: number
+  name: string
+  leaderId: number
+  leaderName: string
+  status: ClubStatus
+  startDate: string | null
+  endDate: string | null
+  memberCount: number
+  capacity: number | null
+  goalStatus: ClubGoalStatus
+  satisfiedWeeks: number
+  /** 쉬는 주를 뺀 주 (앞으로의 주 포함) */
+  targetWeeks: number
+  restWeeks: number
+  pendingReviewCount: number
   warnings: ClubWarning[]
+  eligible: boolean
+  completionStatus: ClubCompletionStatus
+}
+
+/** 인증 검토 목록 한 건 (`GET /admin/club-activities`). */
+export interface ClubReviewItem {
+  activityId: number
+  clubId: number
+  clubName: string
+  activityDate: string
+  content: string
+  progressNote: string | null
+  status: ClubActivityStatus
+  submittedAt: string
+  /** 보완 요청 뒤 다시 낸 기록 */
+  resubmitted: boolean
+  revisionReason: string | null
+  photoUrls: string[]
+  roster: { userId: number; name: string; attended: boolean }[]
+  rosterCount: number
+  attendedCount: number
+  required: number
+  requiredSatisfied: boolean
+}
+
+export type ClubTargetType = 'POST' | 'ACTIVITY'
+
+export interface ClubComment {
+  id: number
+  authorId: number
+  authorName: string
+  content: string
+  createdAt: string
+  /** 지금 보는 사람이 지울 수 있는지 (작성자·팀 리더·운영진) */
+  deletable: boolean
+}
+
+export interface ClubLikeResult {
+  liked: boolean
+  likeCount: number
 }

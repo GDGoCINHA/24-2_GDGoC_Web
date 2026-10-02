@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { ClubAdminFrame } from '@/components/club/admin/ClubAdminFrame'
 import {
+  ADMIN_EMPTY_CELL,
+  ADMIN_ERROR_BANNER,
   ADMIN_GHOST_BUTTON,
   ADMIN_OPTION,
   ADMIN_PILL,
@@ -15,8 +17,22 @@ import {
   ADMIN_TH,
   ADMIN_TR
 } from '@/components/admin/dashboard/adminStyles'
-import { MOCK_ADMIN_CLUBS, MOCK_OPEN_REQUESTS, MOCK_REVIEW_QUEUE } from '@/mock/clubMock'
-import { CLUB_WARNING_LABEL, type ClubWarning } from '@/types/club'
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { fetchOpenRequests, readClubError } from '@/services/club/clubClient'
+import {
+  downloadAdminClubsCsv,
+  fetchAdminClubs,
+  fetchClubTerms,
+  shortDate
+} from '@/services/club/clubCompletionClient'
+import {
+  CLUB_COMPLETION_STATUS_LABEL,
+  CLUB_GOAL_STATUS_LABEL,
+  CLUB_WARNING_LABEL,
+  type AdminClubRow,
+  type ClubTerm,
+  type ClubWarning
+} from '@/types/club'
 import { cn } from '@/utils/cn'
 
 type Filter = 'ALL' | 'ANY' | ClubWarning
@@ -27,45 +43,95 @@ const FILTERS: Filter[] = [
   'MEMBERS_UNDER_4',
   'PERIOD_NOT_SET',
   'GOAL_NOT_SET',
+  'OUT_OF_PERIOD',
   'OVER_CAPACITY'
 ]
 
 /**
  * 운영진 소모임 현황 (C 담당). 시스템은 막지 않고 경고로만 보여준다 — 판단은 여기서 한다.
+ *
+ * 한 기수의 팀은 많아야 수십 개라 전체를 한 번 받아 화면에서 거른다. 필터 칩의 숫자를 함께 보여 주려는 것이다.
  */
 export default function ClubAdminDashboardPage() {
+  const { apiClient } = useAuthenticatedApi()
+  const [terms, setTerms] = useState<ClubTerm[]>([])
+  const [termId, setTermId] = useState<number | null>(null)
+  const [allRows, setAllRows] = useState<AdminClubRow[] | null>(null)
+  const [openRequests, setOpenRequests] = useState<number | null>(null)
   const [filter, setFilter] = useState<Filter>('ALL')
-  // TODO(C): GET /api/v1/admin/clubs?termId=&warning= 로 바꾼다.
-  const rows = useMemo(
-    () =>
-      MOCK_ADMIN_CLUBS.filter((row) =>
-        filter === 'ALL'
-          ? true
-          : filter === 'ANY'
-            ? row.warnings.length > 0
-            : row.warnings.includes(filter)
-      ),
-    [filter]
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchClubTerms(apiClient)
+      .then((list) => {
+        setTerms(list)
+        // 기수가 하나도 없으면 null 로 두고, 서버도 빈 목록을 준다.
+        setTermId((prev) => prev ?? list[0]?.id ?? null)
+        if (list.length === 0) setAllRows([])
+      })
+      .catch((err) => setError(readClubError(err, '기수를 불러오지 못했어요.')))
+    fetchOpenRequests(apiClient, 'PENDING')
+      .then((list) => setOpenRequests(list.length))
+      .catch(() => setOpenRequests(null))
+  }, [apiClient])
+
+  const load = useCallback(() => {
+    if (termId === null) return
+    setAllRows(null)
+    fetchAdminClubs(apiClient, { termId })
+      .then((rows) => {
+        setAllRows(rows)
+        setError(null)
+      })
+      .catch((err) => setError(readClubError(err, '현황을 불러오지 못했어요.')))
+  }, [apiClient, termId])
+
+  useEffect(load, [load])
+
+  const source = useMemo(() => allRows ?? [], [allRows])
+  const matches = useCallback(
+    (row: AdminClubRow, value: Filter) =>
+      value === 'ALL'
+        ? true
+        : value === 'ANY'
+          ? row.warnings.length > 0
+          : row.warnings.includes(value),
+    []
   )
-  const countOf = (value: Filter) =>
-    value === 'ALL'
-      ? MOCK_ADMIN_CLUBS.length
-      : value === 'ANY'
-        ? MOCK_ADMIN_CLUBS.filter((row) => row.warnings.length > 0).length
-        : MOCK_ADMIN_CLUBS.filter((row) => row.warnings.includes(value)).length
+  const rows = useMemo(
+    () => source.filter((row) => matches(row, filter)),
+    [source, filter, matches]
+  )
+  const countOf = (value: Filter) => source.filter((row) => matches(row, value)).length
+  const pendingReviews = source.reduce((sum, row) => sum + row.pendingReviewCount, 0)
+
+  const exportCsv = async () => {
+    try {
+      const blob = await downloadAdminClubsCsv(apiClient, termId ?? undefined)
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      const termName = terms.find((t) => t.id === termId)?.name ?? '소모임'
+      anchor.download = `${termName}_소모임현황.csv`
+      anchor.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      setError(readClubError(err, 'CSV 를 내려받지 못했어요.'))
+    }
+  }
 
   const stats = [
-    { label: '운영 중인 소모임', value: MOCK_ADMIN_CLUBS.length, href: null, accent: false },
+    { label: '소모임', value: source.length, href: null, accent: false },
     {
       label: '인증 검토 대기',
-      value: MOCK_REVIEW_QUEUE.length,
+      value: pendingReviews,
       href: '/dashboard/club/review',
       accent: true
     },
     { label: '경고 있는 팀', value: countOf('ANY'), href: null, accent: false },
     {
       label: '개설 신청 대기',
-      value: MOCK_OPEN_REQUESTS.length,
+      value: openRequests ?? '—',
       href: '/dashboard/club/leaders',
       accent: false
     }
@@ -80,17 +146,33 @@ export default function ClubAdminDashboardPage() {
         <div className="flex flex-wrap gap-2">
           <label className={ADMIN_PILL}>
             <span className="whitespace-nowrap text-[13px] text-admin-ink-dim">기수</span>
-            <select className={ADMIN_PILL_SELECT}>
-              <option className={ADMIN_OPTION}>2026-2학기</option>
-              <option className={ADMIN_OPTION}>2026-1학기</option>
+            <select
+              className={ADMIN_PILL_SELECT}
+              value={termId ?? ''}
+              onChange={(e) => setTermId(Number(e.target.value))}
+              disabled={terms.length === 0}
+            >
+              {terms.length === 0 && <option className={ADMIN_OPTION}>기수 없음</option>}
+              {terms.map((term) => (
+                <option key={term.id} value={term.id} className={ADMIN_OPTION}>
+                  {term.name}
+                </option>
+              ))}
             </select>
           </label>
-          <button type="button" className={ADMIN_GHOST_BUTTON}>
+          <button
+            type="button"
+            onClick={exportCsv}
+            disabled={termId === null}
+            className={ADMIN_GHOST_BUTTON}
+          >
             CSV 내보내기
           </button>
         </div>
       }
     >
+      {error && <div className={cn(ADMIN_ERROR_BANNER, 'mb-4')}>{error}</div>}
+
       <div className="grid grid-cols-4 gap-3 mobile:grid-cols-2">
         {stats.map((stat) => {
           const body = (
@@ -164,19 +246,45 @@ export default function ClubAdminDashboardPage() {
             </tr>
           </thead>
           <tbody>
+            {allRows === null && (
+              <tr>
+                <td colSpan={8} className={ADMIN_EMPTY_CELL}>
+                  불러오는 중…
+                </td>
+              </tr>
+            )}
+            {allRows !== null && rows.length === 0 && (
+              <tr>
+                <td colSpan={8} className={ADMIN_EMPTY_CELL}>
+                  {terms.length === 0
+                    ? '기수가 없어요. 리더·기수 화면에서 먼저 만들어 주세요.'
+                    : '해당하는 소모임이 없어요.'}
+                </td>
+              </tr>
+            )}
             {rows.map((row) => (
-              <tr key={row.id} className={ADMIN_TR}>
+              <tr key={row.clubId} className={ADMIN_TR}>
                 <td className={ADMIN_TD}>
                   <Link
-                    href={`/dashboard/club/team?id=${row.id}`}
+                    href={`/dashboard/club/team?id=${row.clubId}`}
                     className="font-semibold hover:text-admin-accent"
                   >
                     {row.name}
                   </Link>
-                  <div className="mt-0.5 text-[12px] text-admin-ink-soft">리더 {row.leader}</div>
+                  <div className="mt-0.5 text-[12px] text-admin-ink-soft">
+                    리더 {row.leaderName}
+                    {row.status !== 'ACTIVE' && ` · ${row.status === 'ENDED' ? '종료' : '숨김'}`}
+                  </div>
                 </td>
-                <td className={ADMIN_TD_MUTED}>{row.period}</td>
-                <td className={ADMIN_TD}>{row.members}</td>
+                <td className={ADMIN_TD_MUTED}>
+                  {row.startDate && row.endDate
+                    ? `${shortDate(row.startDate)} – ${shortDate(row.endDate)}`
+                    : '미설정'}
+                </td>
+                <td className={ADMIN_TD}>
+                  {row.memberCount}
+                  {row.capacity ? ` / ${row.capacity}` : ''}
+                </td>
                 <td className={ADMIN_TD}>
                   {row.targetWeeks > 0 ? (
                     <div className="flex items-center gap-2.5">
@@ -206,8 +314,19 @@ export default function ClubAdminDashboardPage() {
                     </div>
                   )}
                 </td>
-                <td className={ADMIN_TD_MUTED}>{row.goal}</td>
-                <td className={cn(ADMIN_TD, 'text-admin-accent')}>{row.pendingReviews}</td>
+                <td className={ADMIN_TD_MUTED}>{CLUB_GOAL_STATUS_LABEL[row.goalStatus]}</td>
+                <td className={cn(ADMIN_TD, 'text-admin-accent')}>
+                  {row.pendingReviewCount > 0 ? (
+                    <Link
+                      href={`/dashboard/club/review?clubId=${row.clubId}`}
+                      className="hover:underline"
+                    >
+                      {row.pendingReviewCount}
+                    </Link>
+                  ) : (
+                    0
+                  )}
+                </td>
                 <td className={ADMIN_TD}>
                   <div className="flex flex-wrap gap-1">
                     {row.warnings.map((warning) => (
@@ -220,7 +339,12 @@ export default function ClubAdminDashboardPage() {
                     ))}
                   </div>
                 </td>
-                <td className={ADMIN_TD_MUTED}>{row.completion}</td>
+                <td className={ADMIN_TD_MUTED}>
+                  {CLUB_COMPLETION_STATUS_LABEL[row.completionStatus]}
+                  {row.completionStatus === 'IN_PROGRESS' && row.eligible && (
+                    <div className="mt-0.5 text-[12px] text-admin-ok">기준 충족</div>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
