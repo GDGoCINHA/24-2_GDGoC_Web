@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
+import { ClubGlobalFeed } from '@/components/club/ClubGlobalFeed'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
   ClubCategoryTag,
@@ -20,7 +21,6 @@ import {
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { publicClient } from '@/lib/api/publicClient'
-import { MOCK_GLOBAL_FEED } from '@/mock/clubMock'
 import { fetchClubs, fetchMyClubs, readClubError } from '@/services/club/clubClient'
 import { CLUB_CATEGORY_LABEL, type ClubCategory, type ClubSummary, type MyClub } from '@/types/club'
 import { hasAtLeast } from '@/utils/auth/role'
@@ -227,37 +227,7 @@ export default function ClubListPage() {
           </div>
         )}
 
-        {tab === 'feed' && (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5 mobile:grid-cols-1">
-            {MOCK_GLOBAL_FEED.map((item) => (
-              <Link
-                key={`${item.clubId}-${item.date}`}
-                href={`/club/detail/?id=${item.clubId}`}
-                className="flex flex-col overflow-hidden rounded-[20px] border border-dusk-line-soft bg-dusk-raise"
-              >
-                <div className="grid h-[220px] grid-cols-[2fr_1fr] grid-rows-2 gap-0.5 mobile:h-[180px]">
-                  <div className="row-span-2 bg-dusk-slot" />
-                  <div className="bg-dusk-field" />
-                  <div className="flex items-center justify-center bg-dusk-slot text-[13px] text-dusk-ink-400">
-                    +{Math.max(item.photos - 2, 0)}
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2 px-5 pb-[18px] pt-4">
-                  <div className="flex justify-between text-[13px] text-dusk-ink-700">
-                    <span className="text-ember">{item.club}</span>
-                    <span>{item.date}</span>
-                  </div>
-                  <p className="text-[15px] leading-[1.55] text-dusk-ink-200">{item.text}</p>
-                  <div className="flex gap-3.5 text-[13px] text-dusk-ink-800">
-                    <span>참석 {item.attended}</span>
-                    <span>좋아요 {item.likes}</span>
-                    <span>댓글 {item.comments}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        {tab === 'feed' && <ClubGlobalFeed />}
       </div>
 
       {/* 모바일에서는 개설 버튼을 엄지가 닿는 자리에 띄운다. */}
