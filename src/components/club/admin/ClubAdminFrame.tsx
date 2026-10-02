@@ -14,7 +14,7 @@ const HEADER_LINKS = [
 const SCREENS = [
   { label: '현황', href: '/dashboard/club' },
   { label: '인증 검토', href: '/dashboard/club/review' },
-  { label: '이끔이·기수', href: '/dashboard/club/leaders' }
+  { label: '리더·기수', href: '/dashboard/club/leaders' }
 ]
 
 /** 운영진 소모임 화면의 공통 머리. 조회는 CORE 이상(`dashboard/layout.tsx` 가 막는다). */

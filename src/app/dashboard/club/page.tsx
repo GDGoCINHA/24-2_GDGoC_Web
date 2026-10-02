@@ -173,7 +173,7 @@ export default function ClubAdminDashboardPage() {
                   >
                     {row.name}
                   </Link>
-                  <div className="mt-0.5 text-[12px] text-admin-ink-soft">이끔이 {row.leader}</div>
+                  <div className="mt-0.5 text-[12px] text-admin-ink-soft">리더 {row.leader}</div>
                 </td>
                 <td className={ADMIN_TD_MUTED}>{row.period}</td>
                 <td className={ADMIN_TD}>{row.members}</td>

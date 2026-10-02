@@ -3,99 +3,7 @@
  *
  * 디자인 확정본(소모임 화면 디자인 아티팩트)과 같은 값이다.
  */
-import type {
-  ClubCompletion,
-  ClubDetail,
-  ClubFeedItem,
-  ClubMember,
-  ClubSchedule,
-  ClubSummary,
-  ClubWarning
-} from '@/types/club'
-
-export const MOCK_CLUBS: ClubSummary[] = [
-  {
-    id: 1,
-    name: '알고리즘 스터디',
-    category: 'STUDY',
-    summary: '백준 골드 이상을 목표로 매주 문제를 풀고 서로 풀이를 설명해요',
-    imageUrl: null,
-    leaderName: '한서준',
-    memberCount: 6,
-    capacity: 8,
-    recruitStatus: 'RECRUITING'
-  },
-  {
-    id: 2,
-    name: '주말 러닝 크루',
-    category: 'HOBBY',
-    summary: '토요일 아침 인하대 후문에서 5km를 함께 달려요',
-    imageUrl: null,
-    leaderName: '이도윤',
-    memberCount: 9,
-    capacity: 12,
-    recruitStatus: 'RECRUITING'
-  },
-  {
-    id: 3,
-    name: '프론트엔드 취준반',
-    category: 'CAREER',
-    summary: '포트폴리오 리뷰와 모의 면접을 번갈아 진행해요',
-    imageUrl: null,
-    leaderName: '박지아',
-    memberCount: 5,
-    capacity: 6,
-    recruitStatus: 'RECRUITING'
-  },
-  {
-    id: 4,
-    name: 'AI 논문 읽기',
-    category: 'STUDY',
-    summary: '매주 논문 한 편을 정해 발제하고 토론해요',
-    imageUrl: null,
-    leaderName: '최민준',
-    memberCount: 4,
-    capacity: 8,
-    recruitStatus: 'CLOSED'
-  },
-  {
-    id: 5,
-    name: '보드게임 모임',
-    category: 'HOBBY',
-    summary: '전략 보드게임을 중심으로 격주 금요일에 모여요',
-    imageUrl: null,
-    leaderName: '정하린',
-    memberCount: 7,
-    capacity: 10,
-    recruitStatus: 'RECRUITING'
-  },
-  {
-    id: 6,
-    name: '사진 산책',
-    category: 'ETC',
-    summary: '캠퍼스 근처를 걸으며 사진을 찍고 서로 보정 팁을 나눠요',
-    imageUrl: null,
-    leaderName: '윤서아',
-    memberCount: 4,
-    capacity: 6,
-    recruitStatus: 'CLOSED'
-  }
-]
-
-export const MOCK_MY_CLUBS = [
-  {
-    club: MOCK_CLUBS[0],
-    isLeader: true,
-    next: '다음 모임 · 10월 7일 (화) 19:00 · 하이테크 314호',
-    week: '이번 주 활동 완료'
-  },
-  {
-    club: MOCK_CLUBS[1],
-    isLeader: false,
-    next: '다음 모임 · 10월 4일 (토) 08:00 · 후문',
-    week: '이번 주 활동 전'
-  }
-]
+import type { ClubCompletion, ClubFeedItem, ClubSchedule, ClubWarning } from '@/types/club'
 
 export const MOCK_GLOBAL_FEED = [
   {
@@ -138,27 +46,6 @@ export const MOCK_GLOBAL_FEED = [
     comments: 1,
     photos: 2
   }
-]
-
-export const MOCK_CLUB_DETAIL: ClubDetail = {
-  ...MOCK_CLUBS[0],
-  description:
-    '알고리즘 실력을 꾸준히 올리고 싶은 사람들의 모임이에요. 혼자 하면 흐지부지되는 문제 풀이를 매주 같이 하면서, 서로의 풀이를 설명하는 연습까지 합니다.',
-  activityMethod:
-    '매주 화요일 저녁 오프라인 모임. 주제별 문제 4개를 미리 풀어 오고, 모임에서는 돌아가며 풀이를 발표해요.',
-  startDate: '2026-09-01',
-  endDate: '2026-11-09',
-  kakaoLink: 'https://open.kakao.com/',
-  myMembership: { status: 'ACTIVE', isLeader: true }
-}
-
-export const MOCK_MEMBERS: ClubMember[] = [
-  { userId: 1, name: '한서준', isLeader: true, joinedAt: '개설' },
-  { userId: 2, name: '이도윤', isLeader: false, joinedAt: '9월 1일 합류' },
-  { userId: 3, name: '박지아', isLeader: false, joinedAt: '9월 1일 합류' },
-  { userId: 4, name: '최민준', isLeader: false, joinedAt: '9월 2일 합류' },
-  { userId: 5, name: '정하린', isLeader: false, joinedAt: '9월 3일 합류' },
-  { userId: 6, name: '윤서아', isLeader: false, joinedAt: '9월 24일 합류' }
 ]
 
 export const MOCK_FEED: ClubFeedItem[] = [
@@ -264,21 +151,6 @@ export const MOCK_COMPLETION: ClubCompletion = {
     { weekStart: '11.03', state: 'UPCOMING', countedActivities: 0 }
   ]
 }
-
-export const MOCK_PENDING_APPLICANTS = [
-  {
-    id: 1,
-    name: '김태윤',
-    meta: '컴퓨터공학과 · 9월 30일 신청',
-    message: '실버 2인데 골드 목표로 같이 하고 싶어요!'
-  },
-  {
-    id: 2,
-    name: '오지호',
-    meta: '정보통신공학과 · 10월 1일 신청',
-    message: '수요조사에 알고리즘 적었던 사람입니다.'
-  }
-]
 
 export const MOCK_FIX_REQUESTS = [
   {
@@ -467,12 +339,4 @@ export const MOCK_OPEN_REQUESTS = [
     who: '조은호',
     goal: '목표: 필기 전원 합격. 주 2회 기출 풀이.'
   }
-]
-
-export const MOCK_LEADER_GRANTS = [
-  { userId: 1, name: '한서준', clubs: '알고리즘 스터디' },
-  { userId: 2, name: '이도윤', clubs: '주말 러닝 크루' },
-  { userId: 3, name: '박지아', clubs: '프론트엔드 취준반' },
-  { userId: 4, name: '최민준', clubs: 'AI 논문 읽기' },
-  { userId: 5, name: '정하린', clubs: '보드게임 모임 · 사진 산책' }
 ]

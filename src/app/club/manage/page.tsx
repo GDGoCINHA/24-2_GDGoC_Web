@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 
 import { ClubBackLink, ClubLeaderTag } from '@/components/club/ClubUi'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
@@ -10,23 +11,76 @@ import {
   DUSK_GHOST_BUTTON,
   DUSK_PRIMARY_BUTTON
 } from '@/components/ui/dusk/DuskForm'
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { MOCK_FIX_REQUESTS } from '@/mock/clubMock'
 import {
-  MOCK_CLUB_DETAIL,
-  MOCK_FIX_REQUESTS,
-  MOCK_MEMBERS,
-  MOCK_PENDING_APPLICANTS
-} from '@/mock/clubMock'
+  fetchClubApplicants,
+  fetchClubDetail,
+  fetchClubMembers,
+  handleClubMember,
+  handOverLeader,
+  readClubError,
+  updateClub
+} from '@/services/club/clubClient'
+import type { ClubDetail, ClubMember } from '@/types/club'
 import { cn } from '@/utils/cn'
 
 const SMALL = 'px-4 py-2 text-[13px]'
 
-/** 이끔이 관리 화면. 신청 처리·멤버(A), 출석 수정 요청(B). 이끔이가 아니면 서버가 403. */
+/** 리더 관리 화면. 신청 처리·멤버(A), 출석 수정 요청(B). 리더가 아니면 서버가 403. */
 export default function ClubManagePage() {
   const searchParams = useSearchParams()
-  const clubId = searchParams.get('id') ?? ''
-  const club = MOCK_CLUB_DETAIL
+  const clubId = Number(searchParams.get('id') ?? 0)
+  const { apiClient } = useAuthenticatedApi()
+  const [club, setClub] = useState<ClubDetail | null>(null)
+  const [applicants, setApplicants] = useState<ClubMember[]>([])
+  const [members, setMembers] = useState<ClubMember[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+
+  const load = useCallback(() => {
+    if (!clubId) return
+    Promise.all([
+      fetchClubDetail(apiClient, clubId),
+      fetchClubApplicants(apiClient, clubId),
+      fetchClubMembers(apiClient, clubId)
+    ])
+      .then(([detail, pending, active]) => {
+        setClub(detail)
+        setApplicants(pending)
+        setMembers(active)
+        setError(null)
+      })
+      .catch((err) => setError(readClubError(err, '관리 화면을 불러오지 못했어요.')))
+  }, [apiClient, clubId])
+
+  useEffect(load, [load])
+
+  const run = async (action: () => Promise<void>, confirmText?: string) => {
+    if (confirmText && !window.confirm(confirmText)) return
+    setBusy(true)
+    try {
+      await action()
+      load()
+    } catch (err) {
+      window.alert(readClubError(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (error || !club) {
+    return (
+      <main className="min-h-screen">
+        <ClubSiteHeader />
+        <p className="py-24 text-center text-[15px] text-dusk-ink-800">{error ?? '불러오는 중…'}</p>
+      </main>
+    )
+  }
+
+  const recruiting = club.recruitStatus === 'RECRUITING'
   const overCapacity =
-    club.capacity !== null && club.memberCount + MOCK_PENDING_APPLICANTS.length > club.capacity
+    club.capacity !== null && club.memberCount + applicants.length > club.capacity
 
   const shortcuts = [
     { label: '활동 기록 작성', href: `/club/activity/edit/?clubId=${clubId}`, primary: true },
@@ -66,33 +120,66 @@ export default function ClubManagePage() {
         <section className="flex flex-col gap-3">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h2 className="text-lg font-semibold">
-              참여 신청 <span className="text-ember">{MOCK_PENDING_APPLICANTS.length}</span>
+              참여 신청 <span className="text-ember">{applicants.length}</span>
             </h2>
-            <button type="button" className={cn(DUSK_GHOST_BUTTON, SMALL)}>
-              모집 중 · 마감하기
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() =>
+                run(() =>
+                  updateClub(apiClient, clubId, {
+                    recruitStatus: recruiting ? 'CLOSED' : 'RECRUITING'
+                  })
+                )
+              }
+              className={cn(DUSK_GHOST_BUTTON, SMALL)}
+            >
+              {recruiting ? '모집 중 · 마감하기' : '모집 마감 · 다시 열기'}
             </button>
           </div>
-          {MOCK_PENDING_APPLICANTS.map((applicant) => (
+          {applicants.length === 0 && (
+            <p className="text-sm text-dusk-ink-800">기다리는 신청이 없어요.</p>
+          )}
+          {applicants.map((applicant) => (
             <div
-              key={applicant.id}
+              key={applicant.memberId}
               className="flex flex-wrap items-center gap-3.5 rounded-[14px] border border-dusk-line px-[18px] py-4"
             >
               <div className="min-w-0 flex-[1_1_300px]">
                 <div className="text-[15px] font-semibold">
                   {applicant.name}{' '}
                   <span className="text-[13px] font-normal text-dusk-ink-800">
-                    {applicant.meta}
+                    {applicant.major ?? ''}
                   </span>
                 </div>
-                <div className="mt-1.5 text-sm leading-[1.55] text-dusk-ink-400">
-                  {applicant.message}
-                </div>
+                {applicant.applyMessage && (
+                  <div className="mt-1.5 text-sm leading-[1.55] text-dusk-ink-400">
+                    {applicant.applyMessage}
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
-                <button type="button" className={cn(DUSK_GHOST_BUTTON, SMALL)}>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() =>
+                    run(
+                      () => handleClubMember(apiClient, clubId, applicant.memberId, 'reject'),
+                      `${applicant.name} 님의 신청을 거절할까요?`
+                    )
+                  }
+                  className={cn(DUSK_GHOST_BUTTON, SMALL)}
+                >
                   거절
                 </button>
-                <button type="button" className={cn(DUSK_PRIMARY_BUTTON, SMALL)}>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() =>
+                    run(() => handleClubMember(apiClient, clubId, applicant.memberId, 'approve'))
+                  }
+                  className={cn(DUSK_PRIMARY_BUTTON, SMALL)}
+                >
                   승인
                 </button>
               </div>
@@ -140,11 +227,11 @@ export default function ClubManagePage() {
         </section>
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">멤버 {MOCK_MEMBERS.length}명</h2>
+          <h2 className="text-lg font-semibold">멤버 {members.length}명</h2>
           <ul className="overflow-hidden rounded-[14px] border border-dusk-line">
-            {MOCK_MEMBERS.map((member) => (
+            {members.map((member) => (
               <li
-                key={member.userId}
+                key={member.memberId}
                 className="flex flex-wrap items-center gap-3 border-b border-dusk-line-soft px-[18px] py-3 last:border-b-0"
               >
                 <span className="flex size-8 items-center justify-center rounded-full bg-dusk-slot text-[13px] text-dusk-ink-400">
@@ -156,12 +243,27 @@ export default function ClubManagePage() {
                   <div className="ml-auto flex gap-1.5">
                     <button
                       type="button"
+                      disabled={busy}
+                      onClick={() =>
+                        run(async () => {
+                          await handOverLeader(apiClient, clubId, member.userId)
+                          // 넘긴 뒤에는 리더가 아니라 이 화면이 403 이다.
+                          window.location.assign(`/club/detail/?id=${clubId}`)
+                        }, `${member.name} 님에게 리더를 넘길까요? 넘기면 관리 화면을 쓸 수 없어요.`)
+                      }
                       className={cn(DUSK_GHOST_BUTTON, 'min-h-9 px-3 py-1 text-xs')}
                     >
-                      이끔이 넘기기
+                      리더 넘기기
                     </button>
                     <button
                       type="button"
+                      disabled={busy}
+                      onClick={() =>
+                        run(
+                          () => handleClubMember(apiClient, clubId, member.memberId, 'kick'),
+                          `${member.name} 님을 내보낼까요?`
+                        )
+                      }
                       className={cn(DUSK_DANGER_BUTTON, 'min-h-9 px-3 py-1 text-xs')}
                     >
                       내보내기

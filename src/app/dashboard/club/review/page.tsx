@@ -9,7 +9,7 @@ import { MOCK_REVIEW_QUEUE } from '@/mock/clubMock'
 import { cn } from '@/utils/cn'
 
 /**
- * 인증 검토 (C 담당). 인증 완료하면 그 기록은 이끔이가 더 이상 고칠 수 없다.
+ * 인증 검토 (C 담당). 인증 완료하면 그 기록은 리더가 더 이상 고칠 수 없다.
  */
 export default function ClubReviewPage() {
   // TODO(C): GET /api/v1/admin/club-activities?status=PENDING 으로 바꾼다.

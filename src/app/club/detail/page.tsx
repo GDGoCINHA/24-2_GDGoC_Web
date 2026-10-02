@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { ClubCompletionTab } from '@/components/club/ClubCompletionTab'
 import { ClubFeedTab } from '@/components/club/ClubFeedTab'
@@ -18,7 +18,17 @@ import {
   KakaoShareButton
 } from '@/components/club/ClubUi'
 import { DUSK_GHOST_BUTTON, DUSK_PRIMARY_BUTTON } from '@/components/ui/dusk/DuskForm'
-import { MOCK_CLUB_DETAIL, MOCK_MEMBERS } from '@/mock/clubMock'
+import { useAuth } from '@/hooks/useAuth'
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import {
+  applyClub,
+  fetchClubDetail,
+  fetchClubMembers,
+  leaveClub,
+  readClubError
+} from '@/services/club/clubClient'
+import type { ClubDetail, ClubMember } from '@/types/club'
+import { hasAtLeast } from '@/utils/auth/role'
 import { cn } from '@/utils/cn'
 
 type Tab = 'feed' | 'schedule' | 'goal' | 'about'
@@ -32,14 +42,65 @@ export default function ClubDetailPage() {
   const searchParams = useSearchParams()
   const clubId = Number(searchParams.get('id') ?? 0)
   const [tab, setTab] = useState<Tab>('feed')
+  const { apiClient } = useAuthenticatedApi()
+  const { user } = useAuth()
+  const isStaff = hasAtLeast(user?.userRole, 'CORE')
+  const canJoin = hasAtLeast(user?.userRole, 'MEMBER')
+  const [club, setClub] = useState<ClubDetail | null>(null)
+  const [members, setMembers] = useState<ClubMember[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
 
-  // TODO(A): GET /api/v1/clubs/{id} 로 바꾼다. kakaoLink 는 멤버가 아니면 서버가 null 로 준다.
-  const club = MOCK_CLUB_DETAIL
+  // kakaoLink 는 멤버·운영진이 아니면 서버가 null 로 준다.
+  const load = useCallback(() => {
+    if (!clubId) return
+    fetchClubDetail(apiClient, clubId)
+      .then((data) => {
+        setClub(data)
+        setError(null)
+      })
+      .catch((err) => setError(readClubError(err, '소모임을 불러오지 못했어요.')))
+  }, [apiClient, clubId])
+
+  useEffect(load, [load])
+
+  const isMemberOrStaff = club?.myMembership?.status === 'ACTIVE' || isStaff
+  useEffect(() => {
+    if (tab !== 'about' || !isMemberOrStaff) return
+    fetchClubMembers(apiClient, clubId)
+      .then(setMembers)
+      .catch(() => setMembers([]))
+  }, [apiClient, clubId, tab, isMemberOrStaff])
+
+  const run = async (action: () => Promise<void>, confirmText?: string) => {
+    if (confirmText && !window.confirm(confirmText)) return
+    setBusy(true)
+    try {
+      await action()
+      load()
+    } catch (err) {
+      window.alert(readClubError(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+  const apply = () => run(() => applyClub(apiClient, clubId, null))
+  const leave = (text: string) => run(() => leaveClub(apiClient, clubId), text)
+
+  if (error || !club) {
+    return (
+      <main className="min-h-screen">
+        <ClubSiteHeader />
+        <p className="py-24 text-center text-[15px] text-dusk-ink-800">{error ?? '불러오는 중…'}</p>
+      </main>
+    )
+  }
+
   const membership = club.myMembership
   const isMember = membership?.status === 'ACTIVE'
   const isPending = membership?.status === 'PENDING'
   const isLeader = Boolean(membership?.isLeader)
-  const canApply = !membership && club.recruitStatus === 'RECRUITING'
+  const canApply = canJoin && !membership && club.recruitStatus === 'RECRUITING'
   const headcount = `${club.memberCount}${club.capacity ? ` / ${club.capacity}` : ''}명`
 
   return (
@@ -64,7 +125,7 @@ export default function ClubDetailPage() {
             <p className="text-[15px] leading-[1.6] text-dusk-ink-400">{club.summary}</p>
             <dl className="mt-1 grid grid-cols-3 gap-2">
               {[
-                ['이끔이', club.leaderName],
+                ['리더', club.leaderName],
                 ['인원', headcount],
                 ['활동 기간', formatPeriod(club.startDate, club.endDate)]
               ].map(([term, value]) => (
@@ -81,12 +142,26 @@ export default function ClubDetailPage() {
               {canApply && (
                 <button
                   type="button"
+                  disabled={busy}
+                  onClick={apply}
                   className={cn(DUSK_PRIMARY_BUTTON, 'px-[26px] py-3 text-[15px] mobile:hidden')}
                 >
                   참여 신청
                 </button>
               )}
-              {isPending && <span className="text-sm text-tag-event">승인 대기 중</span>}
+              {isPending && (
+                <>
+                  <span className="text-sm text-tag-event">승인 대기 중</span>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => leave('참여 신청을 취소할까요?')}
+                    className="min-h-11 px-2 text-[13px] text-dusk-ink-800"
+                  >
+                    신청 취소
+                  </button>
+                </>
+              )}
               {isMember && club.kakaoLink && (
                 <a
                   href={club.kakaoLink}
@@ -104,7 +179,12 @@ export default function ClubDetailPage() {
               )}
               <KakaoShareButton />
               {isMember && !isLeader && (
-                <button type="button" className="min-h-11 px-2 text-[13px] text-dusk-ink-800">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => leave('이 소모임에서 탈퇴할까요?')}
+                  className="min-h-11 px-2 text-[13px] text-dusk-ink-800"
+                >
                   탈퇴하기
                 </button>
               )}
@@ -144,11 +224,14 @@ export default function ClubDetailPage() {
               </div>
             </div>
             <div>
-              <h2 className="mb-2.5 text-lg font-semibold">멤버 {MOCK_MEMBERS.length}명</h2>
+              <h2 className="mb-2.5 text-lg font-semibold">멤버 {club.memberCount}명</h2>
+              {!isMemberOrStaff && (
+                <p className="text-sm text-dusk-ink-800">멤버 명단은 참여한 사람에게만 보여요.</p>
+              )}
               <ul>
-                {MOCK_MEMBERS.map((member) => (
+                {(members ?? []).map((member) => (
                   <li
-                    key={member.userId}
+                    key={member.memberId}
                     className="flex items-center gap-3 border-b border-dusk-line-soft py-2.5"
                   >
                     <span className="flex size-9 items-center justify-center rounded-full bg-dusk-slot text-sm text-dusk-ink-400">
@@ -156,7 +239,9 @@ export default function ClubDetailPage() {
                     </span>
                     <span className="text-[15px]">{member.name}</span>
                     {member.isLeader && <ClubLeaderTag />}
-                    <span className="ml-auto text-[13px] text-dusk-ink-800">{member.joinedAt}</span>
+                    <span className="ml-auto text-[13px] text-dusk-ink-800">
+                      {member.joinedAt?.slice(0, 10).replaceAll('-', '.')}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -172,7 +257,12 @@ export default function ClubDetailPage() {
             <span className="text-[15px] font-semibold">{headcount}</span>
             <span className="text-xs text-ember">모집 중</span>
           </div>
-          <button type="button" className={cn(DUSK_PRIMARY_BUTTON, 'min-h-12 px-8 text-base')}>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={apply}
+            className={cn(DUSK_PRIMARY_BUTTON, 'min-h-12 px-8 text-base')}
+          >
             참여 신청
           </button>
         </div>
