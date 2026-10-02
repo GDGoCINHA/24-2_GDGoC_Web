@@ -38,7 +38,7 @@ export default function ClubTeamPage() {
 
   return (
     <ClubAdminFrame
-      eyebrow="취업 준비 · 이끔이 박지아 · 5 / 6명"
+      eyebrow="취업 준비 · 리더 박지아 · 5 / 6명"
       title="프론트엔드 취준반"
       current="현황"
       aside={
@@ -47,7 +47,7 @@ export default function ClubTeamPage() {
             활동 기간 수정
           </button>
           <button type="button" className={ADMIN_GHOST_BUTTON}>
-            이끔이 교체
+            리더 교체
           </button>
           <button type="button" className={ADMIN_GHOST_BUTTON}>
             상태: 운영 중

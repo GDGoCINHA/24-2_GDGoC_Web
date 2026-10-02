@@ -111,7 +111,7 @@ export default function ClubActivityEditPage() {
                     </span>
                   )}
                   {row.isLeader && (
-                    <span className="ml-auto text-[13px] text-dusk-ink-800">이끔이</span>
+                    <span className="ml-auto text-[13px] text-dusk-ink-800">리더</span>
                   )}
                 </label>
               ))}

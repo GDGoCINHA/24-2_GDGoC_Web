@@ -70,7 +70,7 @@ export function ClubPostCategoryTag({ category }: { category: ClubPostCategory }
 }
 
 export function ClubLeaderTag() {
-  return <span className={cn(TAG, 'bg-[rgba(208,129,85,0.18)] text-ember')}>이끔이</span>
+  return <span className={cn(TAG, 'bg-[rgba(208,129,85,0.18)] text-ember')}>리더</span>
 }
 
 /** 이미지가 없을 때 대신 까는 면. 카드 높이가 흔들리지 않게 한다. */
