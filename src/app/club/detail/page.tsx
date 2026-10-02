@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { ClubCompletionTab } from '@/components/club/ClubCompletionTab'
@@ -20,6 +20,7 @@ import {
 import { DUSK_GHOST_BUTTON, DUSK_PRIMARY_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { publicClient } from '@/lib/api/publicClient'
 import {
   applyClub,
   fetchClubDetail,
@@ -39,11 +40,16 @@ const formatPeriod = (start: string | null, end: string | null) =>
     : '미설정'
 
 export default function ClubDetailPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const clubId = Number(searchParams.get('id') ?? 0)
-  const [tab, setTab] = useState<Tab>('feed')
-  const { apiClient } = useAuthenticatedApi()
   const { user } = useAuth()
+  const { apiClient: authClient } = useAuthenticatedApi()
+  // 비로그인도 상세(소개)는 본다 — 공유 링크용. 서버가 링크·신청 상태를 비워 준다.
+  const apiClient = user ? authClient : publicClient
+  // 활동·일정·완주는 부원에게만 보인다.
+  const showTeamTabs = hasAtLeast(user?.userRole, 'MEMBER')
+  const [tab, setTab] = useState<Tab>(showTeamTabs ? 'feed' : 'about')
   const isStaff = hasAtLeast(user?.userRole, 'CORE')
   const canJoin = hasAtLeast(user?.userRole, 'MEMBER')
   const [club, setClub] = useState<ClubDetail | null>(null)
@@ -84,7 +90,13 @@ export default function ClubDetailPage() {
       setBusy(false)
     }
   }
-  const apply = () => run(() => applyClub(apiClient, clubId, null))
+  const apply = () => {
+    if (!user) {
+      router.push(`/login?next=${encodeURIComponent(`/club/detail/?id=${clubId}`)}`)
+      return
+    }
+    void run(() => applyClub(apiClient, clubId, null))
+  }
   const leave = (text: string) => run(() => leaveClub(apiClient, clubId), text)
 
   if (error || !club) {
@@ -100,7 +112,8 @@ export default function ClubDetailPage() {
   const isMember = membership?.status === 'ACTIVE'
   const isPending = membership?.status === 'PENDING'
   const isLeader = Boolean(membership?.isLeader)
-  const canApply = canJoin && !membership && club.recruitStatus === 'RECRUITING'
+  // 비로그인에게도 버튼을 보여 주고, 누르면 로그인으로 보낸다. GUEST 는 참여할 수 없어 숨긴다.
+  const canApply = (!user || canJoin) && !membership && club.recruitStatus === 'RECRUITING'
   const headcount = `${club.memberCount}${club.capacity ? ` / ${club.capacity}` : ''}명`
 
   return (
@@ -196,12 +209,16 @@ export default function ClubDetailPage() {
           label="소모임 상세"
           current={tab}
           onChange={setTab}
-          tabs={[
-            { id: 'feed', label: '활동' },
-            { id: 'schedule', label: '일정·출석' },
-            { id: 'goal', label: '목표·완주' },
-            { id: 'about', label: '소개·멤버' }
-          ]}
+          tabs={
+            showTeamTabs
+              ? [
+                  { id: 'feed', label: '활동' },
+                  { id: 'schedule', label: '일정·출석' },
+                  { id: 'goal', label: '목표·완주' },
+                  { id: 'about', label: '소개·멤버' }
+                ]
+              : [{ id: 'about', label: '소개' }]
+          }
         />
 
         {tab === 'feed' && <ClubFeedTab clubId={clubId} myMembership={membership} />}
