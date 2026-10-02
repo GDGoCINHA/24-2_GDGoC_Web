@@ -135,6 +135,55 @@ export interface ClubPost {
 
 export type ClubFeedItem = ({ type: 'ACTIVITY' } & ClubActivity) | ({ type: 'POST' } & ClubPost)
 
+/**
+ * 활동 기록 상세. 서버 `ClubActivityDetailResponse`.
+ *
+ * 서버는 null 필드를 응답에서 뺀다 — 그래서 비어 있을 수 있는 필드는 `?:` 다.
+ */
+export interface ClubActivityDetail {
+  id: number
+  clubId: number
+  scheduleId?: number | null
+  /** YYYY-MM-DD */
+  activityDate: string
+  content: string
+  progressNote?: string | null
+  status: ClubActivityStatus
+  photoUrls: string[]
+  rosterCount: number
+  attendedCount: number
+  requiredCount: number
+  /** 팀 멤버·운영진에게만 채워진다. 다른 부원에게는 없다. */
+  attendance?: ClubActivityAttendance[] | null
+  /** 팀 멤버·운영진에게만 채워진다. */
+  revisionReason?: string | null
+  submittedAt: string
+  /** 내가 리더이고 아직 인증 완료되지 않았다. */
+  editable: boolean
+}
+
+export interface ClubActivityAttendance {
+  userId: number
+  name: string
+  attended: boolean
+}
+
+/** 활동 기록 작성 화면의 명단. 서버 `ClubActivityRosterResponse`. 활동일 당시 팀원이다. */
+export interface ClubActivityRoster {
+  date: string
+  attendanceRatio: number
+  requiredCount: number
+  members: ClubActivityRosterMember[]
+}
+
+export interface ClubActivityRosterMember {
+  userId: number
+  name: string
+  leader: boolean
+  /** QR 로 체크인했다. 출석 체크의 기본값으로만 쓴다. */
+  checkedIn: boolean
+}
+
 export interface ClubSchedule {
   id: number
   title: string
