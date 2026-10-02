@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 
 import AdminHeader from '@/components/admin/dashboard/AdminHeader'
+import { CLUB_ENTRY_VISIBLE } from '@/constant/club'
 import { useAuth } from '@/hooks/useAuth'
 
 type DashboardItem = {
@@ -31,7 +32,7 @@ type VisibleGroup = {
   collapsed: boolean
 }
 
-const DASHBOARD_GROUPS: DashboardGroup[] = [
+const ALL_DASHBOARD_GROUPS: DashboardGroup[] = [
   {
     label: '콘텐츠',
     note: '외부에 보이는 화면을 고칩니다',
@@ -75,6 +76,30 @@ const DASHBOARD_GROUPS: DashboardGroup[] = [
     ]
   },
   {
+    label: '소모임',
+    note: '팀 활동과 완주를 확인합니다',
+    items: [
+      {
+        href: '/dashboard/club',
+        title: '소모임 현황',
+        description: '팀별 인원, 주차 충족, 경고를 보고 완주를 확정합니다.',
+        minRoleRank: 2
+      },
+      {
+        href: '/dashboard/club/review',
+        title: '인증 검토',
+        description: '활동 기록을 인증 완료하거나 보완 요청합니다.',
+        minRoleRank: 2
+      },
+      {
+        href: '/dashboard/club/leaders',
+        title: '이끔이 · 기수',
+        description: '개설 신청을 처리하고 이끔이 권한과 기수별 참석 비율을 관리합니다.',
+        minRoleRank: 2
+      }
+    ]
+  },
+  {
     label: '가끔 쓰는 화면',
     note: '행사 기간에만 씁니다',
     collapsed: true,
@@ -106,6 +131,10 @@ const DASHBOARD_GROUPS: DashboardGroup[] = [
     ]
   }
 ]
+
+const DASHBOARD_GROUPS = ALL_DASHBOARD_GROUPS.filter(
+  (group) => CLUB_ENTRY_VISIBLE || group.label !== '소모임'
+)
 
 const ROLE_RANK: Record<string, number> = {
   GUEST: 0,
