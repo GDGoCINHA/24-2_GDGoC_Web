@@ -3,7 +3,7 @@
  *
  * 디자인 확정본(소모임 화면 디자인 아티팩트)과 같은 값이다.
  */
-import type { ClubCompletion, ClubFeedItem, ClubSchedule, ClubWarning } from '@/types/club'
+import type { ClubCompletion, ClubFeedItem, ClubWarning } from '@/types/club'
 
 export const MOCK_GLOBAL_FEED = [
   {
@@ -96,38 +96,6 @@ export const MOCK_FEED: ClubFeedItem[] = [
 export const MOCK_COMMENTS = [
   { author: '이도윤', content: '3번 풀이 코드 피드에 올려주실 수 있나요?' },
   { author: '박지아', content: '자료 탭에 올렸어요!' }
-]
-
-export const MOCK_SCHEDULES: ClubSchedule[] = [
-  {
-    id: 1,
-    title: 'DP 기초 — 배낭 문제',
-    startsAt: '10월 7일 (화) 19:00',
-    location: '하이테크관 314호',
-    onlineLink: null,
-    attendCount: 4,
-    absentCount: 1,
-    noResponseCount: 1,
-    myResponse: 'ATTEND'
-  },
-  {
-    id: 2,
-    title: '모의 코딩테스트',
-    startsAt: '10월 11일 (토) 14:00',
-    location: null,
-    onlineLink: 'https://meet.google.com/',
-    attendCount: 2,
-    absentCount: 0,
-    noResponseCount: 4,
-    myResponse: null
-  }
-]
-
-export const MOCK_MY_ATTENDANCE = [
-  { date: '10월 2일 (목)', attended: true, locked: true },
-  { date: '9월 25일 (목)', attended: false, locked: false },
-  { date: '9월 16일 (화)', attended: true, locked: true },
-  { date: '9월 9일 (화)', attended: true, locked: true }
 ]
 
 export const MOCK_COMPLETION: ClubCompletion = {

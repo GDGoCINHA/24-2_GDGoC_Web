@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import { formatActivityDate } from '@/components/club/clubDate'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import { ClubActivityStatusTag, ClubBackLink, KakaoShareButton } from '@/components/club/ClubUi'
 import { DUSK_GHOST_BUTTON } from '@/components/ui/dusk/DuskForm'
@@ -12,15 +13,6 @@ import { fetchActivity } from '@/services/club/activityClient'
 import { readClubError } from '@/services/club/clubClient'
 import type { ClubActivityDetail } from '@/types/club'
 import { cn } from '@/utils/cn'
-
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
-
-/** 2026-10-07 → 2026.10.07 (수). 활동일은 날짜만 있으므로 시간대 변환 없이 읽는다. */
-const formatActivityDate = (date: string) => {
-  const [y, m, d] = date.split('-').map(Number)
-  const weekday = WEEKDAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]
-  return `${date.replaceAll('-', '.')} (${weekday})`
-}
 
 /**
  * 활동 기록 상세 (B 담당).
