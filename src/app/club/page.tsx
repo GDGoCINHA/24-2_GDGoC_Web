@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dusk/DuskForm'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { publicClient } from '@/lib/api/publicClient'
 import { MOCK_GLOBAL_FEED } from '@/mock/clubMock'
 import { fetchClubs, fetchMyClubs, readClubError } from '@/services/club/clubClient'
 import { CLUB_CATEGORY_LABEL, type ClubCategory, type ClubSummary, type MyClub } from '@/types/club'
@@ -37,7 +38,9 @@ export default function ClubListPage() {
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [keyword, setKeyword] = useState('')
 
-  const { apiClient } = useAuthenticatedApi()
+  const { apiClient: authClient } = useAuthenticatedApi()
+  // 비로그인도 목록은 본다. 인증 클라이언트로 부르면 401 인터셉터가 로그인으로 보낸다.
+  const apiClient = user ? authClient : publicClient
   const [clubs, setClubs] = useState<ClubSummary[] | null>(null)
   const [myClubs, setMyClubs] = useState<MyClub[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -68,10 +71,11 @@ export default function ClubListPage() {
   }, [apiClient, category, recruitingOnly, keyword])
 
   useEffect(() => {
+    if (!user) return
     fetchMyClubs(apiClient)
       .then(setMyClubs)
       .catch(() => setMyClubs([]))
-  }, [apiClient])
+  }, [apiClient, user])
 
   return (
     <main className="min-h-screen">
@@ -103,11 +107,16 @@ export default function ClubListPage() {
           label="소모임 보기"
           current={tab}
           onChange={setTab}
-          tabs={[
-            { id: 'browse', label: '둘러보기' },
-            { id: 'mine', label: '내 소모임', count: myClubs.length },
-            { id: 'feed', label: '활동 피드' }
-          ]}
+          tabs={
+            // 비로그인은 둘러보기만. 활동 피드는 공개하지 않는다.
+            user
+              ? [
+                  { id: 'browse', label: '둘러보기' },
+                  { id: 'mine', label: '내 소모임', count: myClubs.length },
+                  { id: 'feed', label: '활동 피드' }
+                ]
+              : [{ id: 'browse', label: '둘러보기' }]
+          }
         />
 
         {tab === 'browse' && (
