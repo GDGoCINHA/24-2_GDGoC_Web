@@ -76,7 +76,14 @@ export const shareToKakao = async ({ title, description, imageUrl, path }: Kakao
   const link = { mobileWebUrl: url, webUrl: url }
   kakao.Share.sendDefault({
     objectType: 'feed',
-    content: { title, description, imageUrl: imageUrl || FALLBACK_IMAGE, link },
+    // description 은 비어 있으면 키째 뺀다. SDK 는 키가 있으면 문자열인지 검사해, undefined 를 넘기면
+    // `Illegal argument for "description"` 으로 공유 자체를 거부한다(설명 없이 쓰는 버튼에서 실제로 났다).
+    content: {
+      title,
+      ...(description ? { description } : {}),
+      imageUrl: imageUrl || FALLBACK_IMAGE,
+      link
+    },
     buttons: [{ title: '바로가기', link }]
   })
 }
