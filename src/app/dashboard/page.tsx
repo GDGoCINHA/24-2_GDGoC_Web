@@ -92,8 +92,8 @@ const DASHBOARD_GROUPS: DashboardGroup[] = [
       },
       {
         href: '/dashboard/club/leaders',
-        title: '리더 · 기수',
-        description: '개설 신청을 처리하고 리더 권한과 기수별 참석 비율을 관리합니다.',
+        title: '개설 승인 · 기수',
+        description: '새 소모임 개설을 승인·반려하고 기수별 참석 비율을 관리합니다.',
         minRoleRank: 2
       }
     ]

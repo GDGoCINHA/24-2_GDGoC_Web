@@ -3,18 +3,16 @@ import axios, { type AxiosInstance } from 'axios'
 import type {
   ClubCategory,
   ClubDetail,
-  ClubLeaderGrant,
   ClubMember,
-  ClubOpenRequest,
-  ClubOpenRequestStatus,
   ClubRecruitStatus,
+  ClubStatus,
   ClubSummary,
   MyClub
 } from '@/types/club'
 import type { PageMeta, PagedResult } from '@/utils/api/unwrapPaged'
 
 /**
- * 소모임 A 담당 API (소모임·멤버·리더 권한). 서버 `inha.gdgoc.domain.club.{club,member,leader}`.
+ * 소모임 A 담당 API (소모임·멤버·개설 승인). 서버 `inha.gdgoc.domain.club.{club,member}`.
  *
  * 목록은 data 가 Page 가 아니라 배열이고 페이지 정보는 meta 에 있다 — unwrapPaged 를 쓰지 않는다.
  */
@@ -33,6 +31,8 @@ export const readClubError = (err: unknown, fallback = '요청을 처리하지 �
 export interface ClubSearchParams {
   category?: ClubCategory
   recruitStatus?: ClubRecruitStatus
+  /** 운영진만 통한다(승인 대기 목록). 일반 부원에게는 서버가 무시하고 공개 소모임만 준다. */
+  status?: ClubStatus
   keyword?: string
   page?: number
   size?: number
@@ -135,57 +135,16 @@ export const handOverLeader = async (
   await apiClient.post(`/clubs/${clubId}/leader`, { userId })
 }
 
-/* ---------------- 리더 권한·개설 신청 ---------------- */
-
-export const fetchMyLeaderGrant = async (apiClient: AxiosInstance): Promise<boolean> =>
-  unwrapOnce<{ hasGrant: boolean }>((await apiClient.get('/clubs/leader-grant/me')).data).hasGrant
-
-export interface ClubOpenRequestPayload {
-  name: string
-  category: ClubCategory
-  summary: string
-  goal: string | null
-}
-
-export const createOpenRequest = async (
-  apiClient: AxiosInstance,
-  payload: ClubOpenRequestPayload
-): Promise<void> => {
-  await apiClient.post('/club-open-requests', payload)
-}
-
-export const fetchMyOpenRequests = async (apiClient: AxiosInstance): Promise<ClubOpenRequest[]> =>
-  unwrapOnce<ClubOpenRequest[]>((await apiClient.get('/club-open-requests/me')).data)
-
 /* ---------------- 운영진 ---------------- */
 
-export const fetchOpenRequests = async (
-  apiClient: AxiosInstance,
-  status?: ClubOpenRequestStatus
-): Promise<ClubOpenRequest[]> =>
-  unwrapOnce<ClubOpenRequest[]>(
-    (await apiClient.get('/admin/club-open-requests', { params: { status } })).data
-  )
-
-export const approveOpenRequest = async (apiClient: AxiosInstance, id: number): Promise<void> => {
-  await apiClient.post(`/admin/club-open-requests/${id}/approve`)
+export const approveClub = async (apiClient: AxiosInstance, clubId: number): Promise<void> => {
+  await apiClient.post(`/admin/clubs/${clubId}/approve`)
 }
 
-export const rejectOpenRequest = async (
+export const rejectClub = async (
   apiClient: AxiosInstance,
-  id: number,
+  clubId: number,
   reason: string | null
 ): Promise<void> => {
-  await apiClient.post(`/admin/club-open-requests/${id}/reject`, { reason })
-}
-
-export const fetchLeaderGrants = async (apiClient: AxiosInstance): Promise<ClubLeaderGrant[]> =>
-  unwrapOnce<ClubLeaderGrant[]>((await apiClient.get('/admin/club-leader-grants')).data)
-
-export const grantLeader = async (apiClient: AxiosInstance, userId: number): Promise<void> => {
-  await apiClient.post('/admin/club-leader-grants', { userId })
-}
-
-export const revokeLeader = async (apiClient: AxiosInstance, userId: number): Promise<void> => {
-  await apiClient.delete(`/admin/club-leader-grants/${userId}`)
+  await apiClient.post(`/admin/clubs/${clubId}/reject`, { reason })
 }
