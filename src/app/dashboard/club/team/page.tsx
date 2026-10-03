@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { ClubAdminFrame } from '@/components/club/admin/ClubAdminFrame'
@@ -13,7 +13,7 @@ import {
   ADMIN_GHOST_BUTTON
 } from '@/components/admin/dashboard/adminStyles'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
-import { fetchClubDetail, readClubError } from '@/services/club/clubClient'
+import { deleteClubByStaff, fetchClubDetail, readClubError } from '@/services/club/clubClient'
 import {
   confirmClubCompletion,
   fetchClubCompletion,
@@ -56,6 +56,7 @@ const FIELD =
  * 팀 상세·완주 확정 (C 담당). 계산상 미충족이어도 확정할 수 있다 — 확정 전에 한 번 더 묻는다.
  */
 export default function ClubTeamPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const clubId = Number(searchParams.get('id') ?? 0)
   const { apiClient } = useAuthenticatedApi()
@@ -187,6 +188,28 @@ export default function ClubTeamPage() {
           <Link href={`/club/detail/?id=${clubId}`} className={ADMIN_GHOST_BUTTON}>
             소모임 화면
           </Link>
+          <button
+            type="button"
+            onClick={async () => {
+              const typed = window.prompt(
+                `일정·활동 기록·게시글까지 모두 지워지고 되돌릴 수 없어요. 삭제하려면 소모임 이름(${club.name})을 입력해 주세요.`
+              )
+              if (typed === null) return
+              if (typed.trim() !== club.name) {
+                window.alert('이름이 달라 삭제하지 않았어요.')
+                return
+              }
+              try {
+                await deleteClubByStaff(apiClient, clubId)
+                router.push('/dashboard/club')
+              } catch (err) {
+                setError(readClubError(err))
+              }
+            }}
+            className="min-h-9 px-2 text-[13px] text-admin-ink-muted hover:text-signal-err"
+          >
+            소모임 삭제
+          </button>
         </div>
       }
     >

@@ -102,6 +102,11 @@ export const applyClub = async (
 }
 
 /** 신청 중이면 취소, 참여 중이면 탈퇴. */
+/** 승인 전(대기·반려) 소모임만 리더가 지운다. 공개된 소모임이면 서버가 409. */
+export const deleteClub = async (apiClient: AxiosInstance, clubId: number): Promise<void> => {
+  await apiClient.delete(`/clubs/${clubId}`)
+}
+
 export const leaveClub = async (apiClient: AxiosInstance, clubId: number): Promise<void> => {
   await apiClient.delete(`/clubs/${clubId}/members/me`)
 }
@@ -139,6 +144,14 @@ export const handOverLeader = async (
 
 export const approveClub = async (apiClient: AxiosInstance, clubId: number): Promise<void> => {
   await apiClient.post(`/admin/clubs/${clubId}/approve`)
+}
+
+/** 공개된 소모임까지 딸린 기록과 함께 지운다. 되돌릴 수 없다. */
+export const deleteClubByStaff = async (
+  apiClient: AxiosInstance,
+  clubId: number
+): Promise<void> => {
+  await apiClient.delete(`/admin/clubs/${clubId}`)
 }
 
 export const rejectClub = async (
