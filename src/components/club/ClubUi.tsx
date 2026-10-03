@@ -22,7 +22,8 @@ import type {
 import {
   CLUB_ACTIVITY_STATUS_LABEL,
   CLUB_CATEGORY_LABEL,
-  CLUB_POST_CATEGORY_LABEL
+  CLUB_POST_CATEGORY_LABEL,
+  CLUB_STATUS_LABEL
 } from '@/types/club'
 import { cn } from '@/utils/cn'
 
@@ -55,12 +56,6 @@ export function ClubRecruitTag({ recruiting }: { recruiting: boolean }) {
   )
 }
 
-const HIDDEN_STATUS_LABEL: Record<'PENDING' | 'REJECTED' | 'HIDDEN', string> = {
-  PENDING: '개설 승인 대기',
-  REJECTED: '개설 반려',
-  HIDDEN: '숨김'
-}
-
 /** 운영진에게만 보이는 공개 전·숨김 소모임 표시. 공개(ACTIVE·ENDED)는 모집 태그를 쓴다. */
 export function ClubStatusTag({ status }: { status: 'PENDING' | 'REJECTED' | 'HIDDEN' }) {
   return (
@@ -71,7 +66,7 @@ export function ClubStatusTag({ status }: { status: 'PENDING' | 'REJECTED' | 'HI
         'border border-[rgba(240,234,228,0.2)]'
       )}
     >
-      {HIDDEN_STATUS_LABEL[status]}
+      {CLUB_STATUS_LABEL[status]}
     </span>
   )
 }

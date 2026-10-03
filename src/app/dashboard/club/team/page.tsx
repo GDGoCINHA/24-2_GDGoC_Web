@@ -29,6 +29,7 @@ import {
   CLUB_CATEGORY_LABEL,
   CLUB_COMPLETION_STATUS_LABEL,
   CLUB_GOAL_STATUS_LABEL,
+  CLUB_STATUS_LABEL,
   CLUB_WARNING_LABEL,
   type ClubCompletion,
   type ClubDetail,
@@ -162,8 +163,7 @@ export default function ClubTeamPage() {
   }
 
   const headcount = `${data.memberCount}${club.capacity ? ` / ${club.capacity}` : ''}명`
-  const statusLabel =
-    club.status === 'ACTIVE' ? '운영 중' : club.status === 'ENDED' ? '종료' : '숨김'
+  const statusLabel = CLUB_STATUS_LABEL[club.status]
 
   return (
     <ClubAdminFrame
