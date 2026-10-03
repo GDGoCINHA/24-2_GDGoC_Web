@@ -23,6 +23,7 @@ import {
   readClubError,
   updateClub
 } from '@/services/club/clubClient'
+import { fetchSchedules } from '@/services/club/scheduleClient'
 import type { ClubDetail, ClubMember } from '@/types/club'
 import { cn } from '@/utils/cn'
 
@@ -57,6 +58,18 @@ export default function ClubManagePage() {
 
   useEffect(load, [load])
 
+  /**
+   * 「출석 QR 띄우기」 가 열 일정 — 다음 일정(오늘 것 포함). 없으면 null, 받는 중이면 undefined.
+   * 관리 화면 본 로딩과 따로 받는다 — 일정 조회가 실패해도 신청·멤버 관리는 떠야 한다.
+   */
+  const [nextScheduleId, setNextScheduleId] = useState<number | null | undefined>(undefined)
+  useEffect(() => {
+    if (!clubId) return
+    fetchSchedules(apiClient, clubId, 'upcoming')
+      .then((upcoming) => setNextScheduleId(upcoming[0]?.id ?? null))
+      .catch(() => setNextScheduleId(null))
+  }, [apiClient, clubId])
+
   const run = async (action: () => Promise<void>, confirmText?: string) => {
     if (confirmText && !window.confirm(confirmText)) return
     setBusy(true)
@@ -83,10 +96,23 @@ export default function ClubManagePage() {
   const overCapacity =
     club.capacity !== null && club.memberCount + applicants.length > club.capacity
 
-  const shortcuts = [
+  const scheduleEditHref = `/club/schedule/edit/?clubId=${clubId}`
+  const shortcuts: { label: string; href: string; primary: boolean; hint?: string }[] = [
     { label: '활동 기록 작성', href: `/club/activity/edit/?clubId=${clubId}`, primary: true },
-    { label: '일정 등록', href: '#', primary: false },
-    { label: '출석 QR 띄우기', href: '#', primary: false },
+    { label: '일정 등록', href: scheduleEditHref, primary: false },
+    // QR 은 어느 일정의 출석인지 알아야 한다. 다가오는 일정이 없으면 일정부터 만들게 보낸다.
+    nextScheduleId
+      ? {
+          label: '출석 QR 띄우기',
+          href: `/club/schedule/qr/?clubId=${clubId}&id=${nextScheduleId}`,
+          primary: false
+        }
+      : {
+          label: '출석 QR 띄우기',
+          href: scheduleEditHref,
+          primary: false,
+          hint: nextScheduleId === null ? '먼저 일정을 등록해 주세요' : undefined
+        },
     { label: '정보·기간 수정', href: `/club/new/?id=${clubId}`, primary: false }
   ]
 
@@ -107,13 +133,14 @@ export default function ClubManagePage() {
               key={item.label}
               href={item.href}
               className={cn(
-                'flex min-h-14 items-center rounded-[14px] px-4 text-sm',
+                'flex min-h-14 flex-col justify-center rounded-[14px] px-4 text-sm',
                 item.primary
                   ? 'bg-ember font-medium text-ember-ink'
                   : 'border border-[rgba(240,234,228,0.16)] text-dusk-ink-100'
               )}
             >
               {item.label}
+              {item.hint && <span className="mt-0.5 text-xs text-dusk-ink-800">{item.hint}</span>}
             </Link>
           ))}
         </div>
