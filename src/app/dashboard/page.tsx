@@ -93,8 +93,8 @@ const ALL_DASHBOARD_GROUPS: DashboardGroup[] = [
       },
       {
         href: '/dashboard/club/leaders',
-        title: '이끔이 · 기수',
-        description: '개설 신청을 처리하고 이끔이 권한과 기수별 참석 비율을 관리합니다.',
+        title: '리더 · 기수',
+        description: '개설 신청을 처리하고 리더 권한과 기수별 참석 비율을 관리합니다.',
         minRoleRank: 2
       }
     ]

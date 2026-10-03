@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
+import { ClubGlobalFeed } from '@/components/club/ClubGlobalFeed'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
   ClubCategoryTag,
@@ -18,8 +19,10 @@ import {
   DUSK_PRIMARY_BUTTON
 } from '@/components/ui/dusk/DuskForm'
 import { useAuth } from '@/hooks/useAuth'
-import { MOCK_CLUBS, MOCK_GLOBAL_FEED, MOCK_MY_CLUBS } from '@/mock/clubMock'
-import { CLUB_CATEGORY_LABEL, type ClubCategory } from '@/types/club'
+import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
+import { publicClient } from '@/lib/api/publicClient'
+import { fetchClubs, fetchMyClubs, readClubError } from '@/services/club/clubClient'
+import { CLUB_CATEGORY_LABEL, type ClubCategory, type ClubSummary, type MyClub } from '@/types/club'
 import { hasAtLeast } from '@/utils/auth/role'
 import { cn } from '@/utils/cn'
 
@@ -35,17 +38,44 @@ export default function ClubListPage() {
   const [recruitingOnly, setRecruitingOnly] = useState(false)
   const [keyword, setKeyword] = useState('')
 
-  // TODO(A): GET /api/v1/clubs?category=&recruitStatus=&keyword= 로 바꾼다.
-  const clubs = useMemo(
-    () =>
-      MOCK_CLUBS.filter(
-        (club) =>
-          (category === 'ALL' || club.category === category) &&
-          (!recruitingOnly || club.recruitStatus === 'RECRUITING') &&
-          club.name.includes(keyword.trim())
-      ),
-    [category, recruitingOnly, keyword]
-  )
+  const { apiClient: authClient } = useAuthenticatedApi()
+  // 비로그인도 목록은 본다. 인증 클라이언트로 부르면 401 인터셉터가 로그인으로 보낸다.
+  const apiClient = user ? authClient : publicClient
+  const [clubs, setClubs] = useState<ClubSummary[] | null>(null)
+  const [myClubs, setMyClubs] = useState<MyClub[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  // 검색어는 타이핑이 멈춘 뒤에 보낸다.
+  useEffect(() => {
+    let alive = true
+    const timer = setTimeout(() => {
+      fetchClubs(apiClient, {
+        category: category === 'ALL' ? undefined : category,
+        recruitStatus: recruitingOnly ? 'RECRUITING' : undefined,
+        keyword: keyword.trim() || undefined,
+        size: 60
+      })
+        .then(({ items }) => {
+          if (!alive) return
+          setClubs(items)
+          setError(null)
+        })
+        .catch((err) => {
+          if (alive) setError(readClubError(err, '소모임 목록을 불러오지 못했어요.'))
+        })
+    }, 250)
+    return () => {
+      alive = false
+      clearTimeout(timer)
+    }
+  }, [apiClient, category, recruitingOnly, keyword])
+
+  useEffect(() => {
+    if (!user) return
+    fetchMyClubs(apiClient)
+      .then(setMyClubs)
+      .catch(() => setMyClubs([]))
+  }, [apiClient, user])
 
   return (
     <main className="min-h-screen">
@@ -77,11 +107,16 @@ export default function ClubListPage() {
           label="소모임 보기"
           current={tab}
           onChange={setTab}
-          tabs={[
-            { id: 'browse', label: '둘러보기' },
-            { id: 'mine', label: '내 소모임', count: MOCK_MY_CLUBS.length },
-            { id: 'feed', label: '활동 피드' }
-          ]}
+          tabs={
+            // 비로그인은 둘러보기만. 활동 피드는 공개하지 않는다.
+            user
+              ? [
+                  { id: 'browse', label: '둘러보기' },
+                  { id: 'mine', label: '내 소모임', count: myClubs.length },
+                  { id: 'feed', label: '활동 피드' }
+                ]
+              : [{ id: 'browse', label: '둘러보기' }]
+          }
         />
 
         {tab === 'browse' && (
@@ -120,7 +155,11 @@ export default function ClubListPage() {
               </label>
             </div>
 
-            {clubs.length === 0 ? (
+            {error ? (
+              <p className="py-16 text-center text-[15px] text-dusk-ink-800">{error}</p>
+            ) : clubs === null ? (
+              <p className="py-16 text-center text-[15px] text-dusk-ink-800">불러오는 중…</p>
+            ) : clubs.length === 0 ? (
               <p className="py-16 text-center text-[15px] text-dusk-ink-800">
                 조건에 맞는 소모임이 없어요.
               </p>
@@ -143,7 +182,7 @@ export default function ClubListPage() {
                         {club.summary}
                       </p>
                       <div className="flex justify-between border-t border-dusk-line-soft pt-2.5 text-[13px] text-dusk-ink-800">
-                        <span>이끔이 {club.leaderName}</span>
+                        <span>리더 {club.leaderName}</span>
                         <span>
                           {club.memberCount}
                           {club.capacity ? ` / ${club.capacity}` : ''}명
@@ -159,7 +198,12 @@ export default function ClubListPage() {
 
         {tab === 'mine' && (
           <div className="flex flex-col gap-3">
-            {MOCK_MY_CLUBS.map(({ club, isLeader, next, week }) => (
+            {myClubs.length === 0 && (
+              <p className="py-16 text-center text-[15px] text-dusk-ink-800">
+                아직 참여한 소모임이 없어요.
+              </p>
+            )}
+            {myClubs.map(({ club, isLeader, status }) => (
               <Link
                 key={club.id}
                 href={`/club/detail/?id=${club.id}`}
@@ -171,45 +215,19 @@ export default function ClubListPage() {
                     <span className="truncate text-base font-semibold">{club.name}</span>
                     {isLeader && <ClubLeaderTag />}
                   </div>
-                  <div className="mt-1.5 truncate text-[13px] text-dusk-ink-700">{next}</div>
+                  <div className="mt-1.5 truncate text-[13px] text-dusk-ink-700">
+                    {club.summary}
+                  </div>
                 </div>
-                <span className="shrink-0 text-[13px] text-dusk-ink-800 mobile:hidden">{week}</span>
+                {status === 'PENDING' && (
+                  <span className="shrink-0 text-[13px] text-tag-event">승인 대기</span>
+                )}
               </Link>
             ))}
           </div>
         )}
 
-        {tab === 'feed' && (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-5 mobile:grid-cols-1">
-            {MOCK_GLOBAL_FEED.map((item) => (
-              <Link
-                key={`${item.clubId}-${item.date}`}
-                href={`/club/detail/?id=${item.clubId}`}
-                className="flex flex-col overflow-hidden rounded-[20px] border border-dusk-line-soft bg-dusk-raise"
-              >
-                <div className="grid h-[220px] grid-cols-[2fr_1fr] grid-rows-2 gap-0.5 mobile:h-[180px]">
-                  <div className="row-span-2 bg-dusk-slot" />
-                  <div className="bg-dusk-field" />
-                  <div className="flex items-center justify-center bg-dusk-slot text-[13px] text-dusk-ink-400">
-                    +{Math.max(item.photos - 2, 0)}
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2 px-5 pb-[18px] pt-4">
-                  <div className="flex justify-between text-[13px] text-dusk-ink-700">
-                    <span className="text-ember">{item.club}</span>
-                    <span>{item.date}</span>
-                  </div>
-                  <p className="text-[15px] leading-[1.55] text-dusk-ink-200">{item.text}</p>
-                  <div className="flex gap-3.5 text-[13px] text-dusk-ink-800">
-                    <span>참석 {item.attended}</span>
-                    <span>좋아요 {item.likes}</span>
-                    <span>댓글 {item.comments}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        {tab === 'feed' && <ClubGlobalFeed />}
       </div>
 
       {/* 모바일에서는 개설 버튼을 엄지가 닿는 자리에 띄운다. */}

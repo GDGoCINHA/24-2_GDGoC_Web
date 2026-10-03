@@ -1,13 +1,11 @@
 import type { ReactNode } from 'react'
 
-import ApiCodeGuard from '@/components/auth/ApiCodeGuard'
 import DuskShell from '@/components/ui/dusk/DuskShell'
 
-/** 소모임은 부원(MEMBER 이상)만 쓴다. GUEST 는 참여할 수 없다. */
+/**
+ * 목록·상세(소개)는 누구나 본다 — 카카오톡 공유 링크를 받은 사람이 로그인 없이 열 수 있게.
+ * 개설·관리·활동 작성은 각 폴더의 layout 이 MEMBER 이상으로 막는다.
+ */
 export default function ClubLayout({ children }: { children: ReactNode }) {
-  return (
-    <ApiCodeGuard requiredRole="MEMBER" nextOverride="/club/">
-      <DuskShell>{children}</DuskShell>
-    </ApiCodeGuard>
-  )
+  return <DuskShell>{children}</DuskShell>
 }
