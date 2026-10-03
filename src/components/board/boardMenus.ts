@@ -1,5 +1,4 @@
 import type { GdgMenuLink } from '@/components/ui/design-system'
-import { CLUB_ENTRY_VISIBLE } from '@/constant/club'
 
 /**
  * 게시판 페이지들이 공유하는 헤더 메뉴.
@@ -12,5 +11,5 @@ export const BOARD_MENUS: GdgMenuLink[] = [
   { label: '공지사항', url: '/board/notices/' },
   { label: '행사게시판', url: '/board/events/' },
   { label: '자유게시판', url: '/board/free/' },
-  ...(CLUB_ENTRY_VISIBLE ? [{ label: '소모임', url: '/club/' }] : [])
+  { label: '소모임', url: '/club/' }
 ]
