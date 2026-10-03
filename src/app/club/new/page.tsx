@@ -140,14 +140,23 @@ export default function ClubNewPage() {
       setMessage('이름과 한 줄 소개를 입력해 주세요.')
       return
     }
+    // 입력 중에는 친 그대로 둔다 — 칠 때마다 다듬으면 끝에 친 띄어쓰기가 바로 지워진다. 저장할 때만 다듬는다.
+    const payload: ClubSavePayload = {
+      ...form,
+      name: form.name.trim(),
+      summary: form.summary.trim(),
+      description: blankToNull(form.description ?? ''),
+      activityMethod: blankToNull(form.activityMethod ?? ''),
+      kakaoLink: blankToNull(form.kakaoLink ?? '')
+    }
     setSubmitting(true)
     setMessage(null)
     try {
       if (editId) {
-        await replaceClub(apiClient, editId, form)
+        await replaceClub(apiClient, editId, payload)
         router.push(back?.href ?? `/club/detail/?id=${editId}`)
       } else {
-        const id = await createClub(apiClient, form)
+        const id = await createClub(apiClient, payload)
         router.push(`/club/detail/?id=${id}`)
       }
     } catch (err) {
@@ -206,7 +215,7 @@ export default function ClubNewPage() {
             <textarea
               rows={4}
               value={form.description ?? ''}
-              onChange={(e) => set('description', blankToNull(e.target.value))}
+              onChange={(e) => set('description', e.target.value)}
               placeholder="어떤 모임인지 자세히 적어 주세요"
               className={DUSK_TEXTAREA}
             />
@@ -216,7 +225,7 @@ export default function ClubNewPage() {
             <textarea
               rows={3}
               value={form.activityMethod ?? ''}
-              onChange={(e) => set('activityMethod', blankToNull(e.target.value))}
+              onChange={(e) => set('activityMethod', e.target.value)}
               placeholder="예: 매주 화요일 저녁 오프라인, 주제별 문제 4개 풀이 발표"
               className={DUSK_TEXTAREA}
             />
@@ -260,7 +269,7 @@ export default function ClubNewPage() {
             <input
               type="url"
               value={form.kakaoLink ?? ''}
-              onChange={(e) => set('kakaoLink', blankToNull(e.target.value))}
+              onChange={(e) => set('kakaoLink', e.target.value)}
               placeholder="https://open.kakao.com/..."
               className={DUSK_INPUT}
             />

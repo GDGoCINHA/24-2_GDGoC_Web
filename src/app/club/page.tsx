@@ -10,6 +10,7 @@ import {
   ClubCover,
   ClubLeaderTag,
   ClubRecruitTag,
+  ClubStatusTag,
   ClubTabs
 } from '@/components/club/ClubUi'
 import {
@@ -175,7 +176,12 @@ export default function ClubListPage() {
                     <div className="flex flex-col gap-2.5 px-5 pb-5 pt-[18px]">
                       <div className="flex gap-1.5">
                         <ClubCategoryTag category={club.category} />
-                        <ClubRecruitTag recruiting={club.recruitStatus === 'RECRUITING'} />
+                        {/* 운영진에게는 공개 전·숨김 소모임도 보인다. 모집 대신 상태를 단다. */}
+                        {club.status === 'ACTIVE' || club.status === 'ENDED' ? (
+                          <ClubRecruitTag recruiting={club.recruitStatus === 'RECRUITING'} />
+                        ) : (
+                          <ClubStatusTag status={club.status} />
+                        )}
                       </div>
                       <div className="text-lg font-semibold tracking-[-0.02em]">{club.name}</div>
                       <p className="line-clamp-2 min-h-[43px] text-sm leading-[1.55] text-dusk-ink-600">
