@@ -23,6 +23,7 @@ import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { publicClient } from '@/lib/api/publicClient'
 import {
   applyClub,
+  deleteClub,
   fetchClubDetail,
   fetchClubMembers,
   leaveClub,
@@ -98,6 +99,26 @@ export default function ClubDetailPage() {
     void run(() => applyClub(apiClient, clubId, null))
   }
   const leave = (text: string) => run(() => leaveClub(apiClient, clubId), text)
+  // 되돌릴 수 없어 이름을 직접 입력받는다.
+  const remove = async () => {
+    if (!club) return
+    const typed = window.prompt(
+      `삭제하면 되돌릴 수 없어요. 삭제하려면 소모임 이름(${club.name})을 입력해 주세요.`
+    )
+    if (typed === null) return
+    if (typed.trim() !== club.name) {
+      window.alert('이름이 달라 삭제하지 않았어요.')
+      return
+    }
+    setBusy(true)
+    try {
+      await deleteClub(apiClient, clubId)
+      router.push('/club/')
+    } catch (err) {
+      window.alert(readClubError(err))
+      setBusy(false)
+    }
+  }
 
   if (error || !club) {
     return (
@@ -147,9 +168,19 @@ export default function ClubDetailPage() {
               )}
             </div>
             {isLeader && (
-              <Link href={`/club/new/?id=${clubId}`} className={DUSK_GHOST_BUTTON}>
-                정보 수정
-              </Link>
+              <div className="flex gap-2">
+                <Link href={`/club/new/?id=${clubId}`} className={DUSK_GHOST_BUTTON}>
+                  정보 수정
+                </Link>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={remove}
+                  className="min-h-11 px-3 text-[13px] text-signal-err"
+                >
+                  삭제
+                </button>
+              </div>
             )}
           </div>
         )}
