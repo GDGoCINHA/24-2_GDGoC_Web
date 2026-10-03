@@ -23,7 +23,13 @@ import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import { publicClient } from '@/lib/api/publicClient'
 import { fetchClubs, fetchMyClubs, readClubError } from '@/services/club/clubClient'
-import { CLUB_CATEGORY_LABEL, type ClubCategory, type ClubSummary, type MyClub } from '@/types/club'
+import {
+  CLUB_CATEGORY_LABEL,
+  CLUB_STATUS_LABEL,
+  type ClubCategory,
+  type ClubSummary,
+  type MyClub
+} from '@/types/club'
 import { hasAtLeast } from '@/utils/auth/role'
 import { cn } from '@/utils/cn'
 
@@ -224,16 +230,22 @@ export default function ClubListPage() {
                   <div className="mt-1.5 truncate text-[13px] text-dusk-ink-700">
                     {club.summary}
                   </div>
+                  {/* 상태는 이름 옆이 아니라 아래 줄에 둔다 — 모바일에서 이름이 잘리지 않게. */}
+                  {club.status === 'PENDING' || club.status === 'REJECTED' ? (
+                    <div
+                      className={cn(
+                        'mt-1 text-[13px]',
+                        club.status === 'REJECTED' ? 'text-signal-err' : 'text-tag-event'
+                      )}
+                    >
+                      {CLUB_STATUS_LABEL[club.status]}
+                    </div>
+                  ) : (
+                    status === 'PENDING' && (
+                      <div className="mt-1 text-[13px] text-tag-event">참여 승인 대기</div>
+                    )
+                  )}
                 </div>
-                {club.status === 'PENDING' ? (
-                  <span className="shrink-0 text-[13px] text-tag-event">개설 승인 대기</span>
-                ) : club.status === 'REJECTED' ? (
-                  <span className="shrink-0 text-[13px] text-signal-err">개설 반려</span>
-                ) : (
-                  status === 'PENDING' && (
-                    <span className="shrink-0 text-[13px] text-tag-event">승인 대기</span>
-                  )
-                )}
               </Link>
             ))}
           </div>
