@@ -28,7 +28,7 @@ import {
   leaveClub,
   readClubError
 } from '@/services/club/clubClient'
-import type { ClubDetail, ClubMember } from '@/types/club'
+import { CLUB_CATEGORY_LABEL, type ClubDetail, type ClubMember } from '@/types/club'
 import { hasAtLeast } from '@/utils/auth/role'
 import { cn } from '@/utils/cn'
 
@@ -190,7 +190,20 @@ export default function ClubDetailPage() {
                   소모임 관리
                 </Link>
               )}
-              <KakaoShareButton />
+              {/* 기획 2.10: 소모임 이름·분야·모집 정원·신청 링크. */}
+              <KakaoShareButton
+                title={club.name}
+                description={[
+                  CLUB_CATEGORY_LABEL[club.category],
+                  club.recruitStatus === 'RECRUITING' ? '모집 중' : '모집 마감',
+                  club.capacity ? `정원 ${club.capacity}명` : null
+                ]
+                  .filter(Boolean)
+                  .join(' · ')
+                  .concat(club.summary ? ` — ${club.summary}` : '')}
+                imageUrl={club.imageUrl}
+                path={`/club/detail/?id=${clubId}`}
+              />
               {isMember && !isLeader && (
                 <button
                   type="button"
