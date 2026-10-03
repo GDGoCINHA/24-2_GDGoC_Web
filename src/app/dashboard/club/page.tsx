@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { ClubAdminFrame } from '@/components/club/admin/ClubAdminFrame'
@@ -54,6 +55,7 @@ const FILTERS: Filter[] = [
  * 한 기수의 팀은 많아야 수십 개라 전체를 한 번 받아 화면에서 거른다. 필터 칩의 숫자를 함께 보여 주려는 것이다.
  */
 export default function ClubAdminDashboardPage() {
+  const router = useRouter()
   const { apiClient } = useAuthenticatedApi()
   const [terms, setTerms] = useState<ClubTerm[]>([])
   const [termId, setTermId] = useState<number | null>(null)
@@ -264,7 +266,15 @@ export default function ClubAdminDashboardPage() {
               </tr>
             )}
             {rows.map((row) => (
-              <tr key={row.clubId} className={ADMIN_TR}>
+              <tr
+                key={row.clubId}
+                // 행 어디를 눌러도 팀 상세로 간다. 안쪽 링크·버튼은 그대로 제 할 일을 한다.
+                onClick={(e) => {
+                  if ((e.target as HTMLElement).closest('a,button')) return
+                  router.push(`/dashboard/club/team?id=${row.clubId}`)
+                }}
+                className={cn(ADMIN_TR, 'cursor-pointer')}
+              >
                 <td className={ADMIN_TD}>
                   <Link
                     href={`/dashboard/club/team?id=${row.clubId}`}
