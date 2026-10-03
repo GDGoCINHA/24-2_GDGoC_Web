@@ -219,8 +219,14 @@ export default function ClubListPage() {
                     {club.summary}
                   </div>
                 </div>
-                {status === 'PENDING' && (
-                  <span className="shrink-0 text-[13px] text-tag-event">승인 대기</span>
+                {club.status === 'PENDING' ? (
+                  <span className="shrink-0 text-[13px] text-tag-event">개설 승인 대기</span>
+                ) : club.status === 'REJECTED' ? (
+                  <span className="shrink-0 text-[13px] text-signal-err">개설 반려</span>
+                ) : (
+                  status === 'PENDING' && (
+                    <span className="shrink-0 text-[13px] text-tag-event">승인 대기</span>
+                  )
                 )}
               </Link>
             ))}
