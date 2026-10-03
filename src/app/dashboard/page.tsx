@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 
 import AdminHeader from '@/components/admin/dashboard/AdminHeader'
-import { CLUB_ENTRY_VISIBLE } from '@/constant/club'
 import { useAuth } from '@/hooks/useAuth'
 
 type DashboardItem = {
@@ -32,7 +31,7 @@ type VisibleGroup = {
   collapsed: boolean
 }
 
-const ALL_DASHBOARD_GROUPS: DashboardGroup[] = [
+const DASHBOARD_GROUPS: DashboardGroup[] = [
   {
     label: '콘텐츠',
     note: '외부에 보이는 화면을 고칩니다',
@@ -131,10 +130,6 @@ const ALL_DASHBOARD_GROUPS: DashboardGroup[] = [
     ]
   }
 ]
-
-const DASHBOARD_GROUPS = ALL_DASHBOARD_GROUPS.filter(
-  (group) => CLUB_ENTRY_VISIBLE || group.label !== '소모임'
-)
 
 const ROLE_RANK: Record<string, number> = {
   GUEST: 0,
