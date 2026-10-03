@@ -122,6 +122,35 @@ export default function ClubDetailPage() {
       <div className="mx-auto w-full max-w-[1120px] space-y-8 px-[clamp(20px,5vw,44px)] pb-28 pt-11 mobile:pt-6">
         <ClubBackLink href="/club/" label="소모임 목록" />
 
+        {/* 공개 전 소모임은 리더·운영진에게만 열린다. 리더가 다음에 할 일을 알 수 있게 상태를 붙인다. */}
+        {(club.status === 'PENDING' || club.status === 'REJECTED') && (
+          <div className="flex flex-wrap items-center gap-3 rounded-[14px] border border-dusk-line px-5 py-4 text-sm">
+            <div className="min-w-0 flex-[1_1_320px]">
+              {club.status === 'PENDING' ? (
+                <p>
+                  <span className="font-semibold text-tag-event">개설 승인 대기</span> · 운영진이
+                  승인하면 게시판에 올라가고 참여 신청을 받을 수 있어요.
+                </p>
+              ) : (
+                <>
+                  <p>
+                    <span className="font-semibold text-signal-err">개설 반려</span> · 정보를 고쳐
+                    저장하면 다시 승인을 요청해요.
+                  </p>
+                  {club.rejectReason && (
+                    <p className="mt-1.5 text-dusk-ink-700">사유: {club.rejectReason}</p>
+                  )}
+                </>
+              )}
+            </div>
+            {isLeader && (
+              <Link href={`/club/new/?id=${clubId}`} className={DUSK_GHOST_BUTTON}>
+                정보 수정
+              </Link>
+            )}
+          </div>
+        )}
+
         <section className="flex flex-wrap gap-8 mobile:gap-5">
           <ClubCover
             imageUrl={club.imageUrl}

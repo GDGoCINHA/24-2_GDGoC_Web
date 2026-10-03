@@ -6,7 +6,8 @@
 
 export type ClubCategory = 'STUDY' | 'HOBBY' | 'CAREER' | 'ETC'
 export type ClubRecruitStatus = 'RECRUITING' | 'CLOSED'
-export type ClubStatus = 'ACTIVE' | 'ENDED' | 'HIDDEN'
+/** PENDING(개설 승인 대기)·REJECTED(반려)·HIDDEN 은 리더·멤버와 운영진에게만 보인다. */
+export type ClubStatus = 'PENDING' | 'REJECTED' | 'ACTIVE' | 'ENDED' | 'HIDDEN'
 export type ClubMemberStatus = 'PENDING' | 'ACTIVE' | 'REJECTED' | 'CANCELED' | 'LEFT' | 'KICKED'
 export type ClubActivityStatus = 'PENDING' | 'APPROVED' | 'REVISION_REQUESTED'
 export type ClubPostCategory = 'NOTICE' | 'QUESTION' | 'REVIEW' | 'RESOURCE'
@@ -43,6 +44,7 @@ export interface ClubSummary {
   memberCount: number
   capacity: number | null
   recruitStatus: ClubRecruitStatus
+  status: ClubStatus
 }
 
 export interface ClubMembership {
@@ -52,7 +54,8 @@ export interface ClubMembership {
 
 export interface ClubDetail extends ClubSummary {
   leaderId: number
-  status: ClubStatus
+  /** 운영진이 반려할 때 남긴 사유. 승인하면 비운다. */
+  rejectReason: string | null
   termId: number
   termName: string
   description: string | null
@@ -81,30 +84,6 @@ export interface MyClub {
   club: ClubSummary
   status: ClubMemberStatus
   isLeader: boolean
-}
-
-export type ClubOpenRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
-
-export interface ClubOpenRequest {
-  id: number
-  userId: number
-  userName: string
-  name: string
-  category: ClubCategory
-  summary: string
-  goal: string | null
-  status: ClubOpenRequestStatus
-  rejectReason: string | null
-  createdAt: string
-}
-
-export interface ClubLeaderGrant {
-  userId: number
-  name: string
-  major: string | null
-  grantedAt: string
-  /** 지금 이끄는 소모임 이름. */
-  clubNames: string[]
 }
 
 /**

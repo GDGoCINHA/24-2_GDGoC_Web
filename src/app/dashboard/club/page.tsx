@@ -18,7 +18,7 @@ import {
   ADMIN_TR
 } from '@/components/admin/dashboard/adminStyles'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
-import { fetchOpenRequests, readClubError } from '@/services/club/clubClient'
+import { fetchClubs, readClubError } from '@/services/club/clubClient'
 import {
   downloadAdminClubsCsv,
   fetchAdminClubs,
@@ -57,7 +57,7 @@ export default function ClubAdminDashboardPage() {
   const [terms, setTerms] = useState<ClubTerm[]>([])
   const [termId, setTermId] = useState<number | null>(null)
   const [allRows, setAllRows] = useState<AdminClubRow[] | null>(null)
-  const [openRequests, setOpenRequests] = useState<number | null>(null)
+  const [pendingClubs, setPendingClubs] = useState<number | null>(null)
   const [filter, setFilter] = useState<Filter>('ALL')
   const [error, setError] = useState<string | null>(null)
 
@@ -70,9 +70,9 @@ export default function ClubAdminDashboardPage() {
         if (list.length === 0) setAllRows([])
       })
       .catch((err) => setError(readClubError(err, '기수를 불러오지 못했어요.')))
-    fetchOpenRequests(apiClient, 'PENDING')
-      .then((list) => setOpenRequests(list.length))
-      .catch(() => setOpenRequests(null))
+    fetchClubs(apiClient, { status: 'PENDING', size: 1 })
+      .then(({ meta }) => setPendingClubs(meta.totalElements))
+      .catch(() => setPendingClubs(null))
   }, [apiClient])
 
   const load = useCallback(() => {
@@ -130,8 +130,8 @@ export default function ClubAdminDashboardPage() {
     },
     { label: '경고 있는 팀', value: countOf('ANY'), href: null, accent: false },
     {
-      label: '개설 신청 대기',
-      value: openRequests ?? '—',
+      label: '개설 승인 대기',
+      value: pendingClubs ?? '—',
       href: '/dashboard/club/leaders',
       accent: false
     }
@@ -257,7 +257,7 @@ export default function ClubAdminDashboardPage() {
               <tr>
                 <td colSpan={8} className={ADMIN_EMPTY_CELL}>
                   {terms.length === 0
-                    ? '기수가 없어요. 리더·기수 화면에서 먼저 만들어 주세요.'
+                    ? '기수가 없어요. 개설 승인·기수 화면에서 먼저 만들어 주세요.'
                     : '해당하는 소모임이 없어요.'}
                 </td>
               </tr>
