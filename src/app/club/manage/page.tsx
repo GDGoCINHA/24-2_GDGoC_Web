@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { ClubFixRequestSection } from '@/components/club/ClubFixRequestSection'
+import { FROM_MANAGE_PARAM } from '@/components/club/clubNav'
 import { ClubBackLink, ClubLeaderTag } from '@/components/club/ClubUi'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
@@ -96,15 +97,19 @@ export default function ClubManagePage() {
   const overCapacity =
     club.capacity !== null && club.memberCount + applicants.length > club.capacity
 
-  const scheduleEditHref = `/club/schedule/edit/?clubId=${clubId}`
+  const scheduleEditHref = `/club/schedule/edit/?clubId=${clubId}&${FROM_MANAGE_PARAM}`
   const shortcuts: { label: string; href: string; primary: boolean; hint?: string }[] = [
-    { label: '활동 기록 작성', href: `/club/activity/edit/?clubId=${clubId}`, primary: true },
+    {
+      label: '활동 기록 작성',
+      href: `/club/activity/edit/?clubId=${clubId}&${FROM_MANAGE_PARAM}`,
+      primary: true
+    },
     { label: '일정 등록', href: scheduleEditHref, primary: false },
     // QR 은 어느 일정의 출석인지 알아야 한다. 다가오는 일정이 없으면 일정부터 만들게 보낸다.
     nextScheduleId
       ? {
           label: '출석 QR 띄우기',
-          href: `/club/schedule/qr/?clubId=${clubId}&id=${nextScheduleId}`,
+          href: `/club/schedule/qr/?clubId=${clubId}&id=${nextScheduleId}&${FROM_MANAGE_PARAM}`,
           primary: false
         }
       : {
@@ -113,7 +118,11 @@ export default function ClubManagePage() {
           primary: false,
           hint: nextScheduleId === null ? '먼저 일정을 등록해 주세요' : undefined
         },
-    { label: '정보·기간 수정', href: `/club/new/?id=${clubId}`, primary: false }
+    {
+      label: '정보·기간 수정',
+      href: `/club/new/?id=${clubId}&${FROM_MANAGE_PARAM}`,
+      primary: false
+    }
   ]
 
   return (

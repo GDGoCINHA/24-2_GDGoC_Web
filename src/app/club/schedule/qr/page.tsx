@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 import { formatScheduleTime } from '@/components/club/clubDate'
+import { clubBackTarget, isFromManage } from '@/components/club/clubNav'
 import { ClubBackLink } from '@/components/club/ClubUi'
 import { DUSK_GHOST_BUTTON } from '@/components/ui/dusk/DuskForm'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
@@ -20,6 +21,7 @@ export default function ClubScheduleQrPage() {
   const searchParams = useSearchParams()
   const clubId = Number(searchParams.get('clubId') ?? 0)
   const scheduleId = Number(searchParams.get('id') ?? 0)
+  const back = clubBackTarget(clubId, isFromManage(searchParams))
   const { apiClient } = useAuthenticatedApi()
 
   const [title, setTitle] = useState('')
@@ -76,7 +78,7 @@ export default function ClubScheduleQrPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-5 px-6 py-10">
       <div className="self-start">
-        <ClubBackLink href={`/club/detail/?id=${clubId}`} label="소모임으로" />
+        <ClubBackLink href={back.href} label={back.label} />
       </div>
       <div className="flex flex-col items-center gap-1.5 text-center">
         <p className="text-[13px] tracking-[0.14em] text-dusk-ink-800">출석 체크</p>

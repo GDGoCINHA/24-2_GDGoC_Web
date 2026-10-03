@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 
+import { clubBackTarget, isFromManage } from '@/components/club/clubNav'
 import { ClubBackLink } from '@/components/club/ClubUi'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
@@ -203,6 +204,8 @@ export default function ClubNewPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const editId = Number(searchParams.get('id') ?? 0) || null
+  // 수정 화면을 관리 화면에서 열었으면 취소·저장 뒤 관리 화면으로 돌아간다.
+  const back = editId ? clubBackTarget(editId, isFromManage(searchParams)) : null
   const { apiClient } = useAuthenticatedApi()
 
   const [hasGrant, setHasGrant] = useState<boolean | null>(editId ? true : null)
@@ -280,7 +283,7 @@ export default function ClubNewPage() {
     try {
       if (editId) {
         await replaceClub(apiClient, editId, form)
-        router.push(`/club/detail/?id=${editId}`)
+        router.push(back?.href ?? `/club/detail/?id=${editId}`)
       } else {
         const id = await createClub(apiClient, form)
         router.push(`/club/detail/?id=${id}`)
@@ -302,10 +305,7 @@ export default function ClubNewPage() {
         {hasGrant && (
           <>
             <div>
-              <ClubBackLink
-                href={editId ? `/club/detail/?id=${editId}` : '/club/'}
-                label={editId ? '소모임으로' : '목록으로'}
-              />
+              <ClubBackLink href={back?.href ?? '/club/'} label={back?.label ?? '목록으로'} />
               <h1 className="mt-6 text-[clamp(25px,3vw,36px)] font-semibold leading-[1.3] tracking-[-0.03em]">
                 {editId ? '소모임 정보 수정' : '소모임 개설'}
               </h1>
@@ -433,10 +433,7 @@ export default function ClubNewPage() {
               {message && <p className="text-sm text-signal-err">{message}</p>}
 
               <div className="sticky bottom-0 flex gap-2.5 bg-dusk-base pb-3 pt-2">
-                <a
-                  href={editId ? `/club/detail/?id=${editId}` : '/club/'}
-                  className={DUSK_CANCEL_BUTTON}
-                >
+                <a href={back?.href ?? '/club/'} className={DUSK_CANCEL_BUTTON}>
                   취소
                 </a>
                 <button
