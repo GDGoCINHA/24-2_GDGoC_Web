@@ -113,7 +113,10 @@ export default function ClubDetailPage() {
   const isPending = membership?.status === 'PENDING'
   const isLeader = Boolean(membership?.isLeader)
   // 비로그인에게도 버튼을 보여 주고, 누르면 로그인으로 보낸다. GUEST 는 참여할 수 없어 숨긴다.
-  const canApply = (!user || canJoin) && !membership && club.recruitStatus === 'RECRUITING'
+  // 승인 전(PENDING·REJECTED)·숨김 소모임은 운영진도 볼 수 있지만 신청·공유·모집 표시는 하지 않는다.
+  const isPublic = club.status === 'ACTIVE' || club.status === 'ENDED'
+  const canApply =
+    (!user || canJoin) && !membership && isPublic && club.recruitStatus === 'RECRUITING'
   const headcount = `${club.memberCount}${club.capacity ? ` / ${club.capacity}` : ''}명`
 
   return (
@@ -159,7 +162,7 @@ export default function ClubDetailPage() {
           <div className="flex min-w-0 flex-[1_1_380px] flex-col gap-3.5">
             <div className="flex gap-1.5">
               <ClubCategoryTag category={club.category} />
-              <ClubRecruitTag recruiting={club.recruitStatus === 'RECRUITING'} />
+              {isPublic && <ClubRecruitTag recruiting={club.recruitStatus === 'RECRUITING'} />}
             </div>
             <h1 className="text-[clamp(28px,3.2vw,40px)] font-semibold leading-[1.24] tracking-[-0.03em]">
               {club.name}
@@ -219,20 +222,22 @@ export default function ClubDetailPage() {
                   소모임 관리
                 </Link>
               )}
-              {/* 기획 2.10: 소모임 이름·분야·모집 정원·신청 링크. */}
-              <KakaoShareButton
-                title={club.name}
-                description={[
-                  CLUB_CATEGORY_LABEL[club.category],
-                  club.recruitStatus === 'RECRUITING' ? '모집 중' : '모집 마감',
-                  club.capacity ? `정원 ${club.capacity}명` : null
-                ]
-                  .filter(Boolean)
-                  .join(' · ')
-                  .concat(club.summary ? ` — ${club.summary}` : '')}
-                imageUrl={club.imageUrl}
-                path={`/club/detail/?id=${clubId}`}
-              />
+              {/* 기획 2.10: 소모임 이름·분야·모집 정원·신청 링크. 공개 전에는 받는 사람이 열 수 없어 숨긴다. */}
+              {isPublic && (
+                <KakaoShareButton
+                  title={club.name}
+                  description={[
+                    CLUB_CATEGORY_LABEL[club.category],
+                    club.recruitStatus === 'RECRUITING' ? '모집 중' : '모집 마감',
+                    club.capacity ? `정원 ${club.capacity}명` : null
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')
+                    .concat(club.summary ? ` — ${club.summary}` : '')}
+                  imageUrl={club.imageUrl}
+                  path={`/club/detail/?id=${clubId}`}
+                />
+              )}
               {isMember && !isLeader && (
                 <button
                   type="button"

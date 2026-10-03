@@ -55,6 +55,27 @@ export function ClubRecruitTag({ recruiting }: { recruiting: boolean }) {
   )
 }
 
+const HIDDEN_STATUS_LABEL: Record<'PENDING' | 'REJECTED' | 'HIDDEN', string> = {
+  PENDING: '개설 승인 대기',
+  REJECTED: '개설 반려',
+  HIDDEN: '숨김'
+}
+
+/** 운영진에게만 보이는 공개 전·숨김 소모임 표시. 공개(ACTIVE·ENDED)는 모집 태그를 쓴다. */
+export function ClubStatusTag({ status }: { status: 'PENDING' | 'REJECTED' | 'HIDDEN' }) {
+  return (
+    <span
+      className={cn(
+        TAG,
+        status === 'REJECTED' ? 'text-signal-err' : 'text-tag-event',
+        'border border-[rgba(240,234,228,0.2)]'
+      )}
+    >
+      {HIDDEN_STATUS_LABEL[status]}
+    </span>
+  )
+}
+
 const ACTIVITY_STATUS_CLASS: Record<ClubActivityStatus, string> = {
   PENDING: 'bg-[rgba(224,162,78,0.18)] text-tag-event',
   APPROVED: 'bg-[rgba(134,192,143,0.20)] text-signal-ok',
