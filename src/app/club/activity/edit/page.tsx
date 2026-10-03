@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { type FormEvent, useEffect, useMemo, useState } from 'react'
 
 import { formatScheduleTime, kstDateOf } from '@/components/club/clubDate'
+import { clubBackTarget, isFromManage } from '@/components/club/clubNav'
 import { ClubBackLink } from '@/components/club/ClubUi'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
@@ -231,9 +232,11 @@ export default function ClubActivityEditPage() {
     }
   }
 
-  const backHref = activityId
-    ? `/club/activity/?clubId=${clubId}&id=${activityId}`
-    : `/club/detail/?id=${clubId}`
+  // 새로 쓸 때는 들어온 곳(상세 또는 관리 화면)으로, 고칠 때는 그 기록으로 돌아간다.
+  const back = activityId
+    ? { href: `/club/activity/?clubId=${clubId}&id=${activityId}`, label: '활동 기록으로' }
+    : clubBackTarget(clubId, isFromManage(searchParams))
+  const backHref = back.href
   const submitLabel = submitting
     ? '제출하는 중…'
     : revisionReason
@@ -247,7 +250,7 @@ export default function ClubActivityEditPage() {
       <ClubSiteHeader />
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-7 px-[clamp(20px,5vw,44px)] pb-[100px] pt-11 mobile:pt-6">
         <div>
-          <ClubBackLink href={backHref} label={activityId ? '활동 기록으로' : '소모임으로'} />
+          <ClubBackLink href={backHref} label={back.label} />
           <h1 className="mt-6 text-[clamp(25px,3vw,36px)] font-semibold leading-[1.3] tracking-[-0.03em]">
             {isEdit ? '활동 기록 수정' : '활동 기록 작성'}
           </h1>

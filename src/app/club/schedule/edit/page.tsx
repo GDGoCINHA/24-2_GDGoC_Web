@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { type FormEvent, useEffect, useState } from 'react'
 
 import { fromKstInputValue, toKstInputValue } from '@/components/club/clubDate'
+import { clubBackTarget, isFromManage } from '@/components/club/clubNav'
 import { ClubBackLink } from '@/components/club/ClubUi'
 import { ClubSiteHeader } from '@/components/club/ClubSiteHeader'
 import {
@@ -70,7 +71,9 @@ export default function ClubScheduleEditPage() {
       .finally(() => setLoaded(true))
   }, [apiClient, clubId, scheduleId])
 
-  const backHref = `/club/detail/?id=${clubId}`
+  // 관리 화면에서 왔으면 저장·삭제·취소 뒤에도 관리 화면으로 돌아간다.
+  const back = clubBackTarget(clubId, isFromManage(searchParams))
+  const backHref = back.href
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()
@@ -118,7 +121,7 @@ export default function ClubScheduleEditPage() {
       <ClubSiteHeader />
       <div className="mx-auto flex w-full max-w-[720px] flex-col gap-7 px-[clamp(20px,5vw,44px)] pb-[100px] pt-11 mobile:pt-6">
         <div>
-          <ClubBackLink href={backHref} label="소모임으로" />
+          <ClubBackLink href={backHref} label={back.label} />
           <h1 className="mt-6 text-[clamp(25px,3vw,36px)] font-semibold leading-[1.3] tracking-[-0.03em]">
             {isEdit ? '일정 수정' : '일정 등록'}
           </h1>
