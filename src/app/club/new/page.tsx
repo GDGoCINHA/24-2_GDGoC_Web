@@ -300,7 +300,7 @@ export default function ClubNewPage() {
 
           {message && <p className="text-sm text-signal-err">{message}</p>}
 
-          <div className="sticky bottom-0 flex gap-2.5 bg-dusk-base pb-3 pt-2">
+          <div className="sticky bottom-0 flex gap-2.5 bg-gradient-to-t from-[#2C2028] from-70% to-transparent pb-[calc(12px+env(safe-area-inset-bottom))] pt-7">
             <a href={back?.href ?? '/club/'} className={DUSK_CANCEL_BUTTON}>
               취소
             </a>

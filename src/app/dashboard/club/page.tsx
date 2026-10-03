@@ -28,6 +28,7 @@ import {
 import {
   CLUB_COMPLETION_STATUS_LABEL,
   CLUB_GOAL_STATUS_LABEL,
+  CLUB_STATUS_LABEL,
   CLUB_WARNING_LABEL,
   type AdminClubRow,
   type ClubTerm,
@@ -273,7 +274,7 @@ export default function ClubAdminDashboardPage() {
                   </Link>
                   <div className="mt-0.5 text-[12px] text-admin-ink-soft">
                     리더 {row.leaderName}
-                    {row.status !== 'ACTIVE' && ` · ${row.status === 'ENDED' ? '종료' : '숨김'}`}
+                    {row.status !== 'ACTIVE' && ` · ${CLUB_STATUS_LABEL[row.status]}`}
                   </div>
                 </td>
                 <td className={ADMIN_TD_MUTED}>

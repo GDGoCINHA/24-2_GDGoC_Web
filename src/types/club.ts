@@ -21,6 +21,14 @@ export const CLUB_CATEGORY_LABEL: Record<ClubCategory, string> = {
   ETC: '기타'
 }
 
+export const CLUB_STATUS_LABEL: Record<ClubStatus, string> = {
+  PENDING: '개설 승인 대기',
+  REJECTED: '개설 반려',
+  ACTIVE: '운영 중',
+  ENDED: '종료',
+  HIDDEN: '숨김'
+}
+
 export const CLUB_ACTIVITY_STATUS_LABEL: Record<ClubActivityStatus, string> = {
   PENDING: '확인 중',
   APPROVED: '인증 완료',
