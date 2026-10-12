@@ -124,8 +124,9 @@ export default function ClubMemberAddPage() {
     )
   }
 
-  // 정원은 막지 않는다. 넘는다는 사실만 알린다.
-  const overCapacity = club.capacity != null && members.length + picked.length > club.capacity
+  // 정원은 막지 않는다. 넘는다는 사실만 알린다. 고른 사람이 없으면 「넣으면 넘는다」 는 말이 안 맞아 띄우지 않는다.
+  const overCapacity =
+    picked.length > 0 && club.capacity != null && members.length + picked.length > club.capacity
 
   return (
     <main className="min-h-screen">
@@ -248,10 +249,10 @@ export default function ClubMemberAddPage() {
           </p>
         </section>
 
-        {error && <p className="text-sm text-signal-err">{error}</p>}
-        {notice && <p className="text-sm text-signal-ok">{notice}</p>}
-
-        <div className="sticky bottom-0 flex gap-2.5 bg-gradient-to-t from-[#2C2028] from-70% to-transparent pb-[calc(12px+env(safe-area-inset-bottom))] pt-7">
+        {/* 결과 안내는 버튼 바로 위에 둔다 — 멤버가 많으면 본문 끝이 화면 밖이라 넣었는지 모른다. */}
+        <div className="sticky bottom-0 flex flex-col gap-2.5 bg-gradient-to-t from-[#2C2028] from-70% to-transparent pb-[calc(12px+env(safe-area-inset-bottom))] pt-7">
+          {error && <p className="text-sm text-signal-err">{error}</p>}
+          {notice && <p className="text-sm text-signal-ok">{notice}</p>}
           <button
             type="button"
             disabled={busy || picked.length === 0}
