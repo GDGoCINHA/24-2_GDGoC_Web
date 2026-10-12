@@ -243,7 +243,7 @@ export default function EventApplicantsPage() {
                 ) : (
                   applicants.map((applicant) => (
                     <tr key={applicant.applicationId} className={ADMIN_TR}>
-                      <td className={ADMIN_TD}>
+                      <td className={`${ADMIN_TD} whitespace-nowrap`}>
                         {applicant.name}
                         {applicant.userId == null && (
                           <span className="ml-1.5 text-[12px] text-admin-ink-dim">(비로그인)</span>
@@ -252,9 +252,15 @@ export default function EventApplicantsPage() {
                           <span className="ml-1.5 text-[12px] text-admin-ink-dim">(취소)</span>
                         )}
                       </td>
-                      <td className={ADMIN_TD_MUTED}>{applicant.studentId}</td>
-                      <td className={ADMIN_TD_MUTED}>{formatMajorLabel(applicant.major)}</td>
-                      <td className={ADMIN_TD_MUTED}>{formatDate(applicant.appliedAt)}</td>
+                      <td className={`${ADMIN_TD_MUTED} whitespace-nowrap`}>
+                        {applicant.studentId}
+                      </td>
+                      <td className={`${ADMIN_TD_MUTED} whitespace-nowrap`}>
+                        {formatMajorLabel(applicant.major)}
+                      </td>
+                      <td className={`${ADMIN_TD_MUTED} whitespace-nowrap`}>
+                        {formatDate(applicant.appliedAt)}
+                      </td>
                       <td className={ADMIN_TD}>
                         <div className="flex items-center gap-1.5">
                           <select

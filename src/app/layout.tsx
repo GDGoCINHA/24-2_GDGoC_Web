@@ -75,7 +75,7 @@ export const viewport = {
   initialScale: 1.0,
   minimumScale: 1.0,
   userScalable: true,
-  themeColor: '#000000',
+  themeColor: '#1b1622',
   colorScheme: 'light dark'
 }
 
@@ -137,12 +137,12 @@ export const metadata = {
   },
   icons: {
     icon: [{ url: '/favicon.ico', sizes: 'any', type: 'image/x-icon' }],
-    apple: [{ url: '/icons/gdgocIcon/180x180.png', sizes: '180x180', type: 'image/png' }],
+    apple: [{ url: '/icons/app/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
     shortcut: ['/favicon.ico']
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black',
     title: 'GDGoC INHA'
   },
   openGraph: {

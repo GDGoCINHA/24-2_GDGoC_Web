@@ -50,7 +50,7 @@ const STATE_CLASS: Record<ClubWeekState, string> = {
 const CARD =
   'flex flex-col gap-3 rounded-[20px] border border-admin-line-soft bg-admin-card p-[22px] shadow-admin'
 const FIELD =
-  'resize-y rounded-xl border border-admin-line bg-admin-base px-4 py-3 text-[14px] text-admin-ink outline-none focus:border-admin-accent'
+  'resize-y rounded-xl border border-admin-line bg-admin-base px-4 py-3 text-[14px] mobile:text-base text-admin-ink outline-none focus:border-admin-accent'
 
 /**
  * 팀 상세·완주 확정 (C 담당). 계산상 미충족이어도 확정할 수 있다 — 확정 전에 한 번 더 묻는다.

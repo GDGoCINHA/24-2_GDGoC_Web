@@ -9,23 +9,28 @@
 export const ADMIN_PILL =
   'flex items-center gap-2.5 rounded-full border border-admin-line bg-admin-card px-4 py-2.5'
 
-/** 알약 안에 들어가는 네이티브 셀렉트 */
+/**
+ * 알약 안에 들어가는 네이티브 셀렉트.
+ *
+ * 입력 컨트롤은 모바일에서 16px 이상이어야 한다 — iOS Safari 는 그보다 작은 칸에 포커스하면
+ * 화면을 확대하고 되돌리지 않는다.
+ */
 export const ADMIN_PILL_SELECT =
-  'cursor-pointer border-0 bg-transparent text-[15px] text-admin-ink outline-none'
+  'cursor-pointer border-0 bg-transparent text-[15px] mobile:text-base text-admin-ink outline-none'
 
 /** 셀렉트 옵션 — 브라우저가 배경을 상속하지 않아 직접 준다 */
 export const ADMIN_OPTION = 'bg-admin-card text-admin-ink'
 
 /** 표 안에서 쓰는 셀렉트 */
 export const ADMIN_CELL_SELECT =
-  'w-full min-w-[96px] cursor-pointer rounded-[10px] border border-admin-line bg-admin-card px-2.5 py-2 text-[14px] text-admin-ink outline-none transition-colors duration-200 hover:border-admin-accent disabled:cursor-not-allowed disabled:opacity-40'
+  'w-full min-w-[96px] cursor-pointer rounded-[10px] border border-admin-line bg-admin-card px-2.5 py-2 text-[14px] mobile:text-base text-admin-ink outline-none transition-colors duration-200 hover:border-admin-accent disabled:cursor-not-allowed disabled:opacity-40'
 
 /** 검색 필드를 감싸는 라벨 */
 export const ADMIN_SEARCH_FIELD =
   'flex min-w-0 flex-1 basis-[300px] items-center gap-2.5 rounded-full border border-admin-line bg-admin-card px-4 py-2.5 shadow-admin transition duration-[250ms] focus-within:border-admin-accent focus-within:shadow-admin-ring'
 
 export const ADMIN_SEARCH_INPUT =
-  'min-w-0 flex-1 border-0 bg-transparent text-[15px] text-admin-ink outline-none'
+  'min-w-0 flex-1 border-0 bg-transparent text-[15px] mobile:text-base text-admin-ink outline-none'
 
 /** 강조 버튼 (저장 등) */
 export const ADMIN_ACCENT_BUTTON =
@@ -39,9 +44,13 @@ export const ADMIN_ACCENT_BUTTON_SM =
 export const ADMIN_GHOST_BUTTON =
   'whitespace-nowrap rounded-full border border-admin-line px-[18px] py-2 text-[13px] text-admin-ink-muted transition-colors duration-200 hover:border-admin-accent hover:text-admin-ink disabled:cursor-not-allowed disabled:opacity-40'
 
-/** 표를 감싸는 카드 — `overflow-hidden` 이 라운드를 지킨다 */
+/**
+ * 표를 감싸는 카드. `overflow-x-auto` 가 라운드를 지키면서 좁은 화면에서 가로 스크롤을 준다 —
+ * `overflow-hidden` 이던 때는 모바일에서 오른쪽 열이 잘린 채 밀어도 움직이지 않았다.
+ * 안의 표는 `min-w-max` 등으로 폭을 지켜야 열이 찌그러지지 않는다.
+ */
 export const ADMIN_TABLE_CARD =
-  'overflow-hidden rounded-[20px] border border-admin-line-soft bg-admin-card shadow-admin'
+  'overflow-x-auto rounded-[20px] border border-admin-line-soft bg-admin-card shadow-admin'
 
 /**
  * 표 헤더 셀. `top-0` 이어야 한다 — 68px 을 주면 첫 행과 겹친다.

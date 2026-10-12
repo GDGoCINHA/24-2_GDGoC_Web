@@ -3,7 +3,7 @@
 import Image from 'next/image'
 
 import { useAuth } from '@/hooks/useAuth'
-import { hasAtLeast } from '@/utils/auth/role'
+import { canOpenDashboard, hasAtLeast } from '@/utils/auth/role'
 
 import gdgocPcLogo from '@public/icons/gdgocIcon/pc.svg'
 
@@ -20,15 +20,16 @@ const ANCHORS = [
   { label: 'FAQ', id: 'faq' }
 ]
 
+// 세로 여백은 누르는 면적용이다 — 글자 높이(20px)만으로는 손가락으로 잘 안 눌린다. 헤더 높이는 고정이라 모양은 그대로다.
 const LINK_CLASS =
-  'whitespace-nowrap text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100'
+  'whitespace-nowrap py-2.5 text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100'
 
 /**
  * 운영진만 보는 진입 버튼. 지원하기(ember)와 겹치지 않게 테두리만 준다 —
  * 방문자에게 가장 중요한 버튼이 두 개로 보이면 안 된다.
  */
 const ADMIN_LINK_CLASS =
-  'whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 py-1.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
+  'inline-flex h-10 items-center whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
 
 export function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -39,9 +40,10 @@ export default function LandingHeader() {
   const isLoggedIn = Boolean(user)
   // 콘텐츠 관리 화면과 같은 기준이다 (dashboard/landing/layout.tsx).
   const canEditContent = hasAtLeast(user?.userRole, 'LEAD')
+  const canOpenAdmin = canOpenDashboard(user?.userRole)
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex h-[68px] items-center justify-between gap-6 border-b border-b-[rgba(240,234,228,0.07)] bg-[rgba(27,22,34,0.62)] px-[clamp(20px,4vw,44px)] backdrop-blur-[18px]">
+    <header className="fixed inset-x-0 top-0 z-50 flex h-[68px] items-center justify-between gap-3 border-b border-b-[rgba(240,234,228,0.07)] bg-[rgba(27,22,34,0.62)] px-[clamp(20px,4vw,44px)] backdrop-blur-[18px] pc:gap-6">
       <a
         href="#top"
         onClick={(event) => {
@@ -66,10 +68,24 @@ export default function LandingHeader() {
         </span>
       </a>
 
-      <nav className="flex items-center gap-[clamp(14px,2.4vw,34px)]">
+      {/*
+        모바일 여백은 운영진 기준으로 맞췄다. CORE 이상은 「운영」까지 다섯 개라 360px 에서
+        PC 와 같은 간격이면 지원하기가 25px 잘린다.
+      */}
+      <nav className="flex items-center gap-[clamp(10px,2.4vw,34px)]">
+        {/*
+          좁은 화면에서는 숨긴다. 넣으면 nav 가 헤더보다 길어져 지원하기가 잘린다(360px 기준 62px 초과).
+          운영진은 대시보드 허브의 온보딩 관리로 같은 화면에 갈 수 있다.
+        */}
         {canEditContent && (
-          <a href="/dashboard/landing/" className={ADMIN_LINK_CLASS}>
+          <a href="/dashboard/landing/" className={`${ADMIN_LINK_CLASS} mobile:hidden`}>
             콘텐츠 관리
+          </a>
+        )}
+        {/* 홈 화면 앱을 열면 여기가 첫 화면이라 운영진 입구가 있어야 한다. 짧아서 모바일에도 들어간다. */}
+        {canOpenAdmin && (
+          <a href="/dashboard/" className={ADMIN_LINK_CLASS}>
+            운영
           </a>
         )}
         {ANCHORS.map((item) => (
@@ -98,7 +114,7 @@ export default function LandingHeader() {
         </a>
         <a
           href="/recruit/"
-          className="whitespace-nowrap rounded-full bg-ember px-5 py-2.5 text-[15px] font-medium text-ember-ink transition-colors hover:bg-dusk-ink-100 hover:text-dusk-base"
+          className="whitespace-nowrap rounded-full bg-ember px-4 py-2.5 pc:px-5 text-[15px] font-medium text-ember-ink transition-colors hover:bg-dusk-ink-100 hover:text-dusk-base"
         >
           지원하기
         </a>

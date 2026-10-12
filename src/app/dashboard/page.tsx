@@ -252,7 +252,7 @@ export default function DashboardIndexPage() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="페이지 검색  ( / 키로 이동 )"
-              className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+              className="min-w-0 flex-1 border-0 bg-transparent text-[15px] mobile:text-base text-admin-ink outline-none"
             />
           </label>
 
@@ -262,7 +262,7 @@ export default function DashboardIndexPage() {
               <select
                 value={effectiveRole}
                 onChange={(event) => setViewRole(event.target.value)}
-                className="cursor-pointer border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+                className="cursor-pointer border-0 bg-transparent text-[15px] mobile:text-base text-admin-ink outline-none"
               >
                 {roleOptions.map((role) => (
                   <option key={role} value={role} className="bg-admin-card text-admin-ink">

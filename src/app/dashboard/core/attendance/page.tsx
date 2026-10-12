@@ -526,7 +526,7 @@ export default function DashboardCoreAttendancePage() {
                 aria-label="추가할 일정 날짜"
                 value={newDate}
                 onChange={(e) => setNewDate(e.target.value)}
-                className="rounded-full border border-admin-line bg-admin-card px-3.5 py-1.5 text-[13px] text-admin-ink outline-none transition-colors duration-200 focus:border-admin-accent"
+                className="rounded-full border border-admin-line bg-admin-card px-3.5 py-1.5 text-[13px] mobile:text-base text-admin-ink outline-none transition-colors duration-200 focus:border-admin-accent"
               />
               <button
                 type="button"
@@ -600,7 +600,7 @@ export default function DashboardCoreAttendancePage() {
           </div>
         </div>
 
-        <div data-admin-reveal>
+        <div data-admin-reveal className="min-w-0">
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <div>
               <p className={ADMIN_CAPTION}>Members</p>
@@ -621,7 +621,7 @@ export default function DashboardCoreAttendancePage() {
           </div>
 
           <div className={`${ADMIN_TABLE_CARD} mt-3`}>
-            <table className="w-full border-collapse">
+            <table className="w-full min-w-max border-collapse">
               <thead>
                 <tr>
                   {['이름', '팀', '상태', '최종 수정'].map((label) => (

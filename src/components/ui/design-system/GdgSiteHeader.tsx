@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { User } from 'lucide-react'
 
 import DuskBrand from '@/components/ui/common/DuskBrand'
+import { useAuth } from '@/hooks/useAuth'
+import { canOpenDashboard } from '@/utils/auth/role'
 import { cn } from '@/utils/cn'
 import type { GdgMenuLink } from './GdgSiteNav.types'
 
@@ -34,9 +35,21 @@ function useIsActive() {
   const pathname = usePathname()
   return (url: string) => {
     const base = url.endsWith('/') ? url.slice(0, -1) : url
+    // '/' 는 접두사로 비교하면 모든 경로에서 켜진다
+    if (!base) return pathname === '/'
     return pathname === base || pathname.startsWith(`${base}/`)
   }
 }
+
+const HOME_TAB: GdgMenuLink = { label: '홈', url: '/' }
+const PROFILE_URL = '/profile/'
+
+/**
+ * 운영진만 보는 대시보드 입구. 랜딩 헤더의 「콘텐츠 관리」와 같은 테두리 버튼이다 —
+ * 일반 메뉴와 섞여 보이면 안 되고, 강조색(ember)은 지원하기 같은 주 행동 몫이다.
+ */
+const ADMIN_ENTRY_CLASS =
+  'inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
 
 export function GdgSiteHeader({
   menus,
@@ -45,135 +58,120 @@ export function GdgSiteHeader({
   actionMenus,
   className
 }: GdgSiteHeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const isActive = useIsActive()
+  const pathname = usePathname()
+  const { user } = useAuth()
   const resolvedMenus = menus ?? DEFAULT_MENUS
   const resolvedActionMenus = actionMenus ?? (actionMenu ? [actionMenu] : [])
+  // 화면에서 숨기는 것일 뿐 막는 것은 대시보드 가드와 서버다
+  const showAdminEntry = canOpenDashboard(user?.userRole)
+
+  // 모바일은 서랍 없이 탭 줄에 다 꺼내 둔다. 내 정보는 오른쪽 위 아이콘이 맡으므로 탭에서 뺀다.
+  const mobileTabs = [HOME_TAB, ...resolvedMenus.filter((menu) => menu.url !== PROFILE_URL)]
 
   return (
-    <>
-      <header
-        className={cn(
-          'sticky top-0 z-40 w-full border-b border-b-[rgba(240,234,228,0.08)] bg-[rgba(27,22,34,0.72)] backdrop-blur-[18px] mobile:h-16 pc:h-[68px]',
-          className
-        )}
-      >
-        <div className="hidden h-full pc:block">
-          <div className="flex h-full items-center justify-between gap-6 px-[clamp(20px,4vw,44px)]">
-            <DuskBrand href={brandHref} />
+    <header
+      className={cn(
+        'sticky top-0 z-40 w-full border-b border-b-[rgba(240,234,228,0.08)] bg-[rgba(27,22,34,0.72)] backdrop-blur-[18px] pc:h-[68px]',
+        className
+      )}
+    >
+      <div className="hidden h-full pc:block">
+        <div className="flex h-full items-center justify-between gap-6 px-[clamp(20px,4vw,44px)]">
+          <DuskBrand href={brandHref} />
 
-            <nav className="flex items-center gap-[clamp(12px,2vw,28px)]">
-              {resolvedMenus.map((menu) => {
-                const active = isActive(menu.url)
-                return (
-                  <Link
-                    key={`${menu.label}-${menu.url}`}
-                    href={menu.url}
-                    aria-current={active ? 'page' : undefined}
-                    className={cn(
-                      'whitespace-nowrap border-b-2 pb-[3px] text-[15px] transition-colors',
-                      active
-                        ? 'border-b-ember text-dusk-ink-100'
-                        : 'border-b-transparent text-dusk-ink-500 hover:text-dusk-ink-100'
-                    )}
-                  >
-                    {menu.label}
-                  </Link>
-                )
-              })}
-              {resolvedActionMenus.map((menu) => (
+          <nav className="flex items-center gap-[clamp(12px,2vw,28px)]">
+            {resolvedMenus.map((menu) => {
+              const active = isActive(menu.url)
+              return (
                 <Link
-                  key={`action-${menu.label}-${menu.url}`}
+                  key={`${menu.label}-${menu.url}`}
                   href={menu.url}
-                  className="whitespace-nowrap text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100"
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'whitespace-nowrap border-b-2 pb-[3px] text-[15px] transition-colors',
+                    active
+                      ? 'border-b-ember text-dusk-ink-100'
+                      : 'border-b-transparent text-dusk-ink-500 hover:text-dusk-ink-100'
+                  )}
                 >
                   {menu.label}
                 </Link>
-              ))}
-            </nav>
-          </div>
-        </div>
-
-        <div className="flex h-full items-center justify-between px-5 pc:hidden">
-          <DuskBrand href={brandHref} />
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            className="inline-flex size-10 items-center justify-center rounded-full border border-dusk-line text-dusk-ink-200"
-            aria-label={isMenuOpen ? '메뉴 닫기' : '메뉴 열기'}
-          >
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </header>
-
-      {/*
-        서랍은 header 밖에 둔다. header 에 backdrop-blur 가 걸려 있는데
-        backdrop-filter 는 fixed 자손의 컨테이닝 블록이 되어, 안에 두면 이 상자가
-        뷰포트가 아니라 헤더 높이(64px)로 잡힌다 — 서랍이 그만큼만 열린다.
-
-        상자 자체는 화면을 넘지 않고, 서랍은 그 안에서 absolute 로 밀어낸다.
-        닫힌 서랍을 fixed 로 화면 밖에 세우면 문서 폭이 늘어나 가로 스크롤이 생기는데,
-        overflow-hidden 인 이 상자가 그것도 같이 막는다.
-      */}
-      <div
-        className={cn(
-          'pointer-events-none fixed inset-0 z-50 overflow-hidden pc:hidden',
-          isMenuOpen && 'pointer-events-auto'
-        )}
-      >
-        <div
-          className={cn(
-            'absolute inset-0 bg-[rgba(15,12,19,0.72)] opacity-0 transition-opacity duration-200',
-            isMenuOpen && 'opacity-100'
-          )}
-          onClick={() => setIsMenuOpen(false)}
-        />
-
-        <aside
-          className={cn(
-            'absolute right-0 top-0 h-full w-[78%] max-w-[320px] border-l border-l-dusk-line bg-dusk-card px-6 py-6 transition-transform duration-200',
-            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          )}
-        >
-          <div className="mb-8 flex items-center justify-end">
-            <button
-              type="button"
-              onClick={() => setIsMenuOpen(false)}
-              className="inline-flex size-9 items-center justify-center rounded-full border border-dusk-line text-dusk-ink-200"
-              aria-label="메뉴 닫기"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          <nav className="flex flex-col gap-5">
-            {resolvedMenus.map((menu) => (
-              <Link
-                key={`mobile-drawer-${menu.label}-${menu.url}`}
-                href={menu.url}
-                onClick={() => setIsMenuOpen(false)}
-                className={cn(
-                  'text-base transition-colors',
-                  isActive(menu.url) ? 'text-ember' : 'text-dusk-ink-200 hover:text-dusk-ink-100'
-                )}
-              >
-                {menu.label}
-              </Link>
-            ))}
+              )
+            })}
             {resolvedActionMenus.map((menu) => (
               <Link
-                key={`mobile-action-${menu.label}-${menu.url}`}
+                key={`action-${menu.label}-${menu.url}`}
                 href={menu.url}
-                onClick={() => setIsMenuOpen(false)}
-                className="text-base text-dusk-ink-500 hover:text-dusk-ink-100"
+                className="whitespace-nowrap text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100"
               >
                 {menu.label}
               </Link>
             ))}
+            {showAdminEntry && (
+              <Link href="/dashboard/" className={ADMIN_ENTRY_CLASS}>
+                운영
+              </Link>
+            )}
           </nav>
-        </aside>
+        </div>
       </div>
-    </>
+
+      <div className="pc:hidden">
+        <div className="flex h-14 items-center justify-between gap-3 px-5">
+          <DuskBrand href={brandHref} />
+          <div className="flex items-center gap-2">
+            {showAdminEntry && (
+              <Link href="/dashboard/" className={ADMIN_ENTRY_CLASS}>
+                운영
+              </Link>
+            )}
+            {user ? (
+              <Link
+                href={PROFILE_URL}
+                aria-label="내 정보"
+                aria-current={isActive(PROFILE_URL) ? 'page' : undefined}
+                className={cn(
+                  'inline-flex size-10 items-center justify-center rounded-full border transition-colors',
+                  isActive(PROFILE_URL)
+                    ? 'border-ember text-dusk-ink-100'
+                    : 'border-dusk-line text-dusk-ink-200'
+                )}
+              >
+                <User size={19} />
+              </Link>
+            ) : (
+              <Link
+                href={`/login?next=${encodeURIComponent(pathname)}`}
+                className="inline-flex h-10 items-center px-2 text-[15px] text-dusk-ink-300"
+              >
+                로그인
+              </Link>
+            )}
+          </div>
+        </div>
+
+        <nav aria-label="메뉴" className="no-scrollbar flex h-11 overflow-x-auto px-3">
+          {mobileTabs.map((menu) => {
+            const active = isActive(menu.url)
+            return (
+              <Link
+                key={`tab-${menu.label}-${menu.url}`}
+                href={menu.url}
+                aria-current={active ? 'page' : undefined}
+                className={cn(
+                  'flex shrink-0 items-center border-b-2 px-3 text-[15px] transition-colors',
+                  active
+                    ? 'border-b-ember text-dusk-ink-100'
+                    : 'border-b-transparent text-dusk-ink-500'
+                )}
+              >
+                {menu.shortLabel ?? menu.label}
+              </Link>
+            )
+          })}
+        </nav>
+      </div>
+    </header>
   )
 }
