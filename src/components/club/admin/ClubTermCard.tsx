@@ -16,7 +16,7 @@ import { cn } from '@/utils/cn'
 const CARD =
   'flex flex-col gap-3 rounded-[20px] border border-admin-line-soft bg-admin-card p-[22px] shadow-admin'
 const FIELD =
-  'rounded-xl border border-admin-line bg-admin-base px-4 py-3 text-[14px] text-admin-ink outline-none focus:border-admin-accent'
+  'rounded-xl border border-admin-line bg-admin-base px-4 py-3 text-[14px] mobile:text-base text-admin-ink outline-none focus:border-admin-accent'
 
 /**
  * 기수 설정 (C 담당) — `/dashboard/club/leaders` 오른쪽 칸. 이름과 참석 비율만 있다. 활동 기간은 소모임마다 둔다.

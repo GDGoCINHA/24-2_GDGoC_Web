@@ -20,7 +20,7 @@ import {
 } from '@/types/eventApplication'
 
 const INPUT =
-  'w-full rounded-[10px] border border-admin-line bg-admin-card px-3 py-2 text-[14px] text-admin-ink outline-none transition-colors duration-200 focus:border-admin-accent disabled:cursor-not-allowed disabled:opacity-40'
+  'w-full rounded-[10px] border border-admin-line bg-admin-card px-3 py-2 text-[14px] mobile:text-base text-admin-ink outline-none transition-colors duration-200 focus:border-admin-accent disabled:cursor-not-allowed disabled:opacity-40'
 
 const LABEL = 'shrink-0 whitespace-nowrap text-[12px] tracking-[0.06em] text-admin-ink-dim'
 

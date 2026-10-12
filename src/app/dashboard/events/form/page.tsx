@@ -43,7 +43,7 @@ const HEADER_LINKS = [
 ]
 
 const INPUT =
-  'rounded-[10px] border border-admin-line bg-admin-card px-3 py-2 text-[14px] text-admin-ink outline-none transition-colors duration-200 focus:border-admin-accent'
+  'rounded-[10px] border border-admin-line bg-admin-card px-3 py-2 text-[14px] mobile:text-base text-admin-ink outline-none transition-colors duration-200 focus:border-admin-accent'
 
 const LABEL = 'text-[12px] tracking-[0.06em] text-admin-ink-dim'
 

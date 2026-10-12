@@ -74,7 +74,7 @@ const SIBLING_SCREENS = [
 const isTeamAssignableRole = (role: string) => role === 'CORE' || role === 'LEAD'
 
 const selectClassName =
-  'w-full min-w-[96px] cursor-pointer rounded-[10px] border border-admin-line bg-admin-card px-2.5 py-2 text-[14px] text-admin-ink outline-none transition-colors duration-200 hover:border-admin-accent disabled:cursor-not-allowed disabled:opacity-40'
+  'w-full min-w-[96px] cursor-pointer rounded-[10px] border border-admin-line bg-admin-card px-2.5 py-2 text-[14px] mobile:text-base text-admin-ink outline-none transition-colors duration-200 hover:border-admin-accent disabled:cursor-not-allowed disabled:opacity-40'
 
 const pillClassName =
   'flex items-center gap-2.5 rounded-full border border-admin-line bg-admin-card px-4 py-2.5'
@@ -332,7 +332,7 @@ export default function DashboardUsersPage() {
               }}
               onBlur={runSearch}
               placeholder="이름 · 이메일 · 학번 검색"
-              className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+              className="min-w-0 flex-1 border-0 bg-transparent text-[15px] mobile:text-base text-admin-ink outline-none"
             />
           </label>
 
@@ -344,7 +344,7 @@ export default function DashboardUsersPage() {
                 setPage(1)
                 setRoleFilter(event.target.value)
               }}
-              className="cursor-pointer border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+              className="cursor-pointer border-0 bg-transparent text-[15px] mobile:text-base text-admin-ink outline-none"
             >
               <option value="ALL" className="bg-admin-card text-admin-ink">
                 전체
@@ -365,7 +365,7 @@ export default function DashboardUsersPage() {
                 setPage(1)
                 setTeamFilter(event.target.value)
               }}
-              className="cursor-pointer border-0 bg-transparent text-[15px] text-admin-ink outline-none"
+              className="cursor-pointer border-0 bg-transparent text-[15px] mobile:text-base text-admin-ink outline-none"
             >
               <option value="ALL" className="bg-admin-card text-admin-ink">
                 전체
@@ -408,8 +408,8 @@ export default function DashboardUsersPage() {
         data-admin-reveal
         className="mx-auto w-full max-w-[1240px] px-[clamp(20px,4vw,40px)] pt-4"
       >
-        <div className="overflow-hidden rounded-[20px] border border-admin-line-soft bg-admin-card shadow-admin">
-          <table className="w-full border-collapse">
+        <div className="overflow-x-auto rounded-[20px] border border-admin-line-soft bg-admin-card shadow-admin">
+          <table className="w-full min-w-max border-collapse">
             <thead>
               <tr>
                 {['ID', '이름', '이메일', '학과 · 학번', '권한', '팀'].map((label) => (
