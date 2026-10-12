@@ -49,7 +49,7 @@ const PROFILE_URL = '/profile/'
  * 일반 메뉴와 섞여 보이면 안 되고, 강조색(ember)은 지원하기 같은 주 행동 몫이다.
  */
 const ADMIN_ENTRY_CLASS =
-  'inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
+  'inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
 
 export function GdgSiteHeader({
   menus,

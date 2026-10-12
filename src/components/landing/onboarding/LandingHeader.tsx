@@ -20,15 +20,16 @@ const ANCHORS = [
   { label: 'FAQ', id: 'faq' }
 ]
 
+// 세로 여백은 누르는 면적용이다 — 글자 높이(20px)만으로는 손가락으로 잘 안 눌린다. 헤더 높이는 고정이라 모양은 그대로다.
 const LINK_CLASS =
-  'whitespace-nowrap text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100'
+  'whitespace-nowrap py-2.5 text-[15px] text-dusk-ink-500 transition-colors hover:text-dusk-ink-100'
 
 /**
  * 운영진만 보는 진입 버튼. 지원하기(ember)와 겹치지 않게 테두리만 준다 —
  * 방문자에게 가장 중요한 버튼이 두 개로 보이면 안 된다.
  */
 const ADMIN_LINK_CLASS =
-  'whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 py-1.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
+  'inline-flex h-10 items-center whitespace-nowrap rounded-full border border-[rgba(240,234,228,0.22)] px-3.5 text-[13px] text-dusk-ink-400 transition-colors hover:border-[rgba(208,129,85,0.6)] hover:text-dusk-ink-100'
 
 export function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
