@@ -253,6 +253,12 @@ export default function ClubDetailPage() {
                   소모임 관리
                 </Link>
               )}
+              {/* 리더는 관리 화면에서 들어간다. 리더가 아닌 운영진은 관리 화면을 못 쓰므로 여기서 바로 연다. */}
+              {isStaff && !isLeader && (
+                <Link href={`/club/manage/members/?id=${clubId}`} className={DUSK_GHOST_BUTTON}>
+                  멤버 추가
+                </Link>
+              )}
               {/* 기획 2.10: 소모임 이름·분야·모집 정원·신청 링크. 공개 전에는 받는 사람이 열 수 없어 숨긴다. */}
               {isPublic && (
                 <KakaoShareButton

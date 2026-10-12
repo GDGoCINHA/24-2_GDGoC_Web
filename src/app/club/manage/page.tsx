@@ -233,7 +233,15 @@ export default function ClubManagePage() {
         <ClubFixRequestSection clubId={clubId} />
 
         <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">멤버 {members.length}명</h2>
+          <div className="flex flex-wrap items-baseline justify-between gap-3">
+            <h2 className="text-lg font-semibold">멤버 {members.length}명</h2>
+            <Link
+              href={`/club/manage/members/?id=${clubId}&${FROM_MANAGE_PARAM}`}
+              className={cn(DUSK_GHOST_BUTTON, SMALL)}
+            >
+              멤버 추가
+            </Link>
+          </div>
           <ul className="overflow-hidden rounded-[14px] border border-dusk-line">
             {members.map((member) => (
               <li

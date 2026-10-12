@@ -10,11 +10,14 @@ import {
   DUSK_CANCEL_BUTTON,
   DUSK_CHIP,
   DUSK_CHIP_ACTIVE,
+  DUSK_GHOST_BUTTON,
   DUSK_INPUT,
   DUSK_SUBMIT_BUTTON,
   DUSK_TEXTAREA,
   DuskField
 } from '@/components/ui/dusk/DuskForm'
+import { formatMajorLabel } from '@/constant/majorOptions'
+import { useAuth } from '@/hooks/useAuth'
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi'
 import {
   describeUploadError,
@@ -31,6 +34,7 @@ import {
   type ClubSavePayload
 } from '@/services/club/clubClient'
 import { CLUB_CATEGORY_LABEL, type ClubCategory, type ClubStatus } from '@/types/club'
+import { hasAtLeast } from '@/utils/auth/role'
 import { cn } from '@/utils/cn'
 
 const CATEGORIES: ClubCategory[] = ['STUDY', 'HOBBY', 'CAREER', 'ETC']
@@ -61,8 +65,130 @@ function CategoryChips({
   )
 }
 
+interface LeaderHit {
+  id: number
+  name: string
+  major?: string | null
+  studentId?: string | null
+  userRole: string
+}
+
+/**
+ * 운영진이 다른 사람을 리더로 세운다. 운영진 전용 회원 검색(`/admin/users`)을 쓴다 — 부원(MEMBER 이상)만 고를 수 있다.
+ * 고르지 않으면 개설한 운영진 본인이 리더다.
+ */
+function LeaderPicker({
+  value,
+  onChange
+}: {
+  value: LeaderHit | null
+  onChange: (value: LeaderHit | null) => void
+}) {
+  const { apiClient } = useAuthenticatedApi()
+  const [query, setQuery] = useState('')
+  const [hits, setHits] = useState<LeaderHit[] | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const search = async () => {
+    const q = query.trim()
+    if (!q) return
+    setBusy(true)
+    setError(null)
+    try {
+      const response = await apiClient.get('/admin/users', {
+        params: { page: 0, size: 20, sort: 'name', dir: 'ASC', q }
+      })
+      const payload = response.data?.data
+      const users: LeaderHit[] = Array.isArray(payload) ? payload : (payload?.content ?? [])
+      setHits(users.filter((u) => hasAtLeast(u.userRole, 'MEMBER')))
+    } catch (err) {
+      setError(readClubError(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (value) {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border border-[rgba(240,234,228,0.14)] px-4 py-3">
+        <span className="min-w-0 flex-1 text-[15px]">
+          {value.name}
+          {value.major && (
+            <span className="ml-2 text-[13px] text-dusk-ink-800">
+              {formatMajorLabel(value.major)}
+            </span>
+          )}
+        </span>
+        <button
+          type="button"
+          onClick={() => onChange(null)}
+          className={cn(DUSK_GHOST_BUTTON, 'px-4 py-2 text-[13px]')}
+        >
+          바꾸기
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-2">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            // 폼 안이라 Enter 가 개설 요청을 보내지 않게 막는다.
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              void search()
+            }
+          }}
+          placeholder="이름 또는 학번으로 찾기"
+          aria-label="리더 찾기"
+          className={DUSK_INPUT}
+        />
+        <button
+          type="button"
+          disabled={busy || !query.trim()}
+          onClick={search}
+          className={cn(DUSK_GHOST_BUTTON, 'shrink-0')}
+        >
+          찾기
+        </button>
+      </div>
+      {error && <p className="text-sm text-signal-err">{error}</p>}
+      {hits && hits.length === 0 && (
+        <p className="text-sm text-dusk-ink-800">일치하는 부원이 없어요.</p>
+      )}
+      {hits && hits.length > 0 && (
+        <ul className="overflow-hidden rounded-[14px] border border-dusk-line">
+          {hits.map((hit) => (
+            <li key={hit.id} className="border-b border-dusk-line-soft last:border-b-0">
+              <button
+                type="button"
+                onClick={() => onChange(hit)}
+                className="flex w-full flex-col px-[18px] py-3 text-left hover:bg-[rgba(240,234,228,0.05)]"
+              >
+                <span className="text-[15px]">{hit.name}</span>
+                <span className="text-[13px] text-dusk-ink-800">
+                  {[hit.studentId, hit.major ? formatMajorLabel(hit.major) : null]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 /**
  * 소모임 개설 (A 담당). 개설하면 승인 대기로 생기고 운영진이 승인하면 게시판에 올라간다.
+ * 운영진이 개설하면 승인 없이 바로 공개되고, 다른 사람을 리더로 세울 수 있다.
  * `?id=` 가 있으면 수정 화면으로 쓴다 — 리더가 아니면 서버가 403. 반려된 소모임은 저장하면 다시 승인 대기로 간다.
  */
 export default function ClubNewPage() {
@@ -72,6 +198,10 @@ export default function ClubNewPage() {
   // 수정 화면을 관리 화면에서 열었으면 취소·저장 뒤 관리 화면으로 돌아간다.
   const back = editId ? clubBackTarget(editId, isFromManage(searchParams)) : null
   const { apiClient } = useAuthenticatedApi()
+  const { user } = useAuth()
+  // 리더 지정·즉시 공개는 새로 열 때만이다. 수정 화면에서는 서버가 leaderId 를 무시한다.
+  const staffCreate = !editId && hasAtLeast(user?.userRole, 'CORE')
+  const [leader, setLeader] = useState<LeaderHit | null>(null)
 
   const [status, setStatus] = useState<ClubStatus | null>(null)
   const [form, setForm] = useState<ClubSavePayload>({
@@ -156,8 +286,9 @@ export default function ClubNewPage() {
         await replaceClub(apiClient, editId, payload)
         router.push(back?.href ?? `/club/detail/?id=${editId}`)
       } else {
-        const id = await createClub(apiClient, payload)
-        router.push(`/club/detail/?id=${id}`)
+        const id = await createClub(apiClient, { ...payload, leaderId: leader?.id ?? null })
+        // 운영진은 인원을 이미 모아 둔 경우라 바로 멤버를 넣으러 간다.
+        router.push(staffCreate ? `/club/manage/members/?id=${id}` : `/club/detail/?id=${id}`)
       }
     } catch (err) {
       setMessage(readClubError(err))
@@ -176,7 +307,9 @@ export default function ClubNewPage() {
           </h1>
           {!editId && (
             <p className="mt-2.5 text-sm text-dusk-ink-700">
-              운영진이 승인하면 게시판에 올라가고 참여 신청을 받을 수 있어요
+              {staffCreate
+                ? '운영진이 개설하면 승인 없이 바로 게시판에 올라가요. 개설한 뒤 멤버를 한 번에 넣을 수 있어요'
+                : '운영진이 승인하면 게시판에 올라가고 참여 신청을 받을 수 있어요'}
             </p>
           )}
           {status === 'REJECTED' && (
@@ -196,6 +329,12 @@ export default function ClubNewPage() {
               className={DUSK_INPUT}
             />
           </DuskField>
+
+          {staffCreate && (
+            <DuskField label="리더" hint="고르지 않으면 내가 리더예요" group>
+              <LeaderPicker value={leader} onChange={setLeader} />
+            </DuskField>
+          )}
 
           <DuskField label="분야" required group>
             <CategoryChips value={form.category} onChange={(value) => set('category', value)} />
@@ -305,7 +444,7 @@ export default function ClubNewPage() {
               취소
             </a>
             <button type="submit" disabled={submitting || uploading} className={DUSK_SUBMIT_BUTTON}>
-              {editId ? '저장하기' : '개설 요청하기'}
+              {editId ? '저장하기' : staffCreate ? '개설하기' : '개설 요청하기'}
             </button>
           </div>
         </form>
