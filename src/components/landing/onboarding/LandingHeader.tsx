@@ -67,8 +67,12 @@ export default function LandingHeader() {
       </a>
 
       <nav className="flex items-center gap-[clamp(14px,2.4vw,34px)]">
+        {/*
+          좁은 화면에서는 숨긴다. 넣으면 nav 가 헤더보다 길어져 지원하기가 잘린다(360px 기준 62px 초과).
+          운영진은 대시보드 허브의 온보딩 관리로 같은 화면에 갈 수 있다.
+        */}
         {canEditContent && (
-          <a href="/dashboard/landing/" className={ADMIN_LINK_CLASS}>
+          <a href="/dashboard/landing/" className={`${ADMIN_LINK_CLASS} mobile:hidden`}>
             콘텐츠 관리
           </a>
         )}

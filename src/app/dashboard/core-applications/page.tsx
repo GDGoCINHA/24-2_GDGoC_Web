@@ -384,7 +384,7 @@ export default function DashboardCoreApplicationsPage() {
 
       <section data-admin-reveal className={`${ADMIN_CONTAINER} pt-4`}>
         <div className={ADMIN_TABLE_CARD}>
-          <table className="w-full border-collapse">
+          <table className="w-full min-w-max border-collapse">
             <thead>
               <tr>
                 {['이름', '학과 · 학번', '지원 팀', '상태', '제출 시각'].map((label) => (

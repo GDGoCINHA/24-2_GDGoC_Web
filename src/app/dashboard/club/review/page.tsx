@@ -235,7 +235,7 @@ export default function ClubReviewPage() {
                   maxLength={1000}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder="예: 모임 장면이 보이는 사진을 추가해 주세요"
-                  className="resize-y rounded-xl border border-admin-line bg-admin-base px-4 py-3 text-[14px] text-admin-ink outline-none focus:border-admin-accent"
+                  className="resize-y rounded-xl border border-admin-line bg-admin-base px-4 py-3 text-[14px] mobile:text-base text-admin-ink outline-none focus:border-admin-accent"
                 />
               </label>
               <div className="flex justify-end gap-2">

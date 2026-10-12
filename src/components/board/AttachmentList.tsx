@@ -59,9 +59,10 @@ export function AttachmentList({ attachments }: AttachmentListProps) {
               href={href ?? '#'}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-tag-info underline transition-colors hover:bg-[rgba(240,234,228,0.11)]"
+              className="flex items-center gap-2 rounded-[10px] bg-[rgba(240,234,228,0.06)] px-4 py-[9px] text-[15px] text-tag-info underline transition-colors hover:bg-[rgba(240,234,228,0.11)]"
             >
-              {attachment.url}
+              {/* flex 컨테이너에 직접 둔 텍스트에는 말줄임이 안 걸려 긴 URL 이 오른쪽 여백까지 잘린다. */}
+              <span className="truncate">{attachment.url}</span>
             </a>
           </li>
         )
