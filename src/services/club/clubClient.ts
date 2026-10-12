@@ -4,6 +4,8 @@ import type {
   ClubCategory,
   ClubDetail,
   ClubMember,
+  ClubMemberAddResult,
+  ClubMemberCandidate,
   ClubRecruitStatus,
   ClubStatus,
   ClubSummary,
@@ -68,9 +70,13 @@ export interface ClubSavePayload {
   endDate: string | null
 }
 
+/**
+ * 부원이 열면 승인 대기로 생긴다. 운영진이 열면 바로 공개되고, leaderId 로 다른 사람을 리더로 세울 수 있다
+ * (부원이 보내면 서버가 무시한다).
+ */
 export const createClub = async (
   apiClient: AxiosInstance,
-  payload: ClubSavePayload
+  payload: ClubSavePayload & { leaderId?: number | null }
 ): Promise<number> => unwrapOnce<number>((await apiClient.post('/clubs', payload)).data)
 
 /** 수정 화면 저장. 보낸 값으로 통째로 바꾼다 — null 이면 비운다. 모집 상태는 건드리지 않는다. */
@@ -122,6 +128,26 @@ export const fetchClubApplicants = async (
   clubId: number
 ): Promise<ClubMember[]> =>
   unwrapOnce<ClubMember[]>((await apiClient.get(`/clubs/${clubId}/members/pending`)).data)
+
+/** 멤버 추가 화면의 이름 검색. 리더·운영진만. 부원(MEMBER 이상)만 나온다. */
+export const searchClubMemberCandidates = async (
+  apiClient: AxiosInstance,
+  clubId: number,
+  q: string
+): Promise<ClubMemberCandidate[]> =>
+  unwrapOnce<ClubMemberCandidate[]>(
+    (await apiClient.get(`/clubs/${clubId}/members/candidates`, { params: { q } })).data
+  )
+
+/** 신청 없이 바로 멤버로 넣는다. 리더·운영진만. 신청 중이면 승인, 이미 멤버면 건너뛴다. */
+export const addClubMembers = async (
+  apiClient: AxiosInstance,
+  clubId: number,
+  userIds: number[]
+): Promise<ClubMemberAddResult> =>
+  unwrapOnce<ClubMemberAddResult>(
+    (await apiClient.post(`/clubs/${clubId}/members/bulk`, { userIds })).data
+  )
 
 export const handleClubMember = async (
   apiClient: AxiosInstance,
