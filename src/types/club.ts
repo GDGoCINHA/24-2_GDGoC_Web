@@ -88,6 +88,23 @@ export interface ClubMember {
   joinedAt: string | null
 }
 
+/** 멤버 추가 화면의 검색 결과. 학번은 앞 4자리만 온다(동명이인 구분용). null 필드는 응답에서 빠진다. */
+export interface ClubMemberCandidate {
+  userId: number
+  name: string
+  major?: string | null
+  studentId?: string | null
+  /** 이 소모임에서 신청 중이거나 멤버면 그 상태, 아니면 비어 있다 */
+  memberStatus?: 'PENDING' | 'ACTIVE' | null
+}
+
+/** 일괄 추가 결과. approved 는 신청 중이던 사람, skipped 는 이미 멤버였던 사람이다. */
+export interface ClubMemberAddResult {
+  added: number
+  approved: number
+  skipped: number
+}
+
 export interface MyClub {
   club: ClubSummary
   status: ClubMemberStatus

@@ -188,6 +188,9 @@ export default function ClubTeamPage() {
           <Link href={`/club/detail/?id=${clubId}`} className={ADMIN_GHOST_BUTTON}>
             소모임 화면
           </Link>
+          <Link href={`/club/manage/members/?id=${clubId}`} className={ADMIN_GHOST_BUTTON}>
+            멤버 추가
+          </Link>
           <button
             type="button"
             onClick={async () => {
