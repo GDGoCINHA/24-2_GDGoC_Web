@@ -3,7 +3,7 @@
 import Image from 'next/image'
 
 import { useAuth } from '@/hooks/useAuth'
-import { hasAtLeast } from '@/utils/auth/role'
+import { canOpenDashboard, hasAtLeast } from '@/utils/auth/role'
 
 import gdgocPcLogo from '@public/icons/gdgocIcon/pc.svg'
 
@@ -39,9 +39,10 @@ export default function LandingHeader() {
   const isLoggedIn = Boolean(user)
   // 콘텐츠 관리 화면과 같은 기준이다 (dashboard/landing/layout.tsx).
   const canEditContent = hasAtLeast(user?.userRole, 'LEAD')
+  const canOpenAdmin = canOpenDashboard(user?.userRole)
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex h-[68px] items-center justify-between gap-6 border-b border-b-[rgba(240,234,228,0.07)] bg-[rgba(27,22,34,0.62)] px-[clamp(20px,4vw,44px)] backdrop-blur-[18px]">
+    <header className="fixed inset-x-0 top-0 z-50 flex h-[68px] items-center justify-between gap-3 border-b border-b-[rgba(240,234,228,0.07)] bg-[rgba(27,22,34,0.62)] px-[clamp(20px,4vw,44px)] backdrop-blur-[18px] pc:gap-6">
       <a
         href="#top"
         onClick={(event) => {
@@ -66,7 +67,11 @@ export default function LandingHeader() {
         </span>
       </a>
 
-      <nav className="flex items-center gap-[clamp(14px,2.4vw,34px)]">
+      {/*
+        모바일 여백은 운영진 기준으로 맞췄다. CORE 이상은 「운영」까지 다섯 개라 360px 에서
+        PC 와 같은 간격이면 지원하기가 25px 잘린다.
+      */}
+      <nav className="flex items-center gap-[clamp(10px,2.4vw,34px)]">
         {/*
           좁은 화면에서는 숨긴다. 넣으면 nav 가 헤더보다 길어져 지원하기가 잘린다(360px 기준 62px 초과).
           운영진은 대시보드 허브의 온보딩 관리로 같은 화면에 갈 수 있다.
@@ -74,6 +79,12 @@ export default function LandingHeader() {
         {canEditContent && (
           <a href="/dashboard/landing/" className={`${ADMIN_LINK_CLASS} mobile:hidden`}>
             콘텐츠 관리
+          </a>
+        )}
+        {/* 홈 화면 앱을 열면 여기가 첫 화면이라 운영진 입구가 있어야 한다. 짧아서 모바일에도 들어간다. */}
+        {canOpenAdmin && (
+          <a href="/dashboard/" className={ADMIN_LINK_CLASS}>
+            운영
           </a>
         )}
         {ANCHORS.map((item) => (
@@ -102,7 +113,7 @@ export default function LandingHeader() {
         </a>
         <a
           href="/recruit/"
-          className="whitespace-nowrap rounded-full bg-ember px-5 py-2.5 text-[15px] font-medium text-ember-ink transition-colors hover:bg-dusk-ink-100 hover:text-dusk-base"
+          className="whitespace-nowrap rounded-full bg-ember px-4 py-2.5 pc:px-5 text-[15px] font-medium text-ember-ink transition-colors hover:bg-dusk-ink-100 hover:text-dusk-base"
         >
           지원하기
         </a>
