@@ -11,6 +11,11 @@ type DashboardItem = {
   title: string
   description: string
   minRoleRank: number
+  /**
+   * minRoleRank 에 못 미쳐도 이 팀의 CORE 이상이면 보여준다. 서버 @Authorize 의 팀 조건과 같게 맞춘다 —
+   * 어긋나면 눌러도 403 인 메뉴가 뜨거나, 쓸 수 있는 화면이 숨는다.
+   */
+  teams?: string[]
 }
 
 type DashboardGroup = {
@@ -71,6 +76,13 @@ const DASHBOARD_GROUPS: DashboardGroup[] = [
         title: 'Core 출석',
         description: '코어 출석 현황을 조회하고 lead 이상은 출석을 기록합니다.',
         minRoleRank: 2
+      },
+      {
+        href: '/dashboard/homecoming',
+        title: '홈커밍 신청',
+        description: '2026 홈커밍데이 신청을 집계·수정·취소하고 명찰 CSV 를 내려받습니다.',
+        minRoleRank: 4,
+        teams: ['HR']
       }
     ]
   },
@@ -142,7 +154,8 @@ const ROLE_RANK: Record<string, number> = {
 
 const ROLE_LABEL: Record<number, string> = {
   2: 'CORE 이상',
-  3: 'LEAD 이상'
+  3: 'LEAD 이상',
+  4: 'ORGANIZER · HR'
 }
 
 /** 권한 기준 셀렉트에 세울 후보. 내 등급 이하만 남긴다. */
@@ -160,6 +173,7 @@ export default function DashboardIndexPage() {
   const { user } = useAuth()
   const myRole = user?.userRole ?? 'GUEST'
   const myRoleRank = ROLE_RANK[myRole] ?? 0
+  const myTeam = user?.team ?? null
 
   const [query, setQuery] = useState('')
   const [viewRole, setViewRole] = useState<string | null>(null)
@@ -200,7 +214,11 @@ export default function DashboardIndexPage() {
 
     DASHBOARD_GROUPS.forEach((group) => {
       const items = group.items
-        .filter((item) => effectiveRank >= item.minRoleRank)
+        .filter(
+          (item) =>
+            effectiveRank >= item.minRoleRank ||
+            (effectiveRank >= ROLE_RANK.CORE && !!myTeam && !!item.teams?.includes(myTeam))
+        )
         .filter(
           (item) => !keyword || `${item.title} ${item.description}`.toLowerCase().includes(keyword)
         )
@@ -220,7 +238,7 @@ export default function DashboardIndexPage() {
     })
 
     return { groups: result, visibleCount: no }
-  }, [effectiveRank, query])
+  }, [effectiveRank, myTeam, query])
 
   return (
     <div className="min-h-screen bg-admin-base pb-12 font-pretendard text-admin-ink">
