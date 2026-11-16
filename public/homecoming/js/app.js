@@ -18,7 +18,6 @@ const TEAMS = [
   ['Tech', '동아리 홈페이지 기획·개발·운영, 홈페이지를 활용한 홍보물 제작'],
   ['PR·Design', '카드뉴스·포스터·굿즈 디자인, 행사 인쇄물, 브랜딩·홍보'],
 ];
-const ROLE_LABEL = { organizer: '운영진', member: '일반 멤버' };
 const ARRIVALS = ['14:00', '15:00', '16:00', '17:00', '18:00'];
 const MSG_MAX = 1000;
 const NAME_MAX = 50;
@@ -36,7 +35,7 @@ const hasExtra = (a) => a === 'main' || a === 'both';
 
 // ── 상태 ────────────────────────────────────────────────
 const blank = () => ({
-  attend: null, name: '', phone: '', yearStart: '', yearEnd: '', role: null, team: null,
+  attend: null, name: '', phone: '', yearStart: '', yearEnd: '', role: 'organizer', team: null, // 모두 운영진이라 구분을 묻지 않는다
   isLate: false, arrival: '', message: '', privacy: false, invite: false, talent: false,
 });
 let form = blank();
@@ -90,7 +89,7 @@ function stepValid(id) {
     case 'attend': return !!form.attend;
     case 'basic': return !errors.name() && !errors.phone();
     case 'activity':
-      return !!form.yearStart && !!form.yearEnd && !errors.years() && !!form.role && (form.role !== 'organizer' || !!form.team);
+      return !!form.yearStart && !!form.yearEnd && !errors.years() && !!form.team;
     case 'extra': return !errors.arrival() && form.message.length <= MSG_MAX;
     case 'confirm': return form.privacy;
     default: return false;
@@ -155,7 +154,7 @@ const RENDER = {
     const ye = errors.years();
     const opt = (sel, ph) => `<option value="" ${!sel ? 'selected' : ''} disabled>${ph}</option>` +
       YEARS.map((y) => `<option value="${y}" ${sel === y ? 'selected' : ''}>${y}</option>`).join('');
-    return `${head('활동 기간과 구분을<br />선택해 주세요', '명찰에 활동 정보를 표시하기 위해 필요해요.')}
+    return `${head('활동 기간과 팀을<br />선택해 주세요', '명찰에 활동 정보를 표시하기 위해 필요해요.')}
       <fieldset><legend>활동 기간 <em>필수</em></legend>
         <div class="row">
           <select class="select" name="yearStart" aria-label="시작 연도" aria-describedby="years-err" ${ye ? 'aria-invalid="true"' : ''}>${opt(form.yearStart, '시작 연도')}</select>
@@ -164,22 +163,15 @@ const RENDER = {
         </div>${errSlot('years', ye)}
         <p class="help" id="years-help">1년간 활동했다면 시작·마지막 연도를 같게 선택해 주세요.</p>
       </fieldset>
-      <fieldset><legend>활동 구분 <em>필수 · 1개 선택</em></legend>
-        <div class="choices two">
-          ${['organizer', 'member'].map((r) => `<label class="choice"><input type="radio" name="role" value="${r}" ${form.role === r ? 'checked' : ''} />
-            <span class="choice-box"><b>${ROLE_LABEL[r]}</b></span></label>`).join('')}
-        </div>
-        <p class="help">운영진 활동 경험이 있다면 ‘운영진’을 선택해 주세요.</p>
-      </fieldset>
-      ${form.role === 'organizer' ? `<fieldset id="team-field"><legend>활동 팀 <em>필수 · 1개 선택</em></legend>
+      <fieldset id="team-field"><legend>활동 팀 <em>필수 · 1개 선택</em></legend>
         ${form.team ? '' : '<p class="help" style="margin:0 2px 10px">활동한 팀을 선택해 주세요.</p>'}
         <div class="choices">
           ${TEAMS.map(([t, d]) => `<label class="choice"><input type="radio" name="team" value="${t}" ${form.team === t ? 'checked' : ''} />
             <span class="choice-box"><b>${t}</b><span class="desc">${d}</span></span></label>`).join('')}
         </div>
         <p class="help">팀 이름이 달랐다면 역할이 비슷한 팀을 선택해 주세요.<br />여러 팀에서 활동했다면 가장 오래 활동한 팀을 선택해 주세요.</p>
-      </fieldset>` : ''}
-      <div class="summary-chip ${activitySummary() ? '' : 'empty'}" aria-live="polite">${activitySummary() || '시작 연도 ~ 마지막 연도 · 활동 구분'}</div>`;
+      </fieldset>
+      <div class="summary-chip ${activitySummary() ? '' : 'empty'}" aria-live="polite">${activitySummary() || '시작 연도 ~ 마지막 연도 · 활동 팀'}</div>`;
   },
   extra() {
     const ae = showErr('arrival') ? errors.arrival() : '';
@@ -231,10 +223,8 @@ const RENDER = {
 
 function activitySummary() {
   const yrs = form.yearStart && form.yearEnd && !errors.years() ? `${form.yearStart} ~ ${form.yearEnd}` : '';
-  if (!yrs || !form.role) return '';
-  const parts = [yrs, ROLE_LABEL[form.role]];
-  if (form.role === 'organizer' && form.team) parts.push(form.team);
-  return parts.join(' · ');
+  if (!yrs) return '';
+  return form.team ? `${yrs} · ${form.team}` : yrs;
 }
 
 function render({ focus = true } = {}) {
@@ -306,12 +296,6 @@ body.addEventListener('change', (e) => {
       break;
     }
     case 'yearStart': case 'yearEnd': form[t.name] = t.value; patchActivity(); break;
-    case 'role':
-      form.role = t.value;
-      if (form.role !== 'organizer') form.team = null; // 일반 멤버 전환 시 팀 초기화
-      patchActivity();
-      if (form.role === 'organizer') $('#team-field')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      break;
     case 'team': form.team = t.value; patchActivity(); break;
     case 'isLate':
       form.isLate = t.checked;
@@ -508,9 +492,9 @@ function hideSubmitError() { submitError.hidden = true; submitError.textContent 
 // ── 완료 ────────────────────────────────────────────────
 const DONE_COPY = {
   // 미정·불참 제목은 확인 필요
-  main: ['참석 신청이 완료됐어요.', '행사 일주일 전에 장소와 세부 안내를 드릴게요.'],
-  both: ['참석 신청이 완료됐어요.', '행사 일주일 전에 장소와 세부 안내를 드릴게요.'],
-  after: ['참석 신청이 완료됐어요.', '뒤풀이 장소는 행사 일주일 전에 안내드릴게요.'],
+  main: ['참석 신청이 완료됐어요.', '13:30까지 와주세요. 세부 장소는 다시 안내드릴게요.'],
+  both: ['참석 신청이 완료됐어요.', '13:30까지 와주세요. 세부 장소는 다시 안내드릴게요.'],
+  after: ['참석 신청이 완료됐어요.', '뒤풀이 장소는 다시 안내드릴게요.'],
   maybe: ['응답이 접수됐어요.', '가까워지면 한 번 더 연락드릴게요.'],
   no: ['응답이 접수됐어요.', '응답해 주셔서 감사해요.'],
 };
@@ -548,8 +532,8 @@ function downloadIcs(type) {
     after: { start: '20261219T093000Z', end: null, loc: '뒤풀이 장소 추후 안내' },
   }[type];
   const desc = type === 'after'
-    ? '뒤풀이(After Party)는 18:30 이후 시작해요. 장소는 행사 일주일 전에 안내드려요.'
-    : '13:00부터 자유 입장, 본 프로그램은 14:10 시작해요. 준비물: 1만 원 이내의 작은 선물';
+    ? '뒤풀이(After Party)는 18:30 이후 시작해요. 장소는 다시 안내드려요.'
+    : '13:30까지 와주세요. 세부 장소는 다시 안내드려요. 준비물: 1만 원 이내의 작은 선물';
   const icsEsc = (s) => s.replace(/[\\;,]/g, (c) => `\\${c}`);
   const lines = [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//GDGoC INHA//Homecoming 2026//KO', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
