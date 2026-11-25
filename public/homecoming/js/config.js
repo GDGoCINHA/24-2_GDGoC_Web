@@ -11,8 +11,9 @@ export const CONFIG = {
   // 그래서 접속한 도메인으로 정한다. 그 밖(localhost 등)은 비워 두어 localStorage 목업을 쓴다.
   API_BASE: apiBaseFor(location.hostname),
 
-  // 신청 마감 (확인 필요: 정확한 마감 시각). 현재 기준 11/22 23:59:59 KST
-  DEADLINE: '2026-11-22T23:59:59+09:00',
+  // 신청 마감 시각. null 이면 마감 없음 (운영진 요청, 2026-11-25).
+  // 다시 마감하려면 '2026-12-19T23:59:59+09:00' 처럼 넣고, 서버 app.homecoming.close-at 도 같이 맞춘다.
+  DEADLINE: null,
 
   // 캘린더 추가 버튼 노출 여부 (확인 필요: 유지 여부)
   CALENDAR_ENABLED: true,
@@ -30,5 +31,6 @@ export const QA = new URLSearchParams(location.search).get('qa') || '';
 
 export function isClosed(now = new Date()) {
   if (QA === 'closed') return true;
+  if (!CONFIG.DEADLINE) return false;
   return now.getTime() > new Date(CONFIG.DEADLINE).getTime();
 }
